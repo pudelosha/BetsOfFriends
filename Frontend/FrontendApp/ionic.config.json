@@ -1,0 +1,7 @@
+{
+  "name": "FrontendApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
