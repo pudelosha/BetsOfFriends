@@ -55,6 +55,7 @@ builder.Services.AddScoped<RoleManager<IdentityRole>>();
 // Register Application Services
 builder.Services.AddScoped<IRegisterService, RegisterService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 // CORS Configuration to Allow Frontend Requests
 builder.Services.AddCors(options =>

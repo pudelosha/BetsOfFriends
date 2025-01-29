@@ -11,25 +11,34 @@ namespace Backend.Repository.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<RegisterService> _logger;
 
-        public RegisterService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration)
+        public RegisterService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<RegisterService> logger)
         {
             _userManager = userManager;
             _emailService = emailService;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<RegisterResultDto> RegisterUserAsync(string userName, string email, string password)
         {
+            _logger.LogInformation($"Attempting to register user with email: {email}");
+
             var user = new ApplicationUser { UserName = userName, Email = email };
 
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
+                _logger.LogWarning($"User registration failed for email: {email}. Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
                 return new RegisterResultDto { Success = false, Errors = result.Errors };
             }
 
+            _logger.LogInformation($"User registered successfully: {email}");
+
             var confirmationUrl = await GenerateEmailConfirmationLinkAsync(user);
+
+            _logger.LogInformation($"Sending confirmation email to {email}");
 
             await _emailService.SendEmailAsync(user.Email, "Confirm Your Account",
                 $"Click <a href='{confirmationUrl}'>here</a> to confirm your account.");
@@ -39,28 +48,49 @@ namespace Backend.Repository.Services
 
         public async Task<RegisterResultDto> ConfirmEmailAsync(string userId, string token)
         {
+            _logger.LogInformation($"Attempting email confirmation for user ID: {userId}");
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
+            {
+                _logger.LogWarning($"Email confirmation failed: User not found with ID {userId}");
                 return new RegisterResultDto { Success = false, Message = "Invalid user ID." };
+            }
 
             var decodedToken = Encoding.UTF8.GetString(Convert.FromBase64String(token));
 
             var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
-            return result.Succeeded
-                ? new RegisterResultDto { Success = true, Message = "Email confirmed successfully." }
-                : new RegisterResultDto { Success = false, Errors = result.Errors };
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning($"Email confirmation failed for user ID {userId}. Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                return new RegisterResultDto { Success = false, Errors = result.Errors };
+            }
+
+            _logger.LogInformation($"Email confirmed successfully for user ID: {userId}");
+
+            return new RegisterResultDto { Success = true, Message = "Email confirmed successfully." };
         }
 
         public async Task<RegisterResultDto> ResendConfirmationEmailAsync(string email)
         {
+            _logger.LogInformation($"Resending confirmation email to {email}");
+
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
+            {
+                _logger.LogWarning($"Resend confirmation email failed: User not found for email {email}");
                 return new RegisterResultDto { Success = false, Message = "User not found." };
+            }
 
             if (await _userManager.IsEmailConfirmedAsync(user))
+            {
+                _logger.LogWarning($"Resend confirmation email failed: Email already confirmed for user {email}");
                 return new RegisterResultDto { Success = false, Message = "Email already confirmed." };
+            }
 
             var confirmationUrl = await GenerateEmailConfirmationLinkAsync(user);
+
+            _logger.LogInformation($"Sending new confirmation email to {email}");
 
             await _emailService.SendEmailAsync(user.Email, "Confirm Your Account",
                 $"Click <a href='{confirmationUrl}'>here</a> to confirm your account.");
@@ -73,7 +103,8 @@ namespace Backend.Repository.Services
         /// </summary>
         private async Task<string> GenerateEmailConfirmationLinkAsync(ApplicationUser user)
         {
-            // Generate the email confirmation token
+            _logger.LogInformation($"Generating email confirmation token for user: {user.Email}");
+
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
             // Encode the token safely in Base64 (avoids double encoding issues)
@@ -85,8 +116,11 @@ namespace Backend.Repository.Services
                 ? _configuration["App:BackendBaseUrlDev"]
                 : _configuration["App:BackendBaseUrlProd"];
 
-            // Generate the final confirmation URL
-            return $"{backendBaseUrl}/api/register/confirm-email?userId={user.Id}&token={encodedToken}";
+            var confirmationLink = $"{backendBaseUrl}/api/register/confirm-email?userId={user.Id}&token={encodedToken}";
+
+            _logger.LogInformation($"Generated confirmation link for user {user.Email}: {confirmationLink}");
+
+            return confirmationLink;
         }
     }
 }
