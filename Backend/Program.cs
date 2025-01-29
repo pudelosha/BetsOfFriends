@@ -56,6 +56,10 @@ builder.Services.AddScoped<RoleManager<IdentityRole>>();
 builder.Services.AddScoped<IRegisterService, RegisterService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IBetService, BetService>();
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<ITournamentService, TournamentService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // CORS Configuration to Allow Frontend Requests
 builder.Services.AddCors(options =>
