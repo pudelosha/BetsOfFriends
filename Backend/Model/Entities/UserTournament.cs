@@ -1,10 +1,15 @@
-﻿namespace Backend.Model.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Backend.Model.Entities
 {
     /// <summary>
     /// Many-to-Many Relationship Table Between Users and Tournaments.
     /// </summary>
     public class UserTournament
     {
+        [Key]
+        public int Id { get; set; }
+
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
 
