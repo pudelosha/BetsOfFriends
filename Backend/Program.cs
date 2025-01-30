@@ -61,14 +61,20 @@ builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<ITournamentService, TournamentService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-// CORS Configuration to Allow Frontend Requests
+// Add CORS policy
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", builder =>
-        builder.WithOrigins(clientBaseUrl)
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials());
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins(
+                "http://localhost:8100", // Allow Ionic Dev Server
+                "https://your-production-frontend.com" // Allow your production frontend
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // Allow cookies if using authentication
+        });
 });
 
 // Configure routing behavior

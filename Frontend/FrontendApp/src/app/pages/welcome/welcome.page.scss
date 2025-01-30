@@ -1,0 +1,16 @@
+.welcome-container {
+  text-align: center;
+  margin-top: 140px;
+  padding: 20px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.rounded-button {
+  border-radius: 35px;
+  width: 150px; /* Adjust button width */
+}

@@ -1,0 +1,73 @@
+<ion-content class="ion-padding">
+  <div class="welcome-container">
+    <h2>Register</h2>
+    <p>Create an account to join tournaments and place bets.</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
+      <!-- UserName Field -->
+      <ion-item>
+        <ion-label position="floating">Username</ion-label>
+        <ion-input formControlName="userName" type="text"></ion-input>
+      </ion-item>
+      <div class="validation-message">
+        <p class="error" *ngIf="f['userName'].invalid && f['userName'].touched">
+          Username is required (max 50 characters).
+        </p>
+      </div>
+
+      <!-- Email Field -->
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input formControlName="email" type="email"></ion-input>
+      </ion-item>
+      <div class="validation-message">
+        <p class="error" *ngIf="f['email'].invalid && f['email'].touched">
+          Please enter a valid email.
+        </p>
+      </div>
+
+      <!-- Password Field -->
+      <ion-item>
+        <ion-label position="floating">Password</ion-label>
+        <ion-input formControlName="password" type="password"></ion-input>
+      </ion-item>
+      <div class="validation-message">
+        <p class="error" *ngIf="f['password'].invalid && f['password'].touched">
+          Password is required (min 8 characters).
+        </p>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <ion-item>
+        <ion-label position="floating">Confirm Password</ion-label>
+        <ion-input formControlName="confirmPassword" type="password"></ion-input>
+      </ion-item>
+      <div class="validation-message">
+        <p class="error" *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched">
+          Passwords must match.
+        </p>
+      </div>
+
+      <!-- Terms and Conditions -->
+      <ion-item lines="none" class="terms-item">
+        <ion-checkbox formControlName="consent" slot="start"></ion-checkbox>
+        <ion-label>I agree to the Terms & Conditions</ion-label>
+      </ion-item>
+      <div class="validation-message">
+        <p class="error" *ngIf="!f['consent'].value && f['consent'].touched">
+          You must accept the terms to register.
+        </p>
+      </div>
+
+      <div class="button-group">
+        <ion-button expand="full" color="primary" class="rounded-button" type="submit" [disabled]="registerForm.invalid">
+          Register
+        </ion-button>
+      </div>
+    </form>
+
+    <p class="switch-auth">
+      Already have an account? <a (click)="navigateToLogin()">Login</a>
+    </p>
+  </div>
+</ion-content>

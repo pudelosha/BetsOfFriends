@@ -1,0 +1,80 @@
+/* Centered register container */
+.welcome-container {
+    text-align: center;
+    margin-top: 0px;
+    padding: 10px;
+  }
+  
+  /* Form field styling */
+  ion-item {
+    --background: #ffffff;
+    --border-radius: 10px;
+    margin: 10px 0;
+  }
+  
+  /* Side-by-side buttons */
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+  }
+  
+  /* Rounded button */
+  .rounded-button {
+    border-radius: 35px;
+    min-width: 150px;
+  }
+  
+  /* "Already have an account?" link */
+  .already-have-account {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  
+  .already-have-account a {
+    color: #264aa5;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  /* Space for validation messages */
+  .validation-message {
+    min-height: 20px;
+  }
+  
+  /* Error message styling */
+  .error {
+    color: red;
+    font-size: 14px;
+    margin-top: 3px;
+  }
+  
+/* Fix checkbox & label spacing */
+.terms-item {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* ✅ Reduce space between checkbox and text */
+  }
+  
+  /* Adjust checkbox size */
+  ion-checkbox {
+    transform: scale(1.2); /* ✅ Slightly enlarge checkbox for better visibility */
+  }
+  
+  /* Terms and Conditions styling */
+  .terms {
+    font-size: 14px;
+    text-align: left;
+    margin-top: 10px;
+  }
+  
+  .terms a {
+    color: #264aa5;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+
+  
+  

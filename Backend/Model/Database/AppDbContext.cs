@@ -18,6 +18,8 @@ namespace Backend.Model.Database
 
             RenameIdentityTables(builder);
             ConfigureUserTournamentRelationship(builder);
+            ConfigureGameRelationships(builder);
+            ConfigureTournamentRelationships(builder);
             SeedRoles(builder);
         }
 
@@ -38,26 +40,78 @@ namespace Backend.Model.Database
         /// <summary>
         /// Define relationships between tables
         /// </summary>
+        private void ConfigureGameRelationships(ModelBuilder builder)
+        {
+            // Many-to-One: Game -> Tournament
+            builder.Entity<Game>()
+                .HasOne(g => g.Tournament)
+                .WithMany(t => t.Games)
+                .HasForeignKey(g => g.TournamentId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade cycles
+
+            // Many-to-One: Game -> Home Team
+            builder.Entity<Game>()
+                .HasOne(g => g.HomeTeam)
+                .WithMany()
+                .HasForeignKey(g => g.HomeTeamId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade cycles
+
+            // Many-to-One: Game -> Away Team
+            builder.Entity<Game>()
+                .HasOne(g => g.AwayTeam)
+                .WithMany()
+                .HasForeignKey(g => g.AwayTeamId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade cycles
+        }
+
         private void ConfigureUserTournamentRelationship(ModelBuilder builder)
         {
             builder.Entity<UserTournament>()
-                .HasKey(ut => new { ut.UserId, ut.TournamentId });
+                .HasKey(ut => ut.Id); // Uses `Id` instead of composite `{ UserId, TournamentId }`
+
+            builder.Entity<UserTournament>()
+                .HasIndex(ut => new { ut.UserId, ut.TournamentId }) // Unique Index (not PK) for fast lookups
+                .IsUnique();
 
             builder.Entity<UserTournament>()
                 .HasOne(ut => ut.User)
                 .WithMany(u => u.UserTournaments)
                 .HasForeignKey(ut => ut.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cascading delete cycles
 
             builder.Entity<UserTournament>()
                 .HasOne(ut => ut.Tournament)
-                .WithMany(t => t.UserTournaments)
+                .WithMany(t => t.Participants)
                 .HasForeignKey(ut => ut.TournamentId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); // Deletes related UserTournaments when Tournament is deleted
 
             builder.Entity<UserTournament>()
                 .Property(ut => ut.Role)
-                .HasDefaultValue(UserTournamentRole.Guest); // Default role is Guest
+                .HasDefaultValue(UserTournamentRole.Guest);
+        }
+
+        private void ConfigureTournamentRelationships(ModelBuilder builder)
+        {
+            // Many-to-One: Tournament -> CreatedByUser
+            builder.Entity<Tournament>()
+                .HasOne(t => t.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(t => t.CreatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cascading delete cycles
+
+            // Many-to-One: Tournament -> Teams (Cascade Delete Allowed)
+            builder.Entity<Tournament>()
+                .HasMany(t => t.Teams)
+                .WithOne(team => team.Tournament)
+                .HasForeignKey(team => team.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade); // If Tournament is deleted, delete its Teams
+
+            // Many-to-One: Tournament -> UserTournaments (Cascade Delete Allowed)
+            builder.Entity<Tournament>()
+                .HasMany(t => t.Participants)
+                .WithOne(ut => ut.Tournament)
+                .HasForeignKey(ut => ut.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade); // If Tournament is deleted, remove participants
         }
 
         /// <summary>

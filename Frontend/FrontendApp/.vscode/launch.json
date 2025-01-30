@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "chrome",
+        "request": "launch",
+        "name": "Launch Ionic App in Chrome",
+        "url": "http://localhost:8100",
+        "webRoot": "${workspaceFolder}"
+      },
+      {
+        "type": "chrome",
+        "request": "attach",
+        "name": "Attach to running Ionic app",
+        "port": 9222,
+        "webRoot": "${workspaceFolder}"
+      }
+    ]
+  }
+  
