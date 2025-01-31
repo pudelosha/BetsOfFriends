@@ -1,0 +1,19 @@
+/* Centered confirmation message */
+.welcome-container {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+  }
+  
+  /* Button styling */
+  .button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .rounded-button {
+    border-radius: 10px;
+    min-width: 200px;
+  }
+  

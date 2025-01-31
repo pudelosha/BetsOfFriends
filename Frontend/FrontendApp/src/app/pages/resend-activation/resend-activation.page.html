@@ -1,7 +1,9 @@
 <ion-content class="ion-padding">
   <div class="welcome-container">
     <h2>Resend Activation Email</h2>
-    <p>Enter your email to receive a new activation link.</p>
+    <p class="resend-text">
+      Enter your email address and we’ll send a new activation link.
+    </p>
 
     <form [formGroup]="resendActivationForm" (ngSubmit)="resendActivation()">
       <ion-item>
@@ -16,13 +18,13 @@
 
       <div class="button-group">
         <ion-button expand="full" color="primary" class="rounded-button" type="submit" [disabled]="resendActivationForm.invalid">
-          Resend Email
+          Send Email
         </ion-button>
       </div>
     </form>
 
     <p class="back-link">
-      <a (click)="navigateToWelcome()">Back to Welcome page</a>
+      <a (click)="navigateToLogin()">Back to Login</a>
     </p>
   </div>
 </ion-content>

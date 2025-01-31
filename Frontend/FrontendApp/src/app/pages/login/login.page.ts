@@ -19,6 +19,7 @@ export class LoginPage {
 
   ionViewWillEnter() {
     this.scrollToTop();
+    this.loginForm.reset();
   }
 
   scrollToTop() {

@@ -112,11 +112,11 @@ namespace Backend.Repository.Services
 
             // Determine the correct backend URL based on environment
             var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
-            var backendBaseUrl = environment == "Development"
-                ? _configuration["App:BackendBaseUrlDev"]
-                : _configuration["App:BackendBaseUrlProd"];
+            var frontendBaseUrl = environment == "Development"
+                ? _configuration["App:ClientBaseUrlDev"]
+                : _configuration["App:ClientBaseUrlProd"];
 
-            var confirmationLink = $"{backendBaseUrl}/api/register/confirm-email?userId={user.Id}&token={encodedToken}";
+            var confirmationLink = $"{frontendBaseUrl}/confirm-email?userId={user.Id}&token={encodedToken}";
 
             _logger.LogInformation($"Generated confirmation link for user {user.Email}: {confirmationLink}");
 

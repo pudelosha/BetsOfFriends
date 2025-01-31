@@ -1,20 +1,80 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { UserService } from '..//..//services//user.service';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { ViewChild } from '@angular/core';
+import { IonContent } from '@ionic/angular';
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.page.html',
   styleUrls: ['./forgot-password.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
-export class ForgotPasswordPage implements OnInit {
+export class ForgotPasswordPage {
+  @ViewChild(IonContent) content!: IonContent;
 
-  constructor() { }
-
-  ngOnInit() {
+  ionViewWillEnter() {
+    this.scrollToTop();
+    this.forgotPasswordForm.reset();
   }
 
+  scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(300);
+    }
+  }
+
+  forgotPasswordForm: FormGroup;
+  isLoading = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private toastController: ToastController,
+    private router: Router
+  ) {
+    this.forgotPasswordForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]]
+    });
+  }
+
+  get f(): { [key: string]: AbstractControl } {
+    return this.forgotPasswordForm.controls;
+  }
+
+  submitRequest() {
+    if (this.forgotPasswordForm.invalid) return;
+
+    this.isLoading = true;
+    const email = this.forgotPasswordForm.value.email;
+
+    this.userService.forgotPassword(email).subscribe({
+      next: (response) => {
+        this.showToast(response.message || "Password reset link sent!", "success");
+        this.isLoading = false;
+      },
+      error: () => {
+        this.showToast("Something went wrong. Please try again.", "danger");
+        this.isLoading = false;
+      },
+    });
+  }
+
+  async showToast(message: string, color: 'success' | 'danger') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color
+    });
+    await toast.present();
+  }
+
+  navigateToLogin() {
+    this.router.navigate(['/login']);
+  }
 }

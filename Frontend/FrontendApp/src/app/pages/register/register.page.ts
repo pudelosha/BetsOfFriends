@@ -19,6 +19,7 @@ export class RegisterPage {
 
   ionViewWillEnter() {
     this.scrollToTop();
+    this.registerForm.reset();
   }
 
   scrollToTop() {

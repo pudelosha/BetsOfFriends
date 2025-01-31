@@ -64,5 +64,14 @@ export class RegisterService {
         return of({ success: false, message: errorMessage });
       })
     );
-  }  
+  } 
+  
+  confirmEmail(userId: string, token: string): Observable<{ success: boolean; message: string }> {
+    return this.http.get<{ success: boolean; message: string }>(`${this.apiUrl}/confirm-email`, {
+      params: { userId, token },
+    }).pipe(
+      catchError(() => of({ success: false, message: "Unable to confirm email. Try again later." }))
+    );
+  }
+  
 }

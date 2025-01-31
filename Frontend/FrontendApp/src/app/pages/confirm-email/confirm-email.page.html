@@ -1,0 +1,15 @@
+<ion-content class="ion-padding">
+  <div class="welcome-container">
+    <h2 *ngIf="confirmationSuccess">Account Activated!</h2>
+    <h2 *ngIf="!confirmationSuccess">Email Confirmation Failed ❌</h2>
+
+    <p *ngIf="isLoading">Processing your request...</p>
+    <p *ngIf="!isLoading">{{ message }}</p>
+
+    <div class="button-group">
+      <ion-button *ngIf="confirmationSuccess" expand="full" color="primary" class="rounded-button" (click)="navigateToLogin()">
+        Go to Login
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

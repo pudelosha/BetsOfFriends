@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { RegisterService } from 'src/app/services/register.service';
 import { Router } from '@angular/router';
+import { ViewChild } from '@angular/core';
+import { IonContent } from '@ionic/angular';
 
 @Component({
   selector: 'app-resend-activation',
@@ -13,6 +15,19 @@ import { Router } from '@angular/router';
   standalone: true,
 })
 export class ResendActivationPage {
+  @ViewChild(IonContent) content!: IonContent;
+
+  ionViewWillEnter() {
+    this.scrollToTop();
+    this.resendActivationForm.reset();
+  }
+
+  scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(300);
+    }
+  }
+
   resendActivationForm: FormGroup;
 
   constructor(
@@ -56,7 +71,7 @@ export class ResendActivationPage {
     }
   }
 
-  navigateToWelcome() {
-    this.router.navigate(['/welcome']);
+  navigateToLogin() {
+    this.router.navigate(['/login']);
   }
 }
