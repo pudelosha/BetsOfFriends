@@ -22,8 +22,8 @@
   
   /* Rounded button */
   .rounded-button {
-    border-radius: 35px;
-    min-width: 150px;
+    border-radius: 10px;
+    min-width: 200px;
   }
   
   /* "Already have an account?" link */
@@ -74,6 +74,18 @@
     text-decoration: none;
     font-weight: bold;
   }
+
+/* Switch between Login/Register */
+.switch-auth {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.switch-auth a {
+  color: #264aa5;
+  text-decoration: none;
+  font-weight: bold;
+}
   
 
   

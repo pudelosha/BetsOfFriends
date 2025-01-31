@@ -39,4 +39,30 @@ export class RegisterService {
       })
     );
   }
+
+  resendActivationEmail(email: string): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/resend-confirmation`, { email }).pipe(
+      map(response => ({
+        success: response.success,
+        message: response.message || "Activation email resent successfully."
+      })),
+      catchError((error) => {
+        let errorMessage = "An error occurred. Please try again.";
+  
+        if (error.status === 400) {
+          if (error.error && error.error.message) {
+            errorMessage = error.error.message;
+          } else {
+            errorMessage = "Invalid email address or user not found.";
+          }
+        } else if (error.status === 403) {
+          errorMessage = "This account is already confirmed.";
+        } else if (error.status === 500) {
+          errorMessage = "Server error. Please try again later.";
+        }
+  
+        return of({ success: false, message: errorMessage });
+      })
+    );
+  }  
 }

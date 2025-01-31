@@ -1,0 +1,83 @@
+/* Centered container */
+.welcome-container {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+  }
+  
+  /* Form field styling */
+  ion-item {
+    --background: #ffffff;
+    --border-radius: 10px;
+    margin: 10px 0;
+  }
+  
+  /* Button styling */
+  .button-group {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Ensures vertical alignment */
+    gap: 15px;
+    margin-top: 15px;
+  }
+  
+  /* Rounded button */
+  .rounded-button {
+    border-radius: 10px;
+    width: 200px;
+  }
+  
+  /* Validation messages */
+  .validation-message {
+    min-height: 20px; // Reserves space for validation messages
+  }
+  
+  .error {
+    color: red;
+    font-size: 14px;
+    margin-top: 3px;
+  }
+  
+  /* Link styling */
+  .resend-info {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .resend-info a {
+    color: #264aa5;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  /* Adjust spacing */
+  ion-label {
+    font-weight: 500;
+  }
+  
+  ion-input {
+    padding: 10px;
+  }
+
+  /* Back to Welcome link */
+.back-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  
+  .back-link a {
+    color: #264aa5;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  /* Responsive adjustments */
+  @media screen and (max-width: 600px) {
+    .button-group {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+  

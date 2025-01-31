@@ -1,0 +1,28 @@
+<ion-content class="ion-padding">
+  <div class="welcome-container">
+    <h2>Resend Activation Email</h2>
+    <p>Enter your email to receive a new activation link.</p>
+
+    <form [formGroup]="resendActivationForm" (ngSubmit)="resendActivation()">
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input formControlName="email" type="email"></ion-input>
+      </ion-item>
+      <div class="validation-message">
+        <p class="error" *ngIf="f['email'].invalid && f['email'].touched">
+          Please enter a valid email.
+        </p>
+      </div>
+
+      <div class="button-group">
+        <ion-button expand="full" color="primary" class="rounded-button" type="submit" [disabled]="resendActivationForm.invalid">
+          Resend Email
+        </ion-button>
+      </div>
+    </form>
+
+    <p class="back-link">
+      <a (click)="navigateToWelcome()">Back to Welcome page</a>
+    </p>
+  </div>
+</ion-content>

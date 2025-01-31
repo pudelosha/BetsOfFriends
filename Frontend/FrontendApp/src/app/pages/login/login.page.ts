@@ -46,18 +46,25 @@ export class LoginPage {
     return this.loginForm.controls;
   }
 
-  async login() {
+  login() {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-
-      this.authService.login(email, password).subscribe(async (response) => {
-        if (response.success) {
-          this.showToast(response.message, 'success');
-          this.router.navigate(['/home']);
-        } else {
-          this.errorMessage = response.message;
-          this.showToast(response.message, 'danger');
-        }
+  
+      this.authService.login(email, password).subscribe({
+        next: (response) => {
+          console.log('Login response:', response);
+  
+          if (response.success) {
+            this.showToast(response.message, 'success');
+            this.router.navigate(['/home']);
+          } else {
+            this.showToast(response.message, 'danger');
+          }
+        },
+        error: (error) => {
+          console.error('Login error:', error);
+          this.showToast(error.message, 'danger');
+        },
       });
     }
   }
@@ -79,5 +86,9 @@ export class LoginPage {
 
   navigateToForgotPassword() {
     this.router.navigateByUrl('/forgot-password');
+  }
+
+  navigateToResendActivation() {
+    this.router.navigateByUrl('/resend-activation');
   }
 }
