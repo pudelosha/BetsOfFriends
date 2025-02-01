@@ -43,12 +43,10 @@ export class AuthService {
     return !!localStorage.getItem(this.authTokenKey);
   }
 
-  private hasToken(): boolean {
-    return !!localStorage.getItem(this.authTokenKey);
-  }
-
   logout(): void {
+    console.log('Clearing auth token...');
     localStorage.removeItem(this.authTokenKey);
+    console.log('Updating authentication state...');
     this.isAuthenticatedSubject.next(false);
   }
 

@@ -1,26 +1,155 @@
 <ion-app>
-  <ion-header *ngIf="isLoggedIn">
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
-      </ion-buttons>
-      <ion-title>Football Betting App</ion-title>
-      <ion-buttons slot="end">
-        <ion-button (click)="logout()">Logout</ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Side Menu -->
+  <ion-menu contentId="main-content" *ngIf="isLoggedIn">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
 
-  <ion-content>
+    <ion-content>
+      <ion-list>
+
+        <!-- Home -->
+        <ion-item routerLink="/home" routerDirection="root">
+          <ion-icon name="home-outline" slot="start"></ion-icon>
+          <ion-label>Home</ion-label>
+        </ion-item>
+
+        <!-- Tournaments Section -->
+        <ion-item-divider>
+          <ion-label>
+            <ion-icon name="trophy-outline" slot="start"></ion-icon>
+            Tournaments
+          </ion-label>
+        </ion-item-divider>
+
+        <ion-item routerLink="/tournaments/my" routerDirection="root">
+          <ion-icon name="list-outline" slot="start"></ion-icon>
+          <ion-label>My Tournaments</ion-label>
+        </ion-item>
+
+        <ion-item routerLink="/tournaments/summary" routerDirection="root">
+          <ion-icon name="podium-outline" slot="start"></ion-icon>
+          <ion-label>Summary</ion-label>
+        </ion-item>
+
+        <ion-item routerLink="/tournaments/results" routerDirection="root">
+          <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+          <ion-label>Live Results</ion-label>
+        </ion-item>
+
+        <!-- Betting Section -->
+        <ion-item-divider>
+          <ion-label>
+            <ion-icon name="football-outline" slot="start"></ion-icon>
+            Betting
+          </ion-label>
+        </ion-item-divider>
+
+        <ion-item routerLink="/bets/my" routerDirection="root">
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          <ion-label>My Bets</ion-label>
+        </ion-item>
+
+        <ion-item routerLink="/bets/preview" routerDirection="root">
+          <ion-icon name="eye-outline" slot="start"></ion-icon>
+          <ion-label>Preview</ion-label>
+        </ion-item>
+
+        <!-- Settings Section -->
+        <ion-item-divider>
+          <ion-label>
+            <ion-icon name="settings-outline" slot="start"></ion-icon>
+            Settings
+          </ion-label>
+        </ion-item-divider>
+
+        <ion-item routerLink="/settings/profile" routerDirection="root">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>Profile</ion-label>
+        </ion-item>
+
+        <ion-item routerLink="/settings/notifications" routerDirection="root">
+          <ion-icon name="notifications-outline" slot="start"></ion-icon>
+          <ion-label>Notifications</ion-label>
+        </ion-item>
+
+        <!-- Admin Section (Visible only to Admins) -->
+        <ng-container>
+          <ion-item-divider>
+            <ion-label>
+              <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+              Admin
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-item routerLink="/admin/create-tournament" routerDirection="root">
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            <ion-label>Create Tournament</ion-label>
+          </ion-item>
+
+          <ion-item routerLink="/admin/manage-tournament" routerDirection="root">
+            <ion-icon name="hammer-outline" slot="start"></ion-icon>
+            <ion-label>Manage Tournament</ion-label>
+          </ion-item>
+
+          <ion-item routerLink="/admin/manage-games" routerDirection="root">
+            <ion-icon name="clipboard-outline" slot="start"></ion-icon>
+            <ion-label>Manage Games</ion-label>
+          </ion-item>
+        </ng-container>
+
+        <!-- Super Admin Section (Visible only to SuperAdmins) -->
+        <ng-container>
+          <ion-item-divider>
+            <ion-label>
+              <ion-icon name="star-outline" slot="start"></ion-icon>
+              Super Admin
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-item routerLink="/superadmin/create-template" routerDirection="root">
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            <ion-label>Create Predefined Tournament</ion-label>
+          </ion-item>
+
+          <ion-item routerLink="/superadmin/manage-templates" routerDirection="root">
+            <ion-icon name="build-outline" slot="start"></ion-icon>
+            <ion-label>Manage Predefined Tournaments</ion-label>
+          </ion-item>
+        </ng-container>
+
+        <!-- Logout -->
+        <ion-item (click)="logout()">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          <ion-label>Logout</ion-label>
+        </ion-item>
+
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <!-- Main Content -->
+  <div id="main-content">
+    <ion-header *ngIf="isLoggedIn">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Football Betting App</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
     <ion-router-outlet></ion-router-outlet>
-  </ion-content>
+  </div>
 
+  <!-- Footer -->
   <ion-footer class="custom-footer">
     <ion-toolbar>
       <ion-title class="footer-text">
-        ©2025 Poodel
+        ©2025 by Poodel
       </ion-title>
     </ion-toolbar>
   </ion-footer>
-  
 </ion-app>
