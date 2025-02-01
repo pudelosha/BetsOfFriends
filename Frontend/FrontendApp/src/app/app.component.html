@@ -1,6 +1,9 @@
 <ion-app>
   <ion-header *ngIf="isLoggedIn">
     <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
       <ion-title>Football Betting App</ion-title>
       <ion-buttons slot="end">
         <ion-button (click)="logout()">Logout</ion-button>
@@ -15,7 +18,7 @@
   <ion-footer class="custom-footer">
     <ion-toolbar>
       <ion-title class="footer-text">
-        ©2025 PooBet Football Betting App by Poodel
+        ©2025 Poodel
       </ion-title>
     </ion-toolbar>
   </ion-footer>

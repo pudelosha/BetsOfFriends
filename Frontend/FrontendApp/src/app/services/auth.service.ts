@@ -15,7 +15,7 @@ interface LoginResponseDto {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = `${environment.apiBaseUrl}/authentication`; //
+  private apiUrl = `${environment.apiBaseUrl}/authentication`;
   private authTokenKey = 'authToken';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
 
@@ -43,6 +43,10 @@ export class AuthService {
     return !!localStorage.getItem(this.authTokenKey);
   }
 
+  private hasToken(): boolean {
+    return !!localStorage.getItem(this.authTokenKey);
+  }
+
   logout(): void {
     localStorage.removeItem(this.authTokenKey);
     this.isAuthenticatedSubject.next(false);
@@ -58,7 +62,7 @@ export class AuthService {
     }
   
     if (error.error?.message) {
-      return { success: false, message: error.error.message }; // ✅ Extract message directly
+      return { success: false, message: error.error.message };
     }
   
     switch (error.status) {
