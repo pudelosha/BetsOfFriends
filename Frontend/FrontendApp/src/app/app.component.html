@@ -10,6 +10,7 @@
     <ion-content>
       <ion-list>
 
+        <ion-menu-toggle auto-hide="true">
         <!-- Home -->
         <ion-item routerLink="/home" routerDirection="root">
           <ion-icon name="home-outline" slot="start"></ion-icon>
@@ -65,7 +66,7 @@
           </ion-label>
         </ion-item-divider>
 
-        <ion-item routerLink="/settings/profile" routerDirection="root">
+        <ion-item (click)="navigateToProfile()">
           <ion-icon name="person-outline" slot="start"></ion-icon>
           <ion-label>Profile</ion-label>
         </ion-item>
@@ -125,6 +126,10 @@
           <ion-icon name="log-out-outline" slot="start"></ion-icon>
           <ion-label>Logout</ion-label>
         </ion-item>
+
+        </ion-menu-toggle>
+
+
 
       </ion-list>
     </ion-content>

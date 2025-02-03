@@ -3,21 +3,21 @@ import { IonApp, IonRouterOutlet, IonItemDivider } from '@ionic/angular/standalo
 import { Router, NavigationEnd  } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonButtons, IonMenuButton, IonMenu, IonList, IonItem, IonIcon, IonLabel } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonButtons, IonMenuButton, IonMenu, IonList, IonItem, IonIcon, IonLabel, IonMenuToggle } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
-import { ToastController } from '@ionic/angular';
+import { ToastController, MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonItemDivider, IonApp, IonRouterOutlet, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonButtons, IonMenuButton, IonMenu, IonList, IonItem, IonIcon, IonLabel, CommonModule, FormsModule],
+  imports: [IonItemDivider, IonApp, IonRouterOutlet, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonButtons, IonMenuButton, IonMenu, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, CommonModule, FormsModule],
   standalone: true,
 })
 export class AppComponent {
   isLoggedIn = false;
 
-  constructor(private authService: AuthService, private router: Router, private toastController: ToastController) {}
+  constructor(private authService: AuthService, private router: Router, private toastController: ToastController, private menuCtrl: MenuController) {}
 
   ngOnInit() {
     // Subscribe to authentication changes
@@ -52,5 +52,10 @@ export class AppComponent {
       color, // success, warning, danger, etc.
     });
     await toast.present();
+  }
+
+  navigateToProfile() {
+    console.log('Navigating to profile page...');
+    this.router.navigate(['/profile']);
   }
 }

@@ -1,0 +1,58 @@
+<ion-content class="ion-padding page-with-header">
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmitProfile()">
+
+    <!-- Member Since -->
+    <ion-item>
+      <ion-label position="stacked">Member Since</ion-label>
+      <ion-input [value]="memberSince" readonly></ion-input>
+    </ion-item>
+
+    <!-- Username -->
+    <ion-item>
+      <ion-label position="stacked">Username</ion-label>
+      <ion-input formControlName="username"></ion-input>
+    </ion-item>
+    <div class="validation-message">
+      <p class="error" *ngIf="f['username'].invalid && f['username'].touched">
+        Username must be between 3-50 characters.
+      </p>
+    </div>
+
+    <!-- Email -->
+    <ion-item>
+      <ion-label position="stacked">Email</ion-label>
+      <ion-input formControlName="email" readonly></ion-input>
+    </ion-item>
+
+    <!-- Language -->
+    <ion-item>
+      <ion-label>Language</ion-label>
+      <ion-select formControlName="selectedLanguage">
+        <ion-select-option value="en">English</ion-select-option>
+        <ion-select-option value="pl">Polski</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Dark Mode -->
+    <ion-item>
+      <ion-label>Dark Mode</ion-label>
+      <ion-toggle formControlName="darkMode"></ion-toggle>
+    </ion-item>
+
+    <!-- Save Profile Button -->
+    <ion-button expand="full" color="primary" type="submit" [disabled]="profileForm.invalid">Save Profile</ion-button>
+
+    <!-- Spacing -->
+    <div class="spacer"></div>
+
+    <!-- Change Email Button -->
+    <ion-button expand="full" color="secondary" (click)="changeEmail()">Change Email</ion-button>
+
+    <!-- Update Password Button -->
+    <ion-button expand="full" color="secondary" (click)="updatePasswordPopup()">Update Password</ion-button>
+
+    <!-- Delete Account Button -->
+    <ion-button expand="full" color="danger" (click)="confirmDeleteAccount()">Delete Account</ion-button>
+
+  </form>
+</ion-content>
