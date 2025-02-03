@@ -35,23 +35,13 @@ export class AppComponent {
       });
   }
 
-  async logout() {
+  logout() {
     console.log('Logging out...');
     this.authService.logout();
     this.isLoggedIn = false;
   
-    // Show logout toast for 3 seconds
-    await this.presentToast('You have been logged out.', 'success');
-  
-    console.log('Waiting 3 seconds before redirecting...');
-    
-    // Delay navigation for 3 seconds
-    setTimeout(() => {
-      console.log('Navigating to login page...');
-      this.router.navigate(['/login']).then(() => {
-        window.location.reload();
-      });
-    }, 3000);
+    console.log('Navigating to logoff page...');
+    this.router.navigate(['/logoff']);
   }
 
   async presentToast(message: string, color: string) {

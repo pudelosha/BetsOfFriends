@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { IonContent } from '@ionic/angular/standalone';
 
@@ -14,10 +12,9 @@ import { IonContent } from '@ionic/angular/standalone';
 })
 export class HomePage {
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor() {}
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/welcome']);
-  }
+
+
+
 }

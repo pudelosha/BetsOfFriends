@@ -7,6 +7,7 @@ export const routes: Routes = [
 
   // Only for logged-in users
   { path: 'home', loadComponent: () => import('./pages/home/home.page').then(m => m.HomePage), canActivate: [AuthGuard] },
+  { path: 'profile', loadComponent: () => import('./pages/profile/profile.page').then( m => m.ProfilePage) , canActivate: [AuthGuard] },
 
   // Only for guests
   { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage), canActivate: [GuestGuard] },
@@ -15,6 +16,10 @@ export const routes: Routes = [
   { path: 'resend-activation', loadComponent: () => import('./pages/resend-activation/resend-activation.page').then(m => m.ResendActivationPage), canActivate: [GuestGuard] },
   { path: 'forgot-password', loadComponent: () => import('./pages/forgot-password/forgot-password.page').then(m => m.ForgotPasswordPage), canActivate: [GuestGuard] },
   { path: 'reset-password', loadComponent: () => import('./pages/reset-password/reset-password.page').then(m => m.ResetPasswordPage), canActivate: [GuestGuard] },
+  { path: 'logoff', loadComponent: () => import('./pages/logoff/logoff.page').then( m => m.LogoffPage), canActivate: [GuestGuard] },
 
   { path: '**', redirectTo: 'welcome' },
+
+
+
 ];
