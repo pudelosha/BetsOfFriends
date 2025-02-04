@@ -85,7 +85,7 @@ namespace Backend.Repository.Services
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddHours(2), // Token expiration time
+                expires: DateTime.UtcNow.AddHours(24), // Token expiration time
                 signingCredentials: credentials
             );
 
