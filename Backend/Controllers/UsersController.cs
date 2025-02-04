@@ -50,6 +50,33 @@ namespace Backend.Controllers
             return Ok(result);
         }
 
+        [HttpGet("profile")]
+        [Authorize]
+        public IActionResult GetUserProfile()
+        {
+            var identity = HttpContext.User.Identity;
+
+            if (identity == null || !identity.IsAuthenticated)
+            {
+                _logger.LogWarning("Unauthorized access attempt to profile endpoint.");
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+
+            _logger.LogInformation($"Received {claims.Count} claims from token:");
+            foreach (var claim in claims)
+            {
+                _logger.LogInformation($"{claim.Type}: {claim.Value}");
+            }
+
+            return Ok(new
+            {
+                UserId = identity.Name,
+                Claims = claims
+            });
+        }
+
 
         //get user profile
         //change user password

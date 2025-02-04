@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ string clientBaseUrl = builder.Environment.IsDevelopment()
     ? builder.Configuration["App:ClientBaseUrlDev"]
     : builder.Configuration["App:ClientBaseUrlProd"];
 
+// Configure Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString(env)));
 
@@ -30,13 +32,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
+
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+
+            NameClaimType = ClaimTypes.NameIdentifier,
+            RoleClaimType = ClaimTypes.Role,
+
+            ClockSkew = TimeSpan.Zero
         };
     });
 
@@ -67,13 +76,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins(
-                "http://localhost:8100", // Allow Ionic Dev Server
-                "https://your-production-frontend.com" // Allow your production frontend
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials(); // Allow cookies if using authentication
+            policy.WithOrigins("http://localhost:8100", "https://your-production-frontend.com")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
@@ -93,6 +99,9 @@ var app = builder.Build();
 // Enable CORS
 app.UseCors("AllowFrontend");
 
+// Add Custom JWT Middleware Before Authentication
+app.UseMiddleware<JwtMiddleware>();
+
 // Middleware Pipeline
 if (app.Environment.IsDevelopment())
 {
@@ -108,5 +117,4 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
