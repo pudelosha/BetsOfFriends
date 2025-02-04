@@ -12,5 +12,6 @@ namespace Backend.Repository.Interfaces
         Task<ResetPasswordResultDto> ResetPasswordAsync(ResetPasswordRequestDto request);
         Task<bool> ChangeUserEmailAsync(string userId, string newEmail, string password);
         Task<bool> UpdateUserPasswordAsync(string userId, string currentPassword, string newPassword);
+        Task<bool> DeleteUserAccountAsync(string userId, string password);
     }
 }

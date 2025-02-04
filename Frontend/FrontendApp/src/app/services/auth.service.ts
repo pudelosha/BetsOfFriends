@@ -49,15 +49,17 @@ export class AuthService {
     return !!localStorage.getItem(this.authTokenKey);
   }
 
-  async logout(message?: string): Promise<void> {
+  async logout(message?: string, redirectPath: string = '/login'): Promise<void> {
     console.log('Clearing auth tokens...');
-    
+  
+    // Clear authentication tokens from both storage locations
     localStorage.removeItem(this.authTokenKey);
     sessionStorage.removeItem(this.authTokenKey);
   
     console.log('Updating authentication state...');
     this.isAuthenticatedSubject.next(false);
   
+    // Show success toast before redirecting
     if (message) {
       const toast = await this.toastCtrl.create({
         message,
@@ -68,10 +70,11 @@ export class AuthService {
       await toast.present();
     }
   
-    console.log('Redirecting to login...');
+    // Redirect to the specified page
+    console.log(`Redirecting to ${redirectPath}...`);
     setTimeout(() => {
-      window.location.href = '/login';
-    }, 3000);
+      window.location.href = redirectPath;
+    }, 3000); // Small delay to allow the toast to appear
   }
   
   getAuthStatus(): Observable<boolean> {

@@ -59,18 +59,24 @@ export class RegisterPage {
   async register() {
     if (this.registerForm.valid) {
       const { userName, email, password, consent } = this.registerForm.value;
-
-      this.registerService.register({ userName, email, password, consent }).subscribe(async (response) => {
-        if (response.success) {
-          this.showToast(response.message, 'success');
-          this.router.navigate(['/login']);
-        } else {
-          this.errorMessage = response.message;
-          this.showToast(response.message, 'danger');
+  
+      this.registerService.register({ userName, email, password, consent }).subscribe({
+        next: async (response) => {
+          if (response.success) {
+            this.showToast(response.message, 'success');
+            this.router.navigate(['/login']);
+          } else {
+            this.showToast(response.message || 'Registration failed.', 'danger');
+          }
+        },
+        error: (error) => {
+          console.error('Registration error:', error);
+          const errorMsg = error?.error?.message || 'An error occurred. Please try again.';
+          this.showToast(errorMsg, 'danger');
         }
       });
     }
-  }
+  }  
 
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({

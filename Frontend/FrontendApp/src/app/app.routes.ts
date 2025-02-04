@@ -17,9 +17,8 @@ export const routes: Routes = [
   { path: 'forgot-password', loadComponent: () => import('./pages/forgot-password/forgot-password.page').then(m => m.ForgotPasswordPage), canActivate: [GuestGuard] },
   { path: 'reset-password', loadComponent: () => import('./pages/reset-password/reset-password.page').then(m => m.ResetPasswordPage), canActivate: [GuestGuard] },
   { path: 'logoff', loadComponent: () => import('./pages/logoff/logoff.page').then( m => m.LogoffPage), canActivate: [GuestGuard] },
+  { path: 'confirm-email', loadComponent: () => import('./pages/confirm-email/confirm-email.page').then( m => m.ConfirmEmailPage ), canActivate: [GuestGuard] },
 
   { path: '**', redirectTo: 'welcome' },
-
-
 
 ];

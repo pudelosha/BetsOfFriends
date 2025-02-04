@@ -28,6 +28,10 @@ export class UserService {
   updatePassword(currentPassword: string, newPassword: string) {
     return this.http.post(`${this.apiUrl}/update-password`, { currentPassword, newPassword });
   }
+
+  deleteAccount(password: string) {
+    return this.http.post(`${this.apiUrl}/delete-account`, { password });
+  }
     
   forgotPassword(email: string): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.apiUrl}/forgot-password`, { email });

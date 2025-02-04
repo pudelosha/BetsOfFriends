@@ -163,11 +163,28 @@ namespace Backend.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost("delete-account")]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountRequestDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { message = "User not authenticated" });
+                }
 
-
-
-        //get users
-        //delete user profile
-
+                var success = await _userService.DeleteUserAccountAsync(userId, request.Password);
+                return success
+                    ? Ok(new { message = "Account deleted successfully." })
+                    : BadRequest(new { message = "Failed to delete account. Check your password." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting user account");
+                return StatusCode(500, new { message = "Internal Server Error" });
+            }
+        }
     }
 }

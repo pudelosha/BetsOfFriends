@@ -25,25 +25,47 @@ namespace Backend.Repository.Services
         {
             _logger.LogInformation($"Attempting to register user with email: {email}");
 
-            var user = new ApplicationUser { UserName = userName, Email = email };
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                _logger.LogWarning($"User registration failed: Email {email} is already in use.");
+                return new RegisterResultDto
+                {
+                    Success = false,
+                    Message = "Email is already in use.",
+                    Errors = new List<IdentityError> { new IdentityError { Description = "Email is already in use." } }
+                };
+            }
 
+            var user = new ApplicationUser { UserName = userName, Email = email };
             var result = await _userManager.CreateAsync(user, password);
+
             if (!result.Succeeded)
             {
-                _logger.LogWarning($"User registration failed for email: {email}. Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-                return new RegisterResultDto { Success = false, Errors = result.Errors };
+                var errorMessages = result.Errors.Select(e => e.Description);
+                _logger.LogWarning($"User registration failed for email: {email}. Errors: {string.Join(", ", errorMessages)}");
+
+                return new RegisterResultDto
+                {
+                    Success = false,
+                    Message = "Registration failed due to validation errors.",
+                    Errors = result.Errors
+                };
             }
 
             _logger.LogInformation($"User registered successfully: {email}");
 
             var confirmationUrl = await GenerateEmailConfirmationLinkAsync(user);
-
             _logger.LogInformation($"Sending confirmation email to {email}");
 
             await _emailService.SendEmailAsync(user.Email, "Confirm Your Account",
                 $"Click <a href='{confirmationUrl}'>here</a> to confirm your account.");
 
-            return new RegisterResultDto { Success = true };
+            return new RegisterResultDto
+            {
+                Success = true,
+                Message = "Registration successful. Please check your email to confirm your account."
+            };
         }
 
         public async Task<RegisterResultDto> ConfirmEmailAsync(string userId, string token)

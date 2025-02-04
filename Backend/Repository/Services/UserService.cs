@@ -171,5 +171,31 @@ namespace Backend.Repository.Services
             _logger.LogInformation($"Password successfully updated for user {userId}");
             return true;
         }
+
+        public async Task<bool> DeleteUserAccountAsync(string userId, string password)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                _logger.LogWarning($"Account deletion failed: User {userId} not found.");
+                return false;
+            }
+
+            if (!await _userManager.CheckPasswordAsync(user, password))
+            {
+                _logger.LogWarning($"Failed account deletion attempt: Incorrect password for user {userId}");
+                return false;
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning($"Failed to delete user {userId}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                return false;
+            }
+
+            _logger.LogInformation($"User {userId} successfully deleted.");
+            return true;
+        }
     }
 }

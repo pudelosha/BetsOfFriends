@@ -51,4 +51,8 @@ namespace Backend.DTOs
         public string NewPassword { get; set; }
     }
 
+    public class DeleteAccountRequestDto
+    {
+        public string Password { get; set; }
+    }
 }

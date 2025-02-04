@@ -162,19 +162,30 @@ export class ProfilePage implements OnInit {
           text: 'Delete',
           cssClass: 'danger-button',
           handler: async (data) => {
-            if (data.password) {
-              // TODO: Call API to mark the account for deletion
-              this.presentToast('Your account has been marked for deletion.', 'danger');
-            } else {
-              this.presentToast('Please enter your password.', 'warning');
+            if (!this.isValidPassword(data.password)) {
+              this.presentToast('Password must be at least 8 characters.', 'warning');
+              return false;
             }
+  
+            try {
+              await this.userService.deleteAccount(data.password).toPromise();
+  
+              this.authService.logout('Your account has been deleted. We hope to see you again!', '/register');
+  
+            } catch (error) {
+              console.error('Error deleting account:', error);
+              this.presentToast('Failed to delete account. Check your password.', 'danger');
+            }
+  
+            return true;
           }
         }
       ]
     });
+  
     await alert.present();
   }
-
+  
   loadUserProfile() {
     console.log('attempting to load user profile');
     this.isLoading = true;

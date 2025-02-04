@@ -27,19 +27,35 @@ namespace Backend.Controllers
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(request.UserName))
+                    return BadRequest(new RegisterResultDto { Success = false, Message = "Username is required." });
+
+                if (string.IsNullOrWhiteSpace(request.Email))
+                    return BadRequest(new RegisterResultDto { Success = false, Message = "Email is required." });
+
+                if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Length < 8)
+                    return BadRequest(new RegisterResultDto { Success = false, Message = "Password must be at least 8 characters long." });
+
                 if (!request.Consent)
                     return BadRequest(new RegisterResultDto { Success = false, Message = "You must accept terms and conditions." });
+
+                _logger.LogInformation($"Registering user: {request.Email}");
 
                 var result = await _registerService.RegisterUserAsync(request.UserName, request.Email, request.Password);
 
                 if (!result.Success)
+                {
+                    _logger.LogWarning($"Registration failed for {request.Email}: {result.Message}");
                     return BadRequest(result);
+                }
+
+                _logger.LogInformation($"User registered successfully: {request.Email}");
 
                 return Ok(new RegisterResultDto { Success = true, Message = "Registration successful! Please check your email to confirm your account." });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred during user registration.");
+                _logger.LogError(ex, $"Unexpected error during registration for {request.Email}");
                 return StatusCode(500, new RegisterResultDto { Success = false, Message = "An unexpected error occurred. Please try again later." });
             }
         }
