@@ -38,6 +38,10 @@ export class AuthService {
       })
     );
   }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.authTokenKey);
+  }
   
   isLoggedIn(): boolean {
     return !!localStorage.getItem(this.authTokenKey);

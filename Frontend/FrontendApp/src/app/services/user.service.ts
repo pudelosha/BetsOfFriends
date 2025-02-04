@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { UserProfile } from '../model/user-profile';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,15 @@ export class UserService {
   private apiUrl = `${environment.apiBaseUrl}/users`;
 
   constructor(private http: HttpClient) {}
+
+  getUserProfile(): Observable<UserProfile> {
+    console.log('attempting to execute get request to ' + `${this.apiUrl}/profile`);
+    return this.http.get<UserProfile>(`${this.apiUrl}/profile`);
+  }
+  
+  updateUserProfile(profile: Partial<UserProfile>): Observable<any> {
+    return this.http.put(`${this.apiUrl}/profile`, profile);
+  }
 
   forgotPassword(email: string): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.apiUrl}/forgot-password`, { email });

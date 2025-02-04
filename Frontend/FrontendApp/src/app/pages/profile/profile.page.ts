@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastController, AlertController, IonicModule } from '@ionic/angular';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { UserService } from 'src/app/services/user.service';
+import { UserProfile } from 'src/app/model/user-profile';
 
 @Component({
   selector: 'app-profile',
@@ -11,21 +13,33 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule],
 })
-export class ProfilePage {
+export class ProfilePage implements OnInit {
   profileForm: FormGroup;
-  memberSince = '2023-05-10'; // Mocked for now, should be fetched from API
+  memberSince = '';
+  isLoading = true;
+  isUpdating = false;
+
+  languages = [
+    { value: 'en', label: 'English' },
+    { value: 'pl', label: 'Polski' }
+  ];
 
   constructor(
     private fb: FormBuilder,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
+    private userService: UserService,
   ) {
     this.profileForm = this.fb.group({
       username: ['', [Validators.minLength(3), Validators.maxLength(50)]], 
-      email: ['johndoe@example.com', [Validators.required, Validators.email]], 
-      selectedLanguage: ['en'],
+      email: ['', [Validators.required, Validators.email]], 
+      language: ['en'],
       darkMode: [false]
     });
+  }
+
+  ngOnInit() {
+    this.loadUserProfile();
   }
 
   get f(): { [key: string]: AbstractControl } {
@@ -126,9 +140,67 @@ export class ProfilePage {
     await alert.present();
   }
 
-  onSubmitProfile() {
-    // TODO: Implement API call to save username, language, dark mode
-    console.log('updating profile');
-    this.presentToast('Profile updated successfully!', 'success');
+  loadUserProfile() {
+    console.log('attempting to load user profile');
+    this.isLoading = true;
+  
+    this.userService.getUserProfile().subscribe({
+      next: (profile: UserProfile) => {
+        console.log('User profile loaded:', profile);
+  
+        this.profileForm.patchValue({
+          username: profile.username,
+          email: profile.email,
+          language: this.getLanguageValue(profile.language),
+          darkMode: profile.darkMode
+        });
+  
+        const dateObj = new Date(profile.memberSince);
+        this.memberSince = `${dateObj.getFullYear()}.${(dateObj.getMonth() + 1).toString().padStart(2, '0')}.${dateObj.getDate().toString().padStart(2, '0')}`;
+      },
+      error: (error) => {
+        console.error('Error loading profile:', error);
+        this.presentToast('Failed to load profile.', 'danger');
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
   }
+  
+  
+  onSubmitProfile() {
+    if (this.profileForm.invalid) {
+      this.presentToast('Please correct the errors before submitting.', 'danger');
+      return;
+    }
+
+    this.isUpdating = true;
+
+    const updatedProfile = {
+      username: this.f['username'].value,
+      language: this.f['language'].value,
+      darkMode: this.f['darkMode'].value,
+    };
+
+    console.log('Updating profile:', updatedProfile);
+
+    this.userService.updateUserProfile(updatedProfile).subscribe({
+      next: () => {
+        this.presentToast('Profile updated successfully!', 'success');
+      },
+      error: (error) => {
+        console.error('Error updating profile:', error);
+        this.presentToast('Failed to update profile. Please try again.', 'danger');
+      },
+      complete: () => {
+        this.isUpdating = false;
+      }
+    });
+  } 
+
+  getLanguageValue(apiValue: string): string {
+    const found = this.languages.find(lang => lang.label === apiValue || lang.value === apiValue);
+    return found ? found.value : 'en';
+  }  
 }

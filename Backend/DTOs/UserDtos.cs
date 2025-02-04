@@ -29,4 +29,13 @@ namespace Backend.DTOs
         public string? Message { get; set; }
         public IEnumerable<IdentityError>? Errors { get; set; }
     }
+
+    public class UserProfileDto
+    {
+        public string Username { get; set; }
+        public string? Email { get; set; }
+        public DateTime? MemberSince { get; set; }
+        public string Language { get; set; }
+        public bool DarkMode { get; set; }
+    }
 }

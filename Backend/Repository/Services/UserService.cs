@@ -2,7 +2,7 @@
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using System.Net;
+using System.Security.Claims;
 using System.Text;
 
 namespace Backend.Repository.Services
@@ -20,6 +20,58 @@ namespace Backend.Repository.Services
             _emailService = emailService;
             _configuration = configuration;
             _logger = logger;
+        }
+
+        public string GetUserIdFromClaims(ClaimsPrincipal user)
+        {
+            return user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+
+        public async Task<UserProfileDto> GetUserProfileAsync(string userId)
+        {
+            _logger.LogInformation($"Fetching profile for UserId: {userId}");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                _logger.LogWarning($"User not found: {userId}");
+                return null;
+            }
+
+            return new UserProfileDto
+            {
+                Username = user.UserName,
+                Email = user.Email,
+                MemberSince = user.MemberSince,
+                Language = "English", //TODO user.Language,
+                DarkMode = false //     user.DarkMode
+            };
+        }
+
+        public async Task<bool> UpdateUserProfileAsync(string userId, UserProfileDto profile)
+        {
+            _logger.LogInformation($"Updating profile for UserId: {userId}");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                _logger.LogWarning($"User not found for update: {userId}");
+                return false;
+            }
+
+            user.UserName = profile.Username;
+            //user.Language = profile.Language;
+            //user.DarkMode = profile.DarkMode;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                _logger.LogError($"Failed to update profile for UserId: {userId}");
+                return false;
+            }
+
+            _logger.LogInformation($"User profile updated successfully for UserId: {userId}");
+            return true;
         }
 
         public async Task<bool> SendPasswordResetEmailAsync(string email)

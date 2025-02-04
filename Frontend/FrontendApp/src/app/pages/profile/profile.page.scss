@@ -13,4 +13,18 @@
   .spacer {
     height: 20px;
   }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full page height */
+    width: 100%;
+  }
+  
+  .loading-spinner {
+    width: 64px !important;  /* Increase size */
+    height: 64px !important; /* Increase size */
+  }
+  
   

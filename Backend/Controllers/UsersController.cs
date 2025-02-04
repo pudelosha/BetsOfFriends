@@ -50,31 +50,62 @@ namespace Backend.Controllers
             return Ok(result);
         }
 
-        [HttpGet("profile")]
         [Authorize]
-        public IActionResult GetUserProfile()
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetUserProfile()
         {
-            var identity = HttpContext.User.Identity;
-
-            if (identity == null || !identity.IsAuthenticated)
+            try
             {
-                _logger.LogWarning("Unauthorized access attempt to profile endpoint.");
-                return Unauthorized(new { message = "User not authenticated" });
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized access attempt to user profile.");
+                    return Unauthorized(new { message = "User not authenticated" });
+                }
+
+                var profile = await _userService.GetUserProfileAsync(userId);
+                if (profile == null)
+                {
+                    _logger.LogWarning($"User profile not found for UserId: {userId}");
+                    return NotFound(new { message = "User not found" });
+                }
+
+                return Ok(profile);
             }
-
-            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
-
-            _logger.LogInformation($"Received {claims.Count} claims from token:");
-            foreach (var claim in claims)
+            catch (Exception ex)
             {
-                _logger.LogInformation($"{claim.Type}: {claim.Value}");
+                _logger.LogError(ex, "Error fetching user profile");
+                return StatusCode(500, new { message = "Internal Server Error" });
             }
+        }
 
-            return Ok(new
+        [Authorize]
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateUserProfile([FromBody] UserProfileDto profile)
+        {
+            try
             {
-                UserId = identity.Name,
-                Claims = claims
-            });
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized profile update attempt.");
+                    return Unauthorized(new { message = "User not authenticated" });
+                }
+
+                var success = await _userService.UpdateUserProfileAsync(userId, profile);
+                if (!success)
+                {
+                    _logger.LogWarning($"Failed to update profile for UserId: {userId}");
+                    return BadRequest(new { message = "Failed to update profile" });
+                }
+
+                return Ok(new { message = "Profile updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating user profile");
+                return StatusCode(500, new { message = "Internal Server Error" });
+            }
         }
 
 
