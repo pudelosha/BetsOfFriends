@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { ToastController } from '@ionic/angular';
+
 
 interface LoginResponseDto {
   success: boolean;
@@ -19,7 +21,7 @@ export class AuthService {
   private authTokenKey = 'authToken';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private toastCtrl: ToastController) {}
 
   login(email: string, password: string): Observable<{ success: boolean; message: string }> {
     return this.http.post<LoginResponseDto>(`${this.apiUrl}/login`, { email, password }).pipe(
@@ -47,13 +49,31 @@ export class AuthService {
     return !!localStorage.getItem(this.authTokenKey);
   }
 
-  logout(): void {
-    console.log('Clearing auth token...');
+  async logout(message?: string): Promise<void> {
+    console.log('Clearing auth tokens...');
+    
     localStorage.removeItem(this.authTokenKey);
+    sessionStorage.removeItem(this.authTokenKey);
+  
     console.log('Updating authentication state...');
     this.isAuthenticatedSubject.next(false);
+  
+    if (message) {
+      const toast = await this.toastCtrl.create({
+        message,
+        duration: 3000,
+        color: 'success',
+        position: 'bottom',
+      });
+      await toast.present();
+    }
+  
+    console.log('Redirecting to login...');
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 3000);
   }
-
+  
   getAuthStatus(): Observable<boolean> {
     return this.isAuthenticatedSubject.asObservable();
   }

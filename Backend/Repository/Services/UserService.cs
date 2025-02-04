@@ -126,5 +126,50 @@ namespace Backend.Repository.Services
             _logger.LogInformation($"Password successfully reset for UserID: {request.UserId}");
             return new ResetPasswordResultDto { Success = true, Message = "Password updated successfully." };
         }
+
+        public async Task<bool> ChangeUserEmailAsync(string userId, string newEmail, string password)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return false;
+
+            // Validate password before allowing email change
+            if (!await _userManager.CheckPasswordAsync(user, password))
+            {
+                _logger.LogWarning($"Failed email change attempt due to incorrect password for user {userId}");
+                return false;
+            }
+
+            user.Email = newEmail;
+            user.NormalizedEmail = newEmail.ToUpper();
+
+            var result = await _userManager.UpdateAsync(user);
+            return result.Succeeded;
+        }
+
+        public async Task<bool> UpdateUserPasswordAsync(string userId, string currentPassword, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                _logger.LogWarning($"Password update failed: User {userId} not found.");
+                return false;
+            }
+
+            if (!await _userManager.CheckPasswordAsync(user, currentPassword))
+            {
+                _logger.LogWarning($"Failed password update attempt: Incorrect current password for user {userId}");
+                return false;
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning($"Failed password update for user {userId}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                return false;
+            }
+
+            _logger.LogInformation($"Password successfully updated for user {userId}");
+            return true;
+        }
     }
 }

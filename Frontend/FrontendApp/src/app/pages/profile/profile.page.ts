@@ -5,6 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
 import { UserProfile } from 'src/app/model/user-profile';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-profile',
@@ -25,6 +26,7 @@ export class ProfilePage implements OnInit {
   ];
 
   constructor(
+    private authService: AuthService,
     private fb: FormBuilder,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
@@ -69,19 +71,35 @@ export class ProfilePage implements OnInit {
         {
           text: 'Change',
           handler: async (data) => {
-            if (data.newEmail && data.password) {
-              // TODO: Call API to verify email change
-              this.presentToast('Verification email sent.', 'success');
-            } else {
-              this.presentToast('Please enter valid details.', 'warning');
+            if (!this.isValidEmail(data.newEmail)) {
+              this.presentToast('Invalid email format.', 'warning');
+              return false;
             }
+  
+            if (!this.isValidPassword(data.password)) {
+              this.presentToast('Password must be at least 8 characters.', 'warning');
+              return false;
+            }
+  
+            try {
+              await this.userService.changeEmail(data.newEmail, data.password).toPromise();
+              this.presentToast('Email updated successfully!', 'success');
+  
+              this.profileForm.patchValue({ email: data.newEmail });
+  
+            } catch (error) {
+              console.error('Error changing email:', error);
+              this.presentToast('Failed to update email. Check your password.', 'danger');
+            }
+  
+            return true;
           }
         }
       ]
     });
     await alert.present();
   }
-
+      
   async updatePasswordPopup() {
     const alert = await this.alertCtrl.create({
       header: 'Update Password',
@@ -95,25 +113,42 @@ export class ProfilePage implements OnInit {
         {
           text: 'Update',
           handler: async (data) => {
-            if (!data.currentPassword || !data.newPassword || !data.confirmPassword) {
-              this.presentToast('All fields are required.', 'warning');
+            if (!this.isValidPassword(data.currentPassword)) {
+              this.presentToast('Current password must be at least 8 characters.', 'warning');
+              return false;
+            }
+            if (!this.isValidPassword(data.newPassword)) {
+              this.presentToast('New password must be at least 8 characters.', 'warning');
               return false;
             }
             if (data.newPassword !== data.confirmPassword) {
               this.presentToast('Passwords do not match.', 'danger');
               return false;
             }
-
-            // TODO: Call API to update password
-            this.presentToast('Password updated successfully.', 'success');
+  
+            try {
+              await this.userService.updatePassword(data.currentPassword, data.newPassword).toPromise();
+  
+              this.authService.logout('Password updated successfully! Please log in again.');
+  
+            } catch (error) {
+              console.error('Error updating password:', error);
+              this.presentToast('Failed to update password. Check your current password.', 'danger');
+            }
+  
             return true;
           }
         }
       ]
     });
+  
     await alert.present();
   }
-
+  
+  logoutUser() {
+    this.authService.logout();
+  }
+  
   async confirmDeleteAccount() {
     const alert = await this.alertCtrl.create({
       header: 'Delete Account',
@@ -202,5 +237,14 @@ export class ProfilePage implements OnInit {
   getLanguageValue(apiValue: string): string {
     const found = this.languages.find(lang => lang.label === apiValue || lang.value === apiValue);
     return found ? found.value : 'en';
+  }  
+
+  private isValidEmail(email: string): boolean {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+  }
+  
+  private isValidPassword(password: string): boolean {
+    return password.length >= 8;
   }  
 }

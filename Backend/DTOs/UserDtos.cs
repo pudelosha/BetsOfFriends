@@ -38,4 +38,17 @@ namespace Backend.DTOs
         public string Language { get; set; }
         public bool DarkMode { get; set; }
     }
+
+    public class ChangeEmailRequestDto
+    {
+        public string NewEmail { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class UpdatePasswordRequestDto
+    {
+        public string CurrentPassword { get; set; }
+        public string NewPassword { get; set; }
+    }
+
 }

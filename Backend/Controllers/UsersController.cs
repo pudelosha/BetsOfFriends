@@ -50,6 +50,9 @@ namespace Backend.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Get user profile details
+        /// </summary>
         [Authorize]
         [HttpGet("profile")]
         public async Task<IActionResult> GetUserProfile()
@@ -79,6 +82,9 @@ namespace Backend.Controllers
             }
         }
 
+        /// <summary>
+        /// Update user profile details
+        /// </summary>
         [Authorize]
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateUserProfile([FromBody] UserProfileDto profile)
@@ -108,12 +114,60 @@ namespace Backend.Controllers
             }
         }
 
+        /// <summary>
+        /// Change user email upon providing valid password
+        /// </summary>
+        [Authorize]
+        [HttpPost("change-email")]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequestDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId)) return Unauthorized(new { message = "User not authenticated" });
 
-        //get user profile
-        //change user password
+                var success = await _userService.ChangeUserEmailAsync(userId, request.NewEmail, request.Password);
+                return success ? Ok(new { message = "Email updated successfully" }) : BadRequest(new { message = "Failed to update email. Check your password." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating user email");
+                return StatusCode(500, new { message = "Internal Server Error" });
+            }
+        }
+
+        /// <summary>
+        /// Change user password
+        /// </summary>
+        [Authorize]
+        [HttpPost("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequestDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { message = "User not authenticated" });
+                }
+
+                var success = await _userService.UpdateUserPasswordAsync(userId, request.CurrentPassword, request.NewPassword);
+                return success
+                    ? Ok(new { message = "Password updated successfully." })
+                    : BadRequest(new { message = "Failed to update password. Check your current password." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating password");
+                return StatusCode(500, new { message = "Internal Server Error" });
+            }
+        }
+
+
+
+
         //get users
         //delete user profile
-        //update user profile
-        //change user email
+
     }
 }

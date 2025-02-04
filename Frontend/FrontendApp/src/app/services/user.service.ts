@@ -21,6 +21,14 @@ export class UserService {
     return this.http.put(`${this.apiUrl}/profile`, profile);
   }
 
+  changeEmail(newEmail: string, password: string) {
+    return this.http.post(`${this.apiUrl}/change-email`, { newEmail, password });
+  }
+
+  updatePassword(currentPassword: string, newPassword: string) {
+    return this.http.post(`${this.apiUrl}/update-password`, { currentPassword, newPassword });
+  }
+    
   forgotPassword(email: string): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.apiUrl}/forgot-password`, { email });
   }
