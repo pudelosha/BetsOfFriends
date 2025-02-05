@@ -48,7 +48,7 @@
           </ion-label>
         </ion-item-divider>
 
-        <ion-item routerLink="/bets/my" routerDirection="root">
+        <ion-item (click)="navigateToMyBets()">
           <ion-icon name="create-outline" slot="start"></ion-icon>
           <ion-label>My Bets</ion-label>
         </ion-item>
@@ -71,7 +71,7 @@
           <ion-label>Profile</ion-label>
         </ion-item>
 
-        <ion-item routerLink="/settings/notifications" routerDirection="root">
+        <ion-item (click)="navigateToNotificationSettings()">
           <ion-icon name="notifications-outline" slot="start"></ion-icon>
           <ion-label>Notifications</ion-label>
         </ion-item>
@@ -147,7 +147,6 @@
     </ion-header>
 
     <ion-router-outlet></ion-router-outlet>
-
   </div>
 
   <!-- Footer -->
@@ -157,5 +156,12 @@
         ©2025 by Poodel
       </ion-title>
     </ion-toolbar>
+
+    <!-- Floating FAB Button (Only on `/my-bets/to-place`) -->
+    <ion-fab *ngIf="showFab" class="fab-footer">
+      <ion-fab-button (click)="openFilters()">
+        <ion-icon name="filter-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
   </ion-footer>
 </ion-app>

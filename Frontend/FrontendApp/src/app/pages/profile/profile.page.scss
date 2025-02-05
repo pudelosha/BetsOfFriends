@@ -4,6 +4,8 @@
     --background: #ffffff;
     --border-radius: 10px;
     margin: 10px 0;
+    --padding-start: 5px !important;
+    padding-left: 0px !important;
   }
     
   .danger-button {
@@ -26,5 +28,6 @@
     width: 64px !important;  /* Increase size */
     height: 64px !important; /* Increase size */
   }
-  
+
+
   

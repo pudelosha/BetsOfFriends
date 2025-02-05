@@ -1,0 +1,104 @@
+<ion-content class="ion-padding">
+  <!-- First Section: Team Names -->
+  <ion-grid>
+    <ion-row class="team-names">
+      <ion-col class="left-align"><strong>{{ bet.match.teamHome }}</strong></ion-col>
+      <ion-col class="separator"></ion-col>
+      <ion-col class="right-align"><strong>{{ bet.match.teamAway }}</strong></ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Divider Line -->
+  <div class="divider"></div>
+
+  <!-- 90-Min Match Odds -->
+  <ion-label class="section-title">90-Min Match Odds</ion-label>
+
+  <!-- Odds Labels -->
+  <ion-grid>
+    <ion-row class="odds-labels">
+      <ion-col>Home Win</ion-col>
+      <ion-col>Draw</ion-col>
+      <ion-col>Away Win</ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Actual Odds -->
+  <ion-grid>
+    <ion-row class="odds-row">
+      <ion-col>{{ bet.odds.home }}</ion-col>
+      <ion-col>{{ bet.odds.draw }}</ion-col>
+      <ion-col>{{ bet.odds.away }}</ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Divider Line -->
+  <div class="divider"></div>
+
+  <!-- 90-Min Score Prediction -->
+  <ion-label class="section-title">Predict the 90-Min Result</ion-label>
+
+  <ion-grid class="center-grid">
+    <ion-row class="prediction-row">
+      <!-- Home Goals Picker -->
+      <ion-col class="center-align">
+        <div class="wheel-container" #homePicker (scroll)="onScroll($event, 'home')">
+          <div *ngFor="let num of goalOptions" class="number-item" [class.selected]="num === homeGoals">
+            {{ num }}
+          </div>
+        </div>
+      </ion-col>
+
+      <!-- Separator -->
+      <ion-col class="center-align">-</ion-col>
+
+      <!-- Away Goals Picker -->
+      <ion-col class="center-align">
+        <div class="wheel-container" #awayPicker (scroll)="onScroll($event, 'away')">
+          <div *ngFor="let num of goalOptions" class="number-item" [class.selected]="num === awayGoals">
+            {{ num }}
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Divider Line -->
+  <div class="divider"></div>
+
+  <!-- Qualification Odds -->
+  <ion-label class="section-title">Who Qualifies? Odds</ion-label>
+
+  <ion-grid>
+    <ion-row class="odds-labels">
+      <ion-col>{{ bet.match.teamHome }}</ion-col>
+      <ion-col>{{ bet.match.teamAway }}</ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid>
+    <ion-row class="odds-row">
+      <ion-col>{{ bet.qualifyOdds?.home ?? '-' }}</ion-col>
+      <ion-col>{{ bet.qualifyOdds?.away ?? '-' }}</ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Divider Line -->
+  <div class="divider"></div>
+
+  <!-- Who Qualifies? Selection -->
+  <ion-label class="section-title">Select the Qualifying Team</ion-label>
+
+  <ion-item class="full-width no-padding">
+    <ion-segment [(ngModel)]="qualifySelection" value="neutral" class="full-width">
+      <ion-segment-button value="home" class="segment-home">{{ bet.match.teamHome }}</ion-segment-button>
+      <ion-segment-button value="neutral" class="segment-neutral">-</ion-segment-button>
+      <ion-segment-button value="away" class="segment-away">{{ bet.match.teamAway }}</ion-segment-button>
+    </ion-segment>
+  </ion-item>
+
+  <!-- Save Button -->
+  <ion-footer>
+    <ion-button expand="full" (click)="saveBet()">Save</ion-button>
+  </ion-footer>
+</ion-content>

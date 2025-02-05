@@ -1,0 +1,19 @@
+<ion-content class="ion-padding">
+  <ion-list class="bet-list">
+    <ion-item *ngFor="let bet of bets" class="bet-item">
+      <div class="bet-grid">
+        <div class="bet-details">
+          <span class="team">{{ bet.match.teamHome }}</span>
+          <span class="team">{{ bet.match.teamAway }}</span>
+        </div>
+        <div class="bet-date">
+          <span class="date">{{ bet.match.startTime | date: 'yyyy.MM.dd' }}</span>
+          <span class="time">{{ bet.match.startTime | date: 'HH:mm' }}</span>
+        </div>
+        <div class="bet-button-container">
+          <ion-button size="small" class="bet-button" (click)="editBet(bet, $event)">Place Bet</ion-button>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+</ion-content>

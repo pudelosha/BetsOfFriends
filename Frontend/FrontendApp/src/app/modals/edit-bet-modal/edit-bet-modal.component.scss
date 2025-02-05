@@ -1,0 +1,137 @@
+/* Team Names */
+.team-names {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.left-align {
+  text-align: left;
+}
+
+.right-align {
+  text-align: right;
+}
+
+.separator {
+  width: 20px;
+}
+
+/* Divider Line */
+.divider {
+  height: 1px;
+  background: #ccc;
+  margin: 10px 0;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  display: block;
+  text-align: center;
+  margin: 10px 0;
+  color: #555;
+}
+
+/* Labels for Odds */
+.odds-labels {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  color: #666;
+}
+
+/* Odds Values */
+.odds-row {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Center content horizontally */
+.center-grid {
+  display: flex;
+  justify-content: center;
+}
+
+/* Align score prediction elements */
+.prediction-row {
+  text-align: center;
+  font-size: 16px;
+}
+
+/* Center alignment */
+.center-align {
+  text-align: center;
+}
+
+/* Wheel Picker Styles */
+.wheel-container {
+  width: 60px;
+  height: 50px; /* Show only one number */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  background: #f1f1f1;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Edge */
+  margin: 0 auto; /* Center align */
+}
+
+.wheel-container::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Number styling */
+.number-item {
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}
+
+.selected {
+  font-weight: bold;
+  font-size: 22px;
+  color: #000;
+  border-bottom: 2px solid #000;
+  border-top: 2px solid #000;
+}
+
+/* Remove padding from ion-item and inner elements */
+.no-padding {
+  --inner-padding-end: 0px !important;
+  --inner-padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --padding-start: 0px !important;
+}
+
+/* Full-width segment */
+.full-width {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+ion-segment {
+  width: 100%;
+  font-size: 10px;
+}
+
+/* Set segment proportions */
+.segment-home {
+  flex: 5;
+}
+
+.segment-neutral {
+  flex: 2;
+}
+
+.segment-away {
+  flex: 5;
+}

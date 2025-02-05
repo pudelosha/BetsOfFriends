@@ -1,0 +1,85 @@
+.bet-list {
+    --padding-top: 0px !important;
+    --padding-bottom: 0px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  }
+  
+/* Remove padding/margin from ion-item */
+.bet-item {
+    --inner-padding-end: 0px !important;
+    --inner-padding-start: 0px !important;
+    --padding-end: 0px !important;
+    --padding-start: 0px !important;
+    --ion-item-background: transparent;
+    
+    height: 60px; /* Fixed height for all match rows */
+    --min-height: 60px !important;
+    --max-height: 60px !important;
+    display: flex;
+    align-items: center; /* Centers content vertically */
+}
+  
+  /* Grid layout for each bet item */
+  .bet-grid {
+    display: grid;
+    grid-template-columns: 8fr 1fr 2fr 1fr; /* 8:1:2:1 ratio */
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    padding-right: 0px;
+  }
+  
+  /* Teams Column */
+  .bet-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    font-size: 12px;
+    color: #333;
+  }
+  
+  /* Result Column (Bold Font) */
+  .bet-result {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #444;
+  }
+  
+  /* Individual Result Formatting */
+  .home-goals, .away-goals {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+  }
+  
+  /* Date & Time Column */
+  .bet-date {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  /* Button Column */
+  .bet-button-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* Button Styling */
+  .bet-button {
+    font-size: 12px;
+    height: 30px;
+    padding-left: 8px;
+    padding-right: 0px !important;
+    min-width: 90px;
+  }
+  

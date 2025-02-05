@@ -9,8 +9,8 @@ ion-app {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Ensure it takes the full height */
-  overflow: auto; /* Allow scrolling */
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
 /* Style the footer */
@@ -18,4 +18,20 @@ ion-footer {
   position: relative;
   bottom: 0;
   width: 100%;
+}
+
+/* Stick FAB to footer and position it above */
+.fab-footer {
+  position: fixed;  /* Ensures it's always visible */
+  bottom: 30px;     /* Adjust distance from bottom */
+  right: 20px;      /* Place it on the right */
+  z-index: 1000;    /* Ensure it's above other elements */
+  pointer-events: auto;
+  opacity: 1 !important;  /* Ensure visibility */
+  border: 2px solid red;  /* Debugging */
+}
+
+ion-fab-button {
+  --background: var(--ion-color-primary);
+  --color: white;
 }

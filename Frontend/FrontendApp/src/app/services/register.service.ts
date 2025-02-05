@@ -3,19 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-
-interface RegisterRequestDto {
-  userName: string;
-  email: string;
-  password: string;
-  consent: boolean;
-}
-
-interface RegisterResultDto {
-  success: boolean;
-  message?: string;
-  errors?: { code: string; description: string }[];
-}
+import { RegisterResult } from '../model/register-result';
+import { RegisterRequest } from '../model/register-request';
 
 @Injectable({
   providedIn: 'root'
@@ -25,8 +14,8 @@ export class RegisterService {
 
   constructor(private http: HttpClient) {}
 
-  register(user: RegisterRequestDto): Observable<{ success: boolean; message: string; errors?: string[] }> {
-    return this.http.post<RegisterResultDto>(`${this.apiUrl}/register`, user).pipe(
+  register(user: RegisterRequest): Observable<{ success: boolean; message: string; errors?: string[] }> {
+    return this.http.post<RegisterResult>(`${this.apiUrl}/register`, user).pipe(
       tap((response) => console.log('Backend response:', response)),
       map((response) => ({
         success: response.success,

@@ -4,14 +4,7 @@ import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { ToastController } from '@ionic/angular';
-
-
-interface LoginResponseDto {
-  success: boolean;
-  token?: string;
-  message?: string;
-  errors?: string[];
-}
+import { LoginResponse } from '..//model/login-response'
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +17,7 @@ export class AuthService {
   constructor(private http: HttpClient, private toastCtrl: ToastController) {}
 
   login(email: string, password: string): Observable<{ success: boolean; message: string }> {
-    return this.http.post<LoginResponseDto>(`${this.apiUrl}/login`, { email, password }).pipe(
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       map((response) => {
         console.log('Backend response:', response);
         if (response.success && response.token) {

@@ -1,0 +1,71 @@
+.bet-list {
+  --padding-top: 0px !important;
+  --padding-bottom: 0px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+/* Remove padding/margin from ion-item */
+.bet-item {
+  --inner-padding-end: 0px !important;
+  --inner-padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --padding-start: 0px !important;
+  --ion-item-background: transparent;
+  
+  height: 60px; /* Fixed height for all match rows */
+  --min-height: 60px !important;
+  --max-height: 60px !important;
+  display: flex;
+  align-items: center; /* Centers content vertically */
+}
+  
+  /* Grid layout */
+  .bet-grid {
+    display: grid;
+    grid-template-columns: 7fr 1fr 1fr 3fr;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    padding-right: 0px;
+  }
+  
+  /* Teams Column */
+  .bet-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    font-size: 12px;
+    color: #333;
+  }
+  
+  /* Player Prediction Column */
+  .bet-player-prediction {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #444;
+  }
+  
+  /* Actual Game Result Column */
+  .bet-actual-result {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #222;
+  }
+
+  /* Remove extra formatting from bet result */
+.bet-result {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  font-size: 12px;  /* Match other columns */
+  color: #333;      /* Match text color */
+}

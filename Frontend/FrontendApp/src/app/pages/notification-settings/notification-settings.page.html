@@ -1,0 +1,131 @@
+<ion-content class="ion-padding page-with-header">
+  <form [formGroup]="notificationForm" (ngSubmit)="onSubmit()">
+    <ion-grid>
+      <!-- Tournament Notifications Section -->
+      <ion-row class="header-row">
+        <ion-col size="6"><span class="header-text">Tournament Notifications</span></ion-col>
+        <ion-col size="3" class="center-text"><span class="header-text">Email</span></ion-col>
+        <ion-col size="3" class="center-text"><span class="header-text">Push</span></ion-col>
+      </ion-row>
+      <ion-row class="divider"></ion-row>
+
+      <ion-row>
+        <ion-col size="6"><span class="item-text">Tournament results recalculated</span></ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="tournamentResultsEmail"></ion-toggle>
+        </ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="tournamentResultsPush"></ion-toggle>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6"><span class="item-text">Daily tournament updates (top 3 players, position changes)</span></ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="dailyTournamentUpdatesEmail"></ion-toggle>
+        </ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="dailyTournamentUpdatesPush"></ion-toggle>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6"><span class="item-text">Tournament invitations</span></ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="tournamentInvitationsEmail"></ion-toggle>
+        </ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="tournamentInvitationsPush"></ion-toggle>
+        </ion-col>
+      </ion-row>
+
+      <!-- Betting Notifications Section -->
+      <ion-row class="header-row">
+        <ion-col size="6"><span class="header-text">Betting Notifications</span></ion-col>
+        <ion-col size="3" class="center-text"><span class="header-text">Email</span></ion-col>
+        <ion-col size="3" class="center-text"><span class="header-text">Push</span></ion-col>
+      </ion-row>
+      <ion-row class="divider"></ion-row>
+
+      <ion-row>
+        <ion-col size="6"><span class="item-text">Pending bets 1 hour before the game starts</span></ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="pendingBets1HourEmail"></ion-toggle>
+        </ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="pendingBets1HourPush"></ion-toggle>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6"><span class="item-text">Pending bets 24 hours before the game starts</span></ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="pendingBets24HoursEmail"></ion-toggle>
+        </ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="pendingBets24HoursPush"></ion-toggle>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6"><span class="item-text">Updates about new games to place bets</span></ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="newGamesUpdatesEmail"></ion-toggle>
+        </ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="newGamesUpdatesPush"></ion-toggle>
+        </ion-col>
+      </ion-row>
+
+      <!-- Match Notifications Section -->
+      <ion-row class="header-row">
+        <ion-col size="6"><span class="header-text">Match Notifications</span></ion-col>
+        <ion-col size="3" class="center-text"><span class="header-text">Email</span></ion-col>
+        <ion-col size="3" class="center-text"><span class="header-text">Push</span></ion-col>
+      </ion-row>
+      <ion-row class="divider"></ion-row>
+
+      <ion-row>
+        <ion-col size="6"><span class="item-text">Live match start</span></ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="liveMatchStartEmail"></ion-toggle>
+        </ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="liveMatchStartPush"></ion-toggle>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6"><span class="item-text">Live match summary</span></ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="liveMatchSummaryEmail"></ion-toggle>
+        </ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="liveMatchSummaryPush"></ion-toggle>
+        </ion-col>
+      </ion-row>
+
+      <!-- Other Notifications Section -->
+      <ion-row class="header-row">
+        <ion-col size="6"><span class="header-text">Other Notifications</span></ion-col>
+        <ion-col size="3" class="center-text"><span class="header-text">Email</span></ion-col>
+        <ion-col size="3" class="center-text"><span class="header-text">Push</span></ion-col>
+      </ion-row>
+      <ion-row class="divider"></ion-row>
+
+      <ion-row>
+        <ion-col size="6"><span class="item-text">Special offers</span></ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="specialOffersEmail"></ion-toggle>
+        </ion-col>
+        <ion-col size="3" class="center-text">
+          <ion-toggle formControlName="specialOffersPush"></ion-toggle>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <!-- Submit Button -->
+    <ion-button expand="full" color="secondary" type="submit" [disabled]="!notificationForm.valid">Save Settings</ion-button>
+
+  </form>
+</ion-content>

@@ -1,0 +1,16 @@
+/* Style for the my-bets tab bar */
+.my-bets-tab-bar {
+    margin-top: 56px; /* Matches the main header height */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ion-background-color); /* Ensure background matches */
+}
+  
+ion-router-outlet {
+    margin-top: 48px; /* Adjust based on tab bar height */
+    position: relative !important;
+    z-index: 1 !important; /* Ensure it's below content */
+    pointer-events: none !important; /* Prevent it from blocking interactions */
+}
+  

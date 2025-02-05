@@ -1,5 +1,5 @@
 import { Component  } from '@angular/core';
-import { IonApp, IonRouterOutlet, IonItemDivider } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet, IonItemDivider, IonFab, IonFabButton } from '@ionic/angular/standalone';
 import { Router, NavigationEnd  } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { FormsModule } from '@angular/forms';
@@ -11,11 +11,12 @@ import { ToastController, MenuController } from '@ionic/angular';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonItemDivider, IonApp, IonRouterOutlet, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonButtons, IonMenuButton, IonMenu, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, CommonModule, FormsModule],
+  imports: [IonFabButton, IonFab, IonItemDivider, IonApp, IonRouterOutlet, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonButtons, IonMenuButton, IonMenu, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonFabButton, CommonModule, FormsModule],
   standalone: true,
 })
 export class AppComponent {
   isLoggedIn = false;
+  showFab: boolean = false; // Control FAB visibility
 
   constructor(private authService: AuthService, private router: Router, private toastController: ToastController, private menuCtrl: MenuController) {}
 
@@ -26,13 +27,21 @@ export class AppComponent {
       console.log('Auth status changed:', loggedIn);
     });
 
-    // Force UI refresh on navigation
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => {
-        console.log('Navigation ended, checking auth state again');
-        this.isLoggedIn = this.authService.isLoggedIn();
-      });
+    // Monitor navigation changes
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
+      console.log('Navigation ended, checking auth state and FAB visibility');
+
+      // Refresh authentication state
+      this.isLoggedIn = this.authService.isLoggedIn();
+
+      // Show FAB only on `/my-bets/to-place`
+      this.showFab = event.urlAfterRedirects === '/my-bets/to-place';
+      console.log("FAB Visibility:", this.showFab);
+    });
+  }
+
+  openFilters() {
+    console.log("Filter button clicked - Implement filter modal here!");
   }
 
   logout() {
@@ -58,4 +67,15 @@ export class AppComponent {
     console.log('Navigating to profile page...');
     this.router.navigate(['/profile']);
   }
+
+  navigateToNotificationSettings() {
+    console.log('Navigating to notification-settings...');
+    this.router.navigate(['/notification-settings']);
+  }
+
+  navigateToMyBets() {
+    console.log('Navigating to my-bets...');
+    this.router.navigate(['/my-bets']);
+  }
+
 }
