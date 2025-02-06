@@ -25,7 +25,7 @@ export class EditMatchModalComponent implements OnInit {
     // Define Reactive Form Structure
     this.matchForm = this.fb.group({
       matchId: [null],
-      stage: ['', Validators.required],
+      stage: [''],
       homeTeamId: [null, Validators.required],
       homeTeam: ['', Validators.required],
       awayTeamId: [null, Validators.required],
@@ -35,8 +35,8 @@ export class EditMatchModalComponent implements OnInit {
       homeWinOdds: ['', [Validators.required, Validators.min(1)]],
       drawOdds: ['', [Validators.required, Validators.min(1)]],
       awayWinOdds: ['', [Validators.required, Validators.min(1)]],
-      homeQualifies: ['', [Validators.required, Validators.min(1)]],
-      awayQualifies: ['', [Validators.required, Validators.min(1)]],
+      homeQualifies: [''],
+      awayQualifies: [''],
     });       
   }
 

@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ViewWillEnter } from '@ionic/angular';
 import { EditMatchModalComponent } from '..//../modals/edit-match-modal/edit-match-modal.component'; // Import the modal
 
 @Component({
@@ -13,7 +13,7 @@ import { EditMatchModalComponent } from '..//../modals/edit-match-modal/edit-mat
   standalone: true,
   imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
-export class CreatePredefinedTournamentPage {
+export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
   step = 1;
   file: File | null = null;
   betForm: FormGroup;
@@ -26,6 +26,14 @@ export class CreatePredefinedTournamentPage {
       teams: this.fb.array([], Validators.required),
       matches: this.fb.array([]),
     });
+  }
+
+  ngOnInit() {
+    this.resetForm(); // Reset form when the page is initialized
+  }
+
+  ionViewWillEnter() {
+    this.resetForm(); // Reset form when user navigates back
   }
 
   // Getters for FormArray
@@ -268,5 +276,14 @@ export class CreatePredefinedTournamentPage {
   submitData() {
     console.log('Submitting Data:', this.betForm.value);
     // Send data to backend
+  }
+
+  resetForm() {
+    this.betForm.reset(); // Clear form data
+    this.teamsArray.clear(); // Clear teams
+    this.matchesArray.clear(); // Clear matches
+    this.teamMap = {}; // Reset team map
+    this.file = null; // Reset file
+    this.step = 1; // Reset to Step 1
   }
 }

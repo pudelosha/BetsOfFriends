@@ -134,7 +134,9 @@
       <div class="match-teams">{{ match.value.homeTeam }} - {{ match.value.awayTeam }}</div>
       <div class="match-date">{{ match.value.date | date: 'yyyy-MM-dd HH:mm' }}</div>
       <div class="match-odds">
-        {{ match.value.homeWinOdds }} / {{ match.value.drawOdds }} / {{ match.value.awayWinOdds }}
+        {{ match.value.homeWinOdds | number:'1.2-2' }} /
+        {{ match.value.drawOdds | number:'1.2-2' }} /
+        {{ match.value.awayWinOdds | number:'1.2-2' }}
       </div>
     </div>
   </div>
