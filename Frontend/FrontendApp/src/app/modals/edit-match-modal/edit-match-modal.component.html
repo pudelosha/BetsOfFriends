@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ index !== undefined ? 'Edit Match' : 'Add Match' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="matchForm" class="match-form">
+    
+    <!-- Home & Away Team Section -->
+    <div class="section-title">Select Teams</div>
+    <div class="match-row">
+      <ion-label class="match-label center-align">Home Team</ion-label>
+      <ion-label class="match-label center-align">Away Team</ion-label>
+    </div>
+
+    <div class="match-row">
+      <ion-select formControlName="homeTeam" class="half-width center-select">
+        <ion-select-option *ngFor="let team of teams" [value]="team">{{ team }}</ion-select-option>
+      </ion-select>
+      <ion-select formControlName="awayTeam" class="half-width center-select">
+        <ion-select-option *ngFor="let team of teams" [value]="team">{{ team }}</ion-select-option>
+      </ion-select>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Match Date & Time Section -->
+    <div class="section-title">Match Date & Time</div>
+    <div class="match-row">
+      <ion-datetime displayFormat="YYYY-MM-DD HH:mm" formControlName="date" class="full-width"></ion-datetime>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Bet Type Section -->
+    <div class="section-title">Bet Type</div>
+    <div class="match-row">
+      <ion-select formControlName="betType" class="full-width center-select">
+        <ion-select-option value="90min">90min</ion-select-option>
+        <ion-select-option value="90min+winner">90min+winner</ion-select-option>
+      </ion-select>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 1X2 Odds Section -->
+    <div class="section-title">1X2 Betting Odds</div>
+    <div class="match-row">
+      <ion-label class="match-label center-align">Home Win</ion-label>
+      <ion-label class="match-label center-align">Draw</ion-label>
+      <ion-label class="match-label center-align">Away Win</ion-label>
+    </div>
+
+    <div class="match-row">
+      <ion-input type="number" formControlName="homeWinOdds" class="third-width odds-input"></ion-input>
+      <ion-input type="number" formControlName="drawOdds" class="third-width odds-input"></ion-input>
+      <ion-input type="number" formControlName="awayWinOdds" class="third-width odds-input"></ion-input>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Qualification Odds Section -->
+    <div class="section-title">Qualification Odds</div>
+    <div class="match-row">
+      <ion-label class="match-label center-align">Home Qualifies</ion-label>
+      <ion-label class="match-label center-align">Away Qualifies</ion-label>
+    </div>
+
+    <div class="match-row">
+      <ion-input type="number" formControlName="homeQualifies" class="half-width odds-input"></ion-input>
+      <ion-input type="number" formControlName="awayQualifies" class="half-width odds-input"></ion-input>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Save Button with Extra Spacing -->
+    <div class="save-button-container">
+      <ion-button expand="full" color="success" (click)="saveMatch()">Save</ion-button>
+    </div>
+  </form>
+</ion-content>

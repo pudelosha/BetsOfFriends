@@ -3,6 +3,8 @@ import * as XLSX from 'xlsx';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
+import { EditMatchModalComponent } from '..//../modals/edit-match-modal/edit-match-modal.component'; // Import the modal
 
 @Component({
   selector: 'app-create-predefined-tournament',
@@ -17,8 +19,9 @@ export class CreatePredefinedTournamentPage {
   betForm: FormGroup;
   teamMap: { [key: number]: string } = {}; // Holds the mapping of Team ID → Team Name
 
-  constructor(private fb: FormBuilder, private toastController: ToastController) {
+  constructor(private fb: FormBuilder, private toastController: ToastController, private modalController: ModalController, ) {
     this.betForm = this.fb.group({
+      tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       uploadType: new FormControl('manual'),
       teams: this.fb.array([], Validators.required),
       matches: this.fb.array([]),
@@ -36,6 +39,10 @@ export class CreatePredefinedTournamentPage {
 
   get uploadType(): FormControl {
     return this.betForm.get('uploadType') as FormControl;
+  }
+
+  get tournamentName(): FormControl {
+    return this.betForm.get('tournamentName') as FormControl;
   }
 
   getTeamControl(index: number): FormControl {
@@ -59,6 +66,47 @@ export class CreatePredefinedTournamentPage {
     if (this.file) this.readExcelFile();
   }
 
+  async openEditModal(index?: number) {
+    const matchData = index !== undefined ? this.getMatchControl(index).value : {
+      matchId: null,
+      stage: '',
+      homeTeamId: null,
+      homeTeam: '',
+      awayTeamId: null,
+      awayTeam: '',
+      date: '',
+      betType: '',
+      homeWinOdds: '',
+      drawOdds: '',
+      awayWinOdds: '',
+      homeQualifies: '',
+      awayQualifies: ''
+    };
+  
+    const modal = await this.modalController.create({
+      component: EditMatchModalComponent,
+      componentProps: {
+        match: matchData, // Pass match details (empty if new)
+        index: index,
+        teams: this.teamsArray.value, // Pass full list of teams
+      }
+    });
+  
+    modal.onDidDismiss().then((result) => {
+      if (result.data) {
+        if (index !== undefined) {
+          this.matchesArray.at(index).setValue(result.data);
+        } else {
+          const newMatchGroup = this.fb.group({ ...result.data });
+          this.matchesArray.push(newMatchGroup);
+          this.matchesArray.updateValueAndValidity();
+        }
+      }
+    });
+      
+    return await modal.present();
+  }
+         
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary' = 'primary') {
     const toast = await this.toastController.create({
       message,

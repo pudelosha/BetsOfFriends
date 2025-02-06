@@ -1,26 +1,40 @@
-<ion-content class="ion-padding page-with-header ">
+<ion-content class="ion-padding page-with-header">
   <!-- Scrollable Content Wrapper -->
   <div class="content-container">
-    <!-- Step 1: Select Input Type -->
-    <div *ngIf="step === 1">
-      <div class="page-description">
-        <p>
-          This page is accessible by the super admin to insert a tournament template 
-          into the application, allowing people to bet on football games for fun with friends.
-        </p>
-        <p>
-          Upload Excel file or click Next button to manually add teams and games.
-        </p>
-      </div>
+    <!-- Step 1: Tournament Name & Select Input Type -->
 
-      <!-- Step 1: Upload Excel File (Always Visible) -->
-      <div class="file-upload-container">
-        <div class="file-input-wrapper">
-          <input type="file" class="file-input" (change)="handleFileInput($event)">
-        </div>
-      </div>      
-           
+<div *ngIf="step === 1">
+  <form [formGroup]="betForm">
+    <div class="page-description">
+      <p>
+        This page is accessible by the super admin to insert a tournament template 
+        into the application, allowing people to bet on football games for fun with friends.
+      </p>
+      <p>
+        Provide a tournament name and upload an Excel file or proceed to manually add teams and games.
+      </p>
     </div>
+
+    <!-- Tournament Name Input -->
+    <div class="form-group">
+      <ion-label class="form-label">Tournament Name</ion-label>
+      <ion-input 
+        formControlName="tournamentName" 
+        class="tournament-name-input full-width"
+        placeholder="Enter tournament name">
+      </ion-input>
+    </div>
+  </form>
+
+  <!-- Upload Excel File -->
+  <div class="file-upload-container">
+    <div class="file-input-wrapper">
+      <input type="file" class="file-input" (change)="handleFileInput($event)">
+    </div>
+  </div>      
+</div>
+
+
 
     <!-- Step 2: Teams Management -->
     <div *ngIf="step === 2">
@@ -38,67 +52,98 @@
       </ion-list>
       <ion-item>
         <ion-input #newTeam type="text" placeholder="Enter new team"></ion-input>
-        <ion-button (click)="addTeam(newTeam)">Add</ion-button>
-      </ion-item>
+        <ion-button class="team-add-button" (click)="addTeam(newTeam)">Add</ion-button>
+      </ion-item>      
     </div>
 
     <!-- Step 3: Games Management -->
     <div *ngIf="step === 3">
-      <ion-label>Manage Matches</ion-label>
-      <ion-list>
-        <ion-item *ngFor="let match of matchesArray.controls; let i = index" [formGroup]="getMatchControl(i)">
-          <ion-label>{{ getMatchControl(i).get('homeTeam')?.value }} vs {{ getMatchControl(i).get('awayTeam')?.value }} on {{ getMatchControl(i).get('date')?.value }}</ion-label>
-          <ion-button fill="clear" color="danger" (click)="removeMatch(i)">Delete</ion-button>
+      <div class="page-description">
+        <p>
+          View and modify tournament matches. Click Edit to change match details, or Delete to remove a match. To add a new match, click Add New Match below.
+        </p>
+      </div>
+
+      <ion-list class="match-list">
+        <ion-item *ngFor="let match of matchesArray.controls; let i = index" class="match-item" [formGroup]="getMatchControl(i)">
+          <div class="match-grid">
+            <!-- Home and Away Team Names (Stacked) -->
+            <div class="match-details">
+              <span class="team">{{ getMatchControl(i).get('homeTeam')?.value }}</span>
+              <span class="team">{{ getMatchControl(i).get('awayTeam')?.value }}</span>
+            </div>
+
+            <!-- Date and Time (Stacked) -->
+            <div class="match-date">
+              <span class="date">{{ getMatchControl(i).get('date')?.value | date: 'yyyy.MM.dd' }}</span>
+              <span class="time">{{ getMatchControl(i).get('date')?.value | date: 'HH:mm' }}</span>
+            </div>
+
+            <!-- Buttons: Edit and Delete -->
+            <div class="match-button-container">
+              <ion-button size="small" fill="outline" color="primary" class="match-button" (click)="openEditModal(i)">Edit</ion-button>
+              <ion-button size="small" fill="outline" color="danger" class="match-button" (click)="removeMatch(i)">Delete</ion-button>
+            </div>
+          </div>
         </ion-item>
       </ion-list>
-      
-      <ion-item>
-        <ion-label>Home Team</ion-label>
-        <ion-select #homeTeam>
-          <ion-select-option *ngFor="let team of teamsArray.controls" [value]="team.value">{{ team.value }}</ion-select-option>
-        </ion-select>
-      </ion-item>
 
-      <ion-item>
-        <ion-label>Away Team</ion-label>
-        <ion-select #awayTeam>
-          <ion-select-option *ngFor="let team of teamsArray.controls" [value]="team.value">{{ team.value }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-label>Match Date</ion-label>
-        <ion-datetime displayFormat="YYYY-MM-DD" #matchDate></ion-datetime>
-      </ion-item>
-
-      <ion-button (click)="addMatch(homeTeam?.value, awayTeam?.value, matchDate?.value)">
-        Add Match
-      </ion-button>
+      <!-- Add Match Button (Full Width & Relative) -->
+      <div class="add-match-container">
+        <ion-button expand="full" color="success" (click)="openEditModal()">Add New Match</ion-button>
+      </div>
     </div>
 
-    <!-- Step 4: Summary & Submit -->
-    <div *ngIf="step === 4">
-      <ion-label>Summary</ion-label>
-      
-      <h3>Teams:</h3>
-      <ul>
-        <li *ngFor="let team of teamsArray.controls">
-          {{ team.value }}
-        </li>
-      </ul>
-    
-      <h3>Games:</h3>
-      <ul>
-        <li *ngFor="let match of matchesArray.controls; let i = index">
-          {{ getMatchControl(i).get('homeTeam')?.value }} vs 
-          {{ getMatchControl(i).get('awayTeam')?.value }} on 
-          {{ getMatchControl(i).get('date')?.value }}
-        </li>
-      </ul>
-    
-      <ion-button expand="full" color="success" (click)="submitData()">Submit</ion-button>
+<!-- Step 4: Summary & Submit -->
+<div *ngIf="step === 4">
+  <div class="page-description">
+    <p>
+      Review the selected teams and matches before finalizing the tournament. 
+      Below, you can see the tournament name, teams participating, and the scheduled matches with corresponding odds.
+    </p>
+    <p>
+      If you need to make changes, go back to the previous steps. 
+      Once confirmed, click the Submit button to save the tournament.
+    </p>
+  </div>
+
+  <!-- Tournament Name Section -->
+  <div class="tournament-name-container">
+    <ion-label class="section-title">Tournament Name</ion-label>
+    <div class="tournament-name-box">
+      {{ tournamentName.value || 'Not provided' }}
     </div>
-    
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Teams Section -->
+  <div class="section-title">Teams</div>
+  <div class="summary-grid-teams">
+    <div *ngFor="let team of teamsArray.controls" class="team-column">
+      {{ team.value }}
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Matches Section -->
+  <div class="section-title">Matches</div>
+  <div class="summary-grid-matches">
+    <div *ngFor="let match of matchesArray.controls" class="match-row">
+      <div class="match-teams">{{ match.value.homeTeam }} - {{ match.value.awayTeam }}</div>
+      <div class="match-date">{{ match.value.date | date: 'yyyy-MM-dd HH:mm' }}</div>
+      <div class="match-odds">
+        {{ match.value.homeWinOdds }} / {{ match.value.drawOdds }} / {{ match.value.awayWinOdds }}
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <ion-button expand="full" color="success" (click)="submitData()">Submit</ion-button>
+</div>
+
   </div>
 
   <div class="button-container">
@@ -115,5 +160,4 @@
       Next
     </ion-button>
   </div>
-  
 </ion-content>
