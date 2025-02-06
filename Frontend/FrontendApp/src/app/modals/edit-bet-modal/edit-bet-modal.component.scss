@@ -120,7 +120,28 @@
 
 ion-segment {
   width: 100%;
-  font-size: 10px;
+  margin-bottom: 10px; /* Space before Save button */
+  margin-top: 10px; /* Space above Save button */
+}
+
+ion-button {
+  margin-top: 20px !important; /* Ensure space above footer */
+}
+
+ion-segment-button {
+  font-size: 10px !important;  /* Ensures smaller text */
+  --color: #333 !important;    /* Keeps text readable */
+  --font-size: 10px !important;
+  height: auto;                /* Allows flexible height */
+  min-height: 36px;            /* Ensures buttons are not too small */
+  padding: 4px 6px;            /* Adjusts spacing */
+  text-align: center;          /* Centers text */
+  white-space: normal !important; /* Allows text wrapping */
+  word-wrap: break-word !important; /* Breaks long words properly */
+  display: flex;               /* Ensures correct flex behavior */
+  align-items: center;         /* Centers text vertically */
+  justify-content: center;     /* Centers text horizontally */
+  text-overflow: ellipsis;     /* Adds "..." if necessary */
 }
 
 /* Set segment proportions */
