@@ -1,95 +1,119 @@
-<ion-content>
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Football Betting Stepper</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
+<ion-content class="ion-padding page-with-header ">
+  <!-- Scrollable Content Wrapper -->
+  <div class="content-container">
+    <!-- Step 1: Select Input Type -->
+    <div *ngIf="step === 1">
+      <div class="page-description">
+        <p>
+          This page is accessible by the super admin to insert a tournament template 
+          into the application, allowing people to bet on football games for fun with friends.
+        </p>
+        <p>
+          Upload Excel file or click Next button to manually add teams and games.
+        </p>
+      </div>
 
-      <!-- Step 1: Select Input Type -->
-      <div *ngIf="step === 1">
-        <ion-item>
-          <ion-label>Input Type:</ion-label>
-          <ion-segment [formControl]="uploadType">
-            <ion-segment-button value="manual">Manual</ion-segment-button>
-            <ion-segment-button value="upload">Upload Excel</ion-segment-button>
-          </ion-segment>
-        </ion-item>
-
-        <div *ngIf="uploadType.value === 'upload'">
-          <ion-item>
-            <ion-label>Upload Excel File</ion-label>
-            <input type="file" (change)="handleFileInput($event)">
-          </ion-item>
+      <!-- Step 1: Upload Excel File (Always Visible) -->
+      <div class="file-upload-container">
+        <div class="file-input-wrapper">
+          <input type="file" class="file-input" (change)="handleFileInput($event)">
         </div>
+      </div>      
+           
+    </div>
+
+    <!-- Step 2: Teams Management -->
+    <div *ngIf="step === 2">
+      <div class="page-description">
+        <p>
+          Edit the teams participating in the tournament. Scroll down to the bottom of the list to add a new team. Click the delete button to remove a team from the list.
+        </p>
       </div>
 
-      <!-- Step 2: Teams Management -->
-      <div *ngIf="step === 2">
-        <ion-label>Manage Teams</ion-label>
-        <ion-list>
-          <ion-item *ngFor="let team of teamsArray.controls; let i = index">
-            <ion-input [formControl]="getTeamControl(i)"></ion-input>
-            <ion-button fill="clear" color="danger" (click)="removeTeam(i)">Delete</ion-button>
-          </ion-item>
-        </ion-list>
-        <ion-item>
-          <ion-input #newTeam type="text" placeholder="Enter new team"></ion-input>
-          <ion-button (click)="addTeam(newTeam?.value || '')">Add</ion-button>
+      <ion-list>
+        <ion-item *ngFor="let team of teamsArray.controls; let i = index">
+          <ion-input [formControl]="getTeamControl(i)"></ion-input>
+          <ion-button fill="clear" color="danger" (click)="removeTeam(i)">Delete</ion-button>
         </ion-item>
-      </div>
+      </ion-list>
+      <ion-item>
+        <ion-input #newTeam type="text" placeholder="Enter new team"></ion-input>
+        <ion-button (click)="addTeam(newTeam)">Add</ion-button>
+      </ion-item>
+    </div>
 
-      <!-- Step 3: Games Management -->
-      <div *ngIf="step === 3">
-        <ion-label>Manage Matches</ion-label>
-        <ion-list>
-          <ion-item *ngFor="let match of matchesArray.controls; let i = index" [formGroup]="getMatchControl(i)">
-            <ion-label>{{ getMatchControl(i).value.home }} vs {{ getMatchControl(i).value.away }} on {{ getMatchControl(i).value.date }}</ion-label>
-            <ion-button fill="clear" color="danger" (click)="removeMatch(i)">Delete</ion-button>
-          </ion-item>
-        </ion-list>
-
-        <ion-item>
-          <ion-label>Home Team</ion-label>
-          <ion-select #homeTeam>
-            <ion-select-option *ngFor="let team of teamsArray.controls" [value]="team.value">{{ team.value }}</ion-select-option>
-          </ion-select>
+    <!-- Step 3: Games Management -->
+    <div *ngIf="step === 3">
+      <ion-label>Manage Matches</ion-label>
+      <ion-list>
+        <ion-item *ngFor="let match of matchesArray.controls; let i = index" [formGroup]="getMatchControl(i)">
+          <ion-label>{{ getMatchControl(i).get('homeTeam')?.value }} vs {{ getMatchControl(i).get('awayTeam')?.value }} on {{ getMatchControl(i).get('date')?.value }}</ion-label>
+          <ion-button fill="clear" color="danger" (click)="removeMatch(i)">Delete</ion-button>
         </ion-item>
+      </ion-list>
+      
+      <ion-item>
+        <ion-label>Home Team</ion-label>
+        <ion-select #homeTeam>
+          <ion-select-option *ngFor="let team of teamsArray.controls" [value]="team.value">{{ team.value }}</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-        <ion-item>
-          <ion-label>Away Team</ion-label>
-          <ion-select #awayTeam>
-            <ion-select-option *ngFor="let team of teamsArray.controls" [value]="team.value">{{ team.value }}</ion-select-option>
-          </ion-select>
-        </ion-item>
+      <ion-item>
+        <ion-label>Away Team</ion-label>
+        <ion-select #awayTeam>
+          <ion-select-option *ngFor="let team of teamsArray.controls" [value]="team.value">{{ team.value }}</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-        <ion-item>
-          <ion-label>Match Date</ion-label>
-          <ion-datetime displayFormat="YYYY-MM-DD" #matchDate></ion-datetime>
-        </ion-item>
+      <ion-item>
+        <ion-label>Match Date</ion-label>
+        <ion-datetime displayFormat="YYYY-MM-DD" #matchDate></ion-datetime>
+      </ion-item>
 
-        <ion-button (click)="addMatch(homeTeam?.value, awayTeam?.value, matchDate?.value)">
-          Add Match
-        </ion-button>
-      </div>
+      <ion-button (click)="addMatch(homeTeam?.value, awayTeam?.value, matchDate?.value)">
+        Add Match
+      </ion-button>
+    </div>
 
-      <!-- Step 4: Summary & Submit -->
-      <div *ngIf="step === 4">
-        <ion-label>Summary</ion-label>
-        <h3>Teams:</h3>
-        <ul>
-          <li *ngFor="let team of teamsArray.controls">{{ team.value }}</li>
-        </ul>
-        <h3>Games:</h3>
-        <ul>
-          <li *ngFor="let match of matchesArray.controls">{{ match.value.home }} vs {{ match.value.away }} on {{ match.value.date }}</li>
-        </ul>
-        <ion-button expand="full" color="success" (click)="submitData()">Submit</ion-button>
-      </div>
+    <!-- Step 4: Summary & Submit -->
+    <div *ngIf="step === 4">
+      <ion-label>Summary</ion-label>
+      
+      <h3>Teams:</h3>
+      <ul>
+        <li *ngFor="let team of teamsArray.controls">
+          {{ team.value }}
+        </li>
+      </ul>
+    
+      <h3>Games:</h3>
+      <ul>
+        <li *ngFor="let match of matchesArray.controls; let i = index">
+          {{ getMatchControl(i).get('homeTeam')?.value }} vs 
+          {{ getMatchControl(i).get('awayTeam')?.value }} on 
+          {{ getMatchControl(i).get('date')?.value }}
+        </li>
+      </ul>
+    
+      <ion-button expand="full" color="success" (click)="submitData()">Submit</ion-button>
+    </div>
+    
+  </div>
 
-      <!-- Stepper Navigation -->
-      <ion-button *ngIf="step > 1" (click)="prevStep()">Previous</ion-button>
-      <ion-button *ngIf="step < 4" (click)="nextStep()">Next</ion-button>
-
-    </ion-card-content>
-  </ion-card>
+  <div class="button-container">
+    <ion-button
+      [class.hidden]="step === 1"
+      class="half-width left-button"
+      (click)="prevStep()">
+      Previous
+    </ion-button>
+    <ion-button
+      [class.hidden]="step === 4"
+      class="half-width right-button"
+      (click)="nextStep()">
+      Next
+    </ion-button>
+  </div>
+  
 </ion-content>

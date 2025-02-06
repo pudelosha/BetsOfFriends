@@ -1,0 +1,60 @@
+.content-container {
+    height: calc(100vh - 150px); /* Ensures space for buttons */
+    overflow-y: auto; /* Enables scrolling */
+    padding-bottom: 80px; /* Extra space at bottom to prevent overlap */
+    margin-bottom: 20px;
+  }
+  
+  .button-container {
+    display: flex; /* Use flex instead of grid */
+    justify-content: space-between; /* Keep buttons on opposite sides */
+    align-items: center;
+    width: 100%;
+    background: white; /* Prevents content overlap */
+    padding: 5px 12px; /* Remove side padding to prevent shifting */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Adds slight shadow for visibility */
+  
+    /* Always stick to bottom of viewport */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin-bottom: 56px;
+    z-index: 1;
+  }
+  
+  .half-width {
+    flex: 1; /* Ensures equal width distribution */
+    max-width: 50%;
+    text-align: center;
+  }
+  
+  /* Hide buttons when not needed, but keep space */
+  .hidden {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .file-upload-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .file-label {
+    font-size: 16px;
+    font-weight: 500;
+    padding-bottom: 4px; /* Adds space between label and file input */
+    display: block;
+  }
+  
+  .file-input-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+  }
+  
+  .file-input {
+    width: auto;
+  }
+  
+  
