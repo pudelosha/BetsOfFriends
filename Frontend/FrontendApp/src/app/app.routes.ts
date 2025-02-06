@@ -20,6 +20,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'to-place', pathMatch: 'full' }
     ]
   },
+  { path: 'create-predefined-tournament', loadComponent: () => import('./pages/create-predefined-tournament/create-predefined-tournament.page').then( m => m.CreatePredefinedTournamentPage), canActivate: [AuthGuard] },
 
   // Only for guests
   { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage), canActivate: [GuestGuard] },
@@ -32,22 +33,9 @@ export const routes: Routes = [
   { path: 'confirm-email', loadComponent: () => import('./pages/confirm-email/confirm-email.page').then( m => m.ConfirmEmailPage ), canActivate: [GuestGuard] },
 
   { path: '**', redirectTo: 'welcome' },
-  {
-    path: 'my-bets',
-    loadComponent: () => import('./pages/my-bets/my-bets.page').then( m => m.MyBetsPage)
-  },
-  {
-    path: 'my-bets-to-place',
-    loadComponent: () => import('./pages/my-bets-to-place/my-bets-to-place.page').then( m => m.MyBetsToPlacePage)
-  },
-  {
-    path: 'my-bets-placed',
-    loadComponent: () => import('./pages/my-bets-placed/my-bets-placed.page').then( m => m.MyBetsPlacedPage)
-  },
-  {
-    path: 'my-bets-finalised',
-    loadComponent: () => import('./pages/my-bets-finalised/my-bets-finalised.page').then( m => m.MyBetsFinalisedPage)
-  },
+
+
+
 
 
 

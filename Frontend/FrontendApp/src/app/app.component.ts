@@ -78,4 +78,9 @@ export class AppComponent {
     this.router.navigate(['/my-bets']);
   }
 
+  navigateToCreatePredefinedTournament() {
+    console.log('Navigating to create-predefined-tournament...');
+    this.router.navigate(['/create-predefined-tournament']);
+  }
+
 }
