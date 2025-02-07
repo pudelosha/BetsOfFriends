@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import * as XLSX from 'xlsx';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { ModalController, ViewWillEnter } from '@ionic/angular';
-import { EditMatchModalComponent } from '..//../modals/edit-match-modal/edit-match-modal.component'; // Import the modal
+import { EditMatchModalComponent } from '..//../modals/edit-match-modal/edit-match-modal.component';
+import { Tournament, Team, Match } from '../../model/tournament-model';
+import { PredefinedTournamentService } from '../../services/tournament.service';
 
 @Component({
   selector: 'app-create-predefined-tournament',
@@ -14,43 +17,101 @@ import { EditMatchModalComponent } from '..//../modals/edit-match-modal/edit-mat
   imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
 export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
+  tournamentId?: number; // Optional tournament ID
   step = 1;
+  tournamentForm: FormGroup;
   file: File | null = null;
-  betForm: FormGroup;
   teamMap: { [key: number]: string } = {}; // Holds the mapping of Team ID → Team Name
 
-  constructor(private fb: FormBuilder, private toastController: ToastController, private modalController: ModalController, private alertController: AlertController) {
-    this.betForm = this.fb.group({
+  constructor(private fb: FormBuilder, 
+    private toastController: ToastController, 
+    private modalController: ModalController, 
+    private alertController: AlertController,
+    private route: ActivatedRoute,
+    private tournamentService: PredefinedTournamentService
+  ) {
+    this.tournamentForm = this.fb.group({
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
-      uploadType: new FormControl('manual'),
+      createdBy: [''],
+      createdAt: [''],
       teams: this.fb.array([], Validators.required),
       matches: this.fb.array([]),
     });
-  }
-
-  ngOnInit() {
-    this.resetForm(); // Reset form when the page is initialized
   }
 
   ionViewWillEnter() {
     this.resetForm(); // Reset form when user navigates back
   }
 
+  ngOnInit() {
+    this.resetForm(); // Reset form when the page is initialized
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.tournamentId = +id;
+        this.loadTournamentData(this.tournamentId);
+      }
+    });
+  }
+
+  private loadTournamentData(tournamentId: number) {
+    this.tournamentService.getPredefinedTournamentById(tournamentId).subscribe(tournament => {
+      if (!tournament) {
+        this.showToast('Tournament not found!', 'danger');
+        return;
+      }
+
+      this.tournamentForm.patchValue({
+        tournamentName: tournament.tournamentName,
+        createdBy: tournament.createdBy,
+        createdAt: tournament.createdAt,
+      });
+
+      // Load teams
+      const teamsArray = this.tournamentForm.get('teams') as FormArray;
+      tournament.teams.forEach(team => {
+        teamsArray.push(new FormControl(team.name, Validators.required));
+      });
+
+      // Load matches
+      const matchesArray = this.tournamentForm.get('matches') as FormArray;
+      tournament.matches.forEach(match => {
+        matchesArray.push(this.fb.group({
+          matchId: [match.matchId],
+          stage: [match.stage],
+          homeTeamId: [match.homeTeamId],
+          homeTeam: [match.homeTeam, Validators.required],
+          awayTeamId: [match.awayTeamId],
+          awayTeam: [match.awayTeam, Validators.required],
+          date: [match.date, Validators.required],
+          betType: [match.betType, Validators.required],
+          homeWinOdds: [match.homeWinOdds, Validators.required],
+          drawOdds: [match.drawOdds, Validators.required],
+          awayWinOdds: [match.awayWinOdds, Validators.required],
+          homeQualifies: [match.homeQualifies, Validators.required],
+          awayQualifies: [match.awayQualifies, Validators.required],
+        }));
+      });
+    });
+  }
+
+
+
   // Getters for FormArray
   get teamsArray(): FormArray {
-    return this.betForm.get('teams') as FormArray;
+    return this.tournamentForm.get('teams') as FormArray;
   }
 
   get matchesArray(): FormArray {
-    return this.betForm.get('matches') as FormArray;
+    return this.tournamentForm.get('matches') as FormArray;
   }
 
   get uploadType(): FormControl {
-    return this.betForm.get('uploadType') as FormControl;
+    return this.tournamentForm.get('uploadType') as FormControl;
   }
 
   get tournamentName(): FormControl {
-    return this.betForm.get('tournamentName') as FormControl;
+    return this.tournamentForm.get('tournamentName') as FormControl;
   }
 
   getTeamControl(index: number): FormControl {
@@ -363,12 +424,33 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
   }
 
   submitData() {
-    console.log('Submitting Data:', this.betForm.value);
-    // Send data to backend
+    const tournamentData: Tournament = {
+      id: this.tournamentId ?? undefined, // Keep ID for existing tournaments
+      tournamentName: this.tournamentForm.value.tournamentName,
+      createdBy: this.tournamentForm.value.createdBy || 'Admin', // Default if missing
+      createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
+      teams: this.teamsArray.value.map((name: string, index: number) => ({
+        id: index + 1,
+        name,
+      })),
+      matches: this.matchesArray.value,
+    };
+
+    console.log('Submitting Tournament:', tournamentData);
+
+    if (this.tournamentId) {
+      this.tournamentService.updatePredefinedTournament(tournamentData).subscribe(() => {
+        this.showToast('Tournament updated successfully!', 'success');
+      });
+    } else {
+      this.tournamentService.createPredefinedTournament(tournamentData).subscribe(() => {
+        this.showToast('Tournament created successfully!', 'success');
+      });
+    }
   }
 
   resetForm() {
-    this.betForm.reset(); // Clear form data
+    this.tournamentForm.reset(); // Clear form data
     this.teamsArray.clear(); // Clear teams
     this.matchesArray.clear(); // Clear matches
     this.teamMap = {}; // Reset team map
