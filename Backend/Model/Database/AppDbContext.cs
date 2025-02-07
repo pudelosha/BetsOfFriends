@@ -9,17 +9,28 @@ namespace Backend.Model.Database
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
+        // Predefined Tournament Tables
+        public DbSet<PredefinedTournament> PredefinedTournaments { get; set; }
+        public DbSet<PredefinedTeam> PredefinedTeams { get; set; }
+        public DbSet<PredefinedMatch> PredefinedMatches { get; set; }
+
+        // Standard Tournament Tables
         public DbSet<Tournament> Tournaments { get; set; }
         public DbSet<UserTournament> UserTournaments { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<Match> Matches { get; set; }
+        public DbSet<Bet> Bets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             RenameIdentityTables(builder);
+            ConfigurePredefinedTournamentRelationships(builder);
+            ConfigureTournamentRelationships(builder);
             ConfigureUserTournamentRelationship(builder);
             ConfigureGameRelationships(builder);
-            ConfigureTournamentRelationships(builder);
+            ConfigureBetRelationships(builder);
             SeedRoles(builder);
         }
 
@@ -38,80 +49,135 @@ namespace Backend.Model.Database
         }
 
         /// <summary>
-        /// Define relationships between tables
+        /// Define relationships for Predefined Tournaments.
         /// </summary>
-        private void ConfigureGameRelationships(ModelBuilder builder)
+        private void ConfigurePredefinedTournamentRelationships(ModelBuilder builder)
         {
-            // Many-to-One: Game -> Tournament
-            builder.Entity<Game>()
-                .HasOne(g => g.Tournament)
-                .WithMany(t => t.Games)
-                .HasForeignKey(g => g.TournamentId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade cycles
+            // Tournament -> Teams
+            builder.Entity<PredefinedTeam>()
+                .HasOne(t => t.PredefinedTournament)
+                .WithMany(t => t.PredefinedTeams)
+                .HasForeignKey(t => t.PredefinedTournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Many-to-One: Game -> Home Team
-            builder.Entity<Game>()
-                .HasOne(g => g.HomeTeam)
-                .WithMany()
-                .HasForeignKey(g => g.HomeTeamId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade cycles
+            // Tournament -> Matches
+            builder.Entity<PredefinedMatch>()
+                .HasOne(m => m.PredefinedTournament)
+                .WithMany(t => t.PredefinedMatches)
+                .HasForeignKey(m => m.PredefinedTournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Many-to-One: Game -> Away Team
-            builder.Entity<Game>()
-                .HasOne(g => g.AwayTeam)
+            // Match -> Home Team (FK to PredefinedTeam)
+            builder.Entity<PredefinedMatch>()
+                .HasOne(m => m.HomeTeam)
                 .WithMany()
-                .HasForeignKey(g => g.AwayTeamId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade cycles
+                .HasForeignKey(m => m.HomeTeamId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cycles
+
+            // Match -> Away Team (FK to PredefinedTeam)
+            builder.Entity<PredefinedMatch>()
+                .HasOne(m => m.AwayTeam)
+                .WithMany()
+                .HasForeignKey(m => m.AwayTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
+        /// <summary>
+        /// Define relationships for Standard Tournaments.
+        /// </summary>
+        private void ConfigureTournamentRelationships(ModelBuilder builder)
+        {
+            // Tournament -> CreatedByUser
+            builder.Entity<Tournament>()
+                .HasOne(t => t.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(t => t.CreatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Tournament -> Teams
+            builder.Entity<Tournament>()
+                .HasMany(t => t.Teams)
+                .WithOne(team => team.Tournament)
+                .HasForeignKey(team => team.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Tournament -> Participants
+            builder.Entity<Tournament>()
+                .HasMany(t => t.Participants)
+                .WithOne(ut => ut.Tournament)
+                .HasForeignKey(ut => ut.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        /// <summary>
+        /// Define relationships for UserTournament (many-to-many users & tournaments).
+        /// </summary>
         private void ConfigureUserTournamentRelationship(ModelBuilder builder)
         {
             builder.Entity<UserTournament>()
-                .HasKey(ut => ut.Id); // Uses `Id` instead of composite `{ UserId, TournamentId }`
+                .HasKey(ut => ut.Id);
 
             builder.Entity<UserTournament>()
-                .HasIndex(ut => new { ut.UserId, ut.TournamentId }) // Unique Index (not PK) for fast lookups
+                .HasIndex(ut => new { ut.UserId, ut.TournamentId })
                 .IsUnique();
 
             builder.Entity<UserTournament>()
                 .HasOne(ut => ut.User)
                 .WithMany(u => u.UserTournaments)
                 .HasForeignKey(ut => ut.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevents cascading delete cycles
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<UserTournament>()
                 .HasOne(ut => ut.Tournament)
                 .WithMany(t => t.Participants)
                 .HasForeignKey(ut => ut.TournamentId)
-                .OnDelete(DeleteBehavior.Cascade); // Deletes related UserTournaments when Tournament is deleted
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<UserTournament>()
                 .Property(ut => ut.Role)
                 .HasDefaultValue(UserTournamentRole.Guest);
         }
 
-        private void ConfigureTournamentRelationships(ModelBuilder builder)
+        /// <summary>
+        /// Define relationships for Matches.
+        /// </summary>
+        private void ConfigureGameRelationships(ModelBuilder builder)
         {
-            // Many-to-One: Tournament -> CreatedByUser
-            builder.Entity<Tournament>()
-                .HasOne(t => t.CreatedByUser)
+            builder.Entity<Match>()
+                .HasOne(g => g.Tournament)
+                .WithMany(t => t.Matches)
+                .HasForeignKey(g => g.TournamentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Match>()
+                .HasOne(g => g.HomeTeam)
                 .WithMany()
-                .HasForeignKey(t => t.CreatedByUserId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevents cascading delete cycles
+                .HasForeignKey(g => g.HomeTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Many-to-One: Tournament -> Teams (Cascade Delete Allowed)
-            builder.Entity<Tournament>()
-                .HasMany(t => t.Teams)
-                .WithOne(team => team.Tournament)
-                .HasForeignKey(team => team.TournamentId)
-                .OnDelete(DeleteBehavior.Cascade); // If Tournament is deleted, delete its Teams
+            builder.Entity<Match>()
+                .HasOne(g => g.AwayTeam)
+                .WithMany()
+                .HasForeignKey(g => g.AwayTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
 
-            // Many-to-One: Tournament -> UserTournaments (Cascade Delete Allowed)
-            builder.Entity<Tournament>()
-                .HasMany(t => t.Participants)
-                .WithOne(ut => ut.Tournament)
-                .HasForeignKey(ut => ut.TournamentId)
-                .OnDelete(DeleteBehavior.Cascade); // If Tournament is deleted, remove participants
+        /// <summary>
+        /// Define relationships for Bets.
+        /// </summary>
+        private void ConfigureBetRelationships(ModelBuilder builder)
+        {
+            builder.Entity<Bet>()
+                .HasOne(b => b.Match)
+                .WithMany(m => m.Bets)
+                .HasForeignKey(b => b.MatchId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Bet>()
+                .HasOne(b => b.User)
+                .WithMany()
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         /// <summary>

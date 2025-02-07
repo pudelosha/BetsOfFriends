@@ -7,7 +7,8 @@ import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { ModalController, ViewWillEnter } from '@ionic/angular';
 import { EditMatchModalComponent } from '..//../modals/edit-match-modal/edit-match-modal.component';
 import { Tournament, Team, Match } from '../../model/tournament-model';
-import { PredefinedTournamentService } from '../../services/tournament.service';
+import { PredefinedTournamentService } from '../../services/predefined-tournament.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-predefined-tournament',
@@ -28,7 +29,8 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
     private modalController: ModalController, 
     private alertController: AlertController,
     private route: ActivatedRoute,
-    private tournamentService: PredefinedTournamentService
+    private tournamentService: PredefinedTournamentService,
+    private router: Router
   ) {
     this.tournamentForm = this.fb.group({
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
@@ -70,7 +72,7 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
       // Load teams
       const teamsArray = this.tournamentForm.get('teams') as FormArray;
       tournament.teams.forEach(team => {
-        teamsArray.push(new FormControl(team.name, Validators.required));
+        teamsArray.push(new FormControl(team.teamName, Validators.required));
       });
 
       // Load matches
@@ -83,7 +85,7 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
           homeTeam: [match.homeTeam, Validators.required],
           awayTeamId: [match.awayTeamId],
           awayTeam: [match.awayTeam, Validators.required],
-          date: [match.date, Validators.required],
+          matchStart: [match.matchStart, Validators.required],
           betType: [match.betType, Validators.required],
           homeWinOdds: [match.homeWinOdds, Validators.required],
           drawOdds: [match.drawOdds, Validators.required],
@@ -94,8 +96,6 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
       });
     });
   }
-
-
 
   // Getters for FormArray
   get teamsArray(): FormArray {
@@ -145,7 +145,7 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
       homeTeam: '',
       awayTeamId: null,
       awayTeam: '',
-      date: new Date().toISOString(), // Ensure a valid default timestamp
+      matchStart: new Date().toISOString(), // Ensure a valid default timestamp
       betType: '',
       homeWinOdds: '',
       drawOdds: '',
@@ -192,7 +192,7 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
             homeTeam: [result.data.homeTeam, Validators.required],
             awayTeamId: [awayTeamId], // Dynamically set ID
             awayTeam: [result.data.awayTeam, Validators.required],
-            date: [result.data.date, Validators.required],
+            matchStart: [result.data.matchStart, Validators.required],
             betType: [result.data.betType, Validators.required],
             homeWinOdds: [result.data.homeWinOdds, Validators.required],
             drawOdds: [result.data.drawOdds, Validators.required],
@@ -325,36 +325,45 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
             homeTeam: [homeTeamName, Validators.required], // Now correctly mapped
             awayTeamId: [awayTeamId, Validators.required],
             awayTeam: [awayTeamName, Validators.required], // Now correctly mapped
-            date: [matchDateTime, Validators.required],
+            matchStart: [matchDateTime, Validators.required],
             betType: [row['Bet Type'], Validators.required],
             homeWinOdds: [this.parseOdds(row['Home Win Odds']), Validators.required],
             drawOdds: [this.parseOdds(row['Draw Odds']), Validators.required],
             awayWinOdds: [this.parseOdds(row['Away Win Odds']), Validators.required],
-            homeQualifies: [this.parseOdds(row['Home Team Qualifies']), Validators.required],
-            awayQualifies: [this.parseOdds(row['Away Team Qualifies']), Validators.required],
+            homeQualifies: [this.parseOdds(row['Home Team Qualifies'])],
+            awayQualifies: [this.parseOdds(row['Away Team Qualifies'])]
           }));
         }
       });
     }
   }
-  
+   
   convertToTimestamp(date: string, time: string, utcOffset: number): string {
-    const dateTimeString = `${date} ${time}`;
-    const localDate = new Date(dateTimeString);
-
-    // Adjust for UTC offset
+    // Combine date and time into a single string
+    const dateTimeString = `${date}T${time}`;
+    
+    // Convert to Date object
+    let localDate = new Date(dateTimeString);
+    
+    // Apply UTC offset correctly
     localDate.setHours(localDate.getHours() - utcOffset);
-
-    return localDate.toISOString(); // Store as ISO timestamp
+    
+    // Convert to ISO string to ensure proper format
+    const utcDateTime = localDate.toISOString();
+    
+    console.log(`Converted Timestamp: ${utcDateTime} (Original: ${dateTimeString}, Offset: ${utcOffset})`); // Debug log
+  
+    return utcDateTime;
   }
-
-  parseOdds(odds: any): number {
+  
+  parseOdds(odds: any): number | null {
     if (typeof odds === 'string') {
-      return parseFloat(odds.replace(',', '.')); // Replace comma with dot
+      const parsed = parseFloat(odds.replace(',', '.'));
+      return isNaN(parsed) ? null : parsed;
     }
-    return typeof odds === 'number' ? odds : NaN;
+    return typeof odds === 'number' && !isNaN(odds) ? odds : null;
   }
-
+  
   async addTeam(inputRef: any) {
     const inputElement = await inputRef.getInputElement(); // Get native input element
     const teamName = inputElement.value.trim(); // Extract value properly
@@ -424,29 +433,61 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
   }
 
   submitData() {
+    // Validation Checks
+    if (!this.tournamentForm.value.tournamentName?.trim()) {
+      this.showToast('Tournament name is required!', 'danger');
+      return;
+    }
+
+    if (this.teamsArray.length < 2) {
+      this.showToast('At least 2 teams are required to create a tournament!', 'danger');
+      return;
+    }
+
+    if (this.matchesArray.length < 1) {
+      this.showToast('At least 1 match is required!', 'danger');
+      return;
+    }
+
+    // Prepare Data for Submission
     const tournamentData: Tournament = {
-      id: this.tournamentId ?? undefined, // Keep ID for existing tournaments
+      tournamentId: this.tournamentId ?? null, // Use null if new tournament
       tournamentName: this.tournamentForm.value.tournamentName,
+      isActive: true,
       createdBy: this.tournamentForm.value.createdBy || 'Admin', // Default if missing
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
-      teams: this.teamsArray.value.map((name: string, index: number) => ({
+      teams: this.teamsArray.value.map((teamName: string, index: number) => ({
         id: index + 1,
-        name,
+        teamName,
       })),
-      matches: this.matchesArray.value,
+      matches: this.matchesArray.value.map((match: any) => ({
+        ...match,
+        matchStart: new Date(match.matchStart).toISOString(), // Ensure ISO format
+      })),
     };
 
     console.log('Submitting Tournament:', tournamentData);
 
-    if (this.tournamentId) {
-      this.tournamentService.updatePredefinedTournament(tournamentData).subscribe(() => {
-        this.showToast('Tournament updated successfully!', 'success');
-      });
-    } else {
-      this.tournamentService.createPredefinedTournament(tournamentData).subscribe(() => {
-        this.showToast('Tournament created successfully!', 'success');
-      });
-    }
+    // API Call with Redirection on Success
+    const submitObservable = this.tournamentId
+      ? this.tournamentService.updatePredefinedTournament(tournamentData)
+      : this.tournamentService.createPredefinedTournament(tournamentData);
+
+    submitObservable.subscribe({
+      next: () => {
+        // Navigate first
+        this.router.navigate(['/predefined-tournaments']).then(() => {
+          // After navigation, show the toast
+          setTimeout(() => {
+            this.showToast('Tournament saved successfully!', 'success');
+          }, 500); // Small delay to ensure UI update
+        });
+      },
+      error: (error) => {
+        console.error('Error submitting tournament:', error);
+        this.showToast('Error submitting tournament!', 'danger');
+      },
+    });
   }
 
   resetForm() {

@@ -1,11 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Model.Entities
 {
-    public class Game
+    public class Match
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
+        public string? Stage { get; set; } = string.Empty;
 
         public int TournamentId { get; set; }
         public Tournament Tournament { get; set; }
@@ -21,18 +25,15 @@ namespace Backend.Model.Entities
         public int? HomeScore { get; set; }
         public int? AwayScore { get; set; }
 
-        [MaxLength(20)]
-        public string? Group { get; set; }
-
-        public bool WhoQualifiesBetRequired { get; set; }
+        [Required]
+        public string BetType { get; set; } = string.Empty;
 
         // Betting Odds
-        public decimal OddsHomeWin { get; set; }
-        public decimal OddsDraw { get; set; }
-        public decimal OddsAwayWin { get; set; }
-        public decimal? OddsExactResult { get; set; }
-        public decimal? OddsHomeQualifies {  get; set; }
-        public decimal? OddsAwayQualifies { get; set; }
+        public decimal HomeWinOdds { get; set; }
+        public decimal DrawOdds { get; set; }
+        public decimal AwayWinOdds { get; set; }
+        public decimal HomeQualifies { get; set; }
+        public decimal AwayQualifies { get; set; }
 
         public ICollection<Bet> Bets { get; set; } = new List<Bet>();
     }

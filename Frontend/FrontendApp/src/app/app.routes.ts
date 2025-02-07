@@ -20,14 +20,9 @@ export const routes: Routes = [
       { path: '', redirectTo: 'to-place', pathMatch: 'full' }
     ]
   },
-  {
-    path: 'create-predefined-tournament', // New tournament
-    loadComponent: () => import('./pages/create-predefined-tournament/create-predefined-tournament.page').then( m => m.CreatePredefinedTournamentPage), canActivate: [AuthGuard] 
-  },
-  {
-    path: 'update-predefined-tournament/:id', // Edit existing tournament
-    loadComponent: () => import('./pages/create-predefined-tournament/create-predefined-tournament.page').then( m => m.CreatePredefinedTournamentPage), canActivate: [AuthGuard] 
-  },
+  { path: 'predefined-tournaments', loadComponent: () => import('./pages/predefined-tournaments/predefined-tournaments.page').then( m => m.PredefinedTournamentsPage), canActivate: [AuthGuard] },
+  { path: 'create-predefined-tournament', loadComponent: () => import('./pages/create-predefined-tournament/create-predefined-tournament.page').then( m => m.CreatePredefinedTournamentPage), canActivate: [AuthGuard] },
+  { path: 'update-predefined-tournament/:id', loadComponent: () => import('./pages/create-predefined-tournament/create-predefined-tournament.page').then( m => m.CreatePredefinedTournamentPage), canActivate: [AuthGuard] },
 
   // Only for guests
   { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage), canActivate: [GuestGuard] },
@@ -40,6 +35,8 @@ export const routes: Routes = [
   { path: 'confirm-email', loadComponent: () => import('./pages/confirm-email/confirm-email.page').then( m => m.ConfirmEmailPage ), canActivate: [GuestGuard] },
 
   { path: '**', redirectTo: 'welcome' },
+
+
 
 
 

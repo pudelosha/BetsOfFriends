@@ -10,7 +10,7 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 
 import { addIcons } from 'ionicons';
-import { logOutOutline, homeOutline, trophyOutline, settingsOutline, listOutline, podiumOutline, statsChartOutline, footballOutline, createOutline, eyeOutline, personOutline, notificationsOutline, shieldCheckmarkOutline, addCircleOutline, hammerOutline, clipboardOutline, starOutline, documentTextOutline, buildOutline, exitOutline, filterOutline } from 'ionicons/icons';
+import { logOutOutline, homeOutline, trophyOutline, pauseOutline, trashOutline, settingsOutline, listOutline, podiumOutline, statsChartOutline, footballOutline, createOutline, eyeOutline, personOutline, notificationsOutline, shieldCheckmarkOutline, addCircleOutline, hammerOutline, clipboardOutline, starOutline, documentTextOutline, buildOutline, exitOutline, filterOutline } from 'ionicons/icons';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -23,6 +23,8 @@ bootstrapApplication(AppComponent, {
 });
 
 addIcons({
+  'trash-outline': trashOutline,
+  'pause-outline': pauseOutline,
   'filter-outline': filterOutline,
   'log-out-outline': logOutOutline,
   'home-outline': homeOutline,

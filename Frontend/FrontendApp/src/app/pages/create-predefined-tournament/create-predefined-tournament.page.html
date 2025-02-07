@@ -3,38 +3,36 @@
   <div class="content-container">
     <!-- Step 1: Tournament Name & Select Input Type -->
 
-<div *ngIf="step === 1">
-  <form [formGroup]="tournamentForm">
-    <div class="page-description">
-      <p>
-        This page is accessible by the super admin to insert a tournament template 
-        into the application, allowing people to bet on football games for fun with friends.
-      </p>
-      <p>
-        Provide a tournament name and upload an Excel file or proceed to manually add teams and games.
-      </p>
+    <div *ngIf="step === 1">
+      <form [formGroup]="tournamentForm">
+        <div class="page-description">
+          <p>
+            This page is accessible by the super admin to insert a tournament template 
+            into the application, allowing people to bet on football games for fun with friends.
+          </p>
+          <p>
+            Provide a tournament name and upload an Excel file or proceed to manually add teams and games.
+          </p>
+        </div>
+
+        <!-- Tournament Name Input -->
+        <div class="form-group">
+          <ion-label class="form-label">Tournament Name</ion-label>
+          <ion-input 
+            formControlName="tournamentName" 
+            class="tournament-name-input full-width"
+            placeholder="Enter tournament name">
+          </ion-input>
+        </div>
+      </form>
+
+      <!-- Upload Excel File -->
+      <div class="file-upload-container">
+        <div class="file-input-wrapper">
+          <input type="file" class="file-input" (change)="handleFileInput($event)">
+        </div>
+      </div>      
     </div>
-
-    <!-- Tournament Name Input -->
-    <div class="form-group">
-      <ion-label class="form-label">Tournament Name</ion-label>
-      <ion-input 
-        formControlName="tournamentName" 
-        class="tournament-name-input full-width"
-        placeholder="Enter tournament name">
-      </ion-input>
-    </div>
-  </form>
-
-  <!-- Upload Excel File -->
-  <div class="file-upload-container">
-    <div class="file-input-wrapper">
-      <input type="file" class="file-input" (change)="handleFileInput($event)">
-    </div>
-  </div>      
-</div>
-
-
 
     <!-- Step 2: Teams Management -->
     <div *ngIf="step === 2">
@@ -75,8 +73,8 @@
 
             <!-- Date and Time (Stacked) -->
             <div class="match-date">
-              <span class="date">{{ getMatchControl(i).get('date')?.value | date: 'yyyy.MM.dd' }}</span>
-              <span class="time">{{ getMatchControl(i).get('date')?.value | date: 'HH:mm' }}</span>
+              <span class="date">{{ getMatchControl(i).get('matchStart')?.value | date: 'yyyy.MM.dd' }}</span>
+              <span class="time">{{ getMatchControl(i).get('matchStart')?.value | date: 'HH:mm' }}</span>
             </div>
 
             <!-- Buttons: Edit and Delete -->
@@ -132,7 +130,7 @@
   <div class="summary-grid-matches">
     <div *ngFor="let match of matchesArray.controls" class="match-row">
       <div class="match-teams">{{ match.value.homeTeam }} - {{ match.value.awayTeam }}</div>
-      <div class="match-date">{{ match.value.date | date: 'yyyy-MM-dd HH:mm' }}</div>
+      <div class="match-date">{{ match.value.matchStart | date: 'yyyy-MM-dd HH:mm' }}</div>
       <div class="match-odds">
         {{ match.value.homeWinOdds | number:'1.2-2' }} /
         {{ match.value.drawOdds | number:'1.2-2' }} /

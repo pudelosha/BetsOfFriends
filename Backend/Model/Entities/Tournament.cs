@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Model.Entities
 {
@@ -8,6 +9,7 @@ namespace Backend.Model.Entities
     public class Tournament
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
         [MaxLength(100)]
@@ -30,7 +32,7 @@ namespace Backend.Model.Entities
 
         public ICollection<UserTournament> Participants { get; set; } = new List<UserTournament>();
         public ICollection<Team> Teams { get; set; } = new List<Team>();
-        public ICollection<Game> Games { get; set; } = new List<Game>();
+        public ICollection<Match> Matches { get; set; } = new List<Match>();
 
         public enum TournamentType
         {

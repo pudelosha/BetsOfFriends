@@ -19,6 +19,7 @@ namespace Backend.Extensions
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<ITournamentService, TournamentService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPredefinedTournamentService, PredefinedTournamentService>();
 
             return services;
         }

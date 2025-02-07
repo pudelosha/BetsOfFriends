@@ -30,13 +30,13 @@ export class EditMatchModalComponent implements OnInit {
       homeTeam: ['', Validators.required],
       awayTeamId: [null],   // Validator intentionally removed, ID to be populated via function on modal close
       awayTeam: ['', Validators.required],
-      date: ['', Validators.required],
+      matchStart: ['', Validators.required],
       betType: ['', Validators.required],
       homeWinOdds: ['', [Validators.required, Validators.min(1)]],
       drawOdds: ['', [Validators.required, Validators.min(1)]],
       awayWinOdds: ['', [Validators.required, Validators.min(1)]],
-      homeQualifies: [''],
-      awayQualifies: [''],
+      homeQualifies: [null],
+      awayQualifies: [null],
     });       
   }
 
@@ -58,7 +58,9 @@ export class EditMatchModalComponent implements OnInit {
     }
   
     const matchData = this.matchForm.value;
-  
+    matchData.homeQualifies = matchData.homeQualifies === '' ? null : matchData.homeQualifies;
+    matchData.awayQualifies = matchData.awayQualifies === '' ? null : matchData.awayQualifies;
+    
     console.log("Saving Match:", matchData);
   
     await this.modalController.dismiss(matchData);

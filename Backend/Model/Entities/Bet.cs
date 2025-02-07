@@ -1,14 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Model.Entities
 {
     public class Bet
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public int GameId { get; set; }
-        public Game Game { get; set; }
+        public int MatchId { get; set; }
+        public Match Match { get; set; }
 
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }

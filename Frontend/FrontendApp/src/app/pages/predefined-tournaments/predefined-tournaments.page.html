@@ -1,0 +1,44 @@
+<ion-content class="page-with-header">
+  <ion-list *ngIf="!isLoading" class="tournament-list">
+    <ion-item *ngFor="let tournament of tournaments" class="tournament-item">
+      <ion-grid>
+        <ion-row class="tournament-row">
+          <!-- Tournament Info -->
+          <ion-col size="8" class="tournament-info">
+            <span class="tournament-title">{{ tournament.tournamentName }}</span>
+            <span class="tournament-meta">
+              Created: {{ tournament.createdAt | date:'yyyy.MM.dd' }}
+            </span>
+            <span class="tournament-status" [class.active]="tournament.isActive" [class.inactive]="!tournament.isActive">
+              {{ tournament.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </ion-col>
+
+          <!-- Edit Button -->
+          <ion-col size="2" class="button-col">
+            <ion-button fill="outline" color="primary" (click)="editTournament(tournament)">
+              <ion-icon name="create-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+
+          <!-- Toggle Status Button -->
+          <ion-col size="2" class="button-col">
+            <ion-button fill="outline" color="warning" (click)="toggleTournamentStatus(tournament)">
+              <ion-icon name="pause-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+
+          <!-- Delete Button -->
+          <ion-col size="2" class="button-col">
+            <ion-button fill="outline" color="danger" (click)="confirmDelete(tournament)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-list>
+
+  <!-- Loading Spinner -->
+  <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+</ion-content>

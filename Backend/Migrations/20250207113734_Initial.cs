@@ -8,11 +8,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "PredefinedTournaments",
+                columns: table => new
+                {
+                    TournamentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TournamentName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PredefinedTournaments", x => x.TournamentId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
@@ -53,6 +68,26 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PredefinedTeams",
+                columns: table => new
+                {
+                    TeamId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TeamName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PredefinedTournamentId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PredefinedTeams", x => x.TeamId);
+                    table.ForeignKey(
+                        name: "FK_PredefinedTeams_PredefinedTournaments_PredefinedTournamentId",
+                        column: x => x.PredefinedTournamentId,
+                        principalTable: "PredefinedTournaments",
+                        principalColumn: "TournamentId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -192,7 +227,48 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Team",
+                name: "PredefinedMatches",
+                columns: table => new
+                {
+                    MatchId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PredefinedTournamentId = table.Column<int>(type: "int", nullable: false),
+                    Stage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HomeTeamId = table.Column<int>(type: "int", nullable: false),
+                    AwayTeamId = table.Column<int>(type: "int", nullable: false),
+                    MatchStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BetType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HomeWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DrawOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AwayWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    HomeQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PredefinedMatches", x => x.MatchId);
+                    table.ForeignKey(
+                        name: "FK_PredefinedMatches_PredefinedTeams_AwayTeamId",
+                        column: x => x.AwayTeamId,
+                        principalTable: "PredefinedTeams",
+                        principalColumn: "TeamId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PredefinedMatches_PredefinedTeams_HomeTeamId",
+                        column: x => x.HomeTeamId,
+                        principalTable: "PredefinedTeams",
+                        principalColumn: "TeamId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PredefinedMatches_PredefinedTournaments_PredefinedTournamentId",
+                        column: x => x.PredefinedTournamentId,
+                        principalTable: "PredefinedTournaments",
+                        principalColumn: "TournamentId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teams",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -202,9 +278,9 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Team", x => x.Id);
+                    table.PrimaryKey("PK_Teams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Team_Tournaments_TournamentId",
+                        name: "FK_Teams_Tournaments_TournamentId",
                         column: x => x.TournamentId,
                         principalTable: "Tournaments",
                         principalColumn: "Id",
@@ -240,43 +316,42 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Game",
+                name: "Matches",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Stage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TournamentId = table.Column<int>(type: "int", nullable: false),
                     HomeTeamId = table.Column<int>(type: "int", nullable: false),
                     AwayTeamId = table.Column<int>(type: "int", nullable: false),
                     MatchStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     HomeScore = table.Column<int>(type: "int", nullable: true),
                     AwayScore = table.Column<int>(type: "int", nullable: true),
-                    Group = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    WhoQualifiesBetRequired = table.Column<bool>(type: "bit", nullable: false),
-                    OddsHomeWin = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OddsDraw = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OddsAwayWin = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OddsExactResult = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    OddsHomeQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    OddsAwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                    BetType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HomeWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DrawOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AwayWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    HomeQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Game", x => x.Id);
+                    table.PrimaryKey("PK_Matches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Game_Team_AwayTeamId",
+                        name: "FK_Matches_Teams_AwayTeamId",
                         column: x => x.AwayTeamId,
-                        principalTable: "Team",
+                        principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Game_Team_HomeTeamId",
+                        name: "FK_Matches_Teams_HomeTeamId",
                         column: x => x.HomeTeamId,
-                        principalTable: "Team",
+                        principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Game_Tournaments_TournamentId",
+                        name: "FK_Matches_Tournaments_TournamentId",
                         column: x => x.TournamentId,
                         principalTable: "Tournaments",
                         principalColumn: "Id",
@@ -284,12 +359,12 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Bet",
+                name: "Bets",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    GameId = table.Column<int>(type: "int", nullable: false),
+                    MatchId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     BaseAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     BonusAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
@@ -302,19 +377,19 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bet", x => x.Id);
+                    table.PrimaryKey("PK_Bets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Bet_Game_GameId",
-                        column: x => x.GameId,
-                        principalTable: "Game",
+                        name: "FK_Bets_Matches_MatchId",
+                        column: x => x.MatchId,
+                        principalTable: "Matches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Bet_Users_UserId",
+                        name: "FK_Bets_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -328,29 +403,49 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bet_GameId",
-                table: "Bet",
-                column: "GameId");
+                name: "IX_Bets_MatchId",
+                table: "Bets",
+                column: "MatchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bet_UserId",
-                table: "Bet",
+                name: "IX_Bets_UserId",
+                table: "Bets",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Game_AwayTeamId",
-                table: "Game",
+                name: "IX_Matches_AwayTeamId",
+                table: "Matches",
                 column: "AwayTeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Game_HomeTeamId",
-                table: "Game",
+                name: "IX_Matches_HomeTeamId",
+                table: "Matches",
                 column: "HomeTeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Game_TournamentId",
-                table: "Game",
+                name: "IX_Matches_TournamentId",
+                table: "Matches",
                 column: "TournamentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PredefinedMatches_AwayTeamId",
+                table: "PredefinedMatches",
+                column: "AwayTeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PredefinedMatches_HomeTeamId",
+                table: "PredefinedMatches",
+                column: "HomeTeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PredefinedMatches_PredefinedTournamentId",
+                table: "PredefinedMatches",
+                column: "PredefinedTournamentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PredefinedTeams_PredefinedTournamentId",
+                table: "PredefinedTeams",
+                column: "PredefinedTournamentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
@@ -365,8 +460,8 @@ namespace Backend.Migrations
                 filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Team_TournamentId",
-                table: "Team",
+                name: "IX_Teams_TournamentId",
+                table: "Teams",
                 column: "TournamentId");
 
             migrationBuilder.CreateIndex(
@@ -417,7 +512,10 @@ namespace Backend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Bet");
+                name: "Bets");
+
+            migrationBuilder.DropTable(
+                name: "PredefinedMatches");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims");
@@ -438,13 +536,19 @@ namespace Backend.Migrations
                 name: "UserTournaments");
 
             migrationBuilder.DropTable(
-                name: "Game");
+                name: "Matches");
+
+            migrationBuilder.DropTable(
+                name: "PredefinedTeams");
 
             migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "Team");
+                name: "Teams");
+
+            migrationBuilder.DropTable(
+                name: "PredefinedTournaments");
 
             migrationBuilder.DropTable(
                 name: "Tournaments");
