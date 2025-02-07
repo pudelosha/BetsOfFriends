@@ -1,97 +1,109 @@
 /* Remove extra padding from ion-content */
 ion-content {
-    --padding-top: 0 !important;
-    --padding-bottom: 0 !important;
-    padding: 0 !important;
-  }
-  
-  /* Section Titles */
-  .section-title {
-    font-size: 14px;
-    font-weight: bold;
-    display: block;
-    text-align: center;
-    margin: 10px 0;
-    color: #555;
-  }
-  
-  /* Match Labels */
-  .match-label {
-    font-size: 12px;
-    font-weight: bold;
-    color: #666;
-    text-align: center;
-    flex: 1;
-  }
-  
-  /* Grid row alignment */
-  .match-row {
-    display: flex;
-    justify-content: center; /* Centers elements horizontally */
-    align-items: center;
-    width: 100%;
-    padding: 8px 0;
-    gap: 10px; /* Adds spacing between elements */
-  }
-  
-  /* Column Widths */
-  .half-width {
-    width: 48%;
-  }
-  
-  .third-width {
-    width: 32%;
-  }
-  
-  /* Center ion-select properly */
-  .center-select {
-    width: 100%;
-    text-align: center;
-    justify-content: center;
-    display: flex;
-  }
-  
-  /* ✅ Force Text & Options to Center Inside Select */
-  ::ng-deep ion-select::part(text) {
-    text-align: center;
-    justify-content: center;
-    display: flex;
-  }
-  
-  /* ✅ Ensure the Selected Value in Dropdown is Centered */
-  ::ng-deep ion-select::part(label) {
-    text-align: center;
-    justify-content: center;
-    display: flex;
-  }
-  
-  /* Divider Line */
-  .divider {
-    height: 1px;
-    background: #ccc;
-    margin: 10px 0;
-  }
-  
-  /* Odds Input Fields */
-  .odds-input {
-    font-size: 14px;
-    text-align: center;
-    padding: 5px;
-    font-weight: bold;
-  }
-  
-  /* Adjust Select Dropdowns */
-  ion-select {
-    width: 100%;
-    --text-align: center;
-    text-align: center;
-    justify-content: center;
-    display: flex;
-  }
-  
-  /* Ensure spacing below Save button */
-  .save-button-container {
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-  
+  --padding-top: 0 !important;
+  --padding-bottom: 0 !important;
+  padding: 0 !important;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  display: block;
+  text-align: center;
+  margin: 10px 0;
+  color: #555;
+}
+
+/* Match Labels */
+.match-label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #666;
+  text-align: center;
+  flex: 1;
+}
+
+/* Grid row alignment */
+.match-row {
+  display: flex;
+  justify-content: center; /* Centers elements horizontally */
+  align-items: center;
+  width: 100%;
+  padding: 8px 0;
+  gap: 10px; /* Adds spacing between elements */
+}
+
+/* Column Widths */
+.half-width {
+  width: 48%;
+}
+
+.third-width {
+  width: 32%;
+}
+
+/* Center ion-select properly */
+.center-select {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+}
+
+/* ✅ Force Text & Options to Center Inside Select */
+::ng-deep ion-select::part(text) {
+  text-align: center;
+  justify-content: center;
+  display: flex;
+}
+
+/* ✅ Ensure the Selected Value in Dropdown is Centered */
+::ng-deep ion-select::part(label) {
+  text-align: center;
+  justify-content: center;
+  display: flex;
+}
+
+/* Divider Line */
+.divider {
+  height: 1px;
+  background: #ccc;
+  margin: 10px 0;
+}
+
+/* Odds Input Fields */
+.odds-input {
+  font-size: 14px;
+  text-align: center;
+  padding: 5px;
+  font-weight: bold;
+}
+
+/* Adjust Select Dropdowns */
+ion-select {
+  width: 100%;
+  --text-align: center;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+}
+
+/* Ensure spacing below Save button */
+.save-button-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.selector-label {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: left;
+  color: #555;
+  white-space: nowrap; /* Prevents text from breaking into a new line */
+  overflow: hidden; /* Prevents text overflow */
+  text-overflow: ellipsis; /* Adds "..." if text overflows */
+  flex: none; /* Ensures it doesn’t shrink */
+  margin: 0; /* Removes extra vertical space */
+}
+

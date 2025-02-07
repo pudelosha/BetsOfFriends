@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { ModalController, ViewWillEnter } from '@ionic/angular';
 import { EditMatchModalComponent } from '..//../modals/edit-match-modal/edit-match-modal.component'; // Import the modal
 
@@ -19,7 +19,7 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
   betForm: FormGroup;
   teamMap: { [key: number]: string } = {}; // Holds the mapping of Team ID → Team Name
 
-  constructor(private fb: FormBuilder, private toastController: ToastController, private modalController: ModalController, ) {
+  constructor(private fb: FormBuilder, private toastController: ToastController, private modalController: ModalController, private alertController: AlertController) {
     this.betForm = this.fb.group({
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       uploadType: new FormControl('manual'),
@@ -75,14 +75,16 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
   }
 
   async openEditModal(index?: number) {
-    const matchData = index !== undefined ? this.getMatchControl(index).value : {
-      matchId: null,
-      stage: '',
-      homeTeamId: null,
+    const existingMatch = index !== undefined ? this.getMatchControl(index).value : null;
+  
+    const matchData = existingMatch || {
+      matchId: this.generateMatchId(), // Generate only for new match
+      stage: '', // Optional, removed required validator
+      homeTeamId: null, // These will be set dynamically
       homeTeam: '',
       awayTeamId: null,
       awayTeam: '',
-      date: '',
+      date: new Date().toISOString(), // Ensure a valid default timestamp
       betType: '',
       homeWinOdds: '',
       drawOdds: '',
@@ -101,20 +103,81 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
     });
   
     modal.onDidDismiss().then((result) => {
+      console.log(" Modal dismissed, result:", result.data);
+    
       if (result.data) {
+        // First, ensure teams array is populated
+        console.log(" Current Teams Array:", this.teamsArray.value);
+    
+        // Fetch team IDs dynamically
+        const homeTeamId = this.findTeamIdByName(result.data.homeTeam);
+        const awayTeamId = this.findTeamIdByName(result.data.awayTeam);
+    
+        // Debugging logs to check ID assignment
+        console.log(" Setting homeTeamId:", homeTeamId, "for", result.data.homeTeam);
+        console.log(" Setting awayTeamId:", awayTeamId, "for", result.data.awayTeam);
+    
         if (index !== undefined) {
-          this.matchesArray.at(index).setValue(result.data);
+          this.matchesArray.at(index).setValue({
+            ...result.data,
+            homeTeamId: homeTeamId,
+            awayTeamId: awayTeamId
+          });
         } else {
-          const newMatchGroup = this.fb.group({ ...result.data });
+          const newMatchGroup = this.fb.group({
+            matchId: [result.data.matchId], // Preserve match ID
+            stage: [result.data.stage], // Optional
+            homeTeamId: [homeTeamId], // Dynamically set ID
+            homeTeam: [result.data.homeTeam, Validators.required],
+            awayTeamId: [awayTeamId], // Dynamically set ID
+            awayTeam: [result.data.awayTeam, Validators.required],
+            date: [result.data.date, Validators.required],
+            betType: [result.data.betType, Validators.required],
+            homeWinOdds: [result.data.homeWinOdds, Validators.required],
+            drawOdds: [result.data.drawOdds, Validators.required],
+            awayWinOdds: [result.data.awayWinOdds, Validators.required],
+            homeQualifies: [result.data.homeQualifies, Validators.required],
+            awayQualifies: [result.data.awayQualifies, Validators.required],
+          });
+    
           this.matchesArray.push(newMatchGroup);
           this.matchesArray.updateValueAndValidity();
         }
       }
     });
-      
+        
     return await modal.present();
   }
-         
+  
+  generateMatchId(): number {
+    return Math.floor(100000 + Math.random() * 900000); // Generate a unique match ID
+  }
+  
+  findTeamIdByName(teamName: string): number | null {
+    if (!teamName) {
+      console.warn(" findTeamIdByName was called with an empty teamName");
+      return null; // Handle undefined or empty names
+    }
+  
+    // Debugging log: Print current teams
+    console.log(" Looking up ID for:", teamName);
+    console.log(" Current Teams Array:", this.teamsArray.value);
+  
+    const teamIndex = this.teamsArray.value.findIndex((team: string) => 
+      team.trim().toLowerCase() === teamName.trim().toLowerCase()
+    );
+  
+    if (teamIndex === -1) {
+      console.warn(` Team ID not found for: ${teamName}`);
+      return null; // If team is not found, return null
+    }
+  
+    console.log(` Found Team ID: ${teamIndex + 1} for ${teamName}`);
+    return teamIndex + 1; // Return the ID (index + 1)
+  }
+  
+  
+    
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary' = 'primary') {
     const toast = await this.toastController.create({
       message,
@@ -257,10 +320,36 @@ export class CreatePredefinedTournamentPage implements OnInit, ViewWillEnter  {
     inputElement.value = '';
   }
   
-  removeTeam(index: number) {
+  async removeTeam(index: number) {
     const teamName = this.teamsArray.at(index).value;
-    this.teamsArray.removeAt(index);
-    this.showToast(`Removed team: ${teamName}`, 'success');
+
+    const alert = await this.alertController.create({
+      header: 'Confirm Deletion',
+      message: `Deleting ${teamName} will also remove all related matches. Do you want to continue?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            this.teamsArray.removeAt(index);
+            this.removeMatchesByTeam(teamName);
+            this.showToast(`Removed team: ${teamName}`, 'success');
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  removeMatchesByTeam(teamName: string) {
+    this.matchesArray.controls = this.matchesArray.controls.filter(
+      match => match.value.homeTeam !== teamName && match.value.awayTeam !== teamName
+    );
+    this.matchesArray.updateValueAndValidity();
   }
   
   addMatch(home: any, away: any, date: any) {

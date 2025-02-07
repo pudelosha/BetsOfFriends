@@ -26,9 +26,9 @@ export class EditMatchModalComponent implements OnInit {
     this.matchForm = this.fb.group({
       matchId: [null],
       stage: [''],
-      homeTeamId: [null, Validators.required],
+      homeTeamId: [null],   // Validator intentionally removed, ID to be populated via function on modal close
       homeTeam: ['', Validators.required],
-      awayTeamId: [null, Validators.required],
+      awayTeamId: [null],   // Validator intentionally removed, ID to be populated via function on modal close
       awayTeam: ['', Validators.required],
       date: ['', Validators.required],
       betType: ['', Validators.required],
@@ -48,20 +48,28 @@ export class EditMatchModalComponent implements OnInit {
 
   async saveMatch() {
     if (this.matchForm.invalid) {
+      console.log("Form Submission Blocked! Invalid Data:");
+      console.log("Form Group Values:", this.matchForm.value);
+      console.log("Form Group Status:", this.matchForm.status);
+      console.log("Form Validation Errors:", this.matchForm.errors);
+  
       this.showToast('Please fill in all required fields with valid values!', 'danger');
       return;
     }
-
+  
     const matchData = this.matchForm.value;
-    this.modalController.dismiss(matchData);
-
+  
+    console.log("Saving Match:", matchData);
+  
+    await this.modalController.dismiss(matchData);
+  
     if (this.index !== undefined) {
       this.showToast('Match updated successfully!', 'success');
     } else {
       this.showToast('New match added successfully!', 'success');
     }
   }
-
+  
   closeModal() {
     this.modalController.dismiss(null);
   }
