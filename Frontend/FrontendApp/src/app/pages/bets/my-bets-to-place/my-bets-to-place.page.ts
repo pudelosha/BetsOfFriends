@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { EditBetModalComponent } from '..//../modals/edit-bet-modal/edit-bet-modal.component';
+import { EditBetModalComponent } from '..//../../modals/edit-bet-modal/edit-bet-modal.component';
 import { ReactiveFormsModule, FormsModule  } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { Bet } from '..//../model/bet';
+import { Bet } from '..//../../model/bet';
 
 @Component({
   selector: 'app-my-bets-to-place',

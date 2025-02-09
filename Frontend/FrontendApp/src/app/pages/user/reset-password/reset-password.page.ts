@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
-import { UserService } from '../../services/user.service';
+import { UserService } from '../../../services/user.service';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';

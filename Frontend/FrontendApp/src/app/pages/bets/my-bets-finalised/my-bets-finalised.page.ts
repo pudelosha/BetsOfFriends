@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Bet } from '../../model/bet';
+import { Bet } from '..//..//../model/bet';
 
 @Component({
   selector: 'app-my-bets-finalised',

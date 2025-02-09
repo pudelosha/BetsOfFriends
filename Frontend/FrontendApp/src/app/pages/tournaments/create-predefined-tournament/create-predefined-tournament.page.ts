@@ -5,9 +5,9 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModul
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { ModalController, ViewWillEnter } from '@ionic/angular';
-import { EditMatchModalComponent } from '..//../modals/edit-match-modal/edit-match-modal.component';
-import { Tournament, Team, Match } from '../../model/tournament-model';
-import { PredefinedTournamentService } from '../../services/predefined-tournament.service';
+import { EditMatchModalComponent } from '..//../../modals/edit-match-modal/edit-match-modal.component';
+import { Tournament, Team, Match } from '../../../model/tournament-model';
+import { PredefinedTournamentService } from '../../../services/predefined-tournament.service';
 import { Router } from '@angular/router';
 
 @Component({

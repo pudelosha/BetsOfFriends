@@ -12,7 +12,7 @@
 
         <ion-menu-toggle auto-hide="true">
         <!-- Home -->
-        <ion-item routerLink="/home" routerDirection="root">
+        <ion-item (click)="navigateToHome()">
           <ion-icon name="home-outline" slot="start"></ion-icon>
           <ion-label>Home</ion-label>
         </ion-item>
@@ -25,7 +25,7 @@
           </ion-label>
         </ion-item-divider>
 
-        <ion-item routerLink="/tournaments/my" routerDirection="root">
+        <ion-item (click)="navigateToMyTournaments()">
           <ion-icon name="list-outline" slot="start"></ion-icon>
           <ion-label>My Tournaments</ion-label>
         </ion-item>

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { RegisterService } from '../../services/register.service';
+import { RegisterService } from '../../../services/register.service';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 

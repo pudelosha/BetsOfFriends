@@ -88,4 +88,14 @@ export class AppComponent {
     this.router.navigate(['/predefined-tournaments']);
   }
 
+  navigateToMyTournaments() {
+    console.log('Navigating to my-tournaments...');
+    this.router.navigate(['/my-tournaments']);
+  }
+
+  navigateToHome() {
+    console.log('Navigating to home...');
+    this.router.navigate(['/home']);
+  }
+
 }
