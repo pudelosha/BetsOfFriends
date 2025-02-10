@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ isEditing ? 'Edit Team' : 'Add New Team' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="teamForm">
+    <!-- Team Name Input -->
+    <ion-item>
+      <ion-label position="floating">Team Name</ion-label>
+      <ion-input formControlName="teamName" placeholder="Enter team name"></ion-input>
+    </ion-item>
+    <div *ngIf="teamForm.get('teamName')?.hasError('required') && teamForm.get('teamName')?.touched" class="error-message">
+      Team name is required.
+    </div>
+    <div *ngIf="teamForm.get('teamName')?.hasError('maxlength') && teamForm.get('teamName')?.touched" class="error-message">
+      Team name cannot exceed 50 characters.
+    </div>
+
+    <!-- Save Button -->
+    <ion-button expand="block" color="primary" (click)="saveTeam()">Save</ion-button>
+  </form>
+</ion-content>

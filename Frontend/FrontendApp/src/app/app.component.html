@@ -30,12 +30,12 @@
           <ion-label>My Tournaments</ion-label>
         </ion-item>
 
-        <ion-item routerLink="/tournaments/summary" routerDirection="root">
+        <ion-item (click)="navigateToTournamentSummary()">
           <ion-icon name="podium-outline" slot="start"></ion-icon>
           <ion-label>Summary</ion-label>
         </ion-item>
 
-        <ion-item routerLink="/tournaments/results" routerDirection="root">
+        <ion-item (click)="navigateToTournamentLiveResults()">
           <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
           <ion-label>Live Results</ion-label>
         </ion-item>
@@ -53,7 +53,7 @@
           <ion-label>My Bets</ion-label>
         </ion-item>
 
-        <ion-item routerLink="/bets/preview" routerDirection="root">
+        <ion-item (click)="navigateToBetPreview()">
           <ion-icon name="eye-outline" slot="start"></ion-icon>
           <ion-label>Preview</ion-label>
         </ion-item>
@@ -85,19 +85,14 @@
             </ion-label>
           </ion-item-divider>
 
-          <ion-item routerLink="/admin/create-tournament" routerDirection="root">
+          <ion-item (click)="navigateToCreateCustomTournament()">
             <ion-icon name="add-circle-outline" slot="start"></ion-icon>
             <ion-label>Create Tournament</ion-label>
           </ion-item>
 
-          <ion-item routerLink="/admin/manage-tournament" routerDirection="root">
+          <ion-item (click)="navigateToCustomTournamentsList()">
             <ion-icon name="hammer-outline" slot="start"></ion-icon>
-            <ion-label>Manage Tournament</ion-label>
-          </ion-item>
-
-          <ion-item routerLink="/admin/manage-games" routerDirection="root">
-            <ion-icon name="clipboard-outline" slot="start"></ion-icon>
-            <ion-label>Manage Games</ion-label>
+            <ion-label>Manage Tournaments</ion-label>
           </ion-item>
         </ng-container>
 

@@ -3,8 +3,9 @@ import { FormArray, FormBuilder, FormGroup,  ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
-import { EditMatchModalComponent } from './/..//..//..//..//../modals/edit-match-modal/edit-match-modal.component'; // Adjust the path as needed
-import { buildMatchFormGroup } from '..//..//../shared/form-utils';
+import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
+import { buildMatchFormGroup } from '../../../shared/form-utils';
+import { AlertController } from '@ionic/angular';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class StageMatchesManagementPage implements OnInit {
   @Input() teamsArray!: string[]; // List of teams (optional for modal dropdown)
   @Output() matchesUpdated = new EventEmitter<any[]>(); // Emits updated matches to parent
 
-  constructor(private fb: FormBuilder, private modalController: ModalController) {}
+  constructor(private fb: FormBuilder, private modalController: ModalController, private alertController: AlertController) {}
 
   ngOnInit(): void {
     
@@ -47,19 +48,19 @@ export class StageMatchesManagementPage implements OnInit {
       if (result.data) {
         // Ensure all required fields have values
         const matchData = {
-          matchId: result.data.matchId || null, // Preserve ID if provided
-          homeTeamId: result.data.homeTeamId || null,
-          awayTeamId: result.data.awayTeamId || null,
+          matchId: result.data.matchId ?? null, // Preserve ID if provided, or set null for new matches
+          homeTeamId: result.data.homeTeamId ?? null,
+          awayTeamId: result.data.awayTeamId ?? null,
           stage: result.data.stage || null, // Optional, set to null if empty
           homeTeam: result.data.homeTeam || '', // Default to empty string
           awayTeam: result.data.awayTeam || '', // Default to empty string
           matchStart: result.data.matchStart || '', // Default to empty string
           betType: result.data.betType || '90min', // Default to '90min'
-          homeWinOdds: result.data.homeWinOdds || null,
-          drawOdds: result.data.drawOdds || null,
-          awayWinOdds: result.data.awayWinOdds || null,
-          homeQualifies: result.data.homeQualifies || null,
-          awayQualifies: result.data.awayQualifies || null,
+          homeWinOdds: result.data.homeWinOdds ?? null,
+          drawOdds: result.data.drawOdds ?? null,
+          awayWinOdds: result.data.awayWinOdds ?? null,
+          homeQualifies: result.data.homeQualifies ?? null,
+          awayQualifies: result.data.awayQualifies ?? null,
         };
   
         if (index !== undefined) {
@@ -76,14 +77,34 @@ export class StageMatchesManagementPage implements OnInit {
     });
   
     await modal.present();
-  }  
-    
+  }
+      
   // Remove a match from the FormArray
-  removeMatch(index: number): void {
-    const removedMatch = this.matchesArray.at(index).value;
-    this.matchesArray.removeAt(index);
-    console.log('Removed match:', removedMatch);
-    this.emitMatches(); // Emit updated matches
+  async removeMatch(index: number): Promise<void> {
+    const matchToRemove = this.matchesArray.at(index).value;
+  
+    // Show confirmation dialog using AlertController
+    const alert = await this.alertController.create({
+      header: 'Confirm Removal',
+      message: `Are you sure you want to delete the match "${matchToRemove.homeTeam} vs ${matchToRemove.awayTeam}"?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          handler: () => {
+            this.matchesArray.removeAt(index);
+            this.emitMatches();
+            console.log('Removed match:', matchToRemove);
+          },
+        },
+      ],
+    });
+  
+    await alert.present();
   }
 
   // Emit updated matches to parent

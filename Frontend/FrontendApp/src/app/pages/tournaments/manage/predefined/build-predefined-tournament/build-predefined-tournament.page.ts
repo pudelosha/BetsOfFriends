@@ -10,6 +10,10 @@ import { buildMatchFormGroup } from '..//..//../shared/form-utils';
 import { PredefinedTournamentService } from '../../../../../services/predefined-tournament.service';
 import { Router } from '@angular/router';
 import { Tournament, Team, Match } from '../../../../../model/tournament-model';
+import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
+import { EditTeamModalComponent } from 'src/app/modals/edit-team-modal/edit-team-modal.component';
+import { ModalController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-build-predefined-tournament',
@@ -27,6 +31,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
     private toastController: ToastController,
     private router: Router,
     private tournamentService: PredefinedTournamentService,
+    private modalController: ModalController
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
@@ -47,6 +52,50 @@ export class BuildPredefinedTournamentPage implements OnInit {
     return this.tournamentForm.get('matches') as FormArray;
   }
 
+  async openAddModal(): Promise<void> {
+    if (this.step === 2) {
+      // Open Edit/Add Team Modal
+      const modal = await this.modalController.create({
+        component: EditTeamModalComponent,
+        componentProps: {
+          team: null, // Passing null to indicate "Add New Team"
+          isEditing: false,
+        },
+      });
+  
+      modal.onDidDismiss().then((result) => {
+        if (result.data) {
+          const newTeam = result.data.teamName;
+          // Add the new team to the teamsArray
+          this.teamsArray.push(new FormControl(newTeam, Validators.required));
+          console.log('Added New Team:', newTeam);
+        }
+      });
+  
+      await modal.present();
+    } else if (this.step === 3) {
+      // Open Add Match Modal
+      const modal = await this.modalController.create({
+        component: EditMatchModalComponent,
+        componentProps: {
+          match: null, // Passing null to indicate "Add New Match"
+          index: undefined, // No existing match to edit
+          teams: this.teamsArray.value, // Pass list of teams for match dropdowns
+        },
+      });
+  
+      modal.onDidDismiss().then((result) => {
+        if (result.data) {
+          // Add the new match to the matchesArray
+          this.matchesArray.push(this.fb.group(result.data));
+          console.log('Added New Match:', result.data);
+        }
+      });
+  
+      await modal.present();
+    }
+  }
+  
   handleTeamsExtracted(teams: string[]): void {
     this.teamsArray.clear();
     teams.forEach(team => {
@@ -164,6 +213,10 @@ export class BuildPredefinedTournamentPage implements OnInit {
     }
   }
 
+  resetStep(){
+    
+  }
+
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary'): Promise<void> {
     const toast = await this.toastController.create({
       message,
@@ -174,7 +227,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
     await toast.present();
   }
   
-
   async canProceed(): Promise<boolean> {
     switch (this.step) {
       case 1:

@@ -22,6 +22,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'to-place', pathMatch: 'full' }
     ]
   },
+  { path: 'bet-preview', loadComponent: () => import('./pages/bets/bet-preview/bet-preview.page').then( m => m.BetPreviewPage), canActivate: [AuthGuard] },
 
   // Tournaments
   {
@@ -45,16 +46,17 @@ export const routes: Routes = [
   },
 
   {
-    path: 'tournaments/manage/custom',
+    path: 'tournaments',
     children: [
-      { path: 'build-custom-tournament', loadComponent: () => import('./pages/tournaments/manage/custom/build-custom-tournament/build-custom-tournament.page').then(m => m.BuildCustomTournamentPage), canActivate: [AuthGuard] },
-      { path: 'custom-tournaments-list', loadComponent: () => import('./pages/tournaments/manage/custom/custom-tournaments-list/custom-tournaments-list.page').then(m => m.CustomTournamentsListPage), canActivate: [AuthGuard] },
+      { path: 'create-custom', loadComponent: () => import('./pages/tournaments/manage/custom/build-custom-tournament/build-custom-tournament.page').then(m => m.BuildCustomTournamentPage), canActivate: [AuthGuard] },
+      { path: 'update-custom/:id', loadComponent: () => import('./pages/tournaments/manage/custom/build-custom-tournament/build-custom-tournament.page').then(m => m.BuildCustomTournamentPage), canActivate: [AuthGuard] },
+      { path: 'custom', loadComponent: () => import('./pages/tournaments/manage/custom/custom-tournaments-list/custom-tournaments-list.page').then(m => m.CustomTournamentsListPage), canActivate: [AuthGuard] },
     ]
   },
 
-  { path: 'tournaments/my-tournaments-dashboard', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard] },
-  { path: 'tournaments/summary-dashboard', loadComponent: () => import('./pages/tournaments/summary-dashboard/summary-dashboard.page').then(m => m.SummaryDashboardPage), canActivate: [AuthGuard] },
-  { path: 'tournaments/live-results-dashboard', loadComponent: () => import('./pages/tournaments/live-results-dashboard/live-results-dashboard.page').then(m => m.LiveResultsDashboardPage), canActivate: [AuthGuard] },
+  { path: 'my-tournaments', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard] },
+  { path: 'summary', loadComponent: () => import('./pages/tournaments/summary-dashboard/summary-dashboard.page').then(m => m.SummaryDashboardPage), canActivate: [AuthGuard] },
+  { path: 'live-results', loadComponent: () => import('./pages/tournaments/live-results-dashboard/live-results-dashboard.page').then(m => m.LiveResultsDashboardPage), canActivate: [AuthGuard] },
 
   // Only for guests
   { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage), canActivate: [GuestGuard] },
@@ -68,4 +70,6 @@ export const routes: Routes = [
 
   // Default and wildcard routes
   { path: '**', redirectTo: 'welcome' },
+
+
 ];

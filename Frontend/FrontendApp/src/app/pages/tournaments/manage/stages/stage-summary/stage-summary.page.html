@@ -31,7 +31,7 @@
 
 <!-- Matches Section -->
 <div class="section-title">Matches</div>
-<div class="summary-grid-matches">
+<div class="summary-grid-matches nav-menu-space">
   <div *ngFor="let match of matchesArray" class="match-row">
     <div class="match-teams">{{ match.homeTeam }} - {{ match.awayTeam }}</div>
     <div class="match-date">{{ match.matchStart | date: 'yyyy-MM-dd HH:mm' }}</div>
@@ -43,6 +43,4 @@
   </div>
 </div>
 
-<div class="divider"></div>
 
-<ion-button expand="full" (click)="submitTournamentData()">Submit</ion-button>

@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
 @Component({
-  selector: 'app-custom-tournaments-list',
-  templateUrl: './custom-tournaments-list.page.html',
-  styleUrls: ['./custom-tournaments-list.page.scss'],
+  selector: 'app-bet-preview',
+  templateUrl: './bet-preview.page.html',
+  styleUrls: ['./bet-preview.page.scss'],
   standalone: true,
   imports: [CommonModule, FormsModule]
 })
-export class CustomTournamentsListPage implements OnInit {
+export class BetPreviewPage implements OnInit {
 
   constructor() { }
 

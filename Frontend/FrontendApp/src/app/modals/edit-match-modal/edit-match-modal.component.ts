@@ -47,10 +47,6 @@ export class EditMatchModalComponent implements OnInit {
   }
 
   async saveMatch() {
-    console.log('Form Status:', this.matchForm.status); // Should be VALID
-    console.log('Form Errors:', this.matchForm.errors); // Should be null
-    console.log('Form Values:', this.matchForm.value);  // Check required fields
-
     if (this.matchForm.invalid) {
       this.showToast('Please fill in all required fields!', 'danger');
       return;

@@ -1,4 +1,8 @@
-<ion-content class="page-with-header">
+<ion-content class="ion-padding  page-with-header">
+  <div class="page-description">
+    <p>Manage your tournaments. Use the edit, toggle, or delete actions for each tournament below.</p>
+  </div>
+
   <ion-list *ngIf="!isLoading" class="tournament-list">
     <ion-item *ngFor="let tournament of tournaments" class="tournament-item">
       <ion-grid>
@@ -14,22 +18,14 @@
             </span>
           </ion-col>
 
-          <!-- Edit Button -->
-          <ion-col size="2" class="button-col">
+          <!-- Action Buttons -->
+          <ion-col size="4" class="button-col">
             <ion-button fill="outline" color="primary" (click)="editTournament(tournament)">
               <ion-icon name="create-outline"></ion-icon>
             </ion-button>
-          </ion-col>
-
-          <!-- Toggle Status Button -->
-          <ion-col size="2" class="button-col">
             <ion-button fill="outline" color="warning" (click)="toggleTournamentStatus(tournament)">
               <ion-icon name="pause-outline"></ion-icon>
             </ion-button>
-          </ion-col>
-
-          <!-- Delete Button -->
-          <ion-col size="2" class="button-col">
             <ion-button fill="outline" color="danger" (click)="confirmDelete(tournament)">
               <ion-icon name="trash-outline"></ion-icon>
             </ion-button>

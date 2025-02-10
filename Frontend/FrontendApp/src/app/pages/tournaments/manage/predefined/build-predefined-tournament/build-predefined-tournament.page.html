@@ -1,50 +1,55 @@
 <ion-content class="ion-padding page-with-header">
-
-  <div class="content-container">
-    <div *ngIf="step === 1">
-      <app-stage-input-type
-        [tournamentForm]="tournamentForm"
-        (teamsExtracted)="handleTeamsExtracted($event)"
-        (matchesExtracted)="handleMatchesExtracted($event)">
+  <div *ngIf="step === 1">
+    <app-stage-input-type
+      [tournamentForm]="tournamentForm"
+      (teamsExtracted)="handleTeamsExtracted($event)"
+      (matchesExtracted)="handleMatchesExtracted($event)">
     </app-stage-input-type>
-    </div>
-
-    <div *ngIf="step === 2">
-      <app-stage-teams-management
-        [teamsArray]="teamsArray"
-        (teamsUpdated)="handleTeamsUpdated($event)">
-      </app-stage-teams-management>
-    </div>
-
-    <div *ngIf="step === 3">
-      <app-stage-matches-management
-        [matchesArray]="matchesArray"
-        [teamsArray]="teamsArray.value"
-        (matchesUpdated)="handleMatchesUpdated($event)">
-      </app-stage-matches-management>
-    </div>
-
-    <div *ngIf="step === 4">
-      <app-stage-summary
-        [tournamentName]="tournamentForm.get('tournamentName')?.value"
-        [teamsArray]="teamsArray.value"
-        [matchesArray]="matchesArray.value"
-        (submitTournament)="handleSubmitTournament()">
-      </app-stage-summary>
-    </div>  
   </div>
 
-  <!-- Back and Next Buttons -->
+  <div *ngIf="step === 2">
+    <app-stage-teams-management
+      [teamsArray]="teamsArray"
+      (teamsUpdated)="handleTeamsUpdated($event)">
+    </app-stage-teams-management>
+  </div>
+
+  <div *ngIf="step === 3">
+    <app-stage-matches-management
+      [matchesArray]="matchesArray"
+      [teamsArray]="teamsArray.value"
+      (matchesUpdated)="handleMatchesUpdated($event)">
+    </app-stage-matches-management>
+  </div>
+
+  <div *ngIf="step === 4">
+    <app-stage-summary
+      [tournamentName]="tournamentForm.get('tournamentName')?.value"
+      [teamsArray]="teamsArray.value"
+      [matchesArray]="matchesArray.value"
+      (submitTournament)="handleSubmitTournament()">
+    </app-stage-summary>
+  </div>
+
   <div class="button-container">
     <ion-button
       [class.hidden]="step === 1"
-      class="half-width left-button"
+      class="third-width"
       (click)="prevStep()">
       Previous
     </ion-button>
+
+    <!-- Show "Add" button only on steps 2 and 3 -->
+    <ion-button
+      *ngIf="step === 2 || step === 3"
+      class="third-width"
+      (click)="openAddModal()">
+      Add
+    </ion-button>
+
     <ion-button
       [class.hidden]="step === 4"
-      class="half-width right-button"
+      class="third-width"
       (click)="nextStep()">
       Next
     </ion-button>

@@ -1,32 +1,32 @@
-.content-container {
-    height: calc(100vh - 150px);
-    overflow-y: auto;
-    padding-bottom: 80px; /* Extra space at bottom to prevent overlap */
-    margin-bottom: 20px;
-  }
-
-  .button-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    background: white;
-    padding: 5px 12px;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    margin-bottom: 56px;
-    z-index: 1;
-  }
+/* Button Container */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: white;
+  padding: 0.5rem;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  margin-bottom: 55px;
+  padding: 15px 10px;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
   
-  .half-width {
-    flex: 1;
-    max-width: 50%;
-    text-align: center;
-  }
+ /* Third Width Buttons */
+.third-width {
+  flex: 1; /* Ensures equal width */
+  max-width: 33.33%; /* 1/3 of the container width */
+  text-align: center;
+  margin: 0 5px; /* Optional: Add spacing between buttons */
+  padding: 0;
+  height: 40px;
+}
 
-  .hidden {
-    visibility: hidden;
-    pointer-events: none;
-  }
+/* Hide buttons when not needed */
+.hidden {
+  visibility: hidden;
+  pointer-events: none;
+}

@@ -1,5 +1,5 @@
 /* ============================= */
-/* ✅ General Layout & Containers */
+/* General Layout & Containers */
 /* ============================= */
 .page-description {
   margin-bottom: 1rem;
@@ -8,7 +8,7 @@
   line-height: 1.5;
 }
 
-/* ✅ Section Titles */
+/* Section Titles */
 .section-title {
   font-size: 14px;
   font-weight: bold;
@@ -17,7 +17,7 @@
   color: #555;
 }
 
-/* ✅ Divider */
+/* Divider */
 .divider {
   height: 1px;
   background: #ccc;
@@ -25,7 +25,7 @@
 }
 
 /* ======================== */
-/* ✅ Tournament Name Styles */
+/* Tournament Name Styles */
 /* ======================== */
 .tournament-name-container {
   text-align: center;
@@ -36,7 +36,7 @@
   justify-content: center;
 }
 
-/* ✅ Tournament Name Box */
+/* Tournament Name Box */
 .tournament-name-box {
   font-size: 18px;
   font-weight: bold;
@@ -51,9 +51,9 @@
 }
 
 /* ======================== */
-/* ✅ Teams Section */
+/* Teams Section */
 /* ======================== */
-/* ✅ Grid Layout for Teams */
+/* Grid Layout for Teams */
 .summary-grid-teams {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -62,7 +62,7 @@
   text-align: center;
 }
 
-/* ✅ Team Column */
+/* Team Column */
 .team-column {
   font-size: 14px;
   font-weight: bold;
@@ -73,9 +73,9 @@
 }
 
 /* ======================== */
-/* ✅ Matches Section */
+/* Matches Section */
 /* ======================== */
-/* ✅ Match List Formatting */
+/* Match List Formatting */
 .summary-grid-matches {
   display: flex;
   flex-direction: column;
@@ -83,7 +83,7 @@
   padding: 10px 0;
 }
 
-/* ✅ Match Row */
+/* Match Row */
 .match-row {
   display: grid;
   grid-template-columns: 5fr 3fr 4fr;
@@ -95,7 +95,7 @@
   border-radius: 5px;
 }
 
-/* ✅ Match Teams */
+/* Match Teams */
 .match-teams {
   font-size: 12px;
   font-weight: bold;
@@ -103,17 +103,22 @@
   color: #333;
 }
 
-/* ✅ Match Date */
+/* Match Date */
 .match-date {
   text-align: center;
   font-size: 12px;
   color: #666;
 }
 
-/* ✅ Match Odds */
+/* Match Odds */
 .match-odds {
   text-align: right;
   font-size: 12px;
   font-weight: bold;
   color: #333;
 }
+
+.nav-menu-space{
+  margin-bottom: 80px;
+}
+

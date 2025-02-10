@@ -4,7 +4,7 @@
   </p>
 </div>
 
-<ion-list class="match-list">
+<ion-list class="match-list nav-menu-space">
   <ion-item *ngFor="let match of matchesArray.controls; let i = index" class="match-item" [formGroup]="getMatchControl(i)">
     <div class="match-grid">
       <!-- Home and Away Team Names (Stacked) -->
@@ -27,8 +27,3 @@
     </div>
   </ion-item>
 </ion-list>
-
-<!-- Add Match Button (Full Width & Relative) -->
-<div class="add-match-container">
-  <ion-button expand="full" (click)="openEditModal()">Add New Match</ion-button>
-</div>

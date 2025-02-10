@@ -78,6 +78,11 @@ export class AppComponent {
     this.router.navigate(['/my-bets']);
   }
 
+  navigateToBetPreview() {
+    console.log('Navigating to bet-preview...');
+    this.router.navigate(['/bet-preview']);
+  }
+
   navigateToCreatePredefinedTournament() {
     console.log('Navigating to create-predefined-tournament...');
     this.router.navigate(['/tournaments/create-predefined']);
@@ -93,9 +98,29 @@ export class AppComponent {
     this.router.navigate(['/my-tournaments']);
   }
 
+  navigateToCreateCustomTournament() {
+    console.log('Navigating to create-custom-tournament...');
+    this.router.navigate(['/tournaments/create-custom']);
+  }
+
+  navigateToCustomTournamentsList() {
+    console.log('Navigating to predefined-custom-list...');
+    this.router.navigate(['/tournaments/custom']);
+  }
+
   navigateToHome() {
     console.log('Navigating to home...');
     this.router.navigate(['/home']);
+  }
+
+  navigateToTournamentSummary(){
+    console.log('Navigating to summary...');
+    this.router.navigate(['/summary']);
+  }
+
+  navigateToTournamentLiveResults() {
+    console.log('Navigating to live-results...');
+    this.router.navigate(['/live-results']);
   }
 
 }

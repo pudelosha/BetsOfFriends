@@ -4,13 +4,9 @@
   </p>
 </div>
 
-<ion-list>
+<ion-list class="nav-menu-space">
   <ion-item *ngFor="let team of teamsArray.controls; let i = index">
     <ion-input [formControl]="getTeamControl(i)"></ion-input>
     <ion-button fill="clear" color="danger" (click)="removeTeam(i)">Delete</ion-button>
   </ion-item>
 </ion-list>
-<ion-item>
-  <ion-input #newTeam type="text" placeholder="Enter new team"></ion-input>
-  <ion-button class="team-add-button" (click)="addTeam(newTeam)">Add</ion-button>
-</ion-item>
