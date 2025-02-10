@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { StageInputTypePage } from '../../stages/stage-input-type/stage-input-type.page';
 import { StageTeamsManagementPage } from '../../stages/stage-teams-management/stage-teams-management.page';
 import { StageMatchesManagementPage } from '../../stages/stage-matches-management/stage-matches-management.page';
 import { StageSummaryPage } from '../../stages/stage-summary/stage-summary.page';
 import { buildMatchFormGroup } from '..//..//../shared/form-utils';
+import { PredefinedTournamentService } from '../../../../../services/predefined-tournament.service';
+import { Router } from '@angular/router';
+import { Tournament, Team, Match } from '../../../../../model/tournament-model';
 
 @Component({
   selector: 'app-build-predefined-tournament',
@@ -18,10 +21,17 @@ import { buildMatchFormGroup } from '..//..//../shared/form-utils';
 export class BuildPredefinedTournamentPage implements OnInit {
   tournamentForm: FormGroup;
   step = 1;
+  tournamentId?: number | null = null; // Optional: null for new tournaments, number for existing ones
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, 
+    private toastController: ToastController,
+    private router: Router,
+    private tournamentService: PredefinedTournamentService,
+  ) {
     this.tournamentForm = this.fb.group({
+      tournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
+      uploadMode: ['append'],
       teams: this.fb.array([], Validators.required),
       matches: this.fb.array([]),
     });
@@ -70,17 +80,47 @@ export class BuildPredefinedTournamentPage implements OnInit {
   }
 
   handleSubmitTournament(): void {
-    const finalizedTournament = {
-      tournamentName: this.tournamentForm.get('tournamentName')?.value || '',
-      teams: this.teamsArray.value.map((team: string) => ({ teamName: team })),
+    // Step 1: Validate Tournament Data
+    if (!this.tournamentForm.value.tournamentName?.trim()) {
+      this.showToast('Tournament name is required!', 'danger');
+      return;
+    }
+  
+    if (this.teamsArray.length < 2) {
+      this.showToast('At least 2 teams are required to create a tournament!', 'danger');
+      return;
+    }
+  
+    if (this.matchesArray.length < 1) {
+      this.showToast('At least 1 match is required!', 'danger');
+      return;
+    }
+  
+    // Step 2: Prepare Tournament Data
+    const isEditing = !!this.tournamentId; // Determine if editing or creating a new tournament
+  
+    const tournamentData: Tournament = {
+      tournamentId: isEditing ? this.tournamentId : null, // Set ID only if updating
+      tournamentName: this.tournamentForm.value.tournamentName,
+      isActive: true,
+      createdBy: this.tournamentForm.value.createdBy || 'Admin', // Use default if missing
+      createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
+      
+      // Step 2.1: Format Teams
+      teams: this.teamsArray.value.map((teamName: string) => ({
+        teamName, // Only name, no ID (backend generates it for new tournaments)
+      })),
+  
+      // Step 2.2: Format Matches
       matches: this.matchesArray.value.map((match: any) => ({
-        matchId: match.matchId || null, // Include if editing, null if new
-        stage: match.stage,
-        homeTeamId: match.homeTeamId || null, // Include if editing, null if new
-        awayTeamId: match.awayTeamId || null, // Include if editing, null if new
+        matchId: isEditing ? match.matchId || null : null, // Only include matchId if updating
+        stage: match.stage || '', // Default to empty if missing
+        homeTeamId: isEditing ? match.homeTeamId || null : null, // Only include IDs if editing
+        awayTeamId: isEditing ? match.awayTeamId || null : null,
         homeTeam: match.homeTeam,
         awayTeam: match.awayTeam,
-        matchStart: match.matchStart,
+        betType: match.betType || '90min', // Ensure betType is always present
+        matchStart: new Date(match.matchStart).toISOString(), // Ensure ISO format
         homeWinOdds: match.homeWinOdds,
         drawOdds: match.drawOdds,
         awayWinOdds: match.awayWinOdds,
@@ -89,13 +129,31 @@ export class BuildPredefinedTournamentPage implements OnInit {
       })),
     };
   
-    console.log('Finalized Tournament Submitted:', finalizedTournament);
+    console.log('Finalized Tournament Data:', tournamentData);
   
-    // Add API call logic here to send `finalizedTournament` to the backend
+    // Step 3: Determine API Call (Create or Update)
+    const submitObservable = isEditing
+      ? this.tournamentService.updatePredefinedTournament(tournamentData) // Update
+      : this.tournamentService.createPredefinedTournament(tournamentData); // Create
+  
+    // Step 4: Submit Tournament to Backend
+    submitObservable.subscribe({
+      next: () => {
+        this.router.navigate(['/predefined-tournaments']).then(() => {
+          setTimeout(() => {
+            this.showToast('Tournament saved successfully!', 'success');
+          }, 500); // Small delay to ensure UI update
+        });
+      },
+      error: (error) => {
+        console.error('Error submitting tournament:', error);
+        this.showToast('Error submitting tournament!', 'danger');
+      },
+    });
   }
     
-  nextStep() {
-    if (this.step < 4 && this.canProceed()) {
+  async nextStep() {
+    if (await this.canProceed()) {
       this.step++;
     }
   }
@@ -106,19 +164,45 @@ export class BuildPredefinedTournamentPage implements OnInit {
     }
   }
 
-  canProceed(): boolean {
-    // Validate the current step before proceeding
+  async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary'): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color,
+    });
+    await toast.present();
+  }
+  
+
+  async canProceed(): Promise<boolean> {
     switch (this.step) {
       case 1:
-        return this.tournamentForm.get('tournamentName')?.valid ?? false;
+        if (!this.tournamentForm.get('tournamentName')?.valid) {
+          await this.showToast('Tournament Name is required!', 'danger');
+          return false;
+        }
+        return true;
+  
       case 2:
-        return this.teamsArray.length > 1; // Require at least 2 teams
+        if (this.teamsArray.length <= 1) {
+          await this.showToast('At least 2 teams are required!', 'danger');
+          return false;
+        }
+        return true;
+  
       case 3:
-        return this.matchesArray.length > 0; // Require at least 1 match
+        if (this.matchesArray.length === 0) {
+          await this.showToast('At least 1 match is required!', 'danger');
+          return false;
+        }
+        return true;
+  
       case 4:
         return true; // No validation needed for summary
+  
       default:
         return false;
     }
-  }
+  } 
 }

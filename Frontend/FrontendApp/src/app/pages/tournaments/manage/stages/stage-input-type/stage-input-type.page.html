@@ -1,7 +1,7 @@
-<form [formGroup]="tournamentForm">
+<form [formGroup]="tournamentForm" class="form-container">
   <div class="page-description">
     <p>
-      This page is accessible by the super admin to insert a tournament template 
+      This page is accessible by the super admin to insert a tournament template
       into the application, allowing people to bet on football games for fun with friends.
     </p>
     <p>
@@ -9,18 +9,32 @@
     </p>
   </div>
 
-  <div class="form-group">
-    <ion-label class="form-label">Tournament Name</ion-label>
-    <ion-input 
-      formControlName="tournamentName" 
-      class="tournament-name-input full-width"
-      placeholder="Enter tournament name">
-    </ion-input>
-  </div>
-</form>
+  <!-- Tournament Name -->
+  <ion-label class="form-label centered">Tournament Name</ion-label>
+  <ion-input
+    formControlName="tournamentName"
+    class="full-width centered-input"
+    placeholder="Enter tournament name">
+  </ion-input>
 
-<div class="file-upload-container">
-  <div class="file-input-wrapper">
+  <!-- Upload Mode -->
+  <ion-label class="form-label centered">Upload Mode</ion-label>
+  <ion-segment formControlName="uploadMode" class="full-width upload-mode-segment">
+    <ion-segment-button value="append">
+      <ion-label>Append</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="delete">
+      <ion-label>Delete & Upload</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- File Upload -->
+  <div class="file-upload-container">
     <input type="file" class="file-input" (change)="handleFileInput($event)">
   </div>
-</div> 
+
+  <!-- Erase Form Data Button -->
+  <ion-button color="danger" expand="full" class="erase-button" (click)="confirmEraseForm()">
+    Erase All Form Data
+  </ion-button>
+</form>

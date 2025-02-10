@@ -4,10 +4,11 @@ namespace Backend.DTOs
 {
     public class PredefinedTournamentDto
     {
-        public int? TournamentId { get; set; } // Optional (for edit mode)
+        public int? TournamentId { get; set; } // Nullable for new tournaments
 
         [Required, MaxLength(100)]
         public string TournamentName { get; set; } = string.Empty;
+
         [Required]
         public bool IsActive { get; set; }
 
@@ -25,7 +26,7 @@ namespace Backend.DTOs
 
     public class PredefinedTeamDto
     {
-        public int TeamId { get; set; }
+        public int? TeamId { get; set; } // Nullable for new teams
 
         [Required, MaxLength(50)]
         public string TeamName { get; set; } = string.Empty;
@@ -33,21 +34,20 @@ namespace Backend.DTOs
 
     public class PredefinedMatchDto
     {
-        public int MatchId { get; set; }
-        public string Stage { get; set; } = string.Empty;
+        public int? MatchId { get; set; } // Nullable for new matches
+
+        public string? Stage { get; set; } // Nullable stage
+
+        public int? HomeTeamId { get; set; } // Nullable for new matches
+        [Required]
+        public string HomeTeam { get; set; } = string.Empty;
+
+        public int? AwayTeamId { get; set; } // Nullable for new matches
+        [Required]
+        public string AwayTeam { get; set; } = string.Empty;
 
         [Required]
-        public int HomeTeamId { get; set; }
-        [Required]
-        public string HomeTeam { get; set; }
-
-        [Required]
-        public int AwayTeamId { get; set; }
-        [Required]
-        public string AwayTeam { get; set; }
-
-        [Required]
-        public string BetType { get; set; } = string.Empty;
+        public string BetType { get; set; } = "90min"; // Default value if missing
 
         public decimal HomeWinOdds { get; set; }
         public decimal DrawOdds { get; set; }

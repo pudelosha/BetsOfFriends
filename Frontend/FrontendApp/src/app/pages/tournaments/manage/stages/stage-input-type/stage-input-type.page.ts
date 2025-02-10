@@ -6,13 +6,14 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { ModalController, ViewWillEnter } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms'; // Import FormsModule
 
 @Component({
   selector: 'app-stage-input-type',
   templateUrl: './stage-input-type.page.html',
   styleUrls: ['./stage-input-type.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
 export class StageInputTypePage {
   @Input() tournamentForm!: FormGroup; // Parent form
@@ -20,6 +21,8 @@ export class StageInputTypePage {
   @Output() matchesExtracted = new EventEmitter<any[]>(); // Emit matches to parent
 
   file: File | null = null;
+
+  uploadMode: 'append' | 'delete' = 'append'; // Default to 'append'
 
   constructor(private toastController: ToastController) {}
 
@@ -139,4 +142,37 @@ export class StageInputTypePage {
     }
     return typeof odds === 'number' ? odds : null;
   }
+
+  async confirmEraseForm(): Promise<void> {
+    const alert = await this.toastController.create({
+      header: 'Confirm Erase',
+      message: 'Are you sure you want to erase all data from the form? This action cannot be undone.',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Erase',
+          role: 'destructive',
+          handler: () => this.eraseForm(),
+        },
+      ],
+    });
+  
+    await alert.present();
+  }
+  
+  eraseForm(): void {
+    const teamsArray = this.tournamentForm.get('teams') as FormArray;
+    const matchesArray = this.tournamentForm.get('matches') as FormArray;
+  
+    if (teamsArray) teamsArray.clear(); // Use `.clear()` instead of `.setValue([])`
+    if (matchesArray) matchesArray.clear(); // Properly clears form array
+  
+    this.teamsExtracted.emit([]);
+    this.matchesExtracted.emit([]);
+  
+    this.showToast('All form data has been erased.', 'success');
+  }  
 }

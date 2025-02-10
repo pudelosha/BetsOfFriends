@@ -1,58 +1,97 @@
+/* ======================== */
+/*  Page Description */
+/* ======================== */
 .page-description {
-    margin-bottom: 1rem;
-    color: #666;
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-  
-  .match-list {
-    margin: 1rem 0;
-  }
-  
-  .match-item {
-    padding: 0.5rem 0;
-  }
-  
-  .match-grid {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-  }
-  
-  .match-details {
-    flex: 2;
-  }
-  
-  .match-details .team {
-    display: block;
-    font-size: 1rem;
-    font-weight: bold;
-  }
-  
-  .match-date {
-    flex: 1;
-    text-align: center;
-  }
-  
-  .match-date .date,
-  .match-date .time {
-    display: block;
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  .match-button-container {
-    flex: 1;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-  }
-  
-  .match-button {
-    margin: 0 0.2rem;
-  }
-  
-  .add-match-container {
-    margin-top: 1.5rem;
-  }
-  
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* ======================== */
+/*  Match List Formatting (No Extra Padding) */
+/* ======================== */
+.match-list {
+  margin: 1rem 0;
+  padding: 0; /* Removes padding */
+}
+
+/*  Match Item Formatting (Consistent with Other Lists) */
+.match-item {
+  --inner-padding-end: 0px !important;
+  --inner-padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --padding-start: 0px !important;
+  --ion-item-background: transparent;
+  height: 60px; /* Matches standard height */
+  --min-height: 60px !important;
+  --max-height: 60px !important;
+  display: flex;
+  align-items: center;
+  padding: 0; /* Remove default padding */
+}
+
+/*  Match Grid Layout */
+.match-grid {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+
+/*  Match Details */
+.match-details {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.match-details .team {
+  display: block;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+/*  Match Date Styling */
+.match-date {
+  flex: 1;
+  text-align: center;
+}
+
+.match-date .date,
+.match-date .time {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/*  Match Buttons */
+.match-button-container {
+  flex: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 5px;
+}
+
+/*  Match Button Styling */
+.match-button {
+  font-size: 12px;
+  height: 32px;
+  min-width: 75px;
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ======================== */
+/*  Add Match Button */
+/* ======================== */
+.add-match-container {
+  margin-top: 1.5rem;
+  text-align: center;
+}

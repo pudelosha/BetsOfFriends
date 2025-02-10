@@ -1,27 +1,53 @@
+/* ======================== */
+/*  Page Description */
+/* ======================== */
 .page-description {
-    margin-bottom: 1rem;
-    color: #666;
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-  
-  ion-list {
-    margin: 1rem 0;
-  }
-  
-  ion-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-  }
-  
-  ion-input {
-    flex: 1;
-    margin-right: 1rem;
-  }
-  
-  .team-add-button {
-    margin-left: 1rem;
-  }
-  
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* ======================== */
+/*  Ion List Formatting (No Extra Padding) */
+/* ======================== */
+ion-list {
+  margin: 1rem 0;
+  padding: 0; /* Removes padding */
+}
+
+/*  Ion Item Formatting (Consistent with Match List) */
+ion-item {
+  --inner-padding-end: 0px !important;
+  --inner-padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --padding-start: 0px !important;
+  --ion-item-background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px; /* Matches standard height */
+  --min-height: 48px !important;
+  --max-height: 48px !important;
+}
+
+/*  Input Field Adjustments */
+ion-input {
+  flex: 1;
+  margin-right: 1rem;
+  font-size: 14px;
+  padding: 5px;
+}
+
+/*  Add Button Consistency */
+.team-add-button {
+  font-size: 14px;
+  height: 36px;
+  min-width: 90px;
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

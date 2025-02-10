@@ -115,8 +115,8 @@ namespace Backend.Repository.Services
                     tournament.PredefinedMatches.Add(new PredefinedMatch
                     {
                         Stage = matchDto.Stage,
-                        HomeTeamId = matchDto.HomeTeamId,
-                        AwayTeamId = matchDto.AwayTeamId,
+                        //HomeTeamId = matchDto.HomeTeamId,
+                        //AwayTeamId = matchDto.AwayTeamId,
                         MatchStart = matchDto.MatchStart,
                         BetType = matchDto.BetType,
                         HomeWinOdds = matchDto.HomeWinOdds,

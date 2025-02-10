@@ -4,7 +4,7 @@ export interface Team {
 }
 
 export interface Match {
-  matchId: number;
+  matchId: number| null;
   stage?: string | null;
   homeTeamId: number | null;
   homeTeam: string;

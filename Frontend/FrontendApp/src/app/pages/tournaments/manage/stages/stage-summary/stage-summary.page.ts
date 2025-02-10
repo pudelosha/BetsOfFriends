@@ -35,4 +35,5 @@ export class StageSummaryPage implements OnInit {
     console.log('Finalized Tournament Submitted:', finalizedTournament);
     this.submitTournament.emit(finalizedTournament); // Use emit to send data
   }
+  
 }
