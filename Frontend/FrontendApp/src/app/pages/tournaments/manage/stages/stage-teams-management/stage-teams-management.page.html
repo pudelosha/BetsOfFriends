@@ -1,0 +1,16 @@
+<div class="page-description">
+  <p>
+    Edit the teams participating in the tournament. Scroll down to the bottom of the list to add a new team. Click the delete button to remove a team from the list.
+  </p>
+</div>
+
+<ion-list>
+  <ion-item *ngFor="let team of teamsArray.controls; let i = index">
+    <ion-input [formControl]="getTeamControl(i)"></ion-input>
+    <ion-button fill="clear" color="danger" (click)="removeTeam(i)">Delete</ion-button>
+  </ion-item>
+</ion-list>
+<ion-item>
+  <ion-input #newTeam type="text" placeholder="Enter new team"></ion-input>
+  <ion-button class="team-add-button" (click)="addTeam(newTeam)">Add</ion-button>
+</ion-item>

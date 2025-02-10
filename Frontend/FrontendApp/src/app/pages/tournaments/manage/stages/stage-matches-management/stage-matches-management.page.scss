@@ -1,0 +1,58 @@
+.page-description {
+    margin-bottom: 1rem;
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .match-list {
+    margin: 1rem 0;
+  }
+  
+  .match-item {
+    padding: 0.5rem 0;
+  }
+  
+  .match-grid {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .match-details {
+    flex: 2;
+  }
+  
+  .match-details .team {
+    display: block;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  
+  .match-date {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .match-date .date,
+  .match-date .time {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .match-button-container {
+    flex: 1;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+  
+  .match-button {
+    margin: 0 0.2rem;
+  }
+  
+  .add-match-container {
+    margin-top: 1.5rem;
+  }
+  

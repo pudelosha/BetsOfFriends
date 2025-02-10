@@ -1,11 +1,11 @@
 export interface Team {
-  teamId: number;
+  teamId: number | null;
   teamName: string;
 }
 
 export interface Match {
   matchId: number;
-  stage: string;
+  stage?: string | null;
   homeTeamId: number | null;
   homeTeam: string;
   awayTeamId: number | null;
@@ -15,8 +15,8 @@ export interface Match {
   homeWinOdds: number;
   drawOdds: number;
   awayWinOdds: number;
-  homeQualifies: number;
-  awayQualifies: number;
+  homeQualifies: number | null;
+  awayQualifies: number | null;
 }
 
 export interface Tournament {

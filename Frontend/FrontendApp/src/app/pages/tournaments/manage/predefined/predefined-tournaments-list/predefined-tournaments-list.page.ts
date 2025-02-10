@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
-import { PredefinedTournamentService } from '../../../services/predefined-tournament.service';
-import { Tournament } from '../../../model/tournament-model';
+import { PredefinedTournamentService } from '../../../../../services/predefined-tournament.service';
+import { Tournament } from '../../../../../model/tournament-model';
 
 @Component({
-  selector: 'app-predefined-tournaments',
-  templateUrl: './predefined-tournaments.page.html',
-  styleUrls: ['./predefined-tournaments.page.scss'],
+  selector: 'app-predefined-tournaments-list',
+  templateUrl: './predefined-tournaments-list.page.html',
+  styleUrls: ['./predefined-tournaments-list.page.scss'],
   standalone: true,
   imports: [CommonModule, IonicModule],
 })
-export class PredefinedTournamentsPage implements OnInit {
+export class PredefinedTournamentsListPage implements OnInit {
   tournaments: Tournament[] = []; // Store fetched tournaments
   isLoading = true; // Loader state
 

@@ -1,0 +1,37 @@
+/* Style for the description block */
+.page-description {
+    margin-bottom: 1.5rem;
+    color: #666; /* Neutral gray for text */
+    line-height: 1.5;
+    font-size: 1rem;
+  }
+  
+  /* Style for form group wrapper */
+  .form-group {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Style for labels */
+  .form-label {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    font-size: 1rem;
+    color: #333; /* Dark gray for better readability */
+  }
+  
+  /* Style for the tournament name input */
+  .tournament-name-input {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 0.5rem; /* Rounded corners */
+  }
+  
+  /* Utility class for full-width inputs */
+  .full-width {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  

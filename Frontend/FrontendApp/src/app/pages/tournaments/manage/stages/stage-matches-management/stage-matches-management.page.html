@@ -1,0 +1,34 @@
+<div class="page-description">
+  <p>
+    View and modify tournament matches. Click Edit to change match details, or Delete to remove a match. To add a new match, click Add New Match below.
+  </p>
+</div>
+
+<ion-list class="match-list">
+  <ion-item *ngFor="let match of matchesArray.controls; let i = index" class="match-item" [formGroup]="getMatchControl(i)">
+    <div class="match-grid">
+      <!-- Home and Away Team Names (Stacked) -->
+      <div class="match-details">
+        <span class="team">{{ getMatchControl(i).get('homeTeam')?.value }}</span>
+        <span class="team">{{ getMatchControl(i).get('awayTeam')?.value }}</span>
+      </div>
+
+      <!-- Date and Time (Stacked) -->
+      <div class="match-date">
+        <span class="date">{{ getMatchControl(i).get('matchStart')?.value | date: 'yyyy.MM.dd' }}</span>
+        <span class="time">{{ getMatchControl(i).get('matchStart')?.value | date: 'HH:mm' }}</span>
+      </div>
+
+      <!-- Buttons: Edit and Delete -->
+      <div class="match-button-container">
+        <ion-button size="small" fill="outline" color="primary" class="match-button" (click)="openEditModal(i)">Edit</ion-button>
+        <ion-button size="small" fill="outline" color="danger" class="match-button" (click)="removeMatch(i)">Delete</ion-button>
+      </div>
+    </div>
+  </ion-item>
+</ion-list>
+
+<!-- Add Match Button (Full Width & Relative) -->
+<div class="add-match-container">
+  <ion-button expand="full" (click)="openEditModal()">Add New Match</ion-button>
+</div>

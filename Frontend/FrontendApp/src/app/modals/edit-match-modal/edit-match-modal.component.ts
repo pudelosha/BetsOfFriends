@@ -24,54 +24,60 @@ export class EditMatchModalComponent implements OnInit {
   ) {
     // Define Reactive Form Structure
     this.matchForm = this.fb.group({
-      matchId: [null],
-      stage: [''],
-      homeTeamId: [null],   // Validator intentionally removed, ID to be populated via function on modal close
-      homeTeam: ['', Validators.required],
-      awayTeamId: [null],   // Validator intentionally removed, ID to be populated via function on modal close
-      awayTeam: ['', Validators.required],
-      matchStart: ['', Validators.required],
-      betType: ['', Validators.required],
-      homeWinOdds: ['', [Validators.required, Validators.min(1)]],
-      drawOdds: ['', [Validators.required, Validators.min(1)]],
-      awayWinOdds: ['', [Validators.required, Validators.min(1)]],
-      homeQualifies: [null],
-      awayQualifies: [null],
-    });       
+      matchId: [this.match?.matchId || null],
+      stage: [this.match?.stage || ''],
+      homeTeamId: [this.match?.homeTeamId || null],
+      homeTeam: [this.match?.homeTeam || '', Validators.required],
+      awayTeamId: [this.match?.awayTeamId || null],
+      awayTeam: [this.match?.awayTeam || '', Validators.required],
+      matchStart: [this.match?.matchStart || '', Validators.required],
+      betType: [this.match?.betType || '', Validators.required],
+      homeWinOdds: [this.match?.homeWinOdds || null, Validators.required],
+      drawOdds: [this.match?.drawOdds || null, Validators.required],
+      awayWinOdds: [this.match?.awayWinOdds || null, Validators.required],
+      homeQualifies: [this.match?.homeQualifies || null],
+      awayQualifies: [this.match?.awayQualifies || null],
+    });      
   }
 
   ngOnInit() {
     if (this.match) {
-      this.matchForm.patchValue(this.match); // Populate form if editing
+      this.matchForm.patchValue(this.match);
     }
   }
 
   async saveMatch() {
+    console.log('Form Status:', this.matchForm.status); // Should be VALID
+    console.log('Form Errors:', this.matchForm.errors); // Should be null
+    console.log('Form Values:', this.matchForm.value);  // Check required fields
+
     if (this.matchForm.invalid) {
-      console.log("Form Submission Blocked! Invalid Data:");
-      console.log("Form Group Values:", this.matchForm.value);
-      console.log("Form Group Status:", this.matchForm.status);
-      console.log("Form Validation Errors:", this.matchForm.errors);
-  
-      this.showToast('Please fill in all required fields with valid values!', 'danger');
+      this.showToast('Please fill in all required fields!', 'danger');
       return;
     }
   
-    const matchData = this.matchForm.value;
-    matchData.homeQualifies = matchData.homeQualifies === '' ? null : matchData.homeQualifies;
-    matchData.awayQualifies = matchData.awayQualifies === '' ? null : matchData.awayQualifies;
-    
-    console.log("Saving Match:", matchData);
+    const matchData = {
+      matchId: this.match?.matchId || null, // Retain ID for existing matches
+      homeTeamId: this.match?.homeTeamId || null, // Retain ID for existing matches
+      awayTeamId: this.match?.awayTeamId || null, // Retain ID for existing matches
+      stage: this.matchForm.value.stage || null, // Set to null if empty
+      homeTeam: this.matchForm.value.homeTeam || '',
+      awayTeam: this.matchForm.value.awayTeam || '',
+      matchStart: this.matchForm.value.matchStart || '',
+      betType: this.matchForm.value.betType || '90min', // Ensure betType is included
+      homeWinOdds: this.matchForm.value.homeWinOdds || null,
+      drawOdds: this.matchForm.value.drawOdds || null,
+      awayWinOdds: this.matchForm.value.awayWinOdds || null,
+      homeQualifies: this.matchForm.value.homeQualifies || null,
+      awayQualifies: this.matchForm.value.awayQualifies || null,
+    };
+  
+    console.log('Saving Match:', matchData);
   
     await this.modalController.dismiss(matchData);
-  
-    if (this.index !== undefined) {
-      this.showToast('Match updated successfully!', 'success');
-    } else {
-      this.showToast('New match added successfully!', 'success');
-    }
+    this.showToast(this.index !== undefined ? 'Match updated!' : 'New match added!', 'success');
   }
-  
+      
   closeModal() {
     this.modalController.dismiss(null);
   }

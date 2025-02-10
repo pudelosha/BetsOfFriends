@@ -1,0 +1,48 @@
+<div class="page-description">
+  <p>
+    Review the selected teams and matches before finalizing the tournament. 
+    Below, you can see the tournament name, teams participating, and the scheduled matches with corresponding odds.
+  </p>
+  <p>
+    If you need to make changes, go back to the previous steps. 
+    Once confirmed, click the Submit button to save the tournament.
+  </p>
+</div>
+
+<!-- Tournament Name Section -->
+<div class="tournament-name-container">
+  <ion-label class="section-title">Tournament Name</ion-label>
+  <div class="tournament-name-box">
+    {{ tournamentName || 'Not provided' }}
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Teams Section -->
+<div class="section-title">Teams</div>
+<div class="summary-grid-teams">
+  <div *ngFor="let team of teamsArray" class="team-column">
+    {{ team }}
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Matches Section -->
+<div class="section-title">Matches</div>
+<div class="summary-grid-matches">
+  <div *ngFor="let match of matchesArray" class="match-row">
+    <div class="match-teams">{{ match.homeTeam }} - {{ match.awayTeam }}</div>
+    <div class="match-date">{{ match.matchStart | date: 'yyyy-MM-dd HH:mm' }}</div>
+    <div class="match-odds">
+      {{ match.homeWinOdds | number:'1.2-2' }} /
+      {{ match.drawOdds | number:'1.2-2' }} /
+      {{ match.awayWinOdds | number:'1.2-2' }}
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<ion-button expand="full" (click)="submitTournamentData()">Submit</ion-button>

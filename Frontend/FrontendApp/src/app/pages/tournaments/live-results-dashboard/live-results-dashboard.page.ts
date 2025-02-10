@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
 @Component({
-  selector: 'app-my-tournaments',
-  templateUrl: './my-tournaments.page.html',
-  styleUrls: ['./my-tournaments.page.scss'],
+  selector: 'app-live-results-dashboard',
+  templateUrl: './live-results-dashboard.page.html',
+  styleUrls: ['./live-results-dashboard.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule]
 })
-export class MyTournamentsPage implements OnInit {
+export class LiveResultsDashboardPage implements OnInit {
 
   constructor() { }
 

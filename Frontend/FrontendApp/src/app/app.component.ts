@@ -80,12 +80,12 @@ export class AppComponent {
 
   navigateToCreatePredefinedTournament() {
     console.log('Navigating to create-predefined-tournament...');
-    this.router.navigate(['/create-predefined-tournament']);
+    this.router.navigate(['/tournaments/create-predefined']);
   }
 
-  navigateToPredefinedTournaments() {
-    console.log('Navigating to predefined-tournaments...');
-    this.router.navigate(['/predefined-tournaments']);
+  navigateToPredefinedTournamentsList() {
+    console.log('Navigating to predefined-tournaments-list...');
+    this.router.navigate(['/tournaments/predefined']);
   }
 
   navigateToMyTournaments() {
