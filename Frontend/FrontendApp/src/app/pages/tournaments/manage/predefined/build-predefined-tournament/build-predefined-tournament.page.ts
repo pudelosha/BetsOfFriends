@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray, FormControl, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { StageInputTypePage } from '../../stages/stage-input-type/stage-input-type.page';
@@ -51,7 +51,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
         this.tournamentId = +id; // Convert the id to a number
         this.loadTournament();
       } else {
-        console.error('Invalid or missing tournament id:', id);
         this.tournamentId = null;
       }
     });
@@ -83,11 +82,14 @@ export class BuildPredefinedTournamentPage implements OnInit {
 
   async openAddModal(): Promise<void> {
     if (this.step === 2) {
+      const allTeamNames = this.teamsArray.controls.map((control) => control.get('teamName')?.value.trim().toLowerCase()); // Extract all team names
+
       const modal = await this.modalController.create({
         component: EditTeamModalComponent,
         componentProps: {
           team: null, // New team
           isEditing: false,
+          allTeamNames,
         },
       });
   
@@ -213,8 +215,22 @@ export class BuildPredefinedTournamentPage implements OnInit {
   }
   
   handleTeamsUpdated(updatedTeams: any[]): void {
-    this.teamsArray.clear(); // Clear the current array
-    updatedTeams.forEach(team => {
+    // Step 1: Extract team names from updatedTeams
+    const updatedTeamNames = updatedTeams.map((team: any) => team.teamName);
+  
+    // Step 2: Remove all matches where home or away team is not in the updated team names
+    const filteredMatches = this.matchesArray.controls.filter((control: AbstractControl) => {
+      const match = (control as FormGroup).value; // Explicitly cast AbstractControl to FormGroup
+      return updatedTeamNames.includes(match.homeTeam) && updatedTeamNames.includes(match.awayTeam);
+    });
+  
+    // Step 3: Update matchesArray with the filtered matches
+    this.matchesArray.clear();
+    filteredMatches.forEach((control: AbstractControl) => this.matchesArray.push(control));
+  
+    // Step 4: Update teamsArray with the updated teams
+    this.teamsArray.clear();
+    updatedTeams.forEach((team: any) => {
       this.teamsArray.push(
         this.fb.group({
           teamName: [team.teamName, Validators.required], // Use teamName field
@@ -222,9 +238,11 @@ export class BuildPredefinedTournamentPage implements OnInit {
         })
       );
     });
+  
     console.log('Updated Teams from Child:', this.teamsArray.value);
-  }  
-
+    console.log('Updated Matches after team removal:', this.matchesArray.value);
+  }
+   
   handleMatchesUpdated(updatedMatches: any[]): void {
     this.matchesArray.clear();
     updatedMatches.forEach(match => {

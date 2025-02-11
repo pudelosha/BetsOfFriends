@@ -27,11 +27,14 @@ export class StageTeamsManagementPage {
   // Edit team
   async editTeam(index: number): Promise<void> {
     const team = this.teamsArray.at(index).value;
+    const allTeamNames = this.teamsArray.controls.map((control) => control.get('teamName')?.value.trim().toLowerCase());
+
     const modal = await this.modalController.create({
       component: EditTeamModalComponent,
       componentProps: {
         team,
         isEditing: true,
+        allTeamNames,
       },
     });
   
@@ -51,10 +54,9 @@ export class StageTeamsManagementPage {
   async removeTeam(index: number): Promise<void> {
     const teamToRemove = this.teamsArray.at(index).value;
   
-    // Show confirmation dialog using AlertController
     const alert = await this.alertController.create({
       header: 'Confirm Removal',
-      message: `Are you sure you want to delete the team "${teamToRemove.teamName}"?`,
+      message: `Are you sure you want to delete the team "${teamToRemove.teamName}"? Note: Any matches involving this team will also be affected.`,
       buttons: [
         {
           text: 'Cancel',
@@ -63,10 +65,12 @@ export class StageTeamsManagementPage {
         {
           text: 'Delete',
           role: 'destructive',
-          handler: () => {
+          handler: async () => {
             this.teamsArray.removeAt(index);
             this.emitTeams();
             console.log('Removed team:', teamToRemove);
+  
+            await this.showToast(`Team "${teamToRemove.teamName}" removed successfully!`, 'success');
           },
         },
       ],

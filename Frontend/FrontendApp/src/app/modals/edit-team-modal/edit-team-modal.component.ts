@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 export class EditTeamModalComponent implements OnInit {
   @Input() team: { teamId: number | null; teamName: string } | null = null; // Input to receive team details
   @Input() isEditing: boolean = false; // Indicates if the modal is for editing or adding
+  @Input() allTeamNames: string[] = []; // List of existing team names
 
   teamForm: FormGroup;
 
@@ -38,14 +39,26 @@ export class EditTeamModalComponent implements OnInit {
       await this.showToast('Please provide a valid team name!', 'danger');
       return;
     }
-
-    const teamData = this.teamForm.value;
-    await this.modalController.dismiss(teamData);
+  
+    const teamName = this.teamForm.value.teamName.trim().toLowerCase();
+  
+    const currentTeamName = this.team?.teamName?.trim().toLowerCase() || '';
+  
+    const existingTeamNames = this.isEditing
+      ? this.allTeamNames.filter(name => name !== currentTeamName)
+      : this.allTeamNames;
+  
+    if (existingTeamNames.includes(teamName)) {
+      await this.showToast('Team name already exists. Please choose a different name.', 'danger');
+      return;
+    }
+  
+    await this.modalController.dismiss(this.teamForm.value);
     await this.showToast(
       this.isEditing ? 'Team updated successfully!' : 'New team added successfully!',
       'success'
     );
-  }
+  }  
 
   async closeModal(): Promise<void> {
     await this.modalController.dismiss(null);
