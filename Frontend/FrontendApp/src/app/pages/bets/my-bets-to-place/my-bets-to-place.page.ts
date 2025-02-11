@@ -24,6 +24,14 @@ export class MyBetsToPlacePage implements OnInit {
 
   constructor(private modalCtrl: ModalController) {}
 
+  ionViewWillEnter(): void {
+    this.scrollToTop();
+  }
+
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   async editBet(bet: Bet, event: Event) {
     event.stopPropagation();
     console.log("Bet Clicked:", bet);

@@ -42,7 +42,24 @@ export class BuildPredefinedTournamentPage implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
+
+  ionViewWillEnter(): void {
+    this.resetFormData();
+    this.scrollToTop();
+    this.step = 1;
+  }
+
+  private resetFormData(): void {
+    this.tournamentForm.reset();
+    this.teamsArray.clear();
+    this.matchesArray.clear();
+  }
+
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   get teamsArray(): FormArray {
     return this.tournamentForm.get('teams') as FormArray;
@@ -128,8 +145,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
     console.log('Updated Matches from Child:', this.matchesArray.value);
   }
 
-  handleSubmitTournament(): void {
-    // Step 1: Validate Tournament Data
+  submitTournament(): void {
+    // Validate Tournament Data
     if (!this.tournamentForm.value.tournamentName?.trim()) {
       this.showToast('Tournament name is required!', 'danger');
       return;
@@ -145,31 +162,25 @@ export class BuildPredefinedTournamentPage implements OnInit {
       return;
     }
   
-    // Step 2: Prepare Tournament Data
-    const isEditing = !!this.tournamentId; // Determine if editing or creating a new tournament
+    // Prepare Tournament Data
+    const isEditing = !!this.tournamentId;
   
     const tournamentData: Tournament = {
-      tournamentId: isEditing ? this.tournamentId : null, // Set ID only if updating
+      tournamentId: isEditing ? this.tournamentId : null,
       tournamentName: this.tournamentForm.value.tournamentName,
       isActive: true,
-      createdBy: this.tournamentForm.value.createdBy || 'Admin', // Use default if missing
+      createdBy: this.tournamentForm.value.createdBy || 'Admin',
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
-      
-      // Step 2.1: Format Teams
-      teams: this.teamsArray.value.map((teamName: string) => ({
-        teamName, // Only name, no ID (backend generates it for new tournaments)
-      })),
-  
-      // Step 2.2: Format Matches
+      teams: this.teamsArray.value.map((team: string) => ({ teamName: team })),
       matches: this.matchesArray.value.map((match: any) => ({
-        matchId: isEditing ? match.matchId || null : null, // Only include matchId if updating
-        stage: match.stage || '', // Default to empty if missing
-        homeTeamId: isEditing ? match.homeTeamId || null : null, // Only include IDs if editing
+        matchId: isEditing ? match.matchId || null : null,
+        stage: match.stage || '',
+        homeTeamId: isEditing ? match.homeTeamId || null : null,
         awayTeamId: isEditing ? match.awayTeamId || null : null,
         homeTeam: match.homeTeam,
         awayTeam: match.awayTeam,
-        betType: match.betType || '90min', // Ensure betType is always present
-        matchStart: new Date(match.matchStart).toISOString(), // Ensure ISO format
+        betType: match.betType || '90min',
+        matchStart: new Date(match.matchStart).toISOString(),
         homeWinOdds: match.homeWinOdds,
         drawOdds: match.drawOdds,
         awayWinOdds: match.awayWinOdds,
@@ -180,18 +191,17 @@ export class BuildPredefinedTournamentPage implements OnInit {
   
     console.log('Finalized Tournament Data:', tournamentData);
   
-    // Step 3: Determine API Call (Create or Update)
+    // Submit Tournament to Backend
     const submitObservable = isEditing
-      ? this.tournamentService.updatePredefinedTournament(tournamentData) // Update
-      : this.tournamentService.createPredefinedTournament(tournamentData); // Create
+      ? this.tournamentService.updatePredefinedTournament(tournamentData)
+      : this.tournamentService.createPredefinedTournament(tournamentData);
   
-    // Step 4: Submit Tournament to Backend
     submitObservable.subscribe({
       next: () => {
         this.router.navigate(['/predefined-tournaments']).then(() => {
           setTimeout(() => {
             this.showToast('Tournament saved successfully!', 'success');
-          }, 500); // Small delay to ensure UI update
+          }, 500);
         });
       },
       error: (error) => {
@@ -199,17 +209,19 @@ export class BuildPredefinedTournamentPage implements OnInit {
         this.showToast('Error submitting tournament!', 'danger');
       },
     });
-  }
+  }  
     
-  async nextStep() {
-    if (await this.canProceed()) {
+  nextStep(): void {
+    if (this.step < 4) {
       this.step++;
+      this.scrollToTop();
     }
   }
 
-  prevStep() {
+  prevStep(): void {
     if (this.step > 1) {
       this.step--;
+      this.scrollToTop();
     }
   }
 

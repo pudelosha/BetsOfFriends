@@ -37,6 +37,14 @@ export class MyBetsFinalisedPage implements OnInit {
 
   ngOnInit() {}
 
+  ionViewWillEnter(): void {
+    this.scrollToTop();
+  }
+
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   getBetStatus(bet: Bet): string {
     if (
       bet.playerHomeGoals === null || bet.playerHomeGoals === undefined ||

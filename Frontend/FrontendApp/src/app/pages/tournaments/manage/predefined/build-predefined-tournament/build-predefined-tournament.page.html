@@ -26,8 +26,7 @@
     <app-stage-summary
       [tournamentName]="tournamentForm.get('tournamentName')?.value"
       [teamsArray]="teamsArray.value"
-      [matchesArray]="matchesArray.value"
-      (submitTournament)="handleSubmitTournament()">
+      [matchesArray]="matchesArray.value">
     </app-stage-summary>
   </div>
 
@@ -45,6 +44,13 @@
       class="third-width"
       (click)="openAddModal()">
       Add
+    </ion-button>
+
+    <ion-button
+      *ngIf="step === 4"
+      class="third-width"
+      (click)="submitTournament()">
+      Submit
     </ion-button>
 
     <ion-button

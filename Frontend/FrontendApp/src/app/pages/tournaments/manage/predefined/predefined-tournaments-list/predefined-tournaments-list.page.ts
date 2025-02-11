@@ -29,6 +29,11 @@ export class PredefinedTournamentsListPage implements OnInit {
   ionViewWillEnter() {
     // Refresh tournaments every time the page is visited
     this.loadTournaments();
+    this.scrollToTop();
+  }
+
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   loadTournaments() {
