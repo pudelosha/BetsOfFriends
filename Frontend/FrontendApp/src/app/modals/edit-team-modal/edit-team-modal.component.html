@@ -8,20 +8,22 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form [formGroup]="teamForm">
+  <form [formGroup]="teamForm" class="team-form">
     <!-- Team Name Input -->
-    <ion-item>
-      <ion-label position="floating">Team Name</ion-label>
+    <div class="form-group">
+      <ion-label class="selector-label">Team Name</ion-label>
       <ion-input formControlName="teamName" placeholder="Enter team name"></ion-input>
-    </ion-item>
-    <div *ngIf="teamForm.get('teamName')?.hasError('required') && teamForm.get('teamName')?.touched" class="error-message">
+    </div>
+    <div class="error-message" *ngIf="teamForm.get('teamName')?.hasError('required') && teamForm.get('teamName')?.touched">
       Team name is required.
     </div>
-    <div *ngIf="teamForm.get('teamName')?.hasError('maxlength') && teamForm.get('teamName')?.touched" class="error-message">
+    <div class="error-message" *ngIf="teamForm.get('teamName')?.hasError('maxlength') && teamForm.get('teamName')?.touched">
       Team name cannot exceed 50 characters.
     </div>
 
     <!-- Save Button -->
-    <ion-button expand="block" color="primary" (click)="saveTeam()">Save</ion-button>
+    <div class="save-button-container">
+      <ion-button expand="full" color="success" (click)="saveTeam()">Save</ion-button>
+    </div>
   </form>
 </ion-content>

@@ -22,8 +22,7 @@ export class StageMatchesManagementPage implements OnInit {
 
   constructor(private fb: FormBuilder, private modalController: ModalController, private alertController: AlertController) {}
 
-  ngOnInit(): void {
-    
+  ngOnInit(): void {  
   }
 
   // Get a specific match control by index

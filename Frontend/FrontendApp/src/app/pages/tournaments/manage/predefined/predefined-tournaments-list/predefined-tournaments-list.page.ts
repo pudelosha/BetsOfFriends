@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
-import { PredefinedTournamentService } from '../../../../../services/predefined-tournament.service';
-import { Tournament } from '../../../../../model/tournament-model';
+import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
+import { Tournament } from 'src/app/model/tournament-model';
+import { firstValueFrom } from 'rxjs';
+
 
 @Component({
   selector: 'app-predefined-tournaments-list',
@@ -52,15 +54,33 @@ export class PredefinedTournamentsListPage implements OnInit {
   }
   
 
-  editTournament(tournament: any) {
-    window.location.href = `/create-predefined-tournament/${tournament.id}`;
+  editTournament(tournament: Tournament): void {
+    if (!tournament || !tournament.tournamentId) {
+      console.error('Invalid tournament object:', tournament);
+      this.showToast('Invalid tournament data. Unable to edit.', 'danger');
+      return;
+    }
+  
+    console.log('Navigating to edit tournament with ID:', tournament.tournamentId);
+    window.location.href = `tournaments/update-predefined/${tournament.tournamentId}`;
   }
-
+  
   async toggleTournamentStatus(tournament: any) {
     const newStatus = !tournament.isActive;
-    tournament.isActive = newStatus;
-    await this.tournamentService.updatePredefinedTournamentStatus(tournament.id, newStatus).toPromise();
-    this.showToast(`Tournament ${newStatus ? 'enabled' : 'disabled'} successfully!`, 'success');
+  
+    try {
+      // Call the backend to update the status
+      await this.tournamentService.updatePredefinedTournamentStatus(tournament.tournamentId, newStatus).toPromise();
+  
+      // Update the frontend state only after a successful API call
+      tournament.isActive = newStatus;
+      this.showToast(`Tournament ${newStatus ? 'enabled' : 'disabled'} successfully!`, 'success');
+    } catch (error) {
+      // Revert the status change on the frontend in case of an error
+      tournament.isActive = !newStatus;
+      console.error('Error toggling tournament status:', error);
+      this.showToast('Failed to toggle tournament status. Please try again.', 'danger');
+    }
   }
 
   async confirmDelete(tournament: any) {
@@ -72,18 +92,27 @@ export class PredefinedTournamentsListPage implements OnInit {
         {
           text: 'Delete',
           handler: async () => {
-            await this.deleteTournament(tournament);
+            try {
+              await this.deleteTournament(tournament);
+              this.showToast(`${tournament.tournamentName} has been deleted successfully!`, 'success');
+  
+              // Optionally, refresh the list of tournaments
+              this.loadTournaments();
+            } catch (error) {
+              console.error('Error deleting tournament:', error);
+              this.showToast('Failed to delete tournament. Please try again.', 'danger');
+            }
           },
         },
       ],
     });
     await alert.present();
   }
-
+    
   async deleteTournament(tournament: any) {
     try {
-      await this.tournamentService.deletePredefinedTournament(tournament.id).toPromise();
-      this.tournaments = this.tournaments.filter(t => t.tournamentId !== tournament.id);
+      await firstValueFrom(this.tournamentService.deletePredefinedTournament(tournament.tournamentId));
+      this.tournaments = this.tournaments.filter(t => t.tournamentId !== tournament.tournamentId);
       this.showToast('Tournament deleted successfully!', 'success');
     } catch (error) {
       this.showToast('Error deleting tournament!', 'danger');

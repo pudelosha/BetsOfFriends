@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 export class EditMatchModalComponent implements OnInit {
   @Input() match: any; // Match object (existing or new)
   @Input() index?: number; // Index of match in list (undefined if new)
-  @Input() teams: string[] = []; // Available teams for selection
+  @Input() teams: any[] = []; // Available teams for selection
 
   matchForm: FormGroup;
 

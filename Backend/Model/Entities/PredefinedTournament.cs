@@ -12,6 +12,8 @@ namespace Backend.Model.Entities
         [Required, MaxLength(100)]
         public string TournamentName { get; set; } = string.Empty;
 
+        public bool IsActive { get; set; } = true;
+
         [Required]
         public string CreatedBy { get; set; } = string.Empty;
 

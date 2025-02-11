@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms'; // Import FormsModule
 })
 export class StageInputTypePage {
   @Input() tournamentForm!: FormGroup; // Parent form
-  @Output() teamsExtracted = new EventEmitter<string[]>(); // Emit teams to parent
+  @Output() teamsExtracted = new EventEmitter<any[]>(); // Emit teams to parent
   @Output() matchesExtracted = new EventEmitter<any[]>(); // Emit matches to parent
 
   file: File | null = null;
@@ -45,67 +45,70 @@ export class StageInputTypePage {
 
   readExcelFile() {
     const reader = new FileReader();
-
+  
     reader.onload = (e: any) => {
       try {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
-
+  
         // Extract teams and matches
         const teams = this.extractTeams(workbook);
-        const matches = this.extractMatches(workbook, teams);
-
+        const matches = this.extractMatches(workbook, teams.map(t => t.teamName)); // Pass only team names to match extraction
+  
         // Emit data to parent
         this.teamsExtracted.emit(teams);
         this.matchesExtracted.emit(matches);
-
+  
         this.showToast('Excel file read successfully!', 'success');
       } catch (error) {
         this.showToast('Error reading Excel file!', 'danger');
         console.error('Excel read error:', error);
       }
     };
-
+  
     reader.readAsArrayBuffer(this.file!);
   }
-
-  extractTeams(workbook: XLSX.WorkBook): string[] {
+  
+  extractTeams(workbook: XLSX.WorkBook): { teamId: null; teamName: string }[] {
     const sheet = workbook.Sheets['Teams'];
-    const teams: string[] = [];
-
+    const teams: any[] = [];
+  
     if (sheet) {
       const rows = XLSX.utils.sheet_to_json(sheet);
       rows.forEach((row: any) => {
         const teamName = row['Team Name'];
         if (typeof teamName === 'string' && teamName.trim()) {
-          teams.push(teamName.trim());
+          teams.push({
+            teamId: null, // All new teams have teamId set to null
+            teamName: teamName.trim(),
+          });
         }
       });
-
+  
       console.log('Extracted Teams:', teams);
     } else {
       console.warn('No "Teams" sheet found in the Excel file.');
     }
-
+  
     return teams;
-  }
+  }  
 
-  extractMatches(workbook: XLSX.WorkBook, teams: string[]): any[] {
+  extractMatches(workbook: XLSX.WorkBook, teamNames: string[]): any[] {
     const sheet = workbook.Sheets['Games'];
     const matches: any[] = [];
-
+  
     if (sheet) {
       const rows = XLSX.utils.sheet_to_json(sheet);
-
+  
       rows.forEach((row: any) => {
         const homeTeam = row['Home Team'];
         const awayTeam = row['Away Team'];
-
-        if (!teams.includes(homeTeam) || !teams.includes(awayTeam)) {
+  
+        if (!teamNames.includes(homeTeam) || !teamNames.includes(awayTeam)) {
           console.warn(`Unknown teams in match: ${homeTeam} vs ${awayTeam}`);
           return;
         }
-
+  
         const match = {
           stage: row['Stage'] || null,
           homeTeam,
@@ -115,18 +118,18 @@ export class StageInputTypePage {
           drawOdds: this.parseOdds(row['Draw Odds']),
           awayWinOdds: this.parseOdds(row['Away Win Odds']),
         };
-
+  
         matches.push(match);
       });
-
+  
       console.log('Extracted Matches:', matches);
     } else {
       console.warn('No "Games" sheet found in the Excel file.');
     }
-
+  
     return matches;
   }
-
+  
   convertToTimestamp(date: string, time: string, utcOffset: number): string {
     if (!date || !time) return '';
     const dateTimeString = `${date}T${time}`;

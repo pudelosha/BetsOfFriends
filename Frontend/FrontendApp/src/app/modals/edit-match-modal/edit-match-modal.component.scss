@@ -107,3 +107,12 @@ ion-select {
   margin: 0; /* Removes extra vertical space */
 }
 
+/* Vertical alignment for label and input */
+.vertical-align {
+  flex-direction: column; /* Stacks the label and input vertically */
+  align-items: flex-start; /* Aligns both to the left */
+  width: 100%; /* Ensures the row takes full width */
+  gap: 5px; /* Adds space between label and input */
+}
+
+

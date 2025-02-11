@@ -20,8 +20,8 @@ export class PredefinedTournamentService {
     return this.http.post<Tournament>(`${this.apiUrl}/create`, tournament);
   }
 
-  updatePredefinedTournament(tournament: Tournament): Observable<Tournament> {
-    return this.http.put<Tournament>(`${this.apiUrl}/update`, tournament);
+  updatePredefinedTournament(tournament: Tournament): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update`, tournament, { responseType: 'text' });
   }
 
   getPredefinedTournaments(): Observable<Tournament[]> {
@@ -29,7 +29,8 @@ export class PredefinedTournamentService {
   } 
 
   updatePredefinedTournamentStatus(tournamentId: number, isActive: boolean): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/status/${tournamentId}`, { isActive });
+    const requestBody = { isActive };
+    return this.http.patch<void>(`${this.apiUrl}/status/${tournamentId}`, requestBody);
   }
 
   deletePredefinedTournament(tournamentId: number): Observable<void> {

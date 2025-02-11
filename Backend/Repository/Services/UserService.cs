@@ -60,7 +60,7 @@ namespace Backend.Repository.Services
             }
 
             user.UserName = profile.Username;
-            //user.Language = profile.Language;
+            //TODO user.Language = profile.Language;
             //user.DarkMode = profile.DarkMode;
 
             var result = await _userManager.UpdateAsync(user);

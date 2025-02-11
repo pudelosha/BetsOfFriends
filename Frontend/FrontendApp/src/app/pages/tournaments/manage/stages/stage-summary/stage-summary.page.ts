@@ -12,7 +12,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 })
 export class StageSummaryPage implements OnInit {
   @Input() tournamentName!: string;
-  @Input() teamsArray!: string[];
+  @Input() teamsArray!: { teamId: number | null; teamName: string }[];
   @Input() matchesArray!: any[];
 
   constructor() {}

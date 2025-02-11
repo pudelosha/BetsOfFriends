@@ -20,6 +20,7 @@ namespace Backend.Migrations
                     TournamentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TournamentName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -241,8 +242,8 @@ namespace Backend.Migrations
                     HomeWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DrawOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AwayWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    HomeQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    AwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    HomeQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    AwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -9,41 +9,64 @@
 }
 
 /* ======================== */
-/*  Ion List Formatting (No Extra Padding) */
+/*  Team List Formatting */
 /* ======================== */
-ion-list {
+.team-list {
   margin: 1rem 0;
   padding: 0; /* Removes padding */
 }
 
-/*  Ion Item Formatting (Consistent with Match List) */
-ion-item {
+/*  Team Item Formatting (Consistent with Other Lists) */
+.team-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
   --padding-end: 0px !important;
   --padding-start: 0px !important;
   --ion-item-background: transparent;
+  height: 60px; /* Matches standard height */
+  --min-height: 60px !important;
+  --max-height: 60px !important;
   display: flex;
   align-items: center;
+  padding: 0; /* Remove default padding */
+}
+
+/*  Team Grid Layout */
+.team-grid {
+  display: flex;
   justify-content: space-between;
-  height: 48px; /* Matches standard height */
-  --min-height: 48px !important;
-  --max-height: 48px !important;
+  width: 100%;
+  gap: 10px;
 }
 
-/*  Input Field Adjustments */
-ion-input {
+/*  Team Details */
+.team-details {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+.team-details .team-name {
+  font-size: 1rem;
+  font-weight: bold;
+  display: block;
+}
+
+/*  Team Buttons */
+.team-button-container {
   flex: 1;
-  margin-right: 1rem;
-  font-size: 14px;
-  padding: 5px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 5px;
 }
 
-/*  Add Button Consistency */
-.team-add-button {
-  font-size: 14px;
-  height: 36px;
-  min-width: 90px;
+/*  Team Button Styling */
+.team-button {
+  font-size: 12px;
+  height: 32px;
+  min-width: 75px;
   padding: 0 !important;
   margin: 0 !important;
   text-align: center;
@@ -52,7 +75,15 @@ ion-input {
   justify-content: center;
 }
 
-.nav-menu-space{
-  margin-bottom: 80px;
+/* ======================== */
+/*  Add Team Button */
+/* ======================== */
+.add-team-container {
+  margin-top: 1.5rem;
+  text-align: center;
 }
 
+/* Ensure bottom space for navigation */
+.nav-menu-space {
+  margin-bottom: 80px;
+}

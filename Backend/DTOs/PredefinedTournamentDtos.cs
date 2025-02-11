@@ -72,4 +72,10 @@ namespace Backend.DTOs
         public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }
     }
+
+    public class TournamentStatusUpdateDto
+    {
+        [Required]
+        public bool IsActive { get; set; }
+    }
 }

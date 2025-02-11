@@ -74,5 +74,74 @@ namespace Backend.Controllers
                 return StatusCode(500, "An error occurred while fetching tournaments.");
             }
         }
+
+        [Authorize]
+        [HttpGet("get/{tournamentId}")]
+        public async Task<IActionResult> GetTournamentById(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Received request to fetch tournament with ID: {tournamentId}");
+                var tournament = await _tournamentService.GetPredefinedTournamentByIdAsync(tournamentId);
+
+                if (tournament == null)
+                {
+                    return NotFound(new { Message = $"Tournament with ID {tournamentId} not found." });
+                }
+
+                return Ok(tournament);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching the tournament.");
+                return StatusCode(500, new { Message = "An error occurred while fetching the tournament." });
+            }
+        }
+
+        [Authorize]
+        [HttpDelete("delete/{tournamentId}")]
+        public async Task<IActionResult> DeleteTournamentById(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Received request to delete tournament with ID: {tournamentId}");
+
+                var isDeleted = await _tournamentService.DeletePredefinedTournamentByIdAsync(tournamentId);
+
+                if (!isDeleted)
+                {
+                    return NotFound(new { Message = $"Tournament with ID {tournamentId} not found or already deleted." });
+                }
+
+                return Ok(new { Message = $"Tournament with ID {tournamentId} deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while deleting the tournament with ID: {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while deleting the tournament." });
+            }
+        }
+
+        [Authorize]
+        [HttpPatch("status/{tournamentId}")]
+        public async Task<IActionResult> UpdatePredefinedTournamentStatus(int tournamentId, [FromBody] TournamentStatusUpdateDto statusUpdate)
+        {
+            try
+            {
+                var isUpdated = await _tournamentService.UpdatePredefinedTournamentStatusAsync(tournamentId, statusUpdate.IsActive);
+
+                if (!isUpdated)
+                {
+                    return NotFound($"Tournament with ID {tournamentId} not found.");
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating tournament status for ID {tournamentId}: {ex.Message}");
+                return StatusCode(500, "An error occurred while updating the tournament status.");
+            }
+        }
     }
 }

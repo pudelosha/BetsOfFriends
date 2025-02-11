@@ -54,7 +54,7 @@ export class EditTeamModalComponent implements OnInit {
   private async showToast(message: string, color: 'success' | 'danger') {
     const toast = await this.toastController.create({
       message,
-      duration: 2000,
+      duration: 3000,
       position: 'bottom',
       color,
     });

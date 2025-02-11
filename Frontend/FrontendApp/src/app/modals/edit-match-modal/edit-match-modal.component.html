@@ -9,20 +9,28 @@
 
 <ion-content class="ion-padding">
   <form [formGroup]="matchForm" class="match-form">
-    
+    <div class="match-row vertical-align">
+      <ion-label class="selector-label">Stage</ion-label>
+      <ion-input formControlName="stage" placeholder="Enter stage"></ion-input>
+    </div>    
+       
     <!-- Home Team (Label + Selector in One Row) -->
     <div class="match-row">
       <ion-label class="selector-label">Home Team</ion-label>
-      <ion-select formControlName="homeTeam" class="wide-select">
-        <ion-select-option *ngFor="let team of teams" [value]="team">{{ team }}</ion-select-option>
+      <ion-select formControlName="homeTeam">
+        <ion-select-option *ngFor="let team of teams" [value]="team.teamName">
+          {{ team.teamName }}
+        </ion-select-option>
       </ion-select>
     </div>
 
     <!-- Away Team (Label + Selector in One Row) -->
     <div class="match-row">
       <ion-label class="selector-label">Away Team</ion-label>
-      <ion-select formControlName="awayTeam" class="wide-select">
-        <ion-select-option *ngFor="let team of teams" [value]="team">{{ team }}</ion-select-option>
+      <ion-select formControlName="awayTeam">
+        <ion-select-option *ngFor="let team of teams" [value]="team.teamName">
+          {{ team.teamName }}
+        </ion-select-option>
       </ion-select>
     </div>
 

@@ -30,3 +30,12 @@
   visibility: hidden;
   pointer-events: none;
 }
+
+.loading-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  color: #3880ff; /* Optional: Customize spinner color */
+}
