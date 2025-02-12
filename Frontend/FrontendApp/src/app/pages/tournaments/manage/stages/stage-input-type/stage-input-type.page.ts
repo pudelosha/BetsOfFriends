@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter  } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
@@ -19,6 +19,7 @@ export class StageInputTypePage {
   @Input() tournamentForm!: FormGroup; // Parent form
   @Output() teamsExtracted = new EventEmitter<any[]>(); // Emit teams to parent
   @Output() matchesExtracted = new EventEmitter<any[]>(); // Emit matches to parent
+  @ViewChild('fileInput') fileInput!: ElementRef;
 
   file: File | null = null;
 
@@ -31,6 +32,10 @@ export class StageInputTypePage {
     if (this.file) {
       this.readExcelFile();
     }
+  }
+
+  triggerFileInput(): void {
+    this.fileInput.nativeElement.click();
   }
 
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary' = 'primary') {

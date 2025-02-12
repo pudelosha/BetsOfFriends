@@ -18,19 +18,30 @@
   </ion-input>
 
   <!-- Upload Mode -->
-  <ion-label class="form-label centered">Upload Mode</ion-label>
+  <ion-label class="form-label centered">Upload From File</ion-label>
   <ion-segment formControlName="uploadMode" class="full-width upload-mode-segment">
+    <ion-segment-button value="upload">
+      <ion-label>Upload</ion-label>
+    </ion-segment-button>
     <ion-segment-button value="append">
       <ion-label>Append</ion-label>
     </ion-segment-button>
-    <ion-segment-button value="delete">
-      <ion-label>Delete & Upload</ion-label>
-    </ion-segment-button>
   </ion-segment>
 
-  <!-- File Upload -->
-  <div class="file-upload-container">
-    <input type="file" class="file-input" (change)="handleFileInput($event)">
+  <!-- File Upload Button -->
+  <div class="file-upload-container centered">
+    <ion-button
+      color="primary"
+      expand="full"
+      class="upload-button"
+      (click)="triggerFileInput()">
+      Select Excel File
+    </ion-button>
+    <input
+      #fileInput
+      type="file"
+      class="hidden-file-input"
+      (change)="handleFileInput($event)">
   </div>
 
   <!-- Erase Form Data Button -->

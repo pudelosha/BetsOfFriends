@@ -28,11 +28,11 @@
 
 .file-upload-container {
   text-align: center;
-  border: 1px dashed var(--ion-color-medium);
-  padding: 10px;
-  cursor: pointer;
 }
 
 .erase-button {
-  margin-top: 15px; /* Adds some spacing above the button */
+}
+
+.hidden-file-input {
+  display: none;
 }
