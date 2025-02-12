@@ -4,7 +4,7 @@ import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { Tournament } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
-
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-predefined-tournaments-list',
@@ -20,7 +20,8 @@ export class PredefinedTournamentsListPage implements OnInit {
   constructor(
     private tournamentService: PredefinedTournamentService,
     private toastController: ToastController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -60,9 +61,13 @@ export class PredefinedTournamentsListPage implements OnInit {
       this.showToast('Invalid tournament data. Unable to edit.', 'danger');
       return;
     }
-  
+
     console.log('Navigating to edit tournament with ID:', tournament.tournamentId);
-    window.location.href = `tournaments/update-predefined/${tournament.tournamentId}`;
+
+    this.router.navigate([`/tournaments/update-predefined/${tournament.tournamentId}`]).catch((error) => {
+      console.error('Navigation to edit tournament failed:', error);
+      this.showToast('Failed to navigate to the tournament editor.', 'danger');
+    });
   }
   
   async toggleTournamentStatus(tournament: any) {

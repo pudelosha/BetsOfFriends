@@ -15,7 +15,7 @@ import { AlertController } from '@ionic/angular';
 })
 export class StageTeamsManagementPage {
   @Input() teamsArray!: FormArray; // Input from parent for teams FormArray
-  @Output() teamsUpdated = new EventEmitter<string[]>(); // Emits updated teams to parent
+  @Output() teamsUpdated = new EventEmitter<{ previousTeams: any[]; updatedTeams: any[] }>(); // Emits old and updated teams to parent
 
   constructor(private toastController: ToastController, private modalController: ModalController, private alertController: AlertController) {}
 
@@ -28,6 +28,9 @@ export class StageTeamsManagementPage {
   async editTeam(index: number): Promise<void> {
     const team = this.teamsArray.at(index).value;
     const allTeamNames = this.teamsArray.controls.map((control) => control.get('teamName')?.value.trim().toLowerCase());
+
+    // Create a snapshot of the current teamsArray to capture old state
+    const previousTeamsArray = this.teamsArray.value.map((team: any) => ({ ...team }));
 
     const modal = await this.modalController.create({
       component: EditTeamModalComponent,
@@ -44,6 +47,9 @@ export class StageTeamsManagementPage {
         const teamGroup = this.teamsArray.at(index) as FormGroup;
         teamGroup.patchValue(updatedTeam);
         console.log('Updated Team:', updatedTeam);
+
+        // Emit both the previous and updated teams to the parent
+        this.emitTeams(previousTeamsArray, this.teamsArray.value);
       }
     });
   
@@ -53,7 +59,10 @@ export class StageTeamsManagementPage {
   // Remove a team
   async removeTeam(index: number): Promise<void> {
     const teamToRemove = this.teamsArray.at(index).value;
-  
+
+    // Create a snapshot of the current teamsArray to capture old state
+    const previousTeamsArray = this.teamsArray.value.map((team: any) => ({ ...team }));
+
     const alert = await this.alertController.create({
       header: 'Confirm Removal',
       message: `Are you sure you want to delete the team "${teamToRemove.teamName}"? Note: Any matches involving this team will also be affected.`,
@@ -67,22 +76,24 @@ export class StageTeamsManagementPage {
           role: 'destructive',
           handler: async () => {
             this.teamsArray.removeAt(index);
-            this.emitTeams();
+
+            // Emit both the previous and updated teams to the parent
+            this.emitTeams(previousTeamsArray, this.teamsArray.value);
             console.log('Removed team:', teamToRemove);
-  
+
             await this.showToast(`Team "${teamToRemove.teamName}" removed successfully!`, 'success');
           },
         },
       ],
     });
-  
+
     await alert.present();
   }
     
   // Emit updated teams to parent
-  private emitTeams(): void {
-    const updatedTeams = this.teamsArray.value;
-    this.teamsUpdated.emit(updatedTeams); // Emit updated teams to parent
+  private emitTeams(previousTeams: any[], updatedTeams: any[]): void {
+    this.teamsUpdated.emit({ previousTeams, updatedTeams }); // Emit old and updated teams to parent
+    console.log('Emitted Previous Teams:', previousTeams);
     console.log('Emitted Updated Teams:', updatedTeams);
   }
 

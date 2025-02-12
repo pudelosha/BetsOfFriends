@@ -214,34 +214,66 @@ export class BuildPredefinedTournamentPage implements OnInit {
     console.log('Extracted Matches:', this.matchesArray.value);
   }
   
-  handleTeamsUpdated(updatedTeams: any[]): void {
-    // Step 1: Extract team names from updatedTeams
+  handleTeamsUpdated(teamsData: { previousTeams: any[]; updatedTeams: any[] }): void {
+    const { previousTeams, updatedTeams } = teamsData;
+    
+    // Step 1: Create maps of teamId to teamName for previous and updated states
+    const previousTeamMap = previousTeams.reduce((map: any, team: any) => {
+      map[team.teamId] = team.teamName;
+      return map;
+    }, {});
+  
+    const updatedTeamMap = updatedTeams.reduce((map: any, team: any) => {
+      map[team.teamId] = team.teamName;
+      return map;
+    }, {});
+   
+    // Step 2: Detect team name changes
+    const nameUpdates = updatedTeams.filter((updatedTeam: any) => {
+      const previousTeamName = previousTeamMap[updatedTeam.teamId];
+      return previousTeamName && previousTeamName !== updatedTeam.teamName;
+    });
+    
+    // Step 3: Update matchesArray for team name changes
+    if (nameUpdates.length > 0) {
+      nameUpdates.forEach((updatedTeam: any) => {
+        const previousTeamName = previousTeamMap[updatedTeam.teamId];
+  
+        this.matchesArray.controls.forEach((control: AbstractControl) => {
+          const match = (control as FormGroup).value;
+  
+          if (match.homeTeam === previousTeamName) {
+            (control as FormGroup).patchValue({ homeTeam: updatedTeam.teamName });
+          }
+          if (match.awayTeam === previousTeamName) {
+            (control as FormGroup).patchValue({ awayTeam: updatedTeam.teamName });
+          }
+        });
+      });
+    }
+  
+    // Step 4: Remove matches where home or away teams no longer exist
     const updatedTeamNames = updatedTeams.map((team: any) => team.teamName);
-  
-    // Step 2: Remove all matches where home or away team is not in the updated team names
     const filteredMatches = this.matchesArray.controls.filter((control: AbstractControl) => {
-      const match = (control as FormGroup).value; // Explicitly cast AbstractControl to FormGroup
-      return updatedTeamNames.includes(match.homeTeam) && updatedTeamNames.includes(match.awayTeam);
+      const match = (control as FormGroup).value;
+      const isValidMatch = updatedTeamNames.includes(match.homeTeam) && updatedTeamNames.includes(match.awayTeam);
+      if (!isValidMatch) {
+      }
+      return isValidMatch;
     });
   
-    // Step 3: Update matchesArray with the filtered matches
+    // Step 5: Clear and rebuild matchesArray with filtered and updated matches
     this.matchesArray.clear();
-    filteredMatches.forEach((control: AbstractControl) => this.matchesArray.push(control));
-  
-    // Step 4: Update teamsArray with the updated teams
-    this.teamsArray.clear();
-    updatedTeams.forEach((team: any) => {
-      this.teamsArray.push(
-        this.fb.group({
-          teamName: [team.teamName, Validators.required], // Use teamName field
-          teamId: [team.teamId || null], // Include teamId if it exists, otherwise set to null
-        })
-      );
+    filteredMatches.forEach((control: AbstractControl) => {
+      const match = (control as FormGroup).value;
+      this.matchesArray.push(this.fb.group(match));
     });
   
-    console.log('Updated Teams from Child:', this.teamsArray.value);
-    console.log('Updated Matches after team removal:', this.matchesArray.value);
-  }
+    // Step 6: Emit updated matches
+    const finalUpdatedMatches = this.matchesArray.controls.map((control: AbstractControl) =>
+      (control as FormGroup).value
+    );
+  }  
    
   handleMatchesUpdated(updatedMatches: any[]): void {
     this.matchesArray.clear();
