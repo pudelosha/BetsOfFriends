@@ -4,6 +4,10 @@ import { FormGroup, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
+import { Tournament } from 'src/app/model/tournament-model';
+import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
+import { ModalController } from '@ionic/angular';
+import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-selection-modal/tournament-selection.modal';
 
 @Component({
   selector: 'app-stage-input-type',
@@ -13,26 +17,72 @@ import { FormsModule } from '@angular/forms'; // Import FormsModule
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
 export class StageInputTypePage implements OnInit {
+  @Input() showPredefinedImport: boolean = false;
   @Input() tournamentForm!: FormGroup; // Parent form
   @Output() teamsExtracted = new EventEmitter<any[]>(); // Emit teams to parent
   @Output() matchesExtracted = new EventEmitter<any[]>(); // Emit matches to parent
-  @Output() segmentChange = new EventEmitter<string>();
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   file: File | null = null;
-  selectedSegment: string = 'upload'; // Default value
+  importFileMethod: string = 'upload'; // Default value
+  importTournamentMethod: string = 'upload';
+  predefinedTournaments: Tournament[] = []; // Holds active predefined tournaments
+  selectedTournamentId: number | null = null; // Holds the selected tournament ID
 
-  constructor(private toastController: ToastController) {}
+  constructor(private toastController: ToastController, private tournamentService: PredefinedTournamentService, private modalController: ModalController) {}
 
   ngOnInit(): void {
-    this.selectedSegment = 'upload';
-    this.segmentChange.emit(this.selectedSegment); // Notify the parent of the default value
+    this.importFileMethod = 'upload';
+    this.importTournamentMethod = 'upload';
+
+    if (this.showPredefinedImport) {
+      this.loadPredefinedTournaments();
+    }
   }
 
-  onSegmentChange(event: CustomEvent): void {
-    this.selectedSegment = event.detail.value; // Update child property
-    this.segmentChange.emit(this.selectedSegment); // Notify parent
-    console.log('Selected Segment in Child:', this.selectedSegment);
+  onFileExtractChange(event: CustomEvent): void {
+    const method = event.detail.value;
+    this.tournamentForm.get('importFileMode')?.setValue(method);
+    console.log('Import File Mode:', method);
+  }
+  
+  onTournamentExtractChange(event: CustomEvent): void {
+    const method = event.detail.value;
+    this.tournamentForm.get('importTournamentMode')?.setValue(method);
+    console.log('Import Tournament Mode:', method);
+  }
+
+  private loadPredefinedTournaments(): void {
+    this.tournamentService.getActivePredefinedTournaments().subscribe({
+      next: (tournaments) => {
+        this.predefinedTournaments = tournaments;
+        console.log('Loaded predefined tournaments:', tournaments);
+      },
+      error: (err) => {
+        console.error('Error loading predefined tournaments:', err);
+      },
+    });
+  }
+
+  async openTournamentSelection(): Promise<void> {
+    const modal = await this.modalController.create({
+      component: TournamentSelectionModalComponent,
+      componentProps: {
+        predefinedTournaments: this.predefinedTournaments,
+      },
+      breakpoints: [0, 0.5, 1],
+      initialBreakpoint: 0.5, // Popup height
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data?.selectedTournamentId !== null) {
+      this.selectedTournamentId = data.selectedTournamentId;
+      console.log('Selected Tournament ID:', this.selectedTournamentId);
+      // Handle the selected tournament (upload or append logic)
+      // TODO
+    }
   }
 
   handleFileInput(event: any) {
@@ -187,8 +237,11 @@ export class StageInputTypePage implements OnInit {
     if (matchesArray) matchesArray.clear();
   
     this.tournamentForm.get('tournamentName')?.setValue('');
+    this.tournamentForm.get('importFileMode')?.setValue('upload');
+    this.tournamentForm.get('importTournamentMode')?.setValue('upload');
   
-    this.selectedSegment = 'upload';
+    this.importFileMethod = 'upload';
+    this.importTournamentMethod = 'upload';
   
     this.teamsExtracted.emit([]);
     this.matchesExtracted.emit([]);

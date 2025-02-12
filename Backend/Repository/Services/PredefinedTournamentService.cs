@@ -366,5 +366,31 @@ namespace Backend.Repository.Services
                 throw;
             }
         }
+
+        public async Task<List<PredefinedTournamentListDto>> GetActivePredefinedTournamentsAsync()
+        {
+            try
+            {
+                var activeTournaments = await _context.PredefinedTournaments
+                    .Where(t => t.IsActive) // Filter only active tournaments
+                    .Select(t => new PredefinedTournamentListDto
+                    {
+                        TournamentId = t.TournamentId,
+                        TournamentName = t.TournamentName,
+                        CreatedAt = t.CreatedAt,
+                        IsActive = t.IsActive
+                    })
+                    .ToListAsync();
+
+                _logger.LogInformation("Successfully retrieved active predefined tournaments.");
+                return activeTournaments;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error fetching active predefined tournaments: {ex.Message}", ex);
+                throw new ApplicationException("An error occurred while fetching predefined tournaments.", ex);
+            }
+        }
+
     }
 }

@@ -2,9 +2,9 @@
   <div *ngIf="step === 1">
     <app-stage-input-type
     [tournamentForm]="tournamentForm"
+    [showPredefinedImport]="false"
     (teamsExtracted)="handleTeamsExtracted($event)"
-    (matchesExtracted)="handleMatchesExtracted($event)"
-    (segmentChange)="handleSegmentChange($event)">
+    (matchesExtracted)="handleMatchesExtracted($event)">
   </app-stage-input-type>
   
   </div>

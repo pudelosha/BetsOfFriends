@@ -16,10 +16,29 @@
     class="full-width centered-input"
     placeholder="Enter tournament name">
   </ion-input>
+  <hr class="divider" />
 
+  <div *ngIf="showPredefinedImport">
+    <ion-label class="form-label centered">Import Predefined Tournament</ion-label>
+    
+    <!-- Segment for Upload/Append -->
+    <ion-segment [value]="importTournamentMethod" (ionChange)="onTournamentExtractChange($event)">
+      <ion-segment-button value="upload">
+        <ion-label>Upload</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="append">
+        <ion-label>Append</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  
+    <!-- Button to Open Tournament Selection -->
+    <ion-button expand="full" (click)="openTournamentSelection()">Select Tournament</ion-button>
+    <hr class="divider" />
+  </div>
+    
   <!-- Upload Mode -->
   <ion-label class="form-label centered">Upload From File</ion-label>
-  <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChange($event)">
+  <ion-segment [value]="importFileMethod" (ionChange)="onFileExtractChange($event)">
     <ion-segment-button value="upload">
       <ion-label>Upload</ion-label>
     </ion-segment-button>
@@ -43,6 +62,7 @@
       class="hidden-file-input"
       (change)="handleFileInput($event)">
   </div>
+  <hr class="divider" />
 
   <!-- Erase Form Data Button -->
   <ion-button color="danger" expand="full" class="erase-button" (click)="confirmEraseForm()">

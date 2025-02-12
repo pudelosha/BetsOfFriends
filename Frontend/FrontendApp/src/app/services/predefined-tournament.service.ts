@@ -28,6 +28,10 @@ export class PredefinedTournamentService {
     return this.http.get<Tournament[]>(`${this.apiUrl}`);
   } 
 
+  getActivePredefinedTournaments(): Observable<Tournament[]> {
+    return this.http.get<Tournament[]>(`${this.apiUrl}/active`);
+  }
+  
   updatePredefinedTournamentStatus(tournamentId: number, isActive: boolean): Observable<void> {
     const requestBody = { isActive };
     return this.http.patch<void>(`${this.apiUrl}/status/${tournamentId}`, requestBody);

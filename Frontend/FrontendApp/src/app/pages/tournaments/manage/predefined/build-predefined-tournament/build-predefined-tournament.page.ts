@@ -6,8 +6,8 @@ import { StageInputTypePage } from '../../stages/stage-input-type/stage-input-ty
 import { StageTeamsManagementPage } from '../../stages/stage-teams-management/stage-teams-management.page';
 import { StageMatchesManagementPage } from '../../stages/stage-matches-management/stage-matches-management.page';
 import { StageSummaryPage } from '../../stages/stage-summary/stage-summary.page';
-import { buildMatchFormGroup } from '..//..//../shared/form-utils';
-import { PredefinedTournamentService } from '../../../../../services/predefined-tournament.service';
+import { buildMatchFormGroup } from '../../../shared/form-utils';
+import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Tournament, Team, Match } from '../../../../../model/tournament-model';
 import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
@@ -27,7 +27,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
   step = 1;
   tournamentId?: number | null = null; // Optional: null for new tournaments, number for existing ones
   isLoading = false;
-  selectedSegment: string = 'upload';
+  selectedFileExtractMethod: string = 'upload';
+  selectedTournamentExtractMethod : string = 'upload';
 
   constructor(private fb: FormBuilder, 
     private toastController: ToastController,
@@ -39,6 +40,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
+      importFileMode: ['upload'],
+      importTournamentMode: ['upload'],
       teams: this.fb.array([], Validators.required),
       matches: this.fb.array([]),
     });
@@ -156,7 +159,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
     this.tournamentForm.patchValue({
       tournamentId: tournament.tournamentId,
       tournamentName: tournament.tournamentName,
-      uploadMode: 'upload',
+      importTournamentMode: 'upload',
+      importFileMode: 'upload',
     });
   
     // Populate teams
@@ -194,7 +198,12 @@ export class BuildPredefinedTournamentPage implements OnInit {
   }
       
   handleTeamsExtracted(teams: { teamId: number | null; teamName: string }[]): void {
-    if (this.selectedSegment === 'upload') {
+
+// TODO START HERE TOMORROW !!!!!!!!!!!!
+// it looks like we need 1 unified toggle for file and predefined load
+// or parameter in handleTeamsExtracted and handleMatchesExtracted
+
+    if (this.selectedFileExtractMethod === 'upload') {
       // Clear and replace all teams
       this.teamsArray.clear();
       teams.forEach((team) => {
@@ -205,7 +214,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
           })
         );
       });
-    } else if (this.selectedSegment === 'append') {
+    } else if (this.selectedFileExtractMethod === 'append') {
       // Append new teams, avoiding duplicates
       teams.forEach((team) => {
         if (!this.teamsArray.value.some((existing: any) => existing.teamName === team.teamName)) {
@@ -223,13 +232,13 @@ export class BuildPredefinedTournamentPage implements OnInit {
   }
   
   handleMatchesExtracted(matches: any[]): void {
-    if (this.selectedSegment === 'upload') {
+    if (this.selectedFileExtractMethod === 'upload') {
       // Clear and replace all matches
       this.matchesArray.clear();
       matches.forEach((match) => {
         this.matchesArray.push(buildMatchFormGroup(this.fb, match));
       });
-    } else if (this.selectedSegment === 'append') {
+    } else if (this.selectedFileExtractMethod === 'append') {
       // Append new matches, avoiding duplicates
       matches.forEach((match) => {
         if (
@@ -315,11 +324,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
       this.matchesArray.push(buildMatchFormGroup(this.fb, match));
     });
     console.log('Updated Matches from Child:', this.matchesArray.value);
-  }
-
-  handleSegmentChange(segment: string): void {
-    this.selectedSegment = segment;
-    console.log('Selected Segment in Parent:', this.selectedSegment);
   }
   
   submitTournament(): void {

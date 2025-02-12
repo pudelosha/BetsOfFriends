@@ -143,5 +143,28 @@ namespace Backend.Controllers
                 return StatusCode(500, "An error occurred while updating the tournament status.");
             }
         }
+
+        [Authorize]
+
+        [HttpGet("active")]
+        public async Task<IActionResult> GetActivePredefinedTournaments()
+        {
+            try
+            {
+                _logger.LogInformation("Fetching active predefined tournaments.");
+                var tournaments = await _tournamentService.GetActivePredefinedTournamentsAsync();
+                return Ok(tournaments);
+            }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError($"Application error while fetching tournaments: {ex.Message}", ex);
+                return StatusCode(500, "An internal error occurred while retrieving predefined tournaments.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Unexpected error: {ex.Message}", ex);
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
     }
 }

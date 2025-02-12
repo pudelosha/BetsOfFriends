@@ -8,7 +8,7 @@
 .form-container {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Adds consistent spacing between elements */
+  gap: 5px; /* Adds consistent spacing between elements */
 }
 
 .form-label {
@@ -30,9 +30,41 @@
   text-align: center;
 }
 
-.erase-button {
-}
-
 .hidden-file-input {
   display: none;
 }
+
+/* Divider Styles */
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: #ccc; /* Light gray color */
+  margin: 16px 0; /* Space around the divider */
+  border: none;
+}
+
+/* Centered Label */
+.form-label.centered {
+  display: block;
+  text-align: center;
+  font-weight: bold; /* Make the label stand out */
+  margin-bottom: 8px;
+}
+
+/* Center horizontally */
+.horizontal-center {
+  display: flex;
+  flex-direction: column; /* Stack label and select vertically */
+  align-items: center; /* Center horizontally */
+  text-align: center; /* Align label text */
+  margin-top: 16px; /* Add some spacing from the top if needed */
+}
+
+/* Select styling */
+.centered-select {
+  width: auto; /* Allow natural width based on content */
+  margin-top: 8px; /* Space between label and select */
+}
+
+
+

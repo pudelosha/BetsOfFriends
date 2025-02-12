@@ -1,0 +1,26 @@
+/* Button Container */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background-color: white;
+    padding: 0.5rem;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    margin-bottom: 55px;
+    padding: 15px 10px;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+  }
+    
+   /* Third Width Buttons */
+  .third-width {
+    flex: 1; /* Ensures equal width */
+    max-width: 33.33%; /* 1/3 of the container width */
+    text-align: center;
+    margin: 0 5px; /* Optional: Add spacing between buttons */
+    padding: 0;
+    height: 40px;
+  }
