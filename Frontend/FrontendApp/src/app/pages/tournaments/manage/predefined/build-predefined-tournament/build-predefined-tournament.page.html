@@ -1,10 +1,12 @@
 <ion-content class="ion-padding page-with-header">
   <div *ngIf="step === 1">
     <app-stage-input-type
-      [tournamentForm]="tournamentForm"
-      (teamsExtracted)="handleTeamsExtracted($event)"
-      (matchesExtracted)="handleMatchesExtracted($event)">
-    </app-stage-input-type>
+    [tournamentForm]="tournamentForm"
+    (teamsExtracted)="handleTeamsExtracted($event)"
+    (matchesExtracted)="handleMatchesExtracted($event)"
+    (segmentChange)="handleSegmentChange($event)">
+  </app-stage-input-type>
+  
   </div>
 
   <div *ngIf="step === 2">

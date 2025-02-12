@@ -1,11 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit } from '@angular/core';
 import * as XLSX from 'xlsx';
-import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, AlertController } from '@ionic/angular';
-import { ModalController, ViewWillEnter } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
 
 @Component({
@@ -15,17 +12,28 @@ import { FormsModule } from '@angular/forms'; // Import FormsModule
   standalone: true,
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
-export class StageInputTypePage {
+export class StageInputTypePage implements OnInit {
   @Input() tournamentForm!: FormGroup; // Parent form
   @Output() teamsExtracted = new EventEmitter<any[]>(); // Emit teams to parent
   @Output() matchesExtracted = new EventEmitter<any[]>(); // Emit matches to parent
+  @Output() segmentChange = new EventEmitter<string>();
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   file: File | null = null;
-
-  uploadMode: 'append' | 'delete' = 'append'; // Default to 'append'
+  selectedSegment: string = 'upload'; // Default value
 
   constructor(private toastController: ToastController) {}
+
+  ngOnInit(): void {
+    this.selectedSegment = 'upload';
+    this.segmentChange.emit(this.selectedSegment); // Notify the parent of the default value
+  }
+
+  onSegmentChange(event: CustomEvent): void {
+    this.selectedSegment = event.detail.value; // Update child property
+    this.segmentChange.emit(this.selectedSegment); // Notify parent
+    console.log('Selected Segment in Child:', this.selectedSegment);
+  }
 
   handleFileInput(event: any) {
     this.file = event.target.files[0];
@@ -175,12 +183,16 @@ export class StageInputTypePage {
     const teamsArray = this.tournamentForm.get('teams') as FormArray;
     const matchesArray = this.tournamentForm.get('matches') as FormArray;
   
-    if (teamsArray) teamsArray.clear(); // Use `.clear()` instead of `.setValue([])`
-    if (matchesArray) matchesArray.clear(); // Properly clears form array
+    if (teamsArray) teamsArray.clear();
+    if (matchesArray) matchesArray.clear();
+  
+    this.tournamentForm.get('tournamentName')?.setValue('');
+  
+    this.selectedSegment = 'upload';
   
     this.teamsExtracted.emit([]);
     this.matchesExtracted.emit([]);
   
     this.showToast('All form data has been erased.', 'success');
-  }  
+  } 
 }

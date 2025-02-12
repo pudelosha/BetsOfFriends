@@ -19,7 +19,7 @@
 
   <!-- Upload Mode -->
   <ion-label class="form-label centered">Upload From File</ion-label>
-  <ion-segment formControlName="uploadMode" class="full-width upload-mode-segment">
+  <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChange($event)">
     <ion-segment-button value="upload">
       <ion-label>Upload</ion-label>
     </ion-segment-button>

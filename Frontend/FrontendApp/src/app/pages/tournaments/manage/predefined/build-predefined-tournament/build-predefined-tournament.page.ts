@@ -27,6 +27,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
   step = 1;
   tournamentId?: number | null = null; // Optional: null for new tournaments, number for existing ones
   isLoading = false;
+  selectedSegment: string = 'upload';
 
   constructor(private fb: FormBuilder, 
     private toastController: ToastController,
@@ -38,7 +39,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
-      uploadMode: ['append'],
       teams: this.fb.array([], Validators.required),
       matches: this.fb.array([]),
     });
@@ -156,7 +156,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
     this.tournamentForm.patchValue({
       tournamentId: tournament.tournamentId,
       tournamentName: tournament.tournamentName,
-      uploadMode: 'append',
+      uploadMode: 'upload',
     });
   
     // Populate teams
@@ -194,26 +194,60 @@ export class BuildPredefinedTournamentPage implements OnInit {
   }
       
   handleTeamsExtracted(teams: { teamId: number | null; teamName: string }[]): void {
-    this.teamsArray.clear();
-    teams.forEach((team) => {
-      this.teamsArray.push(
-        this.fb.group({
-          teamId: [team.teamId],
-          teamName: [team.teamName, Validators.required],
-        })
-      );
-    });
-    console.log('Extracted Teams:', this.teamsArray.value);
+    if (this.selectedSegment === 'upload') {
+      // Clear and replace all teams
+      this.teamsArray.clear();
+      teams.forEach((team) => {
+        this.teamsArray.push(
+          this.fb.group({
+            teamId: [team.teamId],
+            teamName: [team.teamName, Validators.required],
+          })
+        );
+      });
+    } else if (this.selectedSegment === 'append') {
+      // Append new teams, avoiding duplicates
+      teams.forEach((team) => {
+        if (!this.teamsArray.value.some((existing: any) => existing.teamName === team.teamName)) {
+          this.teamsArray.push(
+            this.fb.group({
+              teamId: [team.teamId],
+              teamName: [team.teamName, Validators.required],
+            })
+          );
+        }
+      });
+    }
+  
+    console.log('Updated Teams:', this.teamsArray.value);
   }
   
   handleMatchesExtracted(matches: any[]): void {
-    this.matchesArray.clear();
-    matches.forEach(match => {
-      this.matchesArray.push(buildMatchFormGroup(this.fb, match));
-    });
-    console.log('Extracted Matches:', this.matchesArray.value);
-  }
+    if (this.selectedSegment === 'upload') {
+      // Clear and replace all matches
+      this.matchesArray.clear();
+      matches.forEach((match) => {
+        this.matchesArray.push(buildMatchFormGroup(this.fb, match));
+      });
+    } else if (this.selectedSegment === 'append') {
+      // Append new matches, avoiding duplicates
+      matches.forEach((match) => {
+        if (
+          !this.matchesArray.value.some(
+            (existing: any) =>
+              existing.homeTeam === match.homeTeam &&
+              existing.awayTeam === match.awayTeam &&
+              existing.matchStart === match.matchStart
+          )
+        ) {
+          this.matchesArray.push(buildMatchFormGroup(this.fb, match));
+        }
+      });
+    }
   
+    console.log('Updated Matches:', this.matchesArray.value);
+  }
+    
   handleTeamsUpdated(teamsData: { previousTeams: any[]; updatedTeams: any[] }): void {
     const { previousTeams, updatedTeams } = teamsData;
     
@@ -283,6 +317,11 @@ export class BuildPredefinedTournamentPage implements OnInit {
     console.log('Updated Matches from Child:', this.matchesArray.value);
   }
 
+  handleSegmentChange(segment: string): void {
+    this.selectedSegment = segment;
+    console.log('Selected Segment in Parent:', this.selectedSegment);
+  }
+  
   submitTournament(): void {
     // Validate Tournament Data
     if (!this.tournamentForm.value.tournamentName?.trim()) {
