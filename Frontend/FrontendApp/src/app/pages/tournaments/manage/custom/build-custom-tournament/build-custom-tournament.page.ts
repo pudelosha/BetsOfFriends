@@ -144,7 +144,7 @@ export class BuildCustomTournamentPage implements OnInit {
      });
    }  
    
-   private populateForm(tournament: Tournament): void {
+   populateForm(tournament: Tournament): void {
      this.tournamentForm.patchValue({
        tournamentId: tournament.tournamentId,
        tournamentName: tournament.tournamentName,

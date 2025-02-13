@@ -21,6 +21,7 @@ export class StageInputTypePage implements OnInit {
   @Input() tournamentForm!: FormGroup; // Parent form
   @Output() teamsExtracted = new EventEmitter<any[]>(); // Emit teams to parent
   @Output() matchesExtracted = new EventEmitter<any[]>(); // Emit matches to parent
+  @Output() tournamentSelected = new EventEmitter<Tournament>();
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   file: File | null = null;
@@ -65,18 +66,36 @@ export class StageInputTypePage implements OnInit {
       breakpoints: [0, 0.5, 1],
       initialBreakpoint: 0.5, // Popup height
     });
-
+  
     await modal.present();
-
+  
     const { data } = await modal.onWillDismiss();
-    if (data?.selectedTournamentId !== null) {
-      this.selectedTournamentId = data.selectedTournamentId;
-      console.log('Selected Tournament ID:', this.selectedTournamentId);
-      // Handle the selected tournament (upload or append logic)
-      // TODO
-    }
+    
+    // Assign the selected tournament ID from the modal data
+    this.selectedTournamentId = data?.selectedTournamentId ?? null;
+  
+    if (this.selectedTournamentId !== null) {
+      this.tournamentService.getPredefinedTournamentById(this.selectedTournamentId).subscribe({
+        next: (tournament: Tournament) => {
+          console.log('Fetched Tournament:', tournament);
+          
+          // Emit the fetched tournament data to the parent
+          this.tournamentSelected.emit(tournament);
+  
+          // Show a success toast
+          this.showToast('Tournament loaded successfully!', 'success');
+        },
+        error: (err) => {
+          console.error('Error fetching tournament:', err);
+          this.showToast('Failed to load tournament data!', 'danger');
+        },
+      });
+    } else {
+      console.error('Selected Tournament ID is null.');
+      this.showToast('No tournament selected!', 'warning');
+    }    
   }
-
+    
   handleFileInput(event: any) {
     this.file = event.target.files[0];
     if (this.file) {

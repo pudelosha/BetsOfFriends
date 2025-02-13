@@ -4,7 +4,8 @@
       [showPredefinedImport]="true"
       [tournamentForm]="tournamentForm"
       (teamsExtracted)="handleTeamsExtracted($event)"
-      (matchesExtracted)="handleMatchesExtracted($event)">
+      (matchesExtracted)="handleMatchesExtracted($event)"
+      (tournamentSelected)="populateForm($event)">
     </app-stage-input-type>
     
     </div>
