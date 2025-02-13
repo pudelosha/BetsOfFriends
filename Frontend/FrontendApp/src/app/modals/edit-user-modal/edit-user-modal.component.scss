@@ -1,0 +1,28 @@
+/* Form field styling */
+ion-item {
+  --background: #ffffff;
+  --border-radius: 10px;
+  margin: 10px 0;
+}
+
+/* Validation message styling */
+.validation-message {
+  margin-top: 4px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.validation-message .error {
+  color: red;
+  margin: 0;
+  padding: 0;
+}
+
+/* Save button styling */
+.save-button-container ion-button {
+  --border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  height: 48px;
+  margin: 10px 0;
+}

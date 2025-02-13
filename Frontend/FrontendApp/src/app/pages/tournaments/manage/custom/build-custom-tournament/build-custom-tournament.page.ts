@@ -4,10 +4,12 @@ import { CommonModule } from '@angular/common';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
 import { EditTeamModalComponent } from 'src/app/modals/edit-team-modal/edit-team-modal.component';
+import { EditUserModalComponent } from 'src/app/modals/edit-user-modal/edit-user-modal.component';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { StageInputTypePage } from '../../stages/stage-input-type/stage-input-type.page';
 import { StageTeamsManagementPage } from '../../stages/stage-teams-management/stage-teams-management.page';
 import { StageMatchesManagementPage } from '../../stages/stage-matches-management/stage-matches-management.page';
+import { StageUsersManagementPage } from '../../stages/stage-users-management/stage-users-management.page';
 import { StageSummaryPage } from '../../stages/stage-summary/stage-summary.page';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
@@ -20,7 +22,7 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
   templateUrl: './build-custom-tournament.page.html',
   styleUrls: ['./build-custom-tournament.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageMatchesManagementPage, StageSummaryPage],
+  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage],
 })
 export class BuildCustomTournamentPage implements OnInit {
   tournamentForm: FormGroup;
@@ -40,7 +42,8 @@ export class BuildCustomTournamentPage implements OnInit {
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       importMethod: ['upload'],
       teams: this.fb.array([], Validators.required),
-      matches: this.fb.array([]),
+      matches: this.fb.array([], Validators.required),
+      users: this.fb.array([], Validators.required),
     });
   }
 
@@ -72,58 +75,100 @@ export class BuildCustomTournamentPage implements OnInit {
     return this.tournamentForm.get('matches') as FormArray;
   }
 
+  get usersArray(): FormArray {
+    return this.tournamentForm.get('users') as FormArray;
+  }
+
   async openAddModal(): Promise<void> {
-     if (this.step === 2) {
-       const allTeamNames = this.teamsArray.controls.map((control) => control.get('teamName')?.value.trim().toLowerCase()); // Extract all team names
- 
-       const modal = await this.modalController.create({
-         component: EditTeamModalComponent,
-         componentProps: {
-           team: null, // New team
-           isEditing: false,
-           allTeamNames,
-         },
-       });
+    if (this.step === 2) {
+      const allTeamNames = this.teamsArray.controls.map((control) => control.get('teamName')?.value.trim().toLowerCase()); // Extract all team names
+  
+      const modal = await this.modalController.create({
+        component: EditTeamModalComponent,
+        componentProps: {
+          team: null, // New team
+          isEditing: false,
+          allTeamNames,
+        },
+      });
+  
+      modal.onDidDismiss().then((result) => {
+        if (result.data) {
+          const newTeam = result.data;
+          this.teamsArray.push(
+            this.fb.group({
+              teamId: [newTeam.teamId], // Can be null for new teams
+              teamName: [newTeam.teamName, Validators.required],
+            })
+          );
+          console.log('Added New Team:', newTeam);
+        }
+      });
+  
+      await modal.present();
+    } else if (this.step === 3) {
+      const modal = await this.modalController.create({
+        component: EditMatchModalComponent,
+        componentProps: {
+          match: null, // Passing null to indicate "Add New Match"
+          index: undefined, // No existing match to edit
+          teams: this.teamsArray.value.map((team: any) => ({
+            teamId: team.teamId || null,
+            teamName: team.teamName,
+          })), // Pass list of teams with both teamId and teamName
+        },
+      });
+  
+      modal.onDidDismiss().then((result) => {
+        if (result.data) {
+          // Add the new match to the matchesArray
+          this.matchesArray.push(this.fb.group(result.data));
+          console.log('Added New Match:', result.data);
+        }
+      });
+  
+      await modal.present();
+    } else if (this.step === 4) {
+      const allUserEmails = this.usersArray.controls.map((control) => control.get('userEmail')?.value.trim().toLowerCase()); // Extract all user emails
+  
+      const modal = await this.modalController.create({
+        component: EditUserModalComponent,
+        componentProps: {
+          user: {
+            userId: null, // New user has no userId initially
+            userName: '', // New user name
+            userAdminName: '', // New admin-defined name
+            userEmail: '', // New user email
+            status: 'New', // Default status for a new user
+          },
+          isEditing: false, // Not editing, this is for adding a new user
+          allUserEmails, // To check for duplicate emails
+        },
+      });
+  
+      modal.onDidDismiss().then((result) => {
+        if (result.data) {
+          const newUser = result.data;
+  
+          // Add the new user to the usersArray
+          this.usersArray.push(
+            this.fb.group({
+              userId: [newUser.userId], // Null for new users
+              userName: [newUser.userName, Validators.required],
+              userAdminName: [newUser.userAdminName, Validators.required],
+              userEmail: [newUser.userEmail, [Validators.required, Validators.email]],
+              status: [newUser.status, Validators.required],
+            })
+          );
+  
+          console.log('Added New User:', newUser);
+        }
+      });
+  
+      await modal.present();
+    }
+  }  
    
-       modal.onDidDismiss().then((result) => {
-         if (result.data) {
-           const newTeam = result.data;
-           this.teamsArray.push(
-             this.fb.group({
-               teamId: [newTeam.teamId], // Can be null for new teams
-               teamName: [newTeam.teamName, Validators.required],
-             })
-           );
-           console.log('Added New Team:', newTeam);
-         }
-       });
-   
-       await modal.present();
-     } else if (this.step === 3) {
-       const modal = await this.modalController.create({
-         component: EditMatchModalComponent,
-         componentProps: {
-           match: null, // Passing null to indicate "Add New Match"
-           index: undefined, // No existing match to edit
-           teams: this.teamsArray.value.map((team: any) => ({
-             teamId: team.teamId || null,
-             teamName: team.teamName,
-           })), // Pass list of teams with both teamId and teamName
-         },
-       });
-   
-       modal.onDidDismiss().then((result) => {
-         if (result.data) {
-           // Add the new match to the matchesArray
-           this.matchesArray.push(this.fb.group(result.data));
-           console.log('Added New Match:', result.data);
-         }
-       });
-   
-       await modal.present();
-     }
-   }
- 
    private loadTournament(): void {
      if (!this.tournamentId) {
        console.error('Tournament ID is missing.');
@@ -247,6 +292,10 @@ export class BuildCustomTournamentPage implements OnInit {
    
      console.log('Updated Matches:', this.matchesArray.value);
    }  
+
+   handleUsersUpdated(users: any[]): void {
+    
+   }
      
    handleTeamsUpdated(teamsData: { previousTeams: any[]; updatedTeams: any[] }): void {
      const { previousTeams, updatedTeams } = teamsData;
@@ -323,7 +372,7 @@ export class BuildCustomTournamentPage implements OnInit {
          
   async nextStep(): Promise<void> {
     const canProceed = await this.canProceed();
-    if (canProceed && this.step < 4) {
+    if (canProceed && this.step < 5) {
       this.scrollToTop();
       this.step++;
     }
@@ -368,8 +417,15 @@ export class BuildCustomTournamentPage implements OnInit {
           return false;
         }
         return true;
-  
+
       case 4:
+        if (this.usersArray.length === 0) {
+          await this.showToast('At least 1 user is required!', 'danger');
+          return false;
+        }
+        return true;
+  
+      case 5:
         return true; // No validation needed for the summary
     }
     return false; // Default fallback

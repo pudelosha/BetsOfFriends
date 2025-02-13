@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ isEditing ? 'Edit User' : 'Add New User' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="userForm" class="user-form">
+    <!-- User Name -->
+    <ion-item>
+      <ion-label position="floating">User Name</ion-label>
+      <ion-input formControlName="userName" readonly></ion-input>
+    </ion-item>
+    <div class="validation-message">
+      <p class="error" *ngIf="userForm.get('userName')?.hasError('required') && userForm.get('userName')?.touched">
+        User name is required.
+      </p>
+    </div>
+
+    <!-- Admin-Defined Name -->
+    <ion-item>
+      <ion-label position="floating">Admin-Defined Name</ion-label>
+      <ion-input formControlName="userAdminName" placeholder="Enter admin-defined name"></ion-input>
+    </ion-item>
+    <div class="validation-message">
+      <p class="error" *ngIf="userForm.get('userAdminName')?.hasError('required') && userForm.get('userAdminName')?.touched">
+        Admin-defined name is required.
+      </p>
+    </div>
+
+    <!-- User Email -->
+    <ion-item>
+      <ion-label position="floating">User Email</ion-label>
+      <ion-input formControlName="userEmail" type="email" placeholder="Enter user email"></ion-input>
+    </ion-item>
+    <div class="validation-message">
+      <p class="error" *ngIf="userForm.get('userEmail')?.hasError('required') && userForm.get('userEmail')?.touched">
+        User email is required.
+      </p>
+      <p class="error" *ngIf="userForm.get('userEmail')?.hasError('email') && userForm.get('userEmail')?.touched">
+        Please enter a valid email address.
+      </p>
+    </div>
+
+    <!-- Status -->
+    <ion-item>
+      <ion-label position="floating">Status</ion-label>
+      <ion-input formControlName="status" readonly></ion-input>
+    </ion-item>
+
+    <!-- Save Button -->
+    <div class="save-button-container">
+      <ion-button expand="full" color="success" (click)="saveUser()">Save</ion-button>
+    </div>
+  </form>
+</ion-content>

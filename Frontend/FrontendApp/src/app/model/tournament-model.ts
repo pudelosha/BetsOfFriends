@@ -19,6 +19,14 @@ export interface Match {
   awayQualifies: number | null;
 }
 
+export interface User {
+  userId: number | null;
+  userName: string;
+  userAdminName: string;
+  userEmail: string;
+  status: 'New' | 'Invited' | 'Accepted' | 'Banned';
+}
+
 export interface Tournament {
   tournamentId?: number | null;
   tournamentName: string;
@@ -27,4 +35,5 @@ export interface Tournament {
   createdAt: string;
   teams: Team[];
   matches: Match[];
+  users?: User[]; // Optional users array
 }

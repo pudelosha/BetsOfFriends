@@ -1,0 +1,85 @@
+/* ======================== */
+/*  Page Description */
+/* ======================== */
+.page-description {
+    margin-bottom: 1rem;
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  /* ======================== */
+  /*  User List Formatting */
+  /* ======================== */
+  .user-list {
+    margin: 1rem 0;
+    padding: 0;
+  }
+  
+  /*  User Item Formatting */
+  .user-item {
+    --inner-padding-end: 0px !important;
+    --inner-padding-start: 0px !important;
+    --padding-end: 0px !important;
+    --padding-start: 0px !important;
+    --ion-item-background: transparent;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    padding: 0;
+  }
+  
+  /*  User Grid Layout */
+  .user-grid {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+  }
+  
+  /*  User Details */
+  .user-details {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+  
+  .user-details .user-name {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  
+  .user-details .user-email,
+  .user-details .user-status {
+    font-size: 0.875rem;
+    color: #555;
+  }
+  
+  /*  User Buttons */
+  .user-button-container {
+    flex: 1;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  /*  User Button Styling */
+  .user-button {
+    font-size: 12px;
+    height: 32px;
+    min-width: 75px;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Ensure bottom space for navigation */
+  .nav-menu-space {
+    margin-bottom: 80px;
+  }
+  

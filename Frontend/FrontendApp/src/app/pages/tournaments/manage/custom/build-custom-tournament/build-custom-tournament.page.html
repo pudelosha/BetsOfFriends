@@ -1,4 +1,4 @@
-<ion-content class="ion-padding page-with-header">
+<ion-content class="ion-padding page-with-header unauth-container">
     <div *ngIf="step === 1">
       <app-stage-input-type
       [showPredefinedImport]="true"
@@ -17,7 +17,6 @@
       </app-stage-teams-management>
     </div>
     
-  
     <div *ngIf="step === 3">
       <app-stage-matches-management
         [matchesArray]="matchesArray"
@@ -27,6 +26,13 @@
     </div>
   
     <div *ngIf="step === 4">
+      <app-stage-users-management
+        [usersArray]="usersArray"
+        (usersUpdated)="handleUsersUpdated($event)">
+      </app-stage-users-management>
+    </div>
+
+    <div *ngIf="step === 5">
       <app-stage-summary
         [tournamentName]="tournamentForm.get('tournamentName')?.value"
         [teamsArray]="teamsArray.value"
@@ -45,7 +51,7 @@
   
       <!-- Show "Add" button only on steps 2 and 3 -->
       <ion-button
-        *ngIf="step === 2 || step === 3"
+        *ngIf="step === 2 || step === 3 || step === 4"
         class="third-width"
         expand="full"
         (click)="openAddModal()">
@@ -53,7 +59,7 @@
       </ion-button>
   
       <ion-button
-        *ngIf="step === 4"
+        *ngIf="step === 5"
         class="third-width"
         expand="full"
         (click)="submitTournament()">
@@ -61,7 +67,7 @@
       </ion-button>
   
       <ion-button
-        [class.hidden]="step === 4"
+        [class.hidden]="step === 5"
         class="third-width"
         expand="full"
         (click)="nextStep()">
