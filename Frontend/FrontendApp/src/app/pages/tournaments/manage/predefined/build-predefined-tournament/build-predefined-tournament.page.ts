@@ -40,8 +40,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
-      importFileMode: ['upload'],
-      importTournamentMode: ['upload'],
+      importMethod: ['upload'],
       teams: this.fb.array([], Validators.required),
       matches: this.fb.array([]),
     });

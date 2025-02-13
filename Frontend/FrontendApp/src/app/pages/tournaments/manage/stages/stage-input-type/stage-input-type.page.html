@@ -1,12 +1,11 @@
 <form [formGroup]="tournamentForm" class="form-container">
   <div class="page-description">
     <p>
-      This page is accessible by the super admin to insert a tournament template
-      into the application, allowing people to bet on football games for fun with friends.
+      Manage tournaments by creating new ones or updating existing ones, with options to customize teams, games, and details.
     </p>
     <p>
-      Provide a tournament name and upload an Excel file or proceed to manually add teams and games.
-    </p>
+      Enter a tournament name and either upload an Excel file or manually add teams and games.
+    </p>    
   </div>
 
   <!-- Tournament Name -->
@@ -18,27 +17,9 @@
   </ion-input>
   <hr class="divider" />
 
-  <div *ngIf="showPredefinedImport">
-    <ion-label class="form-label centered">Import Predefined Tournament</ion-label>
-    
-    <!-- Segment for Upload/Append -->
-    <ion-segment [value]="importTournamentMethod" (ionChange)="onTournamentExtractChange($event)">
-      <ion-segment-button value="upload">
-        <ion-label>Upload</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="append">
-        <ion-label>Append</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  
-    <!-- Button to Open Tournament Selection -->
-    <ion-button expand="full" (click)="openTournamentSelection()">Select Tournament</ion-button>
-    <hr class="divider" />
-  </div>
-    
-  <!-- Upload Mode -->
-  <ion-label class="form-label centered">Upload From File</ion-label>
-  <ion-segment [value]="importFileMethod" (ionChange)="onFileExtractChange($event)">
+  <ion-label class="form-label centered">Import Data</ion-label>
+
+  <ion-segment [value]="importMethod" (ionChange)="onImportMethodChange($event)">
     <ion-segment-button value="upload">
       <ion-label>Upload</ion-label>
     </ion-segment-button>
@@ -47,6 +28,11 @@
     </ion-segment-button>
   </ion-segment>
 
+   <!-- Import Predefined Tournament --> 
+  <div *ngIf="showPredefinedImport">
+    <ion-button expand="full" (click)="openTournamentSelection()">Select Tournament</ion-button>
+  </div>
+    
   <!-- File Upload Button -->
   <div class="file-upload-container centered">
     <ion-button

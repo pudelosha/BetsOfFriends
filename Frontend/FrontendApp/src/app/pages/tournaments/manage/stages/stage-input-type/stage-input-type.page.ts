@@ -24,34 +24,26 @@ export class StageInputTypePage implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   file: File | null = null;
-  importFileMethod: string = 'upload'; // Default value
-  importTournamentMethod: string = 'upload';
+  importMethod: string = 'upload'; // Default value
   predefinedTournaments: Tournament[] = []; // Holds active predefined tournaments
   selectedTournamentId: number | null = null; // Holds the selected tournament ID
 
   constructor(private toastController: ToastController, private tournamentService: PredefinedTournamentService, private modalController: ModalController) {}
 
   ngOnInit(): void {
-    this.importFileMethod = 'upload';
-    this.importTournamentMethod = 'upload';
+    this.importMethod = 'upload';
 
     if (this.showPredefinedImport) {
       this.loadPredefinedTournaments();
     }
   }
 
-  onFileExtractChange(event: CustomEvent): void {
+  onImportMethodChange(event: CustomEvent): void {
     const method = event.detail.value;
-    this.tournamentForm.get('importFileMode')?.setValue(method);
-    console.log('Import File Mode:', method);
+    this.tournamentForm.get('importMethod')?.setValue(method);
+    console.log('Import Method:', method);
   }
   
-  onTournamentExtractChange(event: CustomEvent): void {
-    const method = event.detail.value;
-    this.tournamentForm.get('importTournamentMode')?.setValue(method);
-    console.log('Import Tournament Mode:', method);
-  }
-
   private loadPredefinedTournaments(): void {
     this.tournamentService.getActivePredefinedTournaments().subscribe({
       next: (tournaments) => {
@@ -237,11 +229,9 @@ export class StageInputTypePage implements OnInit {
     if (matchesArray) matchesArray.clear();
   
     this.tournamentForm.get('tournamentName')?.setValue('');
-    this.tournamentForm.get('importFileMode')?.setValue('upload');
-    this.tournamentForm.get('importTournamentMode')?.setValue('upload');
+    this.tournamentForm.get('importMethod')?.setValue('upload');
   
-    this.importFileMethod = 'upload';
-    this.importTournamentMethod = 'upload';
+    this.importMethod = 'upload';
   
     this.teamsExtracted.emit([]);
     this.matchesExtracted.emit([]);
