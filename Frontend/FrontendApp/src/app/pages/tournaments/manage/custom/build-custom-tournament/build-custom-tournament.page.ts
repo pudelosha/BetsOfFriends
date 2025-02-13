@@ -11,7 +11,9 @@ import { StageMatchesManagementPage } from '../../stages/stage-matches-managemen
 import { StageSummaryPage } from '../../stages/stage-summary/stage-summary.page';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-
+import { buildMatchFormGroup } from '../../../shared/form-utils';
+import { Tournament } from 'src/app/model/tournament-model';
+import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 
 @Component({
   selector: 'app-build-custom-tournament',
@@ -23,19 +25,20 @@ import { ModalController } from '@ionic/angular';
 export class BuildCustomTournamentPage implements OnInit {
   tournamentForm: FormGroup;
   step = 1;
+  tournamentId?: number | null = null; // Optional: null for new tournaments, number for existing ones
   isLoading = false;
-
 
   constructor(private fb: FormBuilder, 
     private toastController: ToastController,
     private router: Router,
     private route: ActivatedRoute,
-    //private tournamentService: TournamentService,
+    private tournamentService: CustomTournamentService,
     private modalController: ModalController
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
+      importMethod: ['upload'],
       teams: this.fb.array([], Validators.required),
       matches: this.fb.array([]),
     });
@@ -54,6 +57,7 @@ export class BuildCustomTournamentPage implements OnInit {
     this.tournamentForm.reset();
     this.teamsArray.clear();
     this.matchesArray.clear();
+    this.tournamentForm.get('importMethod')?.setValue('upload');
   }
 
   private scrollToTop(): void {
@@ -69,32 +73,249 @@ export class BuildCustomTournamentPage implements OnInit {
   }
 
   async openAddModal(): Promise<void> {
-
-  }
-
-  handleFileExtractChange(method: string): void {
-
-  }
-
-  handleTournamentExtractChange(method: string): void {
-
-  }
-
-  handleTeamsExtracted(teams: { teamId: number | null; teamName: string }[]): void {
-  
-  }
-
-  handleMatchesExtracted(matches: any[]): void {
-  
-  }
-
-  handleTeamsUpdated(teamsData: { previousTeams: any[]; updatedTeams: any[] }): void {
-
-  }
-
-  handleMatchesUpdated(updatedMatches: any[]): void {
-
-  }
+     if (this.step === 2) {
+       const allTeamNames = this.teamsArray.controls.map((control) => control.get('teamName')?.value.trim().toLowerCase()); // Extract all team names
+ 
+       const modal = await this.modalController.create({
+         component: EditTeamModalComponent,
+         componentProps: {
+           team: null, // New team
+           isEditing: false,
+           allTeamNames,
+         },
+       });
+   
+       modal.onDidDismiss().then((result) => {
+         if (result.data) {
+           const newTeam = result.data;
+           this.teamsArray.push(
+             this.fb.group({
+               teamId: [newTeam.teamId], // Can be null for new teams
+               teamName: [newTeam.teamName, Validators.required],
+             })
+           );
+           console.log('Added New Team:', newTeam);
+         }
+       });
+   
+       await modal.present();
+     } else if (this.step === 3) {
+       const modal = await this.modalController.create({
+         component: EditMatchModalComponent,
+         componentProps: {
+           match: null, // Passing null to indicate "Add New Match"
+           index: undefined, // No existing match to edit
+           teams: this.teamsArray.value.map((team: any) => ({
+             teamId: team.teamId || null,
+             teamName: team.teamName,
+           })), // Pass list of teams with both teamId and teamName
+         },
+       });
+   
+       modal.onDidDismiss().then((result) => {
+         if (result.data) {
+           // Add the new match to the matchesArray
+           this.matchesArray.push(this.fb.group(result.data));
+           console.log('Added New Match:', result.data);
+         }
+       });
+   
+       await modal.present();
+     }
+   }
+ 
+   private loadTournament(): void {
+     if (!this.tournamentId) {
+       console.error('Tournament ID is missing.');
+       return;
+     }
+   
+     this.tournamentService.getCustomTournamentById(this.tournamentId).subscribe({
+       next: (tournament) => {
+         if (tournament) {
+           this.populateForm(tournament);
+         } else {
+           console.error('Tournament not found:', this.tournamentId);
+         }
+       },
+       error: (err) => {
+         console.error('Error loading tournament:', err);
+       },
+     });
+   }  
+   
+   private populateForm(tournament: Tournament): void {
+     this.tournamentForm.patchValue({
+       tournamentId: tournament.tournamentId,
+       tournamentName: tournament.tournamentName,
+       importMethod: 'upload',
+     });
+   
+     // Populate teams
+     this.teamsArray.clear();
+     tournament.teams.forEach((team) => {
+       this.teamsArray.push(
+         this.fb.group({
+           teamId: [team.teamId],
+           teamName: [team.teamName, Validators.required],
+         })
+       );
+     });
+   
+     // Populate matches
+     this.matchesArray.clear();
+     tournament.matches.forEach((match) => {
+       this.matchesArray.push(
+         this.fb.group({
+           matchId: match.matchId,
+           stage: match.stage,
+           homeTeamId: match.homeTeamId,
+           homeTeam: match.homeTeam,
+           awayTeamId: match.awayTeamId,
+           awayTeam: match.awayTeam,
+           matchStart: match.matchStart,
+           betType: match.betType,
+           homeWinOdds: match.homeWinOdds,
+           drawOdds: match.drawOdds,
+           awayWinOdds: match.awayWinOdds,
+           homeQualifies: match.homeQualifies,
+           awayQualifies: match.awayQualifies,
+         })
+       );
+     });
+   }
+       
+   handleTeamsExtracted(teams: { teamId: number | null; teamName: string }[]): void {
+     const importMethod = this.tournamentForm.get('importMethod')?.value;
+ 
+     console.log(importMethod);
+ 
+     if (importMethod === 'upload') {
+       // Clear and replace all teams
+       this.teamsArray.clear();
+       teams.forEach((team) => {
+         this.teamsArray.push(
+           this.fb.group({
+             teamId: [team.teamId],
+             teamName: [team.teamName, Validators.required],
+           })
+         );
+       });
+     } else if (importMethod === 'append') {
+       // Append new teams, avoiding duplicates
+       teams.forEach((team) => {
+         if (!this.teamsArray.value.some((existing: any) => existing.teamName === team.teamName)) {
+           this.teamsArray.push(
+             this.fb.group({
+               teamId: [team.teamId],
+               teamName: [team.teamName, Validators.required],
+             })
+           );
+         }
+       });
+     }
+   
+     console.log('Updated Teams:', this.teamsArray.value);
+   }
+   
+   handleMatchesExtracted(matches: any[]): void {
+     const importMethod = this.tournamentForm.get('importMethod')?.value;
+ 
+     console.log(importMethod);
+   
+     if (importMethod === 'upload') {
+       // Clear and replace all matches
+       this.matchesArray.clear();
+       matches.forEach((match) => {
+         this.matchesArray.push(buildMatchFormGroup(this.fb, match));
+       });
+     } else if (importMethod === 'append') {
+       // Append new matches, avoiding duplicates
+       matches.forEach((match) => {
+         if (
+           !this.matchesArray.value.some(
+             (existing: any) =>
+               existing.homeTeam === match.homeTeam &&
+               existing.awayTeam === match.awayTeam &&
+               existing.matchStart === match.matchStart
+           )
+         ) {
+           this.matchesArray.push(buildMatchFormGroup(this.fb, match));
+         }
+       });
+     }
+   
+     console.log('Updated Matches:', this.matchesArray.value);
+   }  
+     
+   handleTeamsUpdated(teamsData: { previousTeams: any[]; updatedTeams: any[] }): void {
+     const { previousTeams, updatedTeams } = teamsData;
+     
+     // Step 1: Create maps of teamId to teamName for previous and updated states
+     const previousTeamMap = previousTeams.reduce((map: any, team: any) => {
+       map[team.teamId] = team.teamName;
+       return map;
+     }, {});
+   
+     const updatedTeamMap = updatedTeams.reduce((map: any, team: any) => {
+       map[team.teamId] = team.teamName;
+       return map;
+     }, {});
+    
+     // Step 2: Detect team name changes
+     const nameUpdates = updatedTeams.filter((updatedTeam: any) => {
+       const previousTeamName = previousTeamMap[updatedTeam.teamId];
+       return previousTeamName && previousTeamName !== updatedTeam.teamName;
+     });
+     
+     // Step 3: Update matchesArray for team name changes
+     if (nameUpdates.length > 0) {
+       nameUpdates.forEach((updatedTeam: any) => {
+         const previousTeamName = previousTeamMap[updatedTeam.teamId];
+   
+         this.matchesArray.controls.forEach((control: AbstractControl) => {
+           const match = (control as FormGroup).value;
+   
+           if (match.homeTeam === previousTeamName) {
+             (control as FormGroup).patchValue({ homeTeam: updatedTeam.teamName });
+           }
+           if (match.awayTeam === previousTeamName) {
+             (control as FormGroup).patchValue({ awayTeam: updatedTeam.teamName });
+           }
+         });
+       });
+     }
+   
+     // Step 4: Remove matches where home or away teams no longer exist
+     const updatedTeamNames = updatedTeams.map((team: any) => team.teamName);
+     const filteredMatches = this.matchesArray.controls.filter((control: AbstractControl) => {
+       const match = (control as FormGroup).value;
+       const isValidMatch = updatedTeamNames.includes(match.homeTeam) && updatedTeamNames.includes(match.awayTeam);
+       if (!isValidMatch) {
+       }
+       return isValidMatch;
+     });
+   
+     // Step 5: Clear and rebuild matchesArray with filtered and updated matches
+     this.matchesArray.clear();
+     filteredMatches.forEach((control: AbstractControl) => {
+       const match = (control as FormGroup).value;
+       this.matchesArray.push(this.fb.group(match));
+     });
+   
+     // Step 6: Emit updated matches
+     const finalUpdatedMatches = this.matchesArray.controls.map((control: AbstractControl) =>
+       (control as FormGroup).value
+     );
+   }  
+    
+   handleMatchesUpdated(updatedMatches: any[]): void {
+     this.matchesArray.clear();
+     updatedMatches.forEach(match => {
+       this.matchesArray.push(buildMatchFormGroup(this.fb, match));
+     });
+     console.log('Updated Matches from Child:', this.matchesArray.value);
+   }
 
   submitTournament(): void {
     //TBA

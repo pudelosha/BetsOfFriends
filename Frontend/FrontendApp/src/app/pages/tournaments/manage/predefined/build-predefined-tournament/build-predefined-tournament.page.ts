@@ -27,8 +27,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
   step = 1;
   tournamentId?: number | null = null; // Optional: null for new tournaments, number for existing ones
   isLoading = false;
-  selectedFileExtractMethod: string = 'upload';
-  selectedTournamentExtractMethod : string = 'upload';
 
   constructor(private fb: FormBuilder, 
     private toastController: ToastController,
@@ -68,6 +66,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
     this.tournamentForm.reset();
     this.teamsArray.clear();
     this.matchesArray.clear();
+    this.tournamentForm.get('importMethod')?.setValue('upload');
   }
 
   private scrollToTop(): void {
@@ -158,8 +157,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
     this.tournamentForm.patchValue({
       tournamentId: tournament.tournamentId,
       tournamentName: tournament.tournamentName,
-      importTournamentMode: 'upload',
-      importFileMode: 'upload',
+      importMethod: 'upload',
     });
   
     // Populate teams
@@ -197,12 +195,11 @@ export class BuildPredefinedTournamentPage implements OnInit {
   }
       
   handleTeamsExtracted(teams: { teamId: number | null; teamName: string }[]): void {
+    const importMethod = this.tournamentForm.get('importMethod')?.value;
 
-// TODO START HERE TOMORROW !!!!!!!!!!!!
-// it looks like we need 1 unified toggle for file and predefined load
-// or parameter in handleTeamsExtracted and handleMatchesExtracted
+    console.log(importMethod);
 
-    if (this.selectedFileExtractMethod === 'upload') {
+    if (importMethod === 'upload') {
       // Clear and replace all teams
       this.teamsArray.clear();
       teams.forEach((team) => {
@@ -213,7 +210,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
           })
         );
       });
-    } else if (this.selectedFileExtractMethod === 'append') {
+    } else if (importMethod === 'append') {
       // Append new teams, avoiding duplicates
       teams.forEach((team) => {
         if (!this.teamsArray.value.some((existing: any) => existing.teamName === team.teamName)) {
@@ -231,13 +228,17 @@ export class BuildPredefinedTournamentPage implements OnInit {
   }
   
   handleMatchesExtracted(matches: any[]): void {
-    if (this.selectedFileExtractMethod === 'upload') {
+    const importMethod = this.tournamentForm.get('importMethod')?.value;
+
+    console.log(importMethod);
+  
+    if (importMethod === 'upload') {
       // Clear and replace all matches
       this.matchesArray.clear();
       matches.forEach((match) => {
         this.matchesArray.push(buildMatchFormGroup(this.fb, match));
       });
-    } else if (this.selectedFileExtractMethod === 'append') {
+    } else if (importMethod === 'append') {
       // Append new matches, avoiding duplicates
       matches.forEach((match) => {
         if (
@@ -254,7 +255,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
     }
   
     console.log('Updated Matches:', this.matchesArray.value);
-  }
+  }  
     
   handleTeamsUpdated(teamsData: { previousTeams: any[]; updatedTeams: any[] }): void {
     const { previousTeams, updatedTeams } = teamsData;
