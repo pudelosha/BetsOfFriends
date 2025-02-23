@@ -5,6 +5,7 @@ import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { ToastController } from '@ionic/angular';
 import { LoginResponse } from '..//model/login-response'
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class AuthService {
   private authTokenKey = 'authToken';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
 
-  constructor(private http: HttpClient, private toastCtrl: ToastController) {}
+  constructor(private http: HttpClient, private toastCtrl: ToastController, private router: Router) {}
 
   login(email: string, password: string): Observable<{ success: boolean; message: string }> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
@@ -45,14 +46,14 @@ export class AuthService {
   async logout(message?: string, redirectPath: string = '/login'): Promise<void> {
     console.log('Clearing auth tokens...');
   
-    // Clear authentication tokens from both storage locations
+    // Clear authentication tokens
     localStorage.removeItem(this.authTokenKey);
     sessionStorage.removeItem(this.authTokenKey);
   
     console.log('Updating authentication state...');
     this.isAuthenticatedSubject.next(false);
   
-    // Show success toast before redirecting
+    // Show success toast
     if (message) {
       const toast = await this.toastCtrl.create({
         message,
@@ -63,13 +64,12 @@ export class AuthService {
       await toast.present();
     }
   
-    // Redirect to the specified page
     console.log(`Redirecting to ${redirectPath}...`);
     setTimeout(() => {
-      window.location.href = redirectPath;
-    }, 3000); // Small delay to allow the toast to appear
+      this.router.navigate([redirectPath]);
+    }, 3000);
   }
-  
+    
   getAuthStatus(): Observable<boolean> {
     return this.isAuthenticatedSubject.asObservable();
   }
