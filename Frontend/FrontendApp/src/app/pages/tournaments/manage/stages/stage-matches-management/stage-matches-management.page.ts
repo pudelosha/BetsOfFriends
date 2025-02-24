@@ -30,6 +30,37 @@ export class StageMatchesManagementPage implements OnInit {
     return this.matchesArray.at(index) as FormGroup;
   }
 
+  async addMatch(): Promise<void> {
+    if (!this.teamsArray || this.teamsArray.length === 0) {
+      console.warn('No teams available to add a match.');
+      return;
+    }
+  
+    // Extract team names from the string array (assuming it contains names, not objects)
+    const teams = this.teamsArray.map((teamName) => ({
+      teamId: null, // Assuming no team ID is provided in string[]
+      teamName: teamName, // Use the string directly as the team name
+    }));
+  
+    const modal = await this.modalController.create({
+      component: EditMatchModalComponent,
+      componentProps: {
+        match: null, // Indicate "Add New Match"
+        index: undefined, // No existing match to edit
+        teams, // Pass list of teams as objects
+      },
+    });
+  
+    modal.onDidDismiss().then((result) => {
+      if (result.data) {
+        this.matchesArray.push(this.fb.group(result.data));
+        console.log('Added New Match:', result.data);
+      }
+    });
+  
+    await modal.present();
+  }  
+
   // Open edit modal for a match
   async openEditModal(index?: number) {
     const existingMatch = index !== undefined ? this.getMatchControl(index).value : null;

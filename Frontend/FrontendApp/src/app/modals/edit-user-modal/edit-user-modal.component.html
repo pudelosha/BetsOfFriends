@@ -10,46 +10,40 @@
 <ion-content class="ion-padding">
   <form [formGroup]="userForm" class="user-form">
     <!-- User Name -->
-    <ion-item>
-      <ion-label position="floating">User Name</ion-label>
+    <div class="form-group">
+      <ion-label class="selector-label">User Name</ion-label>
       <ion-input formControlName="userName" readonly></ion-input>
-    </ion-item>
-    <div class="validation-message">
-      <p class="error" *ngIf="userForm.get('userName')?.hasError('required') && userForm.get('userName')?.touched">
-        User name is required.
-      </p>
+    </div>
+    <div class="error-message" *ngIf="userForm.get('userName')?.hasError('required') && userForm.get('userName')?.touched">
+      User name is required.
     </div>
 
     <!-- Admin-Defined Name -->
-    <ion-item>
-      <ion-label position="floating">Admin-Defined Name</ion-label>
+    <div class="form-group">
+      <ion-label class="selector-label">Admin-Defined Name</ion-label>
       <ion-input formControlName="userAdminName" placeholder="Enter admin-defined name"></ion-input>
-    </ion-item>
-    <div class="validation-message">
-      <p class="error" *ngIf="userForm.get('userAdminName')?.hasError('required') && userForm.get('userAdminName')?.touched">
-        Admin-defined name is required.
-      </p>
+    </div>
+    <div class="error-message" *ngIf="userForm.get('userAdminName')?.hasError('required') && userForm.get('userAdminName')?.touched">
+      Admin-defined name is required.
     </div>
 
     <!-- User Email -->
-    <ion-item>
-      <ion-label position="floating">User Email</ion-label>
+    <div class="form-group">
+      <ion-label class="selector-label">User Email</ion-label>
       <ion-input formControlName="userEmail" type="email" placeholder="Enter user email"></ion-input>
-    </ion-item>
-    <div class="validation-message">
-      <p class="error" *ngIf="userForm.get('userEmail')?.hasError('required') && userForm.get('userEmail')?.touched">
-        User email is required.
-      </p>
-      <p class="error" *ngIf="userForm.get('userEmail')?.hasError('email') && userForm.get('userEmail')?.touched">
-        Please enter a valid email address.
-      </p>
+    </div>
+    <div class="error-message" *ngIf="userForm.get('userEmail')?.hasError('required') && userForm.get('userEmail')?.touched">
+      User email is required.
+    </div>
+    <div class="error-message" *ngIf="userForm.get('userEmail')?.hasError('email') && userForm.get('userEmail')?.touched">
+      Please enter a valid email address.
     </div>
 
     <!-- Status -->
-    <ion-item>
-      <ion-label position="floating">Status</ion-label>
+    <div class="form-group">
+      <ion-label class="selector-label">Status</ion-label>
       <ion-input formControlName="status" readonly></ion-input>
-    </ion-item>
+    </div>
 
     <!-- Save Button -->
     <div class="save-button-container">

@@ -1,35 +1,44 @@
-/* Button Container */
+/* Container with fixed slots */
 .button-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   background-color: white;
-  padding: 0.5rem;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   position: fixed;
-  margin-bottom: 55px;
-  padding: 15px 10px;
   bottom: 0;
   left: 0;
-  z-index: 1;
+  z-index: 10;
+  padding: 0;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  height: 56px;
+  margin-bottom: 55px;
 }
-  
- /* Third Width Buttons */
+
+/* Ensure equal slots (3 fixed slots for buttons) */
+.button-slot {
+  flex: 1; /* Each slot takes equal space */
+  display: flex;
+  justify-content: center; /* Center the button inside */
+  align-items: center;
+  padding: 5px 10px;
+}
+
+/* Ensure buttons always fill their slot */
 .third-width {
-  flex: 1; /* Ensures equal width */
-  max-width: 33.33%; /* 1/3 of the container width */
+  width: 100%; /* Full width within its slot */
   text-align: center;
-  margin: 0 5px; /* Optional: Add spacing between buttons */
   padding: 0;
   height: 40px;
 }
 
-/* Hide buttons when not needed */
+/* Hide buttons without breaking layout */
 .hidden {
-  visibility: hidden;
-  pointer-events: none;
+  visibility: hidden; /* Keeps layout intact */
+  opacity: 0; /* Ensures it's fully invisible */
+  pointer-events: none; /* Prevents interaction */
 }
+
 
 .loading-spinner {
   position: fixed;

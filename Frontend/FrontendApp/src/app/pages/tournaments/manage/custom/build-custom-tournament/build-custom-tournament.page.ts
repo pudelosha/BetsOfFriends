@@ -16,6 +16,7 @@ import { ModalController } from '@ionic/angular';
 import { buildMatchFormGroup } from '../../../shared/form-utils';
 import { Tournament } from 'src/app/model/tournament-model';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-build-custom-tournament',
@@ -25,6 +26,10 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
   imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage],
 })
 export class BuildCustomTournamentPage implements OnInit {
+  @ViewChild(StageTeamsManagementPage) stageTeamsManagement!: StageTeamsManagementPage;
+  @ViewChild(StageMatchesManagementPage) stageMatchesManagement!: StageMatchesManagementPage;
+  @ViewChild(StageUsersManagementPage) stageUsersManagement!: StageUsersManagementPage;
+
   tournamentForm: FormGroup;
   step = 1;
   tournamentId?: number | null = null; // Optional: null for new tournaments, number for existing ones
@@ -80,95 +85,33 @@ export class BuildCustomTournamentPage implements OnInit {
   }
 
   async openAddModal(): Promise<void> {
-    if (this.step === 2) {
-      const allTeamNames = this.teamsArray.controls.map((control) => control.get('teamName')?.value.trim().toLowerCase()); // Extract all team names
-  
-      const modal = await this.modalController.create({
-        component: EditTeamModalComponent,
-        componentProps: {
-          team: null, // New team
-          isEditing: false,
-          allTeamNames,
-        },
-      });
-  
-      modal.onDidDismiss().then((result) => {
-        if (result.data) {
-          const newTeam = result.data;
-          this.teamsArray.push(
-            this.fb.group({
-              teamId: [newTeam.teamId], // Can be null for new teams
-              teamName: [newTeam.teamName, Validators.required],
-            })
-          );
-          console.log('Added New Team:', newTeam);
+    switch (this.step) {
+      case 2:
+        if (this.stageTeamsManagement) {
+          await this.stageTeamsManagement.addTeam();
+        } else {
+          console.warn('StageTeamsManagementPage reference is not available.');
         }
-      });
-  
-      await modal.present();
-    } else if (this.step === 3) {
-      const modal = await this.modalController.create({
-        component: EditMatchModalComponent,
-        componentProps: {
-          match: null, // Passing null to indicate "Add New Match"
-          index: undefined, // No existing match to edit
-          teams: this.teamsArray.value.map((team: any) => ({
-            teamId: team.teamId || null,
-            teamName: team.teamName,
-          })), // Pass list of teams with both teamId and teamName
-        },
-      });
-  
-      modal.onDidDismiss().then((result) => {
-        if (result.data) {
-          // Add the new match to the matchesArray
-          this.matchesArray.push(this.fb.group(result.data));
-          console.log('Added New Match:', result.data);
+        break;
+      case 3:
+        if (this.stageMatchesManagement) {
+          await this.stageMatchesManagement.addMatch();
+        } else {
+          console.warn('StageMatchesManagement reference is not available.');
         }
-      });
-  
-      await modal.present();
-    } else if (this.step === 4) {
-      const allUserEmails = this.usersArray.controls.map((control) => control.get('userEmail')?.value.trim().toLowerCase()); // Extract all user emails
-  
-      const modal = await this.modalController.create({
-        component: EditUserModalComponent,
-        componentProps: {
-          user: {
-            userId: null, // New user has no userId initially
-            userName: '', // New user name
-            userAdminName: '', // New admin-defined name
-            userEmail: '', // New user email
-            status: 'New', // Default status for a new user
-          },
-          isEditing: false, // Not editing, this is for adding a new user
-          allUserEmails, // To check for duplicate emails
-        },
-      });
-  
-      modal.onDidDismiss().then((result) => {
-        if (result.data) {
-          const newUser = result.data;
-  
-          // Add the new user to the usersArray
-          this.usersArray.push(
-            this.fb.group({
-              userId: [newUser.userId], // Null for new users
-              userName: [newUser.userName, Validators.required],
-              userAdminName: [newUser.userAdminName, Validators.required],
-              userEmail: [newUser.userEmail, [Validators.required, Validators.email]],
-              status: [newUser.status, Validators.required],
-            })
-          );
-  
-          console.log('Added New User:', newUser);
+        break;
+      case 4:
+        if (this.stageUsersManagement) {
+          await this.stageUsersManagement.addUser();
+        } else {
+          console.warn('StageUsersManagement reference is not available.');
         }
-      });
-  
-      await modal.present();
+        break;
+      default:
+        console.warn('Invalid step for adding data:', this.step);
     }
-  }  
-   
+  }
+      
    private loadTournament(): void {
      if (!this.tournamentId) {
        console.error('Tournament ID is missing.');

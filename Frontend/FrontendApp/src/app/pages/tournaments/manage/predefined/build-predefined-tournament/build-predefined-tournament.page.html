@@ -1,72 +1,79 @@
 <ion-content class="ion-padding page-with-header">
-  <div *ngIf="step === 1">
-    <app-stage-input-type
-    [tournamentForm]="tournamentForm"
-    [showPredefinedImport]="false"
-    (teamsExtracted)="handleTeamsExtracted($event)"
-    (matchesExtracted)="handleMatchesExtracted($event)">
-  </app-stage-input-type>
+  <div class="page-container">
+    <div *ngIf="step === 1">
+      <app-stage-input-type
+      [tournamentForm]="tournamentForm"
+      [showPredefinedImport]="false"
+      (teamsExtracted)="handleTeamsExtracted($event)"
+      (matchesExtracted)="handleMatchesExtracted($event)">
+      </app-stage-input-type> 
+    </div>
   
-  </div>
-
-  <div *ngIf="step === 2">
-    <app-stage-teams-management
-      [teamsArray]="teamsArray"
-      (teamsUpdated)="handleTeamsUpdated($event)">
-    </app-stage-teams-management>
-  </div>
+    <div *ngIf="step === 2">
+      <app-stage-teams-management
+        [teamsArray]="teamsArray"
+        (teamsUpdated)="handleTeamsUpdated($event)">
+      </app-stage-teams-management>
+    </div>
+    
   
-
-  <div *ngIf="step === 3">
-    <app-stage-matches-management
-      [matchesArray]="matchesArray"
-      [teamsArray]="teamsArray.value"
-      (matchesUpdated)="handleMatchesUpdated($event)">
-    </app-stage-matches-management>
+    <div *ngIf="step === 3">
+      <app-stage-matches-management
+        [matchesArray]="matchesArray"
+        [teamsArray]="teamsArray.value"
+        (matchesUpdated)="handleMatchesUpdated($event)">
+      </app-stage-matches-management>
+    </div>
+  
+    <div *ngIf="step === 4">
+      <app-stage-summary
+        [tournamentName]="tournamentForm.get('tournamentName')?.value"
+        [teamsArray]="teamsArray.value"
+        [matchesArray]="matchesArray.value">
+      </app-stage-summary>
+    </div>
+  
+    <div class="button-container">
+      <!-- Slot 1: Previous Button -->
+      <div class="button-slot">
+        <ion-button
+          *ngIf="step !== 1"
+          class="third-width"
+          (click)="prevStep()">
+          Previous
+        </ion-button>
+      </div>
+    
+      <!-- Slot 2: Add / Submit Button -->
+      <div class="button-slot">
+        <ion-button
+          *ngIf="step === 2 || step === 3"
+          class="third-width"
+          (click)="openAddModal()">
+          Add
+        </ion-button>
+    
+        <ion-button
+          *ngIf="step === 4"
+          class="third-width"
+          (click)="submitTournament()">
+          Submit
+        </ion-button>
+      </div>
+    
+      <!-- Slot 3: Next Button -->
+      <div class="button-slot">
+        <ion-button
+          *ngIf="step !== 4"
+          class="third-width"
+          (click)="nextStep()">
+          Next
+        </ion-button>
+      </div>
+    </div>
+    
   </div>
 
-  <div *ngIf="step === 4">
-    <app-stage-summary
-      [tournamentName]="tournamentForm.get('tournamentName')?.value"
-      [teamsArray]="teamsArray.value"
-      [matchesArray]="matchesArray.value">
-    </app-stage-summary>
-  </div>
-
-  <div class="button-container">
-    <ion-button
-      [class.hidden]="step === 1"
-      class="third-width"
-      expand="full"
-      (click)="prevStep()">
-      Previous
-    </ion-button>
-
-    <!-- Show "Add" button only on steps 2 and 3 -->
-    <ion-button
-      *ngIf="step === 2 || step === 3"
-      class="third-width"
-      expand="full"
-      (click)="openAddModal()">
-      Add
-    </ion-button>
-
-    <ion-button
-      *ngIf="step === 4"
-      class="third-width"
-      expand="full"
-      (click)="submitTournament()">
-      Submit
-    </ion-button>
-
-    <ion-button
-      [class.hidden]="step === 4"
-      class="third-width"
-      expand="full"
-      (click)="nextStep()">
-      Next
-    </ion-button>
-  </div>
 </ion-content>
 
 <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>

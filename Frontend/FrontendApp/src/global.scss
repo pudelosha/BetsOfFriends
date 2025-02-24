@@ -36,8 +36,7 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
 
-
-/* Default: No frame or shadow (for mobile screens) */
+/* Default Styles */
 .unauth-container {
   max-width: 100%;
   margin: 0 auto;
@@ -45,31 +44,12 @@
   text-align: center;
 }
 
-/* Apply frame and shadow only for larger screens */
-@media screen and (min-width: 768px) { /* Tablets and desktops */
-  .unauth-container {
-    max-width: 450px; /* Limit width */
-    background: #fff; /* Optional: Background color */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Light shadow */
-    border-radius: 10px; /* Rounded corners */
-    padding: 20px; /* More spacing */
-  }
-}
-
-@media screen and (min-width: 1024px) { /* Larger desktops */
-  .unauth-container {
-    max-width: 500px;
-  }
-
-
-}
- 
 .button-group {
   display: flex;
   justify-content: center;
   margin-top: 20px;
 }
-  
+
 .rounded-button {
   border-radius: 10px;
   width: 200px;
@@ -79,7 +59,7 @@
   min-height: 20px;
   text-align: center;
 }
-    
+
 .error {
   color: red;
   font-size: 14px;
@@ -97,4 +77,65 @@
 .page-with-header {
   --padding-top: 56px;
   --padding-bottom: 56px;
+}
+
+/* Page Container */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: calc(100vh - 112px); /* Dynamic height based on header/footer */
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  box-shadow: none;
+}
+
+/* Ensure children (like .button-container) inherit the same width */
+.page-container > * {
+  max-width: inherit;
+  width: 100%;
+}
+
+/* Fix for Pages - Remove Left Padding Only from Pages */
+@media screen and (min-width: 768px) {
+  ion-content:not(ion-modal ion-content) {
+    --padding-start: 0 !important; /* Remove left padding from normal pages */
+  }
+}
+
+/* Restore Padding for Modals */
+ion-modal ion-content {
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+/* Increase Modal Padding on Larger Screens */
+@media screen and (min-width: 768px) {
+  ion-modal ion-content {
+    --padding-start: 30px;
+    --padding-end: 30px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .page-container {
+    max-width: 600px;
+    margin-left: 0px;
+    padding: 0px 15px;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .unauth-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  ion-modal ion-content {
+    --padding-start: 40px;
+    --padding-end: 40px;
+  }
 }

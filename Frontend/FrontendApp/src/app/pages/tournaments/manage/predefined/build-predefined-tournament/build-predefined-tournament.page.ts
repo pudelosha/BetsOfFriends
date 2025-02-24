@@ -13,7 +13,7 @@ import { Tournament, Team, Match } from '../../../../../model/tournament-model';
 import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
 import { EditTeamModalComponent } from 'src/app/modals/edit-team-modal/edit-team-modal.component';
 import { ModalController } from '@ionic/angular';
-
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-build-predefined-tournament',
@@ -23,6 +23,9 @@ import { ModalController } from '@ionic/angular';
   imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageMatchesManagementPage, StageSummaryPage],
 })
 export class BuildPredefinedTournamentPage implements OnInit {
+  @ViewChild(StageTeamsManagementPage) stageTeamsManagement!: StageTeamsManagementPage;
+  @ViewChild(StageMatchesManagementPage) stageMatchesManagement!: StageMatchesManagementPage;
+
   tournamentForm: FormGroup;
   step = 1;
   tournamentId?: number | null = null; // Optional: null for new tournaments, number for existing ones
@@ -82,54 +85,23 @@ export class BuildPredefinedTournamentPage implements OnInit {
   }
 
   async openAddModal(): Promise<void> {
-    if (this.step === 2) {
-      const allTeamNames = this.teamsArray.controls.map((control) => control.get('teamName')?.value.trim().toLowerCase()); // Extract all team names
-
-      const modal = await this.modalController.create({
-        component: EditTeamModalComponent,
-        componentProps: {
-          team: null, // New team
-          isEditing: false,
-          allTeamNames,
-        },
-      });
-  
-      modal.onDidDismiss().then((result) => {
-        if (result.data) {
-          const newTeam = result.data;
-          this.teamsArray.push(
-            this.fb.group({
-              teamId: [newTeam.teamId], // Can be null for new teams
-              teamName: [newTeam.teamName, Validators.required],
-            })
-          );
-          console.log('Added New Team:', newTeam);
+    switch (this.step) {
+      case 2:
+        if (this.stageTeamsManagement) {
+          await this.stageTeamsManagement.addTeam();
+        } else {
+          console.warn('StageTeamsManagementPage reference is not available.');
         }
-      });
-  
-      await modal.present();
-    } else if (this.step === 3) {
-      const modal = await this.modalController.create({
-        component: EditMatchModalComponent,
-        componentProps: {
-          match: null, // Passing null to indicate "Add New Match"
-          index: undefined, // No existing match to edit
-          teams: this.teamsArray.value.map((team: any) => ({
-            teamId: team.teamId || null,
-            teamName: team.teamName,
-          })), // Pass list of teams with both teamId and teamName
-        },
-      });
-  
-      modal.onDidDismiss().then((result) => {
-        if (result.data) {
-          // Add the new match to the matchesArray
-          this.matchesArray.push(this.fb.group(result.data));
-          console.log('Added New Match:', result.data);
+        break;
+      case 3:
+        if (this.stageMatchesManagement) {
+          await this.stageMatchesManagement.addMatch();
+        } else {
+          console.warn('StageMatchesManagement reference is not available.');
         }
-      });
-  
-      await modal.present();
+        break;
+      default:
+        console.warn('Invalid step for adding data:', this.step);
     }
   }
 

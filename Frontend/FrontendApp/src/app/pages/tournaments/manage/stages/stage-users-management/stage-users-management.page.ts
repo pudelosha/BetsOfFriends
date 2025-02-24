@@ -28,6 +28,43 @@ export class StageUsersManagementPage {
     return this.usersArray.at(index) as FormGroup;
   }
 
+  async addUser(): Promise<void> {
+    const allUserEmails = this.usersArray.controls.map(control => control.get('userEmail')?.value.trim().toLowerCase());
+  
+    const modal = await this.modalController.create({
+      component: EditUserModalComponent,
+      componentProps: {
+        user: {
+          userId: null,
+          userName: '',
+          userAdminName: '',
+          userEmail: '',
+          status: 'New',
+        },
+        isEditing: false,
+        allUserEmails,
+      },
+    });
+  
+    modal.onDidDismiss().then(result => {
+      if (result.data) {
+        const newUser = result.data;
+        this.usersArray.push(
+          this.fb.group({
+            userId: [newUser.userId],
+            userName: [newUser.userName, Validators.required],
+            userAdminName: [newUser.userAdminName, Validators.required],
+            userEmail: [newUser.userEmail, [Validators.required, Validators.email]],
+            status: [newUser.status, Validators.required],
+          })
+        );
+        console.log('Added New User:', newUser);
+      }
+    });
+  
+    await modal.present();
+  }
+  
   // Edit user
   async editUser(index: number): Promise<void> {
     const user = this.usersArray.at(index).value;

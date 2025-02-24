@@ -17,13 +17,44 @@ export class StageTeamsManagementPage {
   @Input() teamsArray!: FormArray; // Input from parent for teams FormArray
   @Output() teamsUpdated = new EventEmitter<{ previousTeams: any[]; updatedTeams: any[] }>(); // Emits old and updated teams to parent
 
-  constructor(private toastController: ToastController, private modalController: ModalController, private alertController: AlertController) {}
+  constructor(private toastController: ToastController,
+              private modalController: ModalController,
+              private alertController: AlertController,
+              private fb: FormBuilder) {}
 
   // Get control for a specific team
   getTeamControl(index: number): FormGroup {
     return this.teamsArray.at(index) as FormGroup;
   }
+
+  async addTeam(): Promise<void> {
+    const allTeamNames = this.teamsArray.controls.map(control => control.get('teamName')?.value.trim().toLowerCase());
   
+    const modal = await this.modalController.create({
+      component: EditTeamModalComponent,
+      componentProps: {
+        team: null, // New team
+        isEditing: false,
+        allTeamNames,
+      },
+    });
+  
+    modal.onDidDismiss().then(result => {
+      if (result.data) {
+        const newTeam = result.data;
+        this.teamsArray.push(
+          this.fb.group({
+            teamId: [newTeam.teamId],
+            teamName: [newTeam.teamName, Validators.required],
+          })
+        );
+        console.log('Added New Team:', newTeam);
+      }
+    });
+  
+    await modal.present();
+  }
+    
   // Edit team
   async editTeam(index: number): Promise<void> {
     const team = this.teamsArray.at(index).value;
