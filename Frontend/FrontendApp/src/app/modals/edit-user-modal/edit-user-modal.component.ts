@@ -59,16 +59,21 @@ export class EditUserModalComponent implements OnInit {
       await this.showToast('Please provide valid user details!', 'danger');
       return;
     }
-
-    const updatedUser = this.userForm.value;
-
+  
+    // Get form values and ensure status is included
+    const updatedUser = {
+      ...this.user, // Preserve existing user fields
+      ...this.userForm.getRawValue(), // Get all form values, including disabled ones
+      status: this.user?.status ?? 'New', // Ensure status is included
+    };
+  
     await this.modalController.dismiss(updatedUser);
     await this.showToast(
       this.isEditing ? 'User updated successfully!' : 'New user added successfully!',
       'success'
     );
   }
-
+  
   async closeModal(): Promise<void> {
     await this.modalController.dismiss(null);
   }

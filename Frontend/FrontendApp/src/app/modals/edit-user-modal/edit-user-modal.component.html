@@ -11,7 +11,7 @@
   <form [formGroup]="userForm" class="user-form">
     <!-- User Name -->
     <div class="form-group">
-      <ion-label class="selector-label">User Name</ion-label>
+      <ion-label class="selector-label">User-Defined Name</ion-label>
       <ion-input formControlName="userName" readonly></ion-input>
     </div>
     <div class="error-message" *ngIf="userForm.get('userName')?.hasError('required') && userForm.get('userName')?.touched">
