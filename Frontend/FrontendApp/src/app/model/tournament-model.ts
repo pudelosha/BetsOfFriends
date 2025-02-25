@@ -1,15 +1,22 @@
 export interface Team {
-  teamId: number | null;
+  frontendId: string;  // Unique identifier for frontend tracking
+  backendId: number | null;
   teamName: string;
 }
 
 export interface Match {
-  matchId: number| null;
+  frontendId: string; // Unique frontend match identifier
+  backendId: number | null; // Backend match identifier (null for new matches)
   stage?: string | null;
-  homeTeamId: number | null;
+  
+  homeTeamId: number | null; // Backend ID (if available)
+  homeTeamFrontendId: string; // Always set for tracking in frontend
   homeTeam: string;
-  awayTeamId: number | null;
+
+  awayTeamId: number | null; // Backend ID (if available)
+  awayTeamFrontendId: string; // Always set for tracking in frontend
   awayTeam: string;
+
   matchStart: string;
   betType: string;
   homeWinOdds: number;

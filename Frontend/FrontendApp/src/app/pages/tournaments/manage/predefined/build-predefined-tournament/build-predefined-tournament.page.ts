@@ -42,8 +42,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
       tournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       importMethod: ['upload'],
-      teams: this.fb.array([], Validators.required),
-      matches: this.fb.array([]),
+      teams: this.fb.array([], Validators.required),  // Holds Team models
+      matches: this.fb.array([]), // Holds Match models
     });
   }
 
@@ -132,163 +132,160 @@ export class BuildPredefinedTournamentPage implements OnInit {
       importMethod: 'upload',
     });
   
-    // Populate teams
+    // Populate Teams
     this.teamsArray.clear();
     tournament.teams.forEach((team) => {
-      this.teamsArray.push(
-        this.fb.group({
-          teamId: [team.teamId],
-          teamName: [team.teamName, Validators.required],
-        })
-      );
+      this.teamsArray.push(this.fb.group({
+        frontendId: [team.frontendId],
+        backendId: [team.backendId], 
+        teamName: [team.teamName, Validators.required],
+      }));
     });
   
-    // Populate matches
+    // Populate Matches
     this.matchesArray.clear();
     tournament.matches.forEach((match) => {
-      this.matchesArray.push(
-        this.fb.group({
-          matchId: match.matchId,
-          stage: match.stage,
-          homeTeamId: match.homeTeamId,
-          homeTeam: match.homeTeam,
-          awayTeamId: match.awayTeamId,
-          awayTeam: match.awayTeam,
-          matchStart: match.matchStart,
-          betType: match.betType,
-          homeWinOdds: match.homeWinOdds,
-          drawOdds: match.drawOdds,
-          awayWinOdds: match.awayWinOdds,
-          homeQualifies: match.homeQualifies,
-          awayQualifies: match.awayQualifies,
-        })
-      );
+      this.matchesArray.push(this.buildMatchFormGroup(match));
     });
   }
+
+  private buildMatchFormGroup(match: Match): FormGroup {
+    return this.fb.group({
+      frontendId: [match.frontendId],  // Match frontend ID
+      backendId: [match.backendId],    // Backend ID (null if new)
+  
+      stage: [match.stage || null],
       
-  handleTeamsExtracted(teams: { teamId: number | null; teamName: string }[]): void {
+      homeTeamId: [match.homeTeamId],  // Backend ID
+      homeTeamFrontendId: [match.homeTeamFrontendId],  // Ensure frontend ID is stored
+      homeTeam: [match.homeTeam],  
+  
+      awayTeamId: [match.awayTeamId],  // Backend ID
+      awayTeamFrontendId: [match.awayTeamFrontendId],  // Ensure frontend ID is stored
+      awayTeam: [match.awayTeam],  
+  
+      matchStart: [match.matchStart],
+      betType: [match.betType || '90min'],
+      homeWinOdds: [match.homeWinOdds ?? 0],
+      drawOdds: [match.drawOdds ?? 0],
+      awayWinOdds: [match.awayWinOdds ?? 0],
+      homeQualifies: [match.homeQualifies ?? null],
+      awayQualifies: [match.awayQualifies ?? null],
+    });
+  }
+          
+  handleTeamsExtracted(teams: Team[]): void {
     const importMethod = this.tournamentForm.get('importMethod')?.value;
-
+  
     console.log(importMethod);
-
+  
     if (importMethod === 'upload') {
-      // Clear and replace all teams
+      // Replace all teams
       this.teamsArray.clear();
       teams.forEach((team) => {
-        this.teamsArray.push(
-          this.fb.group({
-            teamId: [team.teamId],
-            teamName: [team.teamName, Validators.required],
-          })
-        );
+        this.teamsArray.push(this.fb.group({
+          frontendId: [team.frontendId],
+          backendId: [team.backendId], // Null for new teams
+          teamName: [team.teamName, Validators.required],
+        }));
       });
     } else if (importMethod === 'append') {
       // Append new teams, avoiding duplicates
       teams.forEach((team) => {
         if (!this.teamsArray.value.some((existing: any) => existing.teamName === team.teamName)) {
-          this.teamsArray.push(
-            this.fb.group({
-              teamId: [team.teamId],
-              teamName: [team.teamName, Validators.required],
-            })
-          );
+          this.teamsArray.push(this.fb.group({
+            frontendId: [team.frontendId],
+            backendId: [team.backendId], 
+            teamName: [team.teamName, Validators.required],
+          }));
         }
       });
     }
   
     console.log('Updated Teams:', this.teamsArray.value);
   }
+    
+  handleMatchesExtracted(matches: Match[]): void {
+    console.log('Matches Received from Child:', matches); // Log what the child emits
   
-  handleMatchesExtracted(matches: any[]): void {
     const importMethod = this.tournamentForm.get('importMethod')?.value;
-
-    console.log(importMethod);
   
     if (importMethod === 'upload') {
-      // Clear and replace all matches
+      // Replace all matches
       this.matchesArray.clear();
       matches.forEach((match) => {
-        this.matchesArray.push(buildMatchFormGroup(this.fb, match));
+        console.log('Adding Match to FormArray:', match); // Log before pushing
+        this.matchesArray.push(this.buildMatchFormGroup(match));
       });
     } else if (importMethod === 'append') {
-      // Append new matches, avoiding duplicates
       matches.forEach((match) => {
         if (
           !this.matchesArray.value.some(
             (existing: any) =>
-              existing.homeTeam === match.homeTeam &&
-              existing.awayTeam === match.awayTeam &&
-              existing.matchStart === match.matchStart
+              existing.frontendId === match.frontendId || 
+              (existing.homeTeamFrontendId === match.homeTeamFrontendId &&
+                existing.awayTeamFrontendId === match.awayTeamFrontendId &&
+                existing.matchStart === match.matchStart)
           )
         ) {
-          this.matchesArray.push(buildMatchFormGroup(this.fb, match));
+          console.log('Appending Match to FormArray:', match); // Log before pushing
+          this.matchesArray.push(this.buildMatchFormGroup(match));
         }
       });
     }
   
-    console.log('Updated Matches:', this.matchesArray.value);
+    console.log('Updated Matches (from FormArray.value):', this.matchesArray.value);
   }  
-    
-  handleTeamsUpdated(teamsData: { previousTeams: any[]; updatedTeams: any[] }): void {
-    const { previousTeams, updatedTeams } = teamsData;
-    
-    // Step 1: Create maps of teamId to teamName for previous and updated states
-    const previousTeamMap = previousTeams.reduce((map: any, team: any) => {
-      map[team.teamId] = team.teamName;
-      return map;
-    }, {});
-  
-    const updatedTeamMap = updatedTeams.reduce((map: any, team: any) => {
-      map[team.teamId] = team.teamName;
-      return map;
-    }, {});
-   
-    // Step 2: Detect team name changes
-    const nameUpdates = updatedTeams.filter((updatedTeam: any) => {
-      const previousTeamName = previousTeamMap[updatedTeam.teamId];
-      return previousTeamName && previousTeamName !== updatedTeam.teamName;
-    });
-    
-    // Step 3: Update matchesArray for team name changes
-    if (nameUpdates.length > 0) {
-      nameUpdates.forEach((updatedTeam: any) => {
-        const previousTeamName = previousTeamMap[updatedTeam.teamId];
-  
-        this.matchesArray.controls.forEach((control: AbstractControl) => {
-          const match = (control as FormGroup).value;
-  
-          if (match.homeTeam === previousTeamName) {
-            (control as FormGroup).patchValue({ homeTeam: updatedTeam.teamName });
-          }
-          if (match.awayTeam === previousTeamName) {
-            (control as FormGroup).patchValue({ awayTeam: updatedTeam.teamName });
-          }
-        });
+         
+handleTeamsUpdated(teamsData: { previousTeams: Team[]; updatedTeams: Team[] }): void {
+  const { previousTeams, updatedTeams } = teamsData;
+
+  // Step 1: Create maps using frontendId for tracking changes
+  const previousTeamMap = new Map(previousTeams.map(team => [team.frontendId, team]));
+  const updatedTeamMap = new Map(updatedTeams.map(team => [team.frontendId, team]));
+
+  // Step 2: Detect team name changes based on frontendId
+  const nameUpdates = updatedTeams.filter(updatedTeam => {
+    const previousTeam = previousTeamMap.get(updatedTeam.frontendId);
+    return previousTeam && previousTeam.teamName !== updatedTeam.teamName;
+  });
+
+  // Step 3: Update matchesArray for team name changes
+  if (nameUpdates.length > 0) {
+    nameUpdates.forEach(updatedTeam => {
+      this.matchesArray.controls.forEach((control: AbstractControl) => {
+        const match = (control as FormGroup).value;
+
+        if (match.homeTeamFrontendId === updatedTeam.frontendId) {
+          (control as FormGroup).patchValue({ homeTeam: updatedTeam.teamName });
+        }
+
+        if (match.awayTeamFrontendId === updatedTeam.frontendId) {
+          (control as FormGroup).patchValue({ awayTeam: updatedTeam.teamName });
+        }
       });
-    }
-  
-    // Step 4: Remove matches where home or away teams no longer exist
-    const updatedTeamNames = updatedTeams.map((team: any) => team.teamName);
-    const filteredMatches = this.matchesArray.controls.filter((control: AbstractControl) => {
-      const match = (control as FormGroup).value;
-      const isValidMatch = updatedTeamNames.includes(match.homeTeam) && updatedTeamNames.includes(match.awayTeam);
-      if (!isValidMatch) {
-      }
-      return isValidMatch;
     });
-  
-    // Step 5: Clear and rebuild matchesArray with filtered and updated matches
-    this.matchesArray.clear();
-    filteredMatches.forEach((control: AbstractControl) => {
-      const match = (control as FormGroup).value;
-      this.matchesArray.push(this.fb.group(match));
-    });
-  
-    // Step 6: Emit updated matches
-    const finalUpdatedMatches = this.matchesArray.controls.map((control: AbstractControl) =>
-      (control as FormGroup).value
+  }
+
+  // Step 4: Remove matches where home or away teams no longer exist
+  const updatedTeamFrontendIds = new Set(updatedTeams.map(team => team.frontendId));
+  const filteredMatches = this.matchesArray.controls.filter((control: AbstractControl) => {
+    const match = (control as FormGroup).value;
+    return (
+      updatedTeamFrontendIds.has(match.homeTeamFrontendId) &&
+      updatedTeamFrontendIds.has(match.awayTeamFrontendId)
     );
-  }  
+  });
+
+  // Step 5: Clear and rebuild matchesArray with filtered and updated matches
+  this.matchesArray.clear();
+  filteredMatches.forEach((control: AbstractControl) => {
+    this.matchesArray.push(this.fb.group(control.value));
+  });
+
+  // Directly update matchesArray instead of emitting an event
+  console.log('Updated Matches:', this.matchesArray.value);
+}
    
   handleMatchesUpdated(updatedMatches: any[]): void {
     this.matchesArray.clear();

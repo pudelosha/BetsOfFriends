@@ -1,29 +1,31 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup,  ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { ModalController } from '@ionic/angular';
+import { ModalController, AlertController } from '@ionic/angular';
 import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
 import { buildMatchFormGroup } from '../../../shared/form-utils';
-import { AlertController } from '@ionic/angular';
-
+import { Match, Team } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-stage-matches-management',
   templateUrl: './stage-matches-management.page.html',
   styleUrls: ['./stage-matches-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule]
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
 export class StageMatchesManagementPage implements OnInit {
   @Input() matchesArray!: FormArray; // FormArray for matches
-  @Input() teamsArray!: string[]; // List of teams (optional for modal dropdown)
-  @Output() matchesUpdated = new EventEmitter<any[]>(); // Emits updated matches to parent
+  @Input() teamsArray!: Team[]; // List of structured teams (instead of string[])
+  @Output() matchesUpdated = new EventEmitter<Match[]>(); // Emits updated matches to parent
 
-  constructor(private fb: FormBuilder, private modalController: ModalController, private alertController: AlertController) {}
+  constructor(
+    private fb: FormBuilder,
+    private modalController: ModalController,
+    private alertController: AlertController
+  ) {}
 
-  ngOnInit(): void {  
-  }
+  ngOnInit(): void {}
 
   // Get a specific match control by index
   getMatchControl(index: number): FormGroup {
@@ -35,84 +37,105 @@ export class StageMatchesManagementPage implements OnInit {
       console.warn('No teams available to add a match.');
       return;
     }
-  
-    // Extract team names from the string array (assuming it contains names, not objects)
-    const teams = this.teamsArray.map((teamName) => ({
-      teamId: null, // Assuming no team ID is provided in string[]
-      teamName: teamName, // Use the string directly as the team name
-    }));
-  
+
     const modal = await this.modalController.create({
       component: EditMatchModalComponent,
       componentProps: {
         match: null, // Indicate "Add New Match"
         index: undefined, // No existing match to edit
-        teams, // Pass list of teams as objects
+        teams: this.teamsArray, // Pass full team objects instead of just names
       },
     });
-  
+
     modal.onDidDismiss().then((result) => {
       if (result.data) {
-        this.matchesArray.push(this.fb.group(result.data));
-        console.log('Added New Match:', result.data);
+        const newMatch: Match = {
+          frontendId: this.generateFrontendId(), // Generate frontend ID for new matches
+          backendId: null, // New matches have no backend ID initially
+
+          stage: result.data.stage || null,
+          homeTeamId: result.data.homeTeamId ?? null,
+          homeTeamFrontendId: result.data.homeTeamFrontendId,
+          homeTeam: result.data.homeTeam,
+
+          awayTeamId: result.data.awayTeamId ?? null,
+          awayTeamFrontendId: result.data.awayTeamFrontendId,
+          awayTeam: result.data.awayTeam,
+
+          matchStart: result.data.matchStart || '',
+          betType: result.data.betType || '90min',
+          homeWinOdds: result.data.homeWinOdds ?? 0,
+          drawOdds: result.data.drawOdds ?? 0,
+          awayWinOdds: result.data.awayWinOdds ?? 0,
+          homeQualifies: result.data.homeQualifies ?? null,
+          awayQualifies: result.data.awayQualifies ?? null,
+        };
+
+        this.matchesArray.push(buildMatchFormGroup(this.fb, newMatch));
+        this.emitMatches();
+        console.log('Added New Match:', newMatch);
       }
     });
-  
+
     await modal.present();
-  }  
+  }
 
   // Open edit modal for a match
   async openEditModal(index?: number) {
     const existingMatch = index !== undefined ? this.getMatchControl(index).value : null;
-  
+
     const modal = await this.modalController.create({
       component: EditMatchModalComponent,
       componentProps: {
         match: existingMatch || {}, // Pass existing match or an empty object
         index,
-        teams: this.teamsArray, // Pass full list of teams for dropdown
+        teams: this.teamsArray, // Pass full structured teams
       },
     });
-  
+
     modal.onDidDismiss().then((result) => {
       if (result.data) {
-        // Ensure all required fields have values
-        const matchData = {
-          matchId: result.data.matchId ?? null, // Preserve ID if provided, or set null for new matches
+        const updatedMatch: Match = {
+          frontendId: result.data.frontendId, // Preserve frontend tracking ID
+          backendId: result.data.backendId ?? null,
+
+          stage: result.data.stage || null,
           homeTeamId: result.data.homeTeamId ?? null,
+          homeTeamFrontendId: result.data.homeTeamFrontendId, // Preserve frontend ID
+          homeTeam: result.data.homeTeam,
+
           awayTeamId: result.data.awayTeamId ?? null,
-          stage: result.data.stage || null, // Optional, set to null if empty
-          homeTeam: result.data.homeTeam || '', // Default to empty string
-          awayTeam: result.data.awayTeam || '', // Default to empty string
-          matchStart: result.data.matchStart || '', // Default to empty string
-          betType: result.data.betType || '90min', // Default to '90min'
-          homeWinOdds: result.data.homeWinOdds ?? null,
-          drawOdds: result.data.drawOdds ?? null,
-          awayWinOdds: result.data.awayWinOdds ?? null,
+          awayTeamFrontendId: result.data.awayTeamFrontendId, // Preserve frontend ID
+          awayTeam: result.data.awayTeam,
+
+          matchStart: result.data.matchStart || '',
+          betType: result.data.betType || '90min',
+          homeWinOdds: result.data.homeWinOdds ?? 0,
+          drawOdds: result.data.drawOdds ?? 0,
+          awayWinOdds: result.data.awayWinOdds ?? 0,
           homeQualifies: result.data.homeQualifies ?? null,
           awayQualifies: result.data.awayQualifies ?? null,
         };
-  
+
         if (index !== undefined) {
-          // Update an existing match
-          this.matchesArray.at(index).setValue(matchData);
+          const matchControl = this.matchesArray.at(index) as FormGroup;
+          matchControl.patchValue(updatedMatch); // Use patchValue() to prevent missing fields error
         } else {
-          // Add a new match
-          this.matchesArray.push(buildMatchFormGroup(this.fb, matchData));
-        }
-  
-        // Emit matches to the parent
+          this.matchesArray.push(buildMatchFormGroup(this.fb, updatedMatch));
+        }        
+
         this.emitMatches();
+        console.log('Updated Match:', updatedMatch);
       }
     });
-  
+
     await modal.present();
   }
-      
+
   // Remove a match from the FormArray
   async removeMatch(index: number): Promise<void> {
     const matchToRemove = this.matchesArray.at(index).value;
-  
+
     // Show confirmation dialog using AlertController
     const alert = await this.alertController.create({
       header: 'Confirm Removal',
@@ -133,14 +156,40 @@ export class StageMatchesManagementPage implements OnInit {
         },
       ],
     });
-  
+
     await alert.present();
   }
 
   // Emit updated matches to parent
   private emitMatches(): void {
-    const updatedMatches = this.matchesArray.value;
-    this.matchesUpdated.emit(updatedMatches); // Emit updated matches
+    const updatedMatches: Match[] = this.matchesArray.value.map((match: any) => ({
+      frontendId: match.frontendId,
+      backendId: match.backendId,
+
+      stage: match.stage || null,
+      homeTeamId: match.homeTeamId,
+      homeTeamFrontendId: match.homeTeamFrontendId, // Ensure frontendId is preserved
+      homeTeam: match.homeTeam,
+
+      awayTeamId: match.awayTeamId,
+      awayTeamFrontendId: match.awayTeamFrontendId, // Ensure frontendId is preserved
+      awayTeam: match.awayTeam,
+
+      matchStart: match.matchStart,
+      betType: match.betType,
+      homeWinOdds: match.homeWinOdds,
+      drawOdds: match.drawOdds,
+      awayWinOdds: match.awayWinOdds,
+      homeQualifies: match.homeQualifies,
+      awayQualifies: match.awayQualifies,
+    }));
+
+    this.matchesUpdated.emit(updatedMatches);
     console.log('Emitted Updated Matches:', updatedMatches);
+  }
+
+  // Generate unique frontendId for new matches
+  private generateFrontendId(): string {
+    return 'M-' + Math.random().toString(36).substr(2, 9);
   }
 }

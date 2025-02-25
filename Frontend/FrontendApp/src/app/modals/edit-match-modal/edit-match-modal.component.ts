@@ -11,8 +11,8 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
 export class EditMatchModalComponent implements OnInit {
-  @Input() match: any; // Match object (existing or new)
-  @Input() index?: number; // Index of match in list (undefined if new)
+  @Input() match: any; // Existing match (if editing), otherwise null
+  @Input() index?: number; // Index in the match array
   @Input() teams: any[] = []; // Available teams for selection
 
   matchForm: FormGroup;
@@ -22,27 +22,43 @@ export class EditMatchModalComponent implements OnInit {
     private fb: FormBuilder,
     private toastController: ToastController
   ) {
-    // Define Reactive Form Structure
     this.matchForm = this.fb.group({
-      matchId: [this.match?.matchId || null],
-      stage: [this.match?.stage || ''],
-      homeTeamId: [this.match?.homeTeamId || null],
-      homeTeam: [this.match?.homeTeam || '', Validators.required],
-      awayTeamId: [this.match?.awayTeamId || null],
-      awayTeam: [this.match?.awayTeam || '', Validators.required],
-      matchStart: [this.match?.matchStart || '', Validators.required],
-      betType: [this.match?.betType || '', Validators.required],
-      homeWinOdds: [this.match?.homeWinOdds || null, Validators.required],
-      drawOdds: [this.match?.drawOdds || null, Validators.required],
-      awayWinOdds: [this.match?.awayWinOdds || null, Validators.required],
-      homeQualifies: [this.match?.homeQualifies || null],
-      awayQualifies: [this.match?.awayQualifies || null],
-    });      
+      frontendId: [null],  
+      backendId: [null],    
+
+      stage: ['', Validators.required],  
+      homeTeamFrontendId: [null],  
+      homeTeamId: [null],  
+      homeTeam: ['', Validators.required],  
+
+      awayTeamFrontendId: [null],  
+      awayTeamId: [null],  
+      awayTeam: ['', Validators.required],  
+
+      matchStart: ['', Validators.required],  
+      betType: ['90min', Validators.required],  
+      homeWinOdds: [null, Validators.required],  
+      drawOdds: [null, Validators.required],  
+      awayWinOdds: [null, Validators.required],  
+      homeQualifies: [null],  
+      awayQualifies: [null],  
+    });
   }
 
   ngOnInit() {
     if (this.match) {
-      this.matchForm.patchValue(this.match);
+      // Ensure `frontendId` is retained
+      this.matchForm.patchValue({
+        ...this.match,
+        frontendId: this.match.frontendId || this.generateFrontendId(),
+        homeTeamFrontendId: this.match.homeTeamFrontendId || null,
+        awayTeamFrontendId: this.match.awayTeamFrontendId || null,
+      });
+    } else {
+      // Generate `frontendId` for new matches
+      this.matchForm.patchValue({
+        frontendId: this.generateFrontendId(),
+      });
     }
   }
 
@@ -51,29 +67,45 @@ export class EditMatchModalComponent implements OnInit {
       this.showToast('Please fill in all required fields!', 'danger');
       return;
     }
-  
+
+    // Find selected team objects to ensure correct frontend and backend IDs
+    const selectedHomeTeam = this.teams.find(t => t.teamName === this.matchForm.value.homeTeam);
+    const selectedAwayTeam = this.teams.find(t => t.teamName === this.matchForm.value.awayTeam);
+
+    if (!selectedHomeTeam || !selectedAwayTeam) {
+      this.showToast('Invalid team selection!', 'danger');
+      return;
+    }
+
     const matchData = {
-      matchId: this.match?.matchId || null, // Retain ID for existing matches
-      homeTeamId: this.match?.homeTeamId || null, // Retain ID for existing matches
-      awayTeamId: this.match?.awayTeamId || null, // Retain ID for existing matches
-      stage: this.matchForm.value.stage || null, // Set to null if empty
-      homeTeam: this.matchForm.value.homeTeam || '',
-      awayTeam: this.matchForm.value.awayTeam || '',
+      frontendId: this.matchForm.value.frontendId, // Ensure frontendId is retained
+      backendId: this.match?.backendId || null, // Retain backendId if editing
+
+      stage: this.matchForm.value.stage || null,
+
+      homeTeamFrontendId: selectedHomeTeam.frontendId, // Ensure correct frontend ID
+      homeTeamId: selectedHomeTeam.backendId || null, // Use backend ID if available
+      homeTeam: selectedHomeTeam.teamName,
+
+      awayTeamFrontendId: selectedAwayTeam.frontendId, // Ensure correct frontend ID
+      awayTeamId: selectedAwayTeam.backendId || null, // Use backend ID if available
+      awayTeam: selectedAwayTeam.teamName,
+
       matchStart: this.matchForm.value.matchStart || '',
-      betType: this.matchForm.value.betType || '90min', // Ensure betType is included
+      betType: this.matchForm.value.betType || '90min',
       homeWinOdds: this.matchForm.value.homeWinOdds || null,
       drawOdds: this.matchForm.value.drawOdds || null,
       awayWinOdds: this.matchForm.value.awayWinOdds || null,
       homeQualifies: this.matchForm.value.homeQualifies || null,
       awayQualifies: this.matchForm.value.awayQualifies || null,
     };
-  
+
     console.log('Saving Match:', matchData);
-  
+
     await this.modalController.dismiss(matchData);
     this.showToast(this.index !== undefined ? 'Match updated!' : 'New match added!', 'success');
   }
-      
+
   closeModal() {
     this.modalController.dismiss(null);
   }
@@ -86,5 +118,9 @@ export class EditMatchModalComponent implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private generateFrontendId(): string {
+    return 'match-' + Math.random().toString(36).substr(2, 9);
   }
 }

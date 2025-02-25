@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ModalController } from '@ionic/angular';
 import { EditTeamModalComponent } from 'src/app/modals/edit-team-modal/edit-team-modal.component';
 import { AlertController } from '@ionic/angular';
+import { Team } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-stage-teams-management',
@@ -15,21 +16,31 @@ import { AlertController } from '@ionic/angular';
 })
 export class StageTeamsManagementPage {
   @Input() teamsArray!: FormArray; // Input from parent for teams FormArray
-  @Output() teamsUpdated = new EventEmitter<{ previousTeams: any[]; updatedTeams: any[] }>(); // Emits old and updated teams to parent
+  @Output() teamsUpdated = new EventEmitter<{ previousTeams: Team[]; updatedTeams: Team[] }>(); // Emits old and updated teams to parent
 
-  constructor(private toastController: ToastController,
-              private modalController: ModalController,
-              private alertController: AlertController,
-              private fb: FormBuilder) {}
+  constructor(
+    private toastController: ToastController,
+    private modalController: ModalController,
+    private alertController: AlertController,
+    private fb: FormBuilder
+  ) {}
 
   // Get control for a specific team
   getTeamControl(index: number): FormGroup {
     return this.teamsArray.at(index) as FormGroup;
   }
 
+  // Generate a unique frontendId for new teams
+  private generateFrontendId(): string {
+    return 'T-' + Math.random().toString(36).substr(2, 9);
+  }
+
+  // Add a new team
   async addTeam(): Promise<void> {
-    const allTeamNames = this.teamsArray.controls.map(control => control.get('teamName')?.value.trim().toLowerCase());
-  
+    const allTeamNames = this.teamsArray.controls.map(control =>
+      control.get('teamName')?.value.trim().toLowerCase()
+    );
+
     const modal = await this.modalController.create({
       component: EditTeamModalComponent,
       componentProps: {
@@ -38,30 +49,34 @@ export class StageTeamsManagementPage {
         allTeamNames,
       },
     });
-  
+
     modal.onDidDismiss().then(result => {
       if (result.data) {
-        const newTeam = result.data;
-        this.teamsArray.push(
-          this.fb.group({
-            teamId: [newTeam.teamId],
-            teamName: [newTeam.teamName, Validators.required],
-          })
-        );
+        const newTeam: Team = {
+          frontendId: this.generateFrontendId(), // Assign new frontend ID
+          backendId: null, // New teams have no backend ID
+          teamName: result.data.teamName.trim(),
+        };
+
+        this.teamsArray.push(this.fb.group(newTeam));
+
         console.log('Added New Team:', newTeam);
+        this.emitTeams();
       }
     });
-  
+
     await modal.present();
   }
-    
-  // Edit team
+
+  // Edit an existing team
   async editTeam(index: number): Promise<void> {
     const team = this.teamsArray.at(index).value;
-    const allTeamNames = this.teamsArray.controls.map((control) => control.get('teamName')?.value.trim().toLowerCase());
+    const allTeamNames = this.teamsArray.controls.map(control =>
+      control.get('teamName')?.value.trim().toLowerCase()
+    );
 
-    // Create a snapshot of the current teamsArray to capture old state
-    const previousTeamsArray = this.teamsArray.value.map((team: any) => ({ ...team }));
+    // Snapshot previous state before editing
+    const previousTeamsArray: Team[] = this.teamsArray.value.map((team: any) => ({ ...team }));
 
     const modal = await this.modalController.create({
       component: EditTeamModalComponent,
@@ -71,19 +86,22 @@ export class StageTeamsManagementPage {
         allTeamNames,
       },
     });
-  
-    modal.onDidDismiss().then((result) => {
+
+    modal.onDidDismiss().then(result => {
       if (result.data) {
         const updatedTeam = result.data;
         const teamGroup = this.teamsArray.at(index) as FormGroup;
-        teamGroup.patchValue(updatedTeam);
+        teamGroup.patchValue({
+          teamName: updatedTeam.teamName.trim(), // Ensure trim to remove whitespace issues
+        });
+
         console.log('Updated Team:', updatedTeam);
 
-        // Emit both the previous and updated teams to the parent
-        this.emitTeams(previousTeamsArray, this.teamsArray.value);
+        // Emit updated teams with old reference
+        this.emitTeams(previousTeamsArray);
       }
     });
-  
+
     await modal.present();
   }
 
@@ -91,8 +109,8 @@ export class StageTeamsManagementPage {
   async removeTeam(index: number): Promise<void> {
     const teamToRemove = this.teamsArray.at(index).value;
 
-    // Create a snapshot of the current teamsArray to capture old state
-    const previousTeamsArray = this.teamsArray.value.map((team: any) => ({ ...team }));
+    // Snapshot previous state before deletion
+    const previousTeamsArray: Team[] = this.teamsArray.value.map((team: any) => ({ ...team }));
 
     const alert = await this.alertController.create({
       header: 'Confirm Removal',
@@ -108,10 +126,8 @@ export class StageTeamsManagementPage {
           handler: async () => {
             this.teamsArray.removeAt(index);
 
-            // Emit both the previous and updated teams to the parent
-            this.emitTeams(previousTeamsArray, this.teamsArray.value);
             console.log('Removed team:', teamToRemove);
-
+            this.emitTeams(previousTeamsArray);
             await this.showToast(`Team "${teamToRemove.teamName}" removed successfully!`, 'success');
           },
         },
@@ -120,10 +136,20 @@ export class StageTeamsManagementPage {
 
     await alert.present();
   }
-    
-  // Emit updated teams to parent
-  private emitTeams(previousTeams: any[], updatedTeams: any[]): void {
-    this.teamsUpdated.emit({ previousTeams, updatedTeams }); // Emit old and updated teams to parent
+
+  // Emit updated teams to parent with previous state reference
+  private emitTeams(previousTeams?: Team[]): void {
+    const updatedTeams: Team[] = this.teamsArray.value.map((team: any) => ({
+      frontendId: team.frontendId,
+      backendId: team.backendId,
+      teamName: team.teamName,
+    }));
+
+    this.teamsUpdated.emit({
+      previousTeams: previousTeams ?? updatedTeams,
+      updatedTeams,
+    });
+
     console.log('Emitted Previous Teams:', previousTeams);
     console.log('Emitted Updated Teams:', updatedTeams);
   }

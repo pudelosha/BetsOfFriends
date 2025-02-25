@@ -8,6 +8,7 @@ import { Tournament } from 'src/app/model/tournament-model';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { ModalController } from '@ionic/angular';
 import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-selection-modal/tournament-selection.modal';
+import { Team, Match } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-stage-input-type',
@@ -18,9 +19,9 @@ import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-sel
 })
 export class StageInputTypePage implements OnInit {
   @Input() showPredefinedImport: boolean = false;
-  @Input() tournamentForm!: FormGroup; // Parent form
-  @Output() teamsExtracted = new EventEmitter<any[]>(); // Emit teams to parent
-  @Output() matchesExtracted = new EventEmitter<any[]>(); // Emit matches to parent
+  @Input() tournamentForm!: FormGroup;
+  @Output() teamsExtracted = new EventEmitter<Team[]>(); 
+  @Output() matchesExtracted = new EventEmitter<Match[]>(); 
   @Output() tournamentSelected = new EventEmitter<Tournament>();
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -125,11 +126,11 @@ export class StageInputTypePage implements OnInit {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
   
-        // Extract teams and matches
+        // Extract structured teams and matches
         const teams = this.extractTeams(workbook);
-        const matches = this.extractMatches(workbook, teams.map(t => t.teamName)); // Pass only team names to match extraction
+        const matches = this.extractMatches(workbook, teams);
   
-        // Emit data to parent
+        // Emit structured data to the parent component
         this.teamsExtracted.emit(teams);
         this.matchesExtracted.emit(matches);
   
@@ -142,10 +143,10 @@ export class StageInputTypePage implements OnInit {
   
     reader.readAsArrayBuffer(this.file!);
   }
-  
-  extractTeams(workbook: XLSX.WorkBook): { teamId: null; teamName: string }[] {
+    
+  extractTeams(workbook: XLSX.WorkBook): Team[] {
     const sheet = workbook.Sheets['Teams'];
-    const teams: any[] = [];
+    const teams: Team[] = [];
   
     if (sheet) {
       const rows = XLSX.utils.sheet_to_json(sheet);
@@ -153,7 +154,8 @@ export class StageInputTypePage implements OnInit {
         const teamName = row['Team Name'];
         if (typeof teamName === 'string' && teamName.trim()) {
           teams.push({
-            teamId: null, // All new teams have teamId set to null
+            frontendId: this.generateFrontendId(), // Generate unique frontend ID
+            backendId: null, // All new teams initially have null backendId
             teamName: teamName.trim(),
           });
         }
@@ -165,32 +167,60 @@ export class StageInputTypePage implements OnInit {
     }
   
     return teams;
-  }  
-
-  extractMatches(workbook: XLSX.WorkBook, teamNames: string[]): any[] {
+  }
+   
+  extractMatches(workbook: XLSX.WorkBook, teams: Team[]): Match[] {
     const sheet = workbook.Sheets['Games'];
-    const matches: any[] = [];
+    const matches: Match[] = [];
   
     if (sheet) {
       const rows = XLSX.utils.sheet_to_json(sheet);
   
-      rows.forEach((row: any) => {
-        const homeTeam = row['Home Team'];
-        const awayTeam = row['Away Team'];
+      // Create a map of team names to frontendId and backendId for reference
+      const teamMap = new Map(
+        teams.map(team => [
+          team.teamName, 
+          { frontendId: team.frontendId, backendId: team.backendId }
+        ])
+      );
   
-        if (!teamNames.includes(homeTeam) || !teamNames.includes(awayTeam)) {
-          console.warn(`Unknown teams in match: ${homeTeam} vs ${awayTeam}`);
-          return;
+      rows.forEach((row: any) => {
+        const homeTeamName = row['Home Team'];
+        const awayTeamName = row['Away Team'];
+  
+        // Ensure both teams exist
+        const homeTeam = teamMap.get(homeTeamName);
+        const awayTeam = teamMap.get(awayTeamName);
+  
+        if (!homeTeam || !awayTeam) {
+          console.warn(`Unknown teams in match: ${homeTeamName} vs ${awayTeamName}`);
+          return; // Skip invalid matches
         }
   
-        const match = {
+        const match: Match = {
+          frontendId: this.generateFrontendId(), // Unique ID for frontend tracking
+          backendId: null, // Initially null for new matches
+  
           stage: row['Stage'] || null,
-          homeTeam,
-          awayTeam,
+  
+          homeTeamId: homeTeam.backendId, // Backend ID if available, otherwise null
+          homeTeamFrontendId: homeTeam.frontendId, // Always present
+          homeTeam: homeTeamName,
+  
+          awayTeamId: awayTeam.backendId, // Backend ID if available, otherwise null
+          awayTeamFrontendId: awayTeam.frontendId, // Always present
+          awayTeam: awayTeamName,
+  
           matchStart: this.convertToTimestamp(row['Date'], row['Time'], row['UTC Offset']),
-          homeWinOdds: this.parseOdds(row['Home Win Odds']),
-          drawOdds: this.parseOdds(row['Draw Odds']),
-          awayWinOdds: this.parseOdds(row['Away Win Odds']),
+  
+          betType: row['Bet Type'] || 'default', // Assign a default value if missing
+  
+          homeWinOdds: this.parseOdds(row['Home Win Odds']) ?? 0, // Ensure a number
+          drawOdds: this.parseOdds(row['Draw Odds']) ?? 0,
+          awayWinOdds: this.parseOdds(row['Away Win Odds']) ?? 0,
+  
+          homeQualifies: null, // Default for now, can be set later
+          awayQualifies: null,
         };
   
         matches.push(match);
@@ -203,7 +233,7 @@ export class StageInputTypePage implements OnInit {
   
     return matches;
   }
-  
+        
   convertToTimestamp(date: string, time: string, utcOffset: number): string {
     if (!date || !time) return '';
     const dateTimeString = `${date}T${time}`;
@@ -257,4 +287,9 @@ export class StageInputTypePage implements OnInit {
   
     this.showToast('All form data has been erased.', 'success');
   } 
+
+  generateFrontendId(): string {
+    return 'F-' + Math.random().toString(36).substr(2, 9); // Simple unique ID
+  }  
 }
+
