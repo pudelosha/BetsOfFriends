@@ -14,6 +14,7 @@ export class StageSummaryPage implements OnInit {
   @Input() tournamentName!: string;
   @Input() teamsArray!: { teamId: number | null; teamName: string }[];
   @Input() matchesArray!: any[];
+  @Input() usersArray!: { userId: number; userName: string; userEmail: string; status: string }[];
 
   constructor() {}
 

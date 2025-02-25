@@ -31,7 +31,7 @@
 
 <!-- Matches Section -->
 <div class="section-title">Matches</div>
-<div class="summary-grid-matches nav-menu-space">
+<div class="summary-grid-matches">
   <div *ngFor="let match of matchesArray" class="match-row">
     <div class="match-teams">{{ match.homeTeam }} - {{ match.awayTeam }}</div>
     <div class="match-date">{{ match.matchStart | date: 'yyyy-MM-dd HH:mm' }}</div>
@@ -42,3 +42,18 @@
     </div>
   </div>
 </div>
+
+<!-- Users Section -->
+<div *ngIf="(usersArray?.length ?? 0) > 0">
+  <div class="divider"></div>
+
+  <div class="section-title">Users</div>
+  <div class="summary-grid-users nav-menu-space">
+    <div *ngFor="let user of usersArray" class="user-row">
+      <div class="user-name">{{ user.userName }}</div>
+      <div class="user-email">{{ user.userEmail }}</div>
+      <div class="user-status">{{ user.status }}</div>
+    </div>
+  </div>
+</div>
+

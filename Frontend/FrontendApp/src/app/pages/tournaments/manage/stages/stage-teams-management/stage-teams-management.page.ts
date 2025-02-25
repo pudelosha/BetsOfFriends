@@ -53,8 +53,8 @@ export class StageTeamsManagementPage {
     modal.onDidDismiss().then(result => {
       if (result.data) {
         const newTeam: Team = {
-          frontendId: this.generateFrontendId(), // Assign new frontend ID
-          backendId: null, // New teams have no backend ID
+          teamFrontendId: this.generateFrontendId(), // Assign new frontend ID
+          teamId: null, // New teams have no backend ID
           teamName: result.data.teamName.trim(),
         };
 
@@ -140,8 +140,8 @@ export class StageTeamsManagementPage {
   // Emit updated teams to parent with previous state reference
   private emitTeams(previousTeams?: Team[]): void {
     const updatedTeams: Team[] = this.teamsArray.value.map((team: any) => ({
-      frontendId: team.frontendId,
-      backendId: team.backendId,
+      teamFrontendId: team.teamFrontendId,
+      teamId: team.teamId,
       teamName: team.teamName,
     }));
 

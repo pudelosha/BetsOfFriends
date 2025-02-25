@@ -16,7 +16,7 @@ import { Match, Team } from 'src/app/model/tournament-model';
 })
 export class StageMatchesManagementPage implements OnInit {
   @Input() matchesArray!: FormArray; // FormArray for matches
-  @Input() teamsArray!: Team[]; // List of structured teams (instead of string[])
+  @Input() teamsArray!: Team[]; // List of structured teams
   @Output() matchesUpdated = new EventEmitter<Match[]>(); // Emits updated matches to parent
 
   constructor(
@@ -43,15 +43,15 @@ export class StageMatchesManagementPage implements OnInit {
       componentProps: {
         match: null, // Indicate "Add New Match"
         index: undefined, // No existing match to edit
-        teams: this.teamsArray, // Pass full team objects instead of just names
+        teams: this.teamsArray, // Pass full team objects
       },
     });
 
     modal.onDidDismiss().then((result) => {
       if (result.data) {
         const newMatch: Match = {
-          frontendId: this.generateFrontendId(), // Generate frontend ID for new matches
-          backendId: null, // New matches have no backend ID initially
+          matchFrontendId: this.generateFrontendId(), // Generate frontend ID for new matches
+          matchId: null, // New matches have no backend ID initially
 
           stage: result.data.stage || null,
           homeTeamId: result.data.homeTeamId ?? null,
@@ -96,8 +96,8 @@ export class StageMatchesManagementPage implements OnInit {
     modal.onDidDismiss().then((result) => {
       if (result.data) {
         const updatedMatch: Match = {
-          frontendId: result.data.frontendId, // Preserve frontend tracking ID
-          backendId: result.data.backendId ?? null,
+          matchFrontendId: result.data.matchFrontendId, // Preserve frontend tracking ID
+          matchId: result.data.matchId ?? null,
 
           stage: result.data.stage || null,
           homeTeamId: result.data.homeTeamId ?? null,
@@ -163,8 +163,8 @@ export class StageMatchesManagementPage implements OnInit {
   // Emit updated matches to parent
   private emitMatches(): void {
     const updatedMatches: Match[] = this.matchesArray.value.map((match: any) => ({
-      frontendId: match.frontendId,
-      backendId: match.backendId,
+      matchFrontendId: match.matchFrontendId,
+      matchId: match.matchId,
 
       stage: match.stage || null,
       homeTeamId: match.homeTeamId,

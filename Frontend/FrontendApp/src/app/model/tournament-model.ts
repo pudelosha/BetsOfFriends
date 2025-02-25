@@ -1,12 +1,12 @@
 export interface Team {
-  frontendId: string;  // Unique identifier for frontend tracking
-  backendId: number | null;
+  teamFrontendId: string;  // Unique identifier for frontend tracking
+  teamId: number | null;
   teamName: string;
 }
 
 export interface Match {
-  frontendId: string; // Unique frontend match identifier
-  backendId: number | null; // Backend match identifier (null for new matches)
+  matchFrontendId: string; // Unique frontend match identifier
+  matchId: number | null; // Backend match identifier (null for new matches)
   stage?: string | null;
   
   homeTeamId: number | null; // Backend ID (if available)

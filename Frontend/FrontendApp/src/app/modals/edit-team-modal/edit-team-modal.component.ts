@@ -24,22 +24,27 @@ export class EditTeamModalComponent implements OnInit {
     private toastController: ToastController
   ) {
     this.teamForm = this.fb.group({
-      frontendId: [''], // Always required
-      backendId: [null], // Only exists for existing teams
+      teamFrontendId: [''], // Always required (Renamed correctly)
+      teamId: [null], // Backend ID (Renamed correctly)
       teamName: ['', [Validators.required, Validators.maxLength(50)]],
     });
   }
 
   ngOnInit(): void {
     if (this.team) {
-      this.teamForm.patchValue(this.team); // Populate the form with team data if provided
+      // Populate fields properly
+      this.teamForm.patchValue({
+        teamFrontendId: this.team.teamFrontendId || this.generateFrontendId(), // Ensure frontend ID
+        teamId: this.team.teamId ?? null, // Preserve backend ID
+        teamName: this.team.teamName,
+      });
     } else {
-      // If it's a new team, generate a frontendId
-      this.teamForm.patchValue({ frontendId: this.generateFrontendId() });
+      // Generate a new frontend ID for new teams
+      this.teamForm.patchValue({ teamFrontendId: this.generateFrontendId() });
     }
   }
 
-  // Generate unique frontendId for new teams
+  // Generate a unique teamFrontendId for new teams
   private generateFrontendId(): string {
     return 'T-' + Math.random().toString(36).substr(2, 9);
   }
@@ -62,10 +67,10 @@ export class EditTeamModalComponent implements OnInit {
       return;
     }
 
-    // Prepare the structured team object
+    // Prepare the structured team object with correct naming
     const updatedTeam: Team = {
-      frontendId: this.teamForm.value.frontendId,
-      backendId: this.teamForm.value.backendId, // Preserve backendId if available
+      teamFrontendId: this.teamForm.value.teamFrontendId, // Matches new model name
+      teamId: this.teamForm.value.teamId, // Preserve backendId if available
       teamName: this.teamForm.value.teamName.trim(),
     };
 
