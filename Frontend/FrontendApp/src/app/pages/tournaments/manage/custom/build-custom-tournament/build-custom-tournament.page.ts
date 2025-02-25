@@ -371,7 +371,7 @@ export class BuildCustomTournamentPage implements OnInit {
       createdBy: this.tournamentForm.value.createdBy || 'Admin',
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
       teams: this.teamsArray.value.map((team: { teamId: number | null; teamName: string }) => ({
-        teamId: team.teamId || null, // Use `null` for new teams
+        teamId: isEditing ? team.teamId || null : null, // Use `null` for new teams
         teamName: team.teamName,
       })),
       matches: this.matchesArray.value.map((match: any) => ({
