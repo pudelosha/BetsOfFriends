@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Model.Entities
 {
-    public class Team
+    public class CustomTeam
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int TeamId { get; set; }
 
         [Required]
         [MaxLength(50)]
@@ -15,6 +15,6 @@ namespace Backend.Model.Entities
 
         public int TournamentId { get; set; }
         [ForeignKey("TournamentId")]
-        public Tournament Tournament { get; set; }
+        public CustomTournament Tournament { get; set; }
     }
 }

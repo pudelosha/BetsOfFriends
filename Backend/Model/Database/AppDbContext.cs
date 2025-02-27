@@ -15,10 +15,10 @@ namespace Backend.Model.Database
         public DbSet<PredefinedMatch> PredefinedMatches { get; set; }
 
         // Standard Tournament Tables
-        public DbSet<Tournament> Tournaments { get; set; }
-        public DbSet<UserTournament> UserTournaments { get; set; }
-        public DbSet<Team> Teams { get; set; }
-        public DbSet<Match> Matches { get; set; }
+        public DbSet<CustomTournament> CustomTournaments { get; set; }
+        public DbSet<CustomTournamentUserAssignment> CustomTournamentUserAssignments { get; set; }
+        public DbSet<CustomTeam> CustomTeams { get; set; }
+        public DbSet<CustomMatch> CustomMatches { get; set; }
         public DbSet<Bet> Bets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -88,21 +88,21 @@ namespace Backend.Model.Database
         private void ConfigureTournamentRelationships(ModelBuilder builder)
         {
             // Tournament -> CreatedByUser
-            builder.Entity<Tournament>()
+            builder.Entity<CustomTournament>()
                 .HasOne(t => t.CreatedByUser)
                 .WithMany()
                 .HasForeignKey(t => t.CreatedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Tournament -> Teams
-            builder.Entity<Tournament>()
+            builder.Entity<CustomTournament>()
                 .HasMany(t => t.Teams)
                 .WithOne(team => team.Tournament)
                 .HasForeignKey(team => team.TournamentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Tournament -> Participants
-            builder.Entity<Tournament>()
+            builder.Entity<CustomTournament>()
                 .HasMany(t => t.Participants)
                 .WithOne(ut => ut.Tournament)
                 .HasForeignKey(ut => ut.TournamentId)
@@ -114,26 +114,26 @@ namespace Backend.Model.Database
         /// </summary>
         private void ConfigureUserTournamentRelationship(ModelBuilder builder)
         {
-            builder.Entity<UserTournament>()
-                .HasKey(ut => ut.Id);
+            builder.Entity<CustomTournamentUserAssignment>()
+                .HasKey(ut => ut.AssignmentId);
 
-            builder.Entity<UserTournament>()
+            builder.Entity<CustomTournamentUserAssignment>()
                 .HasIndex(ut => new { ut.UserId, ut.TournamentId })
                 .IsUnique();
 
-            builder.Entity<UserTournament>()
+            builder.Entity<CustomTournamentUserAssignment>()
                 .HasOne(ut => ut.User)
-                .WithMany(u => u.UserTournaments)
+                .WithMany(u => u.CustomTournamentUserAssignments)
                 .HasForeignKey(ut => ut.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<UserTournament>()
+            builder.Entity<CustomTournamentUserAssignment>()
                 .HasOne(ut => ut.Tournament)
                 .WithMany(t => t.Participants)
                 .HasForeignKey(ut => ut.TournamentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<UserTournament>()
+            builder.Entity<CustomTournamentUserAssignment>()
                 .Property(ut => ut.Role)
                 .HasDefaultValue(UserTournamentRole.Guest);
         }
@@ -143,19 +143,19 @@ namespace Backend.Model.Database
         /// </summary>
         private void ConfigureGameRelationships(ModelBuilder builder)
         {
-            builder.Entity<Match>()
+            builder.Entity<CustomMatch>()
                 .HasOne(g => g.Tournament)
                 .WithMany(t => t.Matches)
                 .HasForeignKey(g => g.TournamentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Match>()
+            builder.Entity<CustomMatch>()
                 .HasOne(g => g.HomeTeam)
                 .WithMany()
                 .HasForeignKey(g => g.HomeTeamId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Match>()
+            builder.Entity<CustomMatch>()
                 .HasOne(g => g.AwayTeam)
                 .WithMany()
                 .HasForeignKey(g => g.AwayTeamId)

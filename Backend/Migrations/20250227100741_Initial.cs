@@ -113,12 +113,13 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tournaments",
+                name: "CustomTournaments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    TournamentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     CreatedByUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -133,9 +134,9 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tournaments", x => x.Id);
+                    table.PrimaryKey("PK_CustomTournaments", x => x.TournamentId);
                     table.ForeignKey(
-                        name: "FK_Tournaments_Users_CreatedByUserId",
+                        name: "FK_CustomTournaments_Users_CreatedByUserId",
                         column: x => x.CreatedByUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -269,30 +270,30 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Teams",
+                name: "CustomTeams",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    TeamId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     TournamentId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teams", x => x.Id);
+                    table.PrimaryKey("PK_CustomTeams", x => x.TeamId);
                     table.ForeignKey(
-                        name: "FK_Teams_Tournaments_TournamentId",
+                        name: "FK_CustomTeams_CustomTournaments_TournamentId",
                         column: x => x.TournamentId,
-                        principalTable: "Tournaments",
-                        principalColumn: "Id",
+                        principalTable: "CustomTournaments",
+                        principalColumn: "TournamentId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTournaments",
+                name: "CustomTournamentUserAssignments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    AssignmentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TournamentId = table.Column<int>(type: "int", nullable: false),
@@ -301,15 +302,15 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTournaments", x => x.Id);
+                    table.PrimaryKey("PK_CustomTournamentUserAssignments", x => x.AssignmentId);
                     table.ForeignKey(
-                        name: "FK_UserTournaments_Tournaments_TournamentId",
+                        name: "FK_CustomTournamentUserAssignments_CustomTournaments_TournamentId",
                         column: x => x.TournamentId,
-                        principalTable: "Tournaments",
-                        principalColumn: "Id",
+                        principalTable: "CustomTournaments",
+                        principalColumn: "TournamentId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserTournaments_Users_UserId",
+                        name: "FK_CustomTournamentUserAssignments_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -317,10 +318,10 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Matches",
+                name: "CustomMatches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    MatchId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Stage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TournamentId = table.Column<int>(type: "int", nullable: false),
@@ -338,24 +339,24 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Matches", x => x.Id);
+                    table.PrimaryKey("PK_CustomMatches", x => x.MatchId);
                     table.ForeignKey(
-                        name: "FK_Matches_Teams_AwayTeamId",
+                        name: "FK_CustomMatches_CustomTeams_AwayTeamId",
                         column: x => x.AwayTeamId,
-                        principalTable: "Teams",
-                        principalColumn: "Id",
+                        principalTable: "CustomTeams",
+                        principalColumn: "TeamId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Matches_Teams_HomeTeamId",
+                        name: "FK_CustomMatches_CustomTeams_HomeTeamId",
                         column: x => x.HomeTeamId,
-                        principalTable: "Teams",
-                        principalColumn: "Id",
+                        principalTable: "CustomTeams",
+                        principalColumn: "TeamId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Matches_Tournaments_TournamentId",
+                        name: "FK_CustomMatches_CustomTournaments_TournamentId",
                         column: x => x.TournamentId,
-                        principalTable: "Tournaments",
-                        principalColumn: "Id",
+                        principalTable: "CustomTournaments",
+                        principalColumn: "TournamentId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -363,7 +364,7 @@ namespace Backend.Migrations
                 name: "Bets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    BetId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MatchId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -378,12 +379,12 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bets", x => x.Id);
+                    table.PrimaryKey("PK_Bets", x => x.BetId);
                     table.ForeignKey(
-                        name: "FK_Bets_Matches_MatchId",
+                        name: "FK_Bets_CustomMatches_MatchId",
                         column: x => x.MatchId,
-                        principalTable: "Matches",
-                        principalColumn: "Id",
+                        principalTable: "CustomMatches",
+                        principalColumn: "MatchId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Bets_Users_UserId",
@@ -414,19 +415,40 @@ namespace Backend.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_AwayTeamId",
-                table: "Matches",
+                name: "IX_CustomMatches_AwayTeamId",
+                table: "CustomMatches",
                 column: "AwayTeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_HomeTeamId",
-                table: "Matches",
+                name: "IX_CustomMatches_HomeTeamId",
+                table: "CustomMatches",
                 column: "HomeTeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_TournamentId",
-                table: "Matches",
+                name: "IX_CustomMatches_TournamentId",
+                table: "CustomMatches",
                 column: "TournamentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomTeams_TournamentId",
+                table: "CustomTeams",
+                column: "TournamentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomTournaments_CreatedByUserId",
+                table: "CustomTournaments",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomTournamentUserAssignments_TournamentId",
+                table: "CustomTournamentUserAssignments",
+                column: "TournamentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomTournamentUserAssignments_UserId_TournamentId",
+                table: "CustomTournamentUserAssignments",
+                columns: new[] { "UserId", "TournamentId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PredefinedMatches_AwayTeamId",
@@ -461,16 +483,6 @@ namespace Backend.Migrations
                 filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Teams_TournamentId",
-                table: "Teams",
-                column: "TournamentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tournaments_CreatedByUserId",
-                table: "Tournaments",
-                column: "CreatedByUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",
                 table: "UserClaims",
                 column: "UserId");
@@ -496,17 +508,6 @@ namespace Backend.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserTournaments_TournamentId",
-                table: "UserTournaments",
-                column: "TournamentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserTournaments_UserId_TournamentId",
-                table: "UserTournaments",
-                columns: new[] { "UserId", "TournamentId" },
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -514,6 +515,9 @@ namespace Backend.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Bets");
+
+            migrationBuilder.DropTable(
+                name: "CustomTournamentUserAssignments");
 
             migrationBuilder.DropTable(
                 name: "PredefinedMatches");
@@ -534,10 +538,7 @@ namespace Backend.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
-                name: "UserTournaments");
-
-            migrationBuilder.DropTable(
-                name: "Matches");
+                name: "CustomMatches");
 
             migrationBuilder.DropTable(
                 name: "PredefinedTeams");
@@ -546,13 +547,13 @@ namespace Backend.Migrations
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "Teams");
+                name: "CustomTeams");
 
             migrationBuilder.DropTable(
                 name: "PredefinedTournaments");
 
             migrationBuilder.DropTable(
-                name: "Tournaments");
+                name: "CustomTournaments");
 
             migrationBuilder.DropTable(
                 name: "Users");

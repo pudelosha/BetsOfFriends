@@ -1,6 +1,5 @@
 ﻿using Backend.DTOs;
 using Backend.Repository.Interfaces;
-using Backend.Repository.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,17 +7,18 @@ namespace Backend.Controllers
 {
     [ApiController]
     [Route("api/predefined-tournaments")]
-    public class PredefinedTournamentController : ControllerBase
+    public class PredefinedTournamentsController : ControllerBase
     {
         private readonly IPredefinedTournamentService _tournamentService;
-        private readonly ILogger<PredefinedTournamentController> _logger;
+        private readonly ILogger<PredefinedTournamentsController> _logger;
 
-        public PredefinedTournamentController(IPredefinedTournamentService tournamentService, ILogger<PredefinedTournamentController> logger)
+        public PredefinedTournamentsController(IPredefinedTournamentService tournamentService, ILogger<PredefinedTournamentsController> logger)
         {
             _tournamentService = tournamentService;
             _logger = logger;
         }
 
+        [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreatePredefinedTournament([FromBody] PredefinedTournamentDto tournamentDto)
         {
@@ -42,7 +42,6 @@ namespace Backend.Controllers
 
             return Ok(new { message = "Tournament created successfully!" });
         }
-
 
         [Authorize]
         [HttpPut("update")]
@@ -77,7 +76,7 @@ namespace Backend.Controllers
 
         [Authorize]
         [HttpGet("get/{tournamentId}")]
-        public async Task<IActionResult> GetTournamentById(int tournamentId)
+        public async Task<IActionResult> GetPredefinedTournamentById(int tournamentId)
         {
             try
             {
@@ -100,7 +99,7 @@ namespace Backend.Controllers
 
         [Authorize]
         [HttpDelete("delete/{tournamentId}")]
-        public async Task<IActionResult> DeleteTournamentById(int tournamentId)
+        public async Task<IActionResult> DeletePredefinedTournamentById(int tournamentId)
         {
             try
             {
@@ -145,7 +144,6 @@ namespace Backend.Controllers
         }
 
         [Authorize]
-
         [HttpGet("active")]
         public async Task<IActionResult> GetActivePredefinedTournaments()
         {

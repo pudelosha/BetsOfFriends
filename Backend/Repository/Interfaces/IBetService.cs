@@ -2,5 +2,7 @@
 {
     public interface IBetService
     {
+        Task CreateBetsForTournamentAsync(int tournamentId);
+
     }
 }

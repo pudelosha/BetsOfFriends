@@ -7,10 +7,10 @@ namespace Backend.Model.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int BetId { get; set; }
 
         public int MatchId { get; set; }
-        public Match Match { get; set; }
+        public CustomMatch Match { get; set; }
 
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }

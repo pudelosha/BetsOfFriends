@@ -1,4 +1,5 @@
 ﻿using Backend.DTOs;
+using Backend.Model.Entities;
 using System.Security.Claims;
 
 namespace Backend.Repository.Interfaces
@@ -6,6 +7,8 @@ namespace Backend.Repository.Interfaces
     public interface IUserService
     {
         string GetUserIdFromClaims(ClaimsPrincipal user);
+        Task<ApplicationUser?> FindUserByEmailAsync(string email);
+        Task<ApplicationUser?> FindUserByIdAsync(string userId);
         Task<UserProfileDto> GetUserProfileAsync(string userId);
         Task<bool> UpdateUserProfileAsync(string userId, UserProfileDto profile);
         Task<bool> SendPasswordResetEmailAsync(string email);

@@ -6,14 +6,16 @@ namespace Backend.Model.Entities
     /// <summary>
     /// Represents a football tournament where users can bet on matches.
     /// </summary>
-    public class Tournament
+    public class CustomTournament
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int TournamentId { get; set; }
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }
+        [Required]
+        public bool IsActive { get; set; } = true;
         public TournamentType Type { get; set; }
 
         [Required]
@@ -30,9 +32,9 @@ namespace Backend.Model.Entities
         public bool AllowNonSubmittedBetsPenalty { get; set; } = false;
         public int? NonSubmittedBetPenalty { get; set; }
 
-        public ICollection<UserTournament> Participants { get; set; } = new List<UserTournament>();
-        public ICollection<Team> Teams { get; set; } = new List<Team>();
-        public ICollection<Match> Matches { get; set; } = new List<Match>();
+        public ICollection<CustomTournamentUserAssignment> Participants { get; set; } = new List<CustomTournamentUserAssignment>();
+        public ICollection<CustomTeam> Teams { get; set; } = new List<CustomTeam>();
+        public ICollection<CustomMatch> Matches { get; set; } = new List<CustomMatch>();
 
         public enum TournamentType
         {

@@ -2,6 +2,7 @@
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Text;
 
@@ -25,6 +26,17 @@ namespace Backend.Repository.Services
         public string GetUserIdFromClaims(ClaimsPrincipal user)
         {
             return user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+
+        public async Task<ApplicationUser?> FindUserByEmailAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<ApplicationUser?> FindUserByIdAsync(string userId)
+        {
+            return await _userManager.FindByIdAsync(userId);
+
         }
 
         public async Task<UserProfileDto> GetUserProfileAsync(string userId)

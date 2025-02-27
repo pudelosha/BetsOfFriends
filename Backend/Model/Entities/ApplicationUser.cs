@@ -12,6 +12,6 @@ namespace Backend.Model.Entities
         public bool AcceptedRegulations { get; set; }
         public bool AcceptedMarketingConsent { get; set; }
 
-        public ICollection<UserTournament> UserTournaments { get; set; } = new List<UserTournament>();
+        public ICollection<CustomTournamentUserAssignment> CustomTournamentUserAssignments { get; set; } = new List<CustomTournamentUserAssignment>();
     }
 }

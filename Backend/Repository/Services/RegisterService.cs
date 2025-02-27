@@ -68,6 +68,51 @@ namespace Backend.Repository.Services
             };
         }
 
+        public async Task<ApplicationUser?> RegisterInvitedUserAsync(string email, string userName)
+        {
+            _logger.LogInformation($"Registering invited user: {email}");
+
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                _logger.LogWarning($"User already exists: {email}. Skipping registration.");
+                return existingUser; // Return existing user if they already have an account
+            }
+
+            var newUser = new ApplicationUser
+            {
+                UserName = "userName1", //TODO change later
+                Email = email,
+                EmailConfirmed = false // User must confirm their email first
+            };
+
+            // Create user without password (password will be set later)
+            var result = await _userManager.CreateAsync(newUser);
+            if (!result.Succeeded)
+            {
+                _logger.LogError($"Failed to create invited user {email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                return null;
+            }
+
+            _logger.LogInformation($"User {email} registered successfully without a password.");
+
+            // Generate an email confirmation & password setup link
+            var confirmationUrl = await GenerateAccountSetupLinkAsync(newUser);
+
+            _logger.LogInformation($"Sending account setup email to {email}");
+
+            // Send email asking user to confirm account & set password
+            await _emailService.SendEmailAsync(
+                newUser.Email,
+                "You're Invited! Set Up Your Tournament Account",
+                $"Hi {userName},<br><br>You have been invited to join a tournament. " +
+                $"To confirm your account and set your password, please click <a href='{confirmationUrl}'>here</a>.<br><br>" +
+                $"Once completed, you can log in and participate!"
+            );
+
+            return newUser;
+        }
+
         public async Task<RegisterResultDto> ConfirmEmailAsync(string userId, string token)
         {
             _logger.LogInformation($"Attempting email confirmation for user ID: {userId}");
@@ -143,6 +188,25 @@ namespace Backend.Repository.Services
             _logger.LogInformation($"Generated confirmation link for user {user.Email}: {confirmationLink}");
 
             return confirmationLink;
+        }
+
+        private async Task<string> GenerateAccountSetupLinkAsync(ApplicationUser user)
+        {
+            _logger.LogInformation($"Generating account setup link for user: {user.Email}");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
+
+            var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
+            var frontendBaseUrl = environment == "Development"
+                ? _configuration["App:ClientBaseUrlDev"]
+                : _configuration["App:ClientBaseUrlProd"];
+
+            var setupLink = $"{frontendBaseUrl}/setup-account?userId={user.Id}&token={encodedToken}";
+
+            _logger.LogInformation($"Generated account setup link for user {user.Email}: {setupLink}");
+
+            return setupLink;
         }
     }
 }
