@@ -94,7 +94,7 @@ namespace Backend.Repository.Services
                     if (existingUser == null)
                     {
                         // Create user without password (invite process)
-                        var newUser = await _registerService.RegisterInvitedUserAsync(userDto.UserEmail, userDto.UserName);
+                        var newUser = await _registerService.RegisterInvitedUserAsync(userDto.UserEmail);
                         if (newUser == null)
                         {
                             throw new Exception($"Failed to create user with email: {userDto.UserEmail}");
@@ -130,7 +130,7 @@ namespace Backend.Repository.Services
                     string inviteLink = GenerateTournamentInviteLink(user.Email, tournament.TournamentId);
 
                     string emailBody = $@"
-                                    <p>Hi {user.UserName},</p>
+                                    <p>Hi,</p>
                                     <p>You have been invited to join the tournament <strong>{tournament.Name}</strong>.</p>
                                     <p>Click the button below to accept the invitation and start participating:</p>
                                     <p>
@@ -209,6 +209,73 @@ namespace Backend.Repository.Services
             catch (Exception ex)
             {
                 _logger.LogError($"Error updating status for custom tournament ID {tournamentId}: {ex.Message}");
+                throw;
+            }
+        }
+        public async Task<bool> DeleteCustomTournamentByIdAsync(int tournamentId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                _logger.LogInformation($"Attempting to delete custom tournament with ID: {tournamentId}");
+
+                // Step 1: Find the tournament with its related entities
+                var tournament = await _context.CustomTournaments
+                    .Include(t => t.Matches)
+                    .Include(t => t.Teams)
+                    .Include(t => t.Participants) // User-Tournament Assignments
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Custom tournament with ID {tournamentId} not found.");
+                    return false;
+                }
+
+                // Step 2: Delete Bets linked to Matches in this Tournament
+                var matchIds = tournament.Matches.Select(m => m.MatchId).ToList();
+                var bets = await _context.Bets.Where(b => matchIds.Contains(b.MatchId)).ToListAsync();
+                if (bets.Any())
+                {
+                    _context.Bets.RemoveRange(bets);
+                    _logger.LogInformation($"Deleted {bets.Count} bets associated with tournament ID: {tournamentId}");
+                }
+
+                // Step 3: Delete Matches
+                if (tournament.Matches.Any())
+                {
+                    _context.CustomMatches.RemoveRange(tournament.Matches);
+                    _logger.LogInformation($"Deleted {tournament.Matches.Count} matches associated with tournament ID: {tournamentId}");
+                }
+
+                // Step 4: Delete Teams
+                if (tournament.Teams.Any())
+                {
+                    _context.CustomTeams.RemoveRange(tournament.Teams);
+                    _logger.LogInformation($"Deleted {tournament.Teams.Count} teams associated with tournament ID: {tournamentId}");
+                }
+
+                // Step 5: Delete User-Tournament Assignments (Do NOT delete users!)
+                if (tournament.Participants.Any())
+                {
+                    _context.CustomTournamentUserAssignments.RemoveRange(tournament.Participants);
+                    _logger.LogInformation($"Deleted {tournament.Participants.Count} user assignments for tournament ID: {tournamentId}");
+                }
+
+                // Step 6: Delete the Tournament itself
+                _context.CustomTournaments.Remove(tournament);
+                _logger.LogInformation($"Deleted tournament with ID: {tournamentId}");
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                _logger.LogInformation($"Successfully deleted custom tournament with ID: {tournamentId}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, $"Error occurred while deleting custom tournament with ID: {tournamentId}");
                 throw;
             }
         }

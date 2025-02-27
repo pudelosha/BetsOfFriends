@@ -52,7 +52,6 @@ namespace Backend.Repository.Services
 
             return new UserProfileDto
             {
-                Username = user.UserName,
                 Email = user.Email,
                 MemberSince = user.MemberSince,
                 Language = "English", //TODO user.Language,
@@ -71,7 +70,6 @@ namespace Backend.Repository.Services
                 return false;
             }
 
-            user.UserName = profile.Username;
             //TODO user.Language = profile.Language;
             //user.DarkMode = profile.DarkMode;
 

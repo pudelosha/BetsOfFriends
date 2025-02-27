@@ -4,17 +4,6 @@
     <p>Create an account to join tournaments and place bets.</p>
 
     <form [formGroup]="registerForm" (ngSubmit)="register()">
-      <!-- UserName Field -->
-      <ion-item>
-        <ion-label position="floating">Username</ion-label>
-        <ion-input formControlName="userName" type="text"></ion-input>
-      </ion-item>
-      <div class="validation-message">
-        <p class="error" *ngIf="f['userName'].invalid && f['userName'].touched">
-          Username is required (max 50 characters).
-        </p>
-      </div>
-
       <!-- Email Field -->
       <ion-item>
         <ion-label position="floating">Email</ion-label>

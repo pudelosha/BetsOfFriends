@@ -8,18 +8,7 @@
         <ion-label position="stacked">Member Since</ion-label>
         <ion-input [value]="memberSince" readonly></ion-input>
       </ion-item>
-  
-      <!-- Username -->
-      <ion-item>
-        <ion-label position="stacked">Username</ion-label>
-        <ion-input formControlName="username"></ion-input>
-      </ion-item>
-      <div class="validation-message">
-        <p class="error" *ngIf="f['username'].invalid && f['username'].touched">
-          Username must be between 3-50 characters.
-        </p>
-      </div>
-  
+    
       <!-- Email -->
       <ion-item>
         <ion-label position="stacked">Email</ion-label>

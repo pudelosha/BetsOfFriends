@@ -113,7 +113,24 @@ namespace Backend.Controllers
         [HttpDelete("delete/{tournamentId}")]
         public async Task<IActionResult> DeleteCustomTournamentById(int tournamentId)
         {
-            return Ok();
+            try
+            {
+                _logger.LogInformation($"Received request to delete custom tournament with ID: {tournamentId}");
+
+                var isDeleted = await _tournamentService.DeleteCustomTournamentByIdAsync(tournamentId);
+
+                if (!isDeleted)
+                {
+                    return NotFound(new { Message = $"Tournament with ID {tournamentId} not found or already deleted." });
+                }
+
+                return Ok(new { Message = $"Custom tournament with ID {tournamentId} deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while deleting the custom tournament with ID: {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while deleting the tournament." });
+            }
         }
 
         [Authorize]

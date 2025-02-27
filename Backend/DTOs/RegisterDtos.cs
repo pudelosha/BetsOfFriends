@@ -5,10 +5,6 @@ namespace Backend.DTOs
 {
     public class RegisterRequestDto
     {
-        [MaxLength(50)]
-        [Required]
-        public string UserName { get; set; }
-
         [Required]
         [EmailAddress]
         public string Email { get; set; }

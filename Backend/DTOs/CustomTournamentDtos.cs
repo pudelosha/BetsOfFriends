@@ -70,7 +70,7 @@ namespace Backend.DTOs
 
     public class CustomUserDto
     {
-        public int? UserId { get; set; } // Nullable for new users
+        public int? AssignmentId { get; set; } // Nullable for new users
 
         [MaxLength(100)]
         public string UserName { get; set; } = string.Empty;

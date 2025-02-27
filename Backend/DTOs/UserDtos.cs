@@ -32,7 +32,6 @@ namespace Backend.DTOs
 
     public class UserProfileDto
     {
-        public string Username { get; set; }
         public string? Email { get; set; }
         public DateTime? MemberSince { get; set; }
         public string Language { get; set; }

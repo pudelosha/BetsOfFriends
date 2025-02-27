@@ -27,9 +27,6 @@ namespace Backend.Controllers
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(request.UserName))
-                    return BadRequest(new RegisterResultDto { Success = false, Message = "Username is required." });
-
                 if (string.IsNullOrWhiteSpace(request.Email))
                     return BadRequest(new RegisterResultDto { Success = false, Message = "Email is required." });
 
@@ -41,7 +38,7 @@ namespace Backend.Controllers
 
                 _logger.LogInformation($"Registering user: {request.Email}");
 
-                var result = await _registerService.RegisterUserAsync(request.UserName, request.Email, request.Password);
+                var result = await _registerService.RegisterUserAsync(request.Email, request.Password);
 
                 if (!result.Success)
                 {

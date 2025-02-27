@@ -266,7 +266,7 @@ export class BuildCustomTournamentPage implements OnInit {
     this.usersArray.clear();
     users.forEach((user) => {
       this.usersArray.push(this.fb.group({
-        userId: [user.userId],
+        assignmentId: [user.assignmentId],
         userName: [user.userName, Validators.required],
         userAdminName: [user.userAdminName],
         userEmail: [user.userEmail, [Validators.required, Validators.email]],
@@ -390,7 +390,7 @@ export class BuildCustomTournamentPage implements OnInit {
         awayQualifies: match.awayQualifies,
       })),
       users: this.usersArray.value.map((user: any) => ({
-        userId: user.userId || null, // Null for new users
+        assignmentId: user.assignmentId || null, // Null for new users
         userName: user.userName,
         userAdminName: user.userAdminName,
         userEmail: user.userEmail,

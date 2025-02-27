@@ -38,7 +38,6 @@ export class RegisterPage {
     private toastController: ToastController
   ) {
     this.registerForm = this.fb.group({
-      userName: ['', [Validators.required, Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
@@ -58,9 +57,9 @@ export class RegisterPage {
 
   async register() {
     if (this.registerForm.valid) {
-      const { userName, email, password, consent } = this.registerForm.value;
+      const { email, password, consent } = this.registerForm.value;
   
-      this.registerService.register({ userName, email, password, consent }).subscribe({
+      this.registerService.register({ email, password, consent }).subscribe({
         next: async (response) => {
           if (response.success) {
             this.showToast(response.message, 'success');

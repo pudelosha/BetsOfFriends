@@ -33,7 +33,6 @@ export class ProfilePage implements OnInit {
     private userService: UserService,
   ) {
     this.profileForm = this.fb.group({
-      username: ['', [Validators.minLength(3), Validators.maxLength(50)]], 
       email: ['', [Validators.required, Validators.email]], 
       language: ['en'],
       darkMode: [false]
@@ -195,7 +194,6 @@ export class ProfilePage implements OnInit {
         console.log('User profile loaded:', profile);
   
         this.profileForm.patchValue({
-          username: profile.username,
           email: profile.email,
           language: this.getLanguageValue(profile.language),
           darkMode: profile.darkMode
@@ -224,7 +222,6 @@ export class ProfilePage implements OnInit {
     this.isUpdating = true;
 
     const updatedProfile = {
-      username: this.f['username'].value,
       language: this.f['language'].value,
       darkMode: this.f['darkMode'].value,
     };

@@ -21,7 +21,7 @@ namespace Backend.Repository.Services
             _logger = logger;
         }
 
-        public async Task<RegisterResultDto> RegisterUserAsync(string userName, string email, string password)
+        public async Task<RegisterResultDto> RegisterUserAsync(string email, string password)
         {
             _logger.LogInformation($"Attempting to register user with email: {email}");
 
@@ -37,7 +37,7 @@ namespace Backend.Repository.Services
                 };
             }
 
-            var user = new ApplicationUser { UserName = userName, Email = email };
+            var user = new ApplicationUser { UserName = email, Email = email };
             var result = await _userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)
@@ -68,7 +68,7 @@ namespace Backend.Repository.Services
             };
         }
 
-        public async Task<ApplicationUser?> RegisterInvitedUserAsync(string email, string userName)
+        public async Task<ApplicationUser?> RegisterInvitedUserAsync(string email)
         {
             _logger.LogInformation($"Registering invited user: {email}");
 
@@ -81,8 +81,8 @@ namespace Backend.Repository.Services
 
             var newUser = new ApplicationUser
             {
-                UserName = "userName1", //TODO change later
                 Email = email,
+                UserName = email,
                 EmailConfirmed = false // User must confirm their email first
             };
 
@@ -105,7 +105,7 @@ namespace Backend.Repository.Services
             await _emailService.SendEmailAsync(
                 newUser.Email,
                 "You're Invited! Set Up Your Tournament Account",
-                $"Hi {userName},<br><br>You have been invited to join a tournament. " +
+                $"Hi,<br><br>You have been invited to join a tournament. " +
                 $"To confirm your account and set your password, please click <a href='{confirmationUrl}'>here</a>.<br><br>" +
                 $"Once completed, you can log in and participate!"
             );

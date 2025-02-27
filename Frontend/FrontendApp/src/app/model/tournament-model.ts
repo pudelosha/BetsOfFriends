@@ -27,7 +27,7 @@ export interface Match {
 }
 
 export interface User {
-  userId: number | null;
+  assignmentId: number | null;
   userName: string;
   userAdminName: string;
   userEmail: string;
