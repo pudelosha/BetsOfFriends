@@ -1,0 +1,10 @@
+<div class="tournament-summary-container">
+  <h2>Tournament Summary</h2>
+  <div *ngFor="let player of topPlayers; let i = index" class="summary-row">
+    <span class="rank">{{ i + 1 }}.</span>
+    <span class="player-name" [ngClass]="{'you': player.name === userName}">
+      {{ player.name }} <span *ngIf="player.name === userName">(you)</span>
+    </span>
+    <span class="points">{{ player.points }} points</span>
+  </div>
+</div>

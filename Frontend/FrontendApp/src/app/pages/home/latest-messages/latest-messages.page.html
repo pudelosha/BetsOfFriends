@@ -1,0 +1,8 @@
+<div class="messages-container">
+  <h2>Latest Messages</h2>
+  <div *ngFor="let message of messages" class="message-row">
+    <span class="sender">{{ message.sender }}</span>
+    <span class="content">{{ message.content }}</span>
+    <span class="timestamp">{{ message.timestamp }}</span>
+  </div>
+</div>

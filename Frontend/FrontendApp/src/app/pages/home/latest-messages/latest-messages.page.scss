@@ -1,0 +1,34 @@
+.messages-container {
+  padding: 15px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  min-height: 100px; /* Ensures visibility */
+  margin-top: 15px;
+}
+
+.messages-container h2 {
+  margin: 0; /* Removes extra space around h2 */
+  padding: 5px 5px 15px 5px; /* Ensures no extra padding */
+  font-size: 1.2em; /* Adjust font size if needed */
+}
+
+.message-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+.sender {
+  font-weight: bold;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 0 10px;
+}
+
+.timestamp {
+  font-size: 0.9em;
+  color: #666;
+}
