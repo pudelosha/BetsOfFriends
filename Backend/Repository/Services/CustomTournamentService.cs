@@ -108,8 +108,9 @@ namespace Backend.Repository.Services
                     {
                         UserId = existingUser.Id,
                         TournamentId = tournament.TournamentId,
+                        UserAdminName = userDto.UserAdminName,
                         Role = UserTournamentRole.Guest, // Default role
-                        IsConfirmed = false // Awaiting confirmation
+                        Status = AssignmentStatus.Invited
                     };
 
                     _context.CustomTournamentUserAssignments.Add(assignment);
@@ -280,7 +281,321 @@ namespace Backend.Repository.Services
             }
         }
 
+        public async Task<bool> UpdateCustomTournamentAsync(CustomTournamentDto tournamentDto)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Step 1: Fetch the tournament from the database
+                var tournament = await _context.CustomTournaments
+                    .Include(t => t.Teams)
+                    .Include(t => t.Matches)
+                    .Include(t => t.Participants)
+                        .ThenInclude(p => p.User)
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentDto.TournamentId);
 
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Custom tournament ID {tournamentDto.TournamentId} not found.");
+                    return false;
+                }
 
+                // Step 2: Update tournament details
+                tournament.Name = tournamentDto.TournamentName;
+                tournament.IsActive = tournamentDto.IsActive;
+
+                // Step 3: Handle Teams
+                var existingTeams = tournament.Teams.ToDictionary(t => t.TeamId);
+                var updatedTeamsWithIds = tournamentDto.Teams.Where(t => t.TeamId.HasValue).ToDictionary(t => t.TeamId.Value);
+                var newTeams = tournamentDto.Teams.Where(t => !t.TeamId.HasValue).ToList();
+
+                var teamsToRemove = existingTeams.Values.Where(et => !updatedTeamsWithIds.ContainsKey(et.TeamId)).ToList();
+                foreach (var team in teamsToRemove)
+                {
+                    var relatedMatches = _context.CustomMatches
+                        .Where(m => m.HomeTeamId == team.TeamId || m.AwayTeamId == team.TeamId)
+                        .ToList();
+                    _context.CustomMatches.RemoveRange(relatedMatches);
+                }
+                _context.CustomTeams.RemoveRange(teamsToRemove);
+
+                // Update existing teams
+                foreach (var teamDto in updatedTeamsWithIds.Values)
+                {
+                    if (existingTeams.TryGetValue(teamDto.TeamId.Value, out var team))
+                    {
+                        team.Name = teamDto.TeamName;
+                    }
+                }
+
+                // Add new teams
+                foreach (var newTeamDto in newTeams)
+                {
+                    tournament.Teams.Add(new CustomTeam
+                    {
+                        Name = newTeamDto.TeamName,
+                        TournamentId = tournament.TournamentId
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+
+                // Step 4: Map team names to IDs
+                var teamMap = await _context.CustomTeams
+                    .Where(t => t.TournamentId == tournament.TournamentId)
+                    .ToDictionaryAsync(t => t.Name, t => t.TeamId);
+
+                // Step 5: Handle Matches
+                var existingMatches = tournament.Matches.ToDictionary(m => m.MatchId);
+                var updatedMatchesWithIds = tournamentDto.Matches.Where(m => m.MatchId.HasValue).ToDictionary(m => m.MatchId.Value);
+                var newMatches = tournamentDto.Matches.Where(m => !m.MatchId.HasValue).ToList();
+
+                // Remove matches not in the updated list
+                var matchesToRemove = existingMatches.Values.Where(em => !updatedMatchesWithIds.ContainsKey(em.MatchId)).ToList();
+                _context.CustomMatches.RemoveRange(matchesToRemove);
+
+                // Update existing matches
+                foreach (var matchDto in updatedMatchesWithIds.Values)
+                {
+                    if (existingMatches.TryGetValue(matchDto.MatchId.Value, out var match))
+                    {
+                        match.Stage = matchDto.Stage;
+                        match.HomeTeamId = matchDto.HomeTeamId.Value;
+                        match.AwayTeamId = matchDto.AwayTeamId.Value;
+                        match.MatchStart = DateTime.SpecifyKind(matchDto.MatchStart, DateTimeKind.Utc);
+                        match.BetType = matchDto.BetType;
+                        match.HomeWinOdds = matchDto.HomeWinOdds;
+                        match.DrawOdds = matchDto.DrawOdds;
+                        match.AwayWinOdds = matchDto.AwayWinOdds;
+                        match.HomeQualifies = matchDto.HomeQualifies;
+                        match.AwayQualifies = matchDto.AwayQualifies;
+                    }
+                }
+
+                // Add new matches
+                foreach (var newMatchDto in newMatches)
+                {
+                    var homeTeamId = teamMap.TryGetValue(newMatchDto.HomeTeam, out var homeId)
+                        ? homeId
+                        : throw new Exception($"Home team '{newMatchDto.HomeTeam}' not found.");
+                    var awayTeamId = teamMap.TryGetValue(newMatchDto.AwayTeam, out var awayId)
+                        ? awayId
+                        : throw new Exception($"Away team '{newMatchDto.AwayTeam}' not found.");
+
+                    tournament.Matches.Add(new CustomMatch
+                    {
+                        TournamentId = tournament.TournamentId,
+                        Stage = newMatchDto.Stage,
+                        HomeTeamId = homeTeamId,
+                        AwayTeamId = awayTeamId,
+                        MatchStart = DateTime.SpecifyKind(newMatchDto.MatchStart, DateTimeKind.Utc),
+                        BetType = newMatchDto.BetType,
+                        HomeWinOdds = newMatchDto.HomeWinOdds,
+                        DrawOdds = newMatchDto.DrawOdds,
+                        AwayWinOdds = newMatchDto.AwayWinOdds,
+                        HomeQualifies = newMatchDto.HomeQualifies,
+                        AwayQualifies = newMatchDto.AwayQualifies
+                    });
+                }
+
+                // Step 6: Handle User Assignments (Correct Emails, Remove Wrong Assignments)
+                var existingAssignments = tournament.Participants.ToDictionary(p => p.AssignmentId);
+                var updatedUsers = tournamentDto.Users.Where(u => u.AssignmentId.HasValue).ToDictionary(u => u.AssignmentId!.Value);
+                var newUsers = tournamentDto.Users.Where(u => !u.AssignmentId.HasValue).ToList();
+
+                // Find and remove assignments that no longer exist in frontend data
+                var removedAssignments = existingAssignments.Values.Where(ea => !updatedUsers.ContainsKey(ea.AssignmentId)).ToList();
+
+                foreach (var assignment in removedAssignments)
+                {
+                    if (assignment.Status == AssignmentStatus.New || assignment.Status == AssignmentStatus.Invited)
+                    {
+                        _context.CustomTournamentUserAssignments.Remove(assignment);
+                        _logger.LogInformation($"Removed incorrect user assignment for email: {assignment.User.Email}");
+                    }
+                }
+
+                var invitedUsers = new List<ApplicationUser>();
+
+                // Process existing users with changes
+                foreach (var userDto in updatedUsers.Values)
+                {
+                    var assignment = existingAssignments[userDto.AssignmentId!.Value];
+
+                    if (assignment.Status == AssignmentStatus.New || assignment.Status == AssignmentStatus.Invited)
+                    {
+                        if (!string.Equals(assignment.User.Email, userDto.UserEmail, StringComparison.OrdinalIgnoreCase))
+                        {
+                            var existingUser = await _userService.FindUserByEmailAsync(userDto.UserEmail);
+
+                            if (existingUser == null)
+                            {
+                                var newUser = await _registerService.RegisterInvitedUserAsync(userDto.UserEmail);
+                                if (newUser == null) throw new Exception($"Failed to create user with email: {userDto.UserEmail}");
+                                invitedUsers.Add(newUser);
+
+                                _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
+                                {
+                                    UserId = newUser.Id,
+                                    TournamentId = tournament.TournamentId,
+                                    Role = assignment.Role,
+                                    Status = AssignmentStatus.Invited,
+                                    UserAdminName = userDto.UserAdminName
+                                });
+                            }
+                            else
+                            {
+                                _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
+                                {
+                                    UserId = existingUser.Id,
+                                    TournamentId = tournament.TournamentId,
+                                    Role = assignment.Role,
+                                    Status = AssignmentStatus.Invited,
+                                    UserAdminName = userDto.UserAdminName
+                                });
+                            }
+
+                            _context.CustomTournamentUserAssignments.Remove(assignment);
+                            _logger.LogInformation($"Replaced incorrect email {assignment.User.Email} with {userDto.UserEmail}");
+                        }
+                        else
+                        {
+                            assignment.UserAdminName = userDto.UserAdminName;
+                        }
+                    }
+                }
+
+                // Step 7: Add New Users (Not Previously Assigned)
+                foreach (var newUserDto in newUsers)
+                {
+                    var existingUser = await _userService.FindUserByEmailAsync(newUserDto.UserEmail);
+                    ApplicationUser userToAssign;
+
+                    if (existingUser == null)
+                    {
+                        var newUser = await _registerService.RegisterInvitedUserAsync(newUserDto.UserEmail);
+                        if (newUser == null) throw new Exception($"Failed to create user with email: {newUserDto.UserEmail}");
+                        invitedUsers.Add(newUser);
+                        userToAssign = newUser;
+                    }
+                    else
+                    {
+                        userToAssign = existingUser;
+                    }
+
+                    // Assign the new user to the tournament
+                    _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
+                    {
+                        UserId = userToAssign.Id,
+                        TournamentId = tournament.TournamentId,
+                        Role = UserTournamentRole.Guest, // Default role
+                        Status = AssignmentStatus.Invited, // New users get invited status
+                        UserAdminName = newUserDto.UserAdminName
+                    });
+
+                    _logger.LogInformation($"Added new user {userToAssign.Email} to tournament {tournament.TournamentId}");
+                }
+
+                // Save the changes
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                // Step 8: Send Email Invitations to New Users (Outside Transaction)
+                foreach (var user in invitedUsers)
+                {
+                    string inviteLink = GenerateTournamentInviteLink(user.Email, tournament.TournamentId);
+
+                    string emailBody = $@"
+                        <p>Hi {user.Email},</p>
+                        <p>You have been invited to join the tournament <strong>{tournament.Name}</strong>.</p>
+                        <p>Click the button below to accept the invitation and start participating:</p>
+                        <p>
+                        <a href='{inviteLink}' style='display:inline-block;padding:10px 20px;font-size:16px;color:#fff;background:#007bff;text-decoration:none;border-radius:5px;'>
+                        Accept Invitation
+                        </a>
+                        </p>
+                        <p>If you did not expect this invitation, you can ignore this email.</p>
+                        <p>Best regards,<br/>Tournament Management Team</p>";
+
+                    _logger.LogInformation($"Sending tournament invite email to {user.Email} with invite link: {inviteLink}");
+
+                    await _emailService.SendEmailAsync(user.Email, $"You're Invited to {tournament.Name}!", emailBody);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError($"Error updating custom tournament ID {tournamentDto.TournamentId}: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<CustomTournamentDto?> GetCustomTournamentByIdAsync(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching custom tournament with ID: {tournamentId}");
+
+                var tournament = await _context.CustomTournaments
+                    .Include(t => t.Teams)
+                    .Include(t => t.Matches)
+                    .Include(t => t.Participants)
+                        .ThenInclude(p => p.User) // Include User Details
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Custom tournament with ID {tournamentId} not found.");
+                    return null;
+                }
+
+                var dto = new CustomTournamentDto
+                {
+                    TournamentId = tournament.TournamentId,
+                    TournamentName = tournament.Name,
+                    CreatedBy = tournament.CreatedByUserId,
+                    CreatedAt = tournament.CreatedAt,
+                    IsActive = tournament.IsActive,
+                    Teams = tournament.Teams.Select(team => new CustomTeamDto
+                    {
+                        TeamId = team.TeamId,
+                        TeamName = team.Name
+                    }).ToList(),
+                    Matches = tournament.Matches.Select(match => new CustomMatchDto
+                    {
+                        MatchId = match.MatchId,
+                        Stage = match.Stage,
+                        HomeTeamId = match.HomeTeamId,
+                        HomeTeam = match.HomeTeam.Name,
+                        AwayTeamId = match.AwayTeamId,
+                        AwayTeam = match.AwayTeam.Name,
+                        BetType = match.BetType,
+                        MatchStart = match.MatchStart,
+                        HomeWinOdds = match.HomeWinOdds,
+                        DrawOdds = match.DrawOdds,
+                        AwayWinOdds = match.AwayWinOdds,
+                        HomeQualifies = match.HomeQualifies,
+                        AwayQualifies = match.AwayQualifies
+                    }).ToList(),
+                    Users = tournament.Participants.Select(p => new CustomUserDto
+                    {
+                        AssignmentId = p.AssignmentId,  // Use AssignmentId instead of UserId
+                        UserAdminName = p.User.UserName,
+                        UserEmail = p.User.Email,
+                        Status = p.Status.ToString()
+                    }).ToList()
+                };
+
+                _logger.LogInformation($"Successfully fetched custom tournament with ID: {tournamentId}");
+                return dto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching custom tournament with ID: {tournamentId}");
+                throw;
+            }
+        }
     }
 }

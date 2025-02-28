@@ -298,7 +298,9 @@ namespace Backend.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TournamentId = table.Column<int>(type: "int", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    IsConfirmed = table.Column<bool>(type: "bit", nullable: false)
+                    UserAdminName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

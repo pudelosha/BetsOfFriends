@@ -32,8 +32,8 @@ namespace Backend.Model.Entities
         public decimal HomeWinOdds { get; set; }
         public decimal DrawOdds { get; set; }
         public decimal AwayWinOdds { get; set; }
-        public decimal HomeQualifies { get; set; }
-        public decimal AwayQualifies { get; set; }
+        public decimal? HomeQualifies { get; set; }
+        public decimal? AwayQualifies { get; set; }
 
         public ICollection<Bet> Bets { get; set; } = new List<Bet>();
     }

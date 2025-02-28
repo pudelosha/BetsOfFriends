@@ -27,17 +27,24 @@ namespace Backend.Model.Entities
 
         [Required]
         public UserTournamentRole Role { get; set; } = UserTournamentRole.Guest;
+        [Required]
+        public string UserAdminName { get; set; }
+        public string? UserName { get; set; }
 
         [Required]
-        public bool IsConfirmed { get; set; } = false;
+        public AssignmentStatus Status { get; set; } = AssignmentStatus.New;
     }
 
-    /// <summary>
-    /// Defines user roles within a tournament.
-    /// </summary>
     public enum UserTournamentRole
     {
         Guest,
         Admin
+    }
+
+    public enum AssignmentStatus
+    {
+        New,
+        Invited,
+        Accepted
     }
 }

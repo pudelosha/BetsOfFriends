@@ -106,7 +106,23 @@ namespace Backend.Controllers
         [HttpGet("get/{tournamentId}")]
         public async Task<IActionResult> GetCustomTournamentById(int tournamentId)
         {
-            return Ok();
+            try
+            {
+                _logger.LogInformation($"Received request to fetch custom tournament with ID: {tournamentId}");
+                var tournament = await _tournamentService.GetCustomTournamentByIdAsync(tournamentId);
+
+                if (tournament == null)
+                {
+                    return NotFound(new { Message = $"Custom tournament with ID {tournamentId} not found." });
+                }
+
+                return Ok(tournament);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching the custom tournament.");
+                return StatusCode(500, new { Message = "An error occurred while fetching the custom tournament." });
+            }
         }
 
         [Authorize]
@@ -137,14 +153,21 @@ namespace Backend.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> UpdateCustomTournament([FromBody] CustomTournamentDto tournamentDto)
         {
-            return Ok();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            bool success = await _tournamentService.UpdateCustomTournamentAsync(tournamentDto);
+
+            if (!success)
+                return NotFound("Tournament not found.");
+
+            return Ok("Tournament updated successfully.");
         }
 
 
 
+        // a method where invited user accepts the tournament invitation and sets its own name
 
-        // create new tournament
-        // update tournament
-        // calculate tournament results
+
     }
 }

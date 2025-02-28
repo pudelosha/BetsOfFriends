@@ -49,7 +49,16 @@ export class BuildCustomTournamentPage implements OnInit {
     });    
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      if (id && !isNaN(+id)) {
+        this.tournamentId = +id; // Convert the id to a number
+        this.loadTournament();
+      } else {
+        this.tournamentId = null;
+      }
+    });
   }
 
   ionViewWillEnter(): void {
@@ -186,9 +195,25 @@ export class BuildCustomTournamentPage implements OnInit {
         })
       );
     });
-  
+
+    // Step 3: Populate Users (With Safe Check)
+    this.usersArray.clear();
+    if (tournament.users?.length) {
+      tournament.users.forEach((user) => {
+        this.usersArray.push(
+          this.fb.group({
+            assignmentId: [user.assignmentId || null], // Ensure null if undefined
+            userAdminName: [user.userAdminName || '', Validators.required], // Provide empty string if undefined
+            userEmail: [user.userEmail || '', [Validators.required, Validators.email]], // Ensure valid email format
+            status: [user.status || 'New', Validators.required], // Default status to 'New'
+          })
+        );
+      });
+    }
+    
     console.log('Teams after population:', this.teamsArray.value);
     console.log('Matches after population:', this.matchesArray.value);
+    console.log('Users after population:', this.usersArray.value);
   } 
 
   private buildMatchFormGroup(match: Match): FormGroup {
