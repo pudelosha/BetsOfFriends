@@ -183,16 +183,17 @@ namespace Backend.Repository.Services
             return $"{baseUrl}/accept-invite?tournamentId={tournamentId}&email={encodedEmail}";
         }
 
-        public async Task<List<CustomTournamentListDto>> GetAllCustomTournamentsAsync()
+        public async Task<List<CustomTournamentListDto>> GetAllCustomTournamentsAsync(string userId)
         {
             try
             {
                 var tournaments = await _context.CustomTournaments
                     .AsNoTracking()
+                    .Where(t => t.Participants.Any(p => p.UserId == userId && p.Role == UserTournamentRole.Admin)) // Ensure the user is an Admin in the tournament
                     .Select(t => new CustomTournamentListDto
                     {
                         TournamentId = t.TournamentId,
-                        TournamentName = t.Name, // Match property name
+                        TournamentName = t.Name,
                         CreatedAt = t.CreatedAt,
                         IsActive = t.IsActive
                     })
@@ -202,28 +203,37 @@ namespace Backend.Repository.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error retrieving custom tournaments: {ex.Message}");
+                _logger.LogError($"Error retrieving custom tournaments for user {userId}: {ex.Message}");
                 throw;
             }
         }
 
-        public async Task<bool> UpdateCustomTournamentStatusAsync(int tournamentId, bool isActive)
+        public async Task<bool?> UpdateCustomTournamentStatusAsync(int tournamentId, string userId, bool isActive)
         {
             try
             {
                 var tournament = await _context.CustomTournaments
+                    .Include(t => t.Participants)
                     .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
 
                 if (tournament == null)
                 {
                     _logger.LogWarning($"Custom tournament with ID {tournamentId} not found.");
+                    return null;
+                }
+
+                bool isTournamentAdmin = tournament.Participants.Any(p => p.UserId == userId && p.Role == UserTournamentRole.Admin);
+
+                if (!isTournamentAdmin)
+                {
+                    _logger.LogWarning($"User {userId} attempted to update tournament {tournamentId} without permission.");
                     return false;
                 }
 
                 tournament.IsActive = isActive;
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation($"Custom tournament ID {tournamentId} status updated to {(isActive ? "active" : "inactive")}.");
+                _logger.LogInformation($"Custom tournament ID {tournamentId} status updated to {(isActive ? "active" : "inactive")} by Admin {userId}.");
                 return true;
             }
             catch (Exception ex)
@@ -232,7 +242,8 @@ namespace Backend.Repository.Services
                 throw;
             }
         }
-        public async Task<bool> DeleteCustomTournamentByIdAsync(int tournamentId)
+
+        public async Task<bool?> DeleteCustomTournamentByIdAsync(int tournamentId, string userId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -252,7 +263,14 @@ namespace Backend.Repository.Services
                     return false;
                 }
 
-                // Step 2: Delete Bets linked to Matches in this Tournament
+                // Step 2: Check if the user is the creator
+                if (tournament.CreatedByUserId != userId)
+                {
+                    _logger.LogWarning($"User {userId} attempted to delete tournament {tournamentId} without permission.");
+                    return false; // Forbidden
+                }
+
+                // Step 3: Delete Bets linked to Matches in this Tournament
                 var matchIds = tournament.Matches.Select(m => m.MatchId).ToList();
                 var bets = await _context.Bets.Where(b => matchIds.Contains(b.MatchId)).ToListAsync();
                 if (bets.Any())
@@ -261,28 +279,28 @@ namespace Backend.Repository.Services
                     _logger.LogInformation($"Deleted {bets.Count} bets associated with tournament ID: {tournamentId}");
                 }
 
-                // Step 3: Delete Matches
+                // Step 4: Delete Matches
                 if (tournament.Matches.Any())
                 {
                     _context.CustomMatches.RemoveRange(tournament.Matches);
                     _logger.LogInformation($"Deleted {tournament.Matches.Count} matches associated with tournament ID: {tournamentId}");
                 }
 
-                // Step 4: Delete Teams
+                // Step 5: Delete Teams
                 if (tournament.Teams.Any())
                 {
                     _context.CustomTeams.RemoveRange(tournament.Teams);
                     _logger.LogInformation($"Deleted {tournament.Teams.Count} teams associated with tournament ID: {tournamentId}");
                 }
 
-                // Step 5: Delete User-Tournament Assignments (Do NOT delete users!)
+                // Step 6: Delete User-Tournament Assignments (Do NOT delete users!)
                 if (tournament.Participants.Any())
                 {
                     _context.CustomTournamentUserAssignments.RemoveRange(tournament.Participants);
                     _logger.LogInformation($"Deleted {tournament.Participants.Count} user assignments for tournament ID: {tournamentId}");
                 }
 
-                // Step 6: Delete the Tournament itself
+                // Step 7: Delete the Tournament itself
                 _context.CustomTournaments.Remove(tournament);
                 _logger.LogInformation($"Deleted tournament with ID: {tournamentId}");
 
@@ -300,7 +318,7 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task<bool> UpdateCustomTournamentAsync(CustomTournamentDto tournamentDto)
+        public async Task<bool?> UpdateCustomTournamentAsync(CustomTournamentDto tournamentDto, string userId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -319,11 +337,20 @@ namespace Backend.Repository.Services
                     return false;
                 }
 
-                // Step 2: Update tournament details
+                // Step 2: Check if the user is an Admin in this tournament
+                bool isTournamentAdmin = tournament.Participants.Any(p => p.UserId == userId && p.Role == UserTournamentRole.Admin);
+
+                if (!isTournamentAdmin)
+                {
+                    _logger.LogWarning($"User {userId} attempted to update tournament {tournamentDto.TournamentId} without permission.");
+                    return false; // Forbidden
+                }
+
+                // Step 3: Update tournament details
                 tournament.Name = tournamentDto.TournamentName;
                 tournament.IsActive = tournamentDto.IsActive;
 
-                // Step 3: Handle Teams
+                // Step 4: Handle Teams
                 var existingTeams = tournament.Teams.ToDictionary(t => t.TeamId);
                 var updatedTeamsWithIds = tournamentDto.Teams.Where(t => t.TeamId.HasValue).ToDictionary(t => t.TeamId.Value);
                 var newTeams = tournamentDto.Teams.Where(t => !t.TeamId.HasValue).ToList();
@@ -357,7 +384,7 @@ namespace Backend.Repository.Services
 
                 await _context.SaveChangesAsync();
 
-                // Step 4: Handle Matches
+                // Step 5: Handle Matches
                 var teamMap = await _context.CustomTeams
                     .Where(t => t.TournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(t => t.Name, t => t.TeamId);
@@ -411,7 +438,7 @@ namespace Backend.Repository.Services
                     });
                 }
 
-                // Step 5: Handle User Assignments
+                // Step 6: Handle User Assignments
                 var existingAssignments = tournament.Participants.ToDictionary(p => p.AssignmentId);
                 var updatedUsers = tournamentDto.Users.Where(u => u.AssignmentId.HasValue).ToDictionary(u => u.AssignmentId!.Value);
                 var newUsers = tournamentDto.Users.Where(u => !u.AssignmentId.HasValue).ToList();
@@ -504,11 +531,11 @@ namespace Backend.Repository.Services
                     _logger.LogInformation($"Added new user {userToAssign.Email} to tournament {tournament.TournamentId}");
                 }
 
-                // Step 6: Commit transaction before sending emails
+                // Step 7: Commit transaction before sending emails
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // Step 7: Send Email Invitations (Outside Transaction)
+                // Step 8: Send Email Invitations (Outside Transaction)
                 foreach (var user in invitedUsers)
                 {
                     string inviteLink = GenerateTournamentInviteLink(user.Email, tournament.TournamentId);
@@ -525,11 +552,11 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task<CustomTournamentDto?> GetCustomTournamentByIdAsync(int tournamentId)
+        public async Task<CustomTournamentDto?> GetCustomTournamentByIdAsync(int tournamentId, string userId)
         {
             try
             {
-                _logger.LogInformation($"Fetching custom tournament with ID: {tournamentId}");
+                _logger.LogInformation($"Fetching custom tournament with ID: {tournamentId} for user {userId}");
 
                 var tournament = await _context.CustomTournaments
                     .Include(t => t.Teams)
@@ -541,6 +568,14 @@ namespace Backend.Repository.Services
                 if (tournament == null)
                 {
                     _logger.LogWarning($"Custom tournament with ID {tournamentId} not found.");
+                    return null;
+                }
+
+                bool isTournamentAdmin = tournament.Participants.Any(p => p.UserId == userId && p.Role == UserTournamentRole.Admin);
+
+                if (!isTournamentAdmin)
+                {
+                    _logger.LogWarning($"User {userId} attempted to access tournament {tournamentId} without permission.");
                     return null;
                 }
 
@@ -581,7 +616,7 @@ namespace Backend.Repository.Services
                     }).ToList()
                 };
 
-                _logger.LogInformation($"Successfully fetched custom tournament with ID: {tournamentId}");
+                _logger.LogInformation($"Successfully fetched custom tournament with ID: {tournamentId} for user {userId}");
                 return dto;
             }
             catch (Exception ex)

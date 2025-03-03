@@ -43,7 +43,7 @@ namespace Backend.Controllers
             return Ok(new { message = "Tournament created successfully!" });
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPut("update")]
         public async Task<IActionResult> UpdatePredefinedTournament([FromBody] PredefinedTournamentDto tournamentDto)
         {
@@ -58,7 +58,7 @@ namespace Backend.Controllers
             return Ok("Tournament updated successfully.");
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllPredefinedTournaments()
         {
@@ -74,7 +74,7 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("get/{tournamentId}")]
         public async Task<IActionResult> GetPredefinedTournamentById(int tournamentId)
         {
@@ -97,7 +97,7 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpDelete("delete/{tournamentId}")]
         public async Task<IActionResult> DeletePredefinedTournamentById(int tournamentId)
         {
@@ -121,7 +121,7 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPatch("status/{tournamentId}")]
         public async Task<IActionResult> UpdatePredefinedTournamentStatus(int tournamentId, [FromBody] TournamentStatusUpdateDto statusUpdate)
         {
@@ -143,7 +143,7 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("active")]
         public async Task<IActionResult> GetActivePredefinedTournaments()
         {

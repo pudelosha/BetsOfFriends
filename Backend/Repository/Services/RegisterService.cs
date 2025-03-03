@@ -48,15 +48,12 @@ namespace Backend.Repository.Services
                 };
             }
 
-            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
             var user = new ApplicationUser { UserName = email, Email = email };
             var result = await _userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)
             {
-                var errorMessages = result.Errors.Select(e => e.Description);
-                _logger.LogWarning($"User registration failed for email: {email}. Errors: {string.Join(", ", errorMessages)}");
+                _logger.LogWarning($"User registration failed for email: {email}. Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
 
                 return new RegisterResultDto
                 {
@@ -80,20 +77,13 @@ namespace Backend.Repository.Services
             if (!roleResult.Succeeded)
             {
                 _logger.LogWarning($"Failed to assign 'User' role to {email}. Errors: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}");
-                return new RegisterResultDto
-                {
-                    Success = false,
-                    Message = "Failed to assign role to the user.",
-                    Errors = roleResult.Errors
-                };
+            }
+            else
+            {
+                _logger.LogInformation($"Assigned 'User' role to {email}.");
             }
 
-            _logger.LogInformation($"Assigned 'User' role to {email}.");
-
-            // Commit the transaction before sending an email
-            transaction.Complete();
-
-            // Send confirmation email after transaction is complete
+            // Send confirmation email
             var confirmationUrl = await GenerateEmailConfirmationLinkAsync(user);
             _logger.LogInformation($"Sending confirmation email to {email}");
             await SendConfirmationEmailAsync(user.Email, confirmationUrl);
@@ -128,8 +118,6 @@ namespace Backend.Repository.Services
                 return existingUser; // Return existing user if they already have an account
             }
 
-            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
             var newUser = new ApplicationUser
             {
                 Email = email,
@@ -159,17 +147,14 @@ namespace Backend.Repository.Services
             if (!roleResult.Succeeded)
             {
                 _logger.LogWarning($"Failed to assign 'User' role to {email}. Errors: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}");
-                return null; // Prevent further execution
             }
-
-            _logger.LogInformation($"Assigned 'User' role to {email}.");
-
-            // Commit the transaction before sending an email
-            transaction.Complete();
+            else
+            {
+                _logger.LogInformation($"Assigned 'User' role to {email}.");
+            }
 
             // Generate an email confirmation & password setup link
             var confirmationUrl = await GenerateAccountSetupLinkAsync(newUser);
-
             _logger.LogInformation($"Sending account setup email to {email}");
             await SendConfirmationEmailAsync(newUser.Email, confirmationUrl);
 

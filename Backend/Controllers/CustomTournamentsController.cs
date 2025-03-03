@@ -21,7 +21,7 @@ namespace Backend.Controllers
             _userService = userService;
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateCustomTournament([FromBody] CustomTournamentDto tournamentDto)
         {
@@ -31,8 +31,7 @@ namespace Backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Get Logged-in User ID from Claims
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = _userService.GetUserIdFromClaims(User);
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -64,13 +63,20 @@ namespace Backend.Controllers
             return Ok(new { message = "Tournament created successfully!" });
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet]
         public async Task<IActionResult> GetAllCustomTournaments()
         {
             try
             {
-                var tournaments = await _tournamentService.GetAllCustomTournamentsAsync();
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized access attempt: Missing user ID.");
+                    return Unauthorized("User ID not found in claims.");
+                }
+
+                var tournaments = await _tournamentService.GetAllCustomTournamentsAsync(userId);
                 return Ok(tournaments);
             }
             catch (Exception ex)
@@ -80,17 +86,28 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPatch("status/{tournamentId}")]
         public async Task<IActionResult> UpdateCustomTournamentStatus(int tournamentId, [FromBody] CustomTournamentStatusUpdateDto statusUpdate)
         {
             try
             {
-                var isUpdated = await _tournamentService.UpdateCustomTournamentStatusAsync(tournamentId, statusUpdate.IsActive);
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized access attempt: Missing user ID.");
+                    return Unauthorized("User ID not found in claims.");
+                }
 
-                if (!isUpdated)
+                var isUpdated = await _tournamentService.UpdateCustomTournamentStatusAsync(tournamentId, userId, statusUpdate.IsActive);
+
+                if (isUpdated == null)
                 {
                     return NotFound($"Tournament with ID {tournamentId} not found.");
+                }
+                if (!isUpdated.Value)
+                {
+                    return Forbid("You do not have permission to update this tournament.");
                 }
 
                 return NoContent();
@@ -102,42 +119,57 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("get/{tournamentId}")]
         public async Task<IActionResult> GetCustomTournamentById(int tournamentId)
         {
             try
             {
-                _logger.LogInformation($"Received request to fetch custom tournament with ID: {tournamentId}");
-                var tournament = await _tournamentService.GetCustomTournamentByIdAsync(tournamentId);
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized access attempt: Missing user ID.");
+                    return Unauthorized("User ID not found in claims.");
+                }
+
+                var tournament = await _tournamentService.GetCustomTournamentByIdAsync(tournamentId, userId);
 
                 if (tournament == null)
                 {
-                    return NotFound(new { Message = $"Custom tournament with ID {tournamentId} not found." });
+                    return NotFound(new { Message = $"Custom tournament with ID {tournamentId} not found or access denied." });
                 }
 
                 return Ok(tournament);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching the custom tournament.");
+                _logger.LogError(ex, $"An error occurred while fetching the custom tournament ID {tournamentId}.");
                 return StatusCode(500, new { Message = "An error occurred while fetching the custom tournament." });
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpDelete("delete/{tournamentId}")]
         public async Task<IActionResult> DeleteCustomTournamentById(int tournamentId)
         {
             try
             {
-                _logger.LogInformation($"Received request to delete custom tournament with ID: {tournamentId}");
-
-                var isDeleted = await _tournamentService.DeleteCustomTournamentByIdAsync(tournamentId);
-
-                if (!isDeleted)
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
                 {
-                    return NotFound(new { Message = $"Tournament with ID {tournamentId} not found or already deleted." });
+                    _logger.LogWarning("Unauthorized access attempt: Missing user ID.");
+                    return Unauthorized("User ID not found in claims.");
+                }
+
+                var isDeleted = await _tournamentService.DeleteCustomTournamentByIdAsync(tournamentId, userId);
+
+                if (isDeleted == null)
+                {
+                    return NotFound(new { Message = $"Tournament with ID {tournamentId} not found." });
+                }
+                if (!isDeleted.Value)
+                {
+                    return Forbid("You do not have permission to delete this tournament.");
                 }
 
                 return Ok(new { Message = $"Custom tournament with ID {tournamentId} deleted successfully." });
@@ -149,20 +181,44 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateCustomTournament([FromBody] CustomTournamentDto tournamentDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            bool success = await _tournamentService.UpdateCustomTournamentAsync(tournamentDto);
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized access attempt: Missing user ID.");
+                    return Unauthorized("User ID not found in claims.");
+                }
 
-            if (!success)
-                return NotFound("Tournament not found.");
+                bool? success = await _tournamentService.UpdateCustomTournamentAsync(tournamentDto, userId);
 
-            return Ok("Tournament updated successfully.");
+                if (success == null)
+                {
+                    return NotFound("Tournament not found.");
+                }
+                if (!success.Value)
+                {
+                    return Forbid("You do not have permission to update this tournament.");
+                }
+
+                return Ok("Tournament updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while updating the custom tournament ID {tournamentDto.TournamentId}.");
+                return StatusCode(500, "An error occurred while updating the tournament.");
+            }
         }
+
 
 
 

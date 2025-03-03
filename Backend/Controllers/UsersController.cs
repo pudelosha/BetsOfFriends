@@ -53,7 +53,7 @@ namespace Backend.Controllers
         /// <summary>
         /// Get user profile details
         /// </summary>
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("profile")]
         public async Task<IActionResult> GetUserProfile()
         {
@@ -85,7 +85,7 @@ namespace Backend.Controllers
         /// <summary>
         /// Update user profile details
         /// </summary>
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateUserProfile([FromBody] UserProfileDto profile)
         {
@@ -117,7 +117,7 @@ namespace Backend.Controllers
         /// <summary>
         /// Change user email upon providing valid password
         /// </summary>
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPost("change-email")]
         public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequestDto request)
         {
@@ -139,7 +139,7 @@ namespace Backend.Controllers
         /// <summary>
         /// Change user password
         /// </summary>
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPost("update-password")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequestDto request)
         {
@@ -163,7 +163,7 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPost("delete-account")]
         public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountRequestDto request)
         {
