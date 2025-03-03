@@ -625,5 +625,109 @@ namespace Backend.Repository.Services
                 throw;
             }
         }
+
+        public async Task<List<UserActiveTournamentDto>> GetUserActiveTournamentsAsync(string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching active tournaments for user {userId}");
+
+                var activeTournaments = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.UserId == userId && a.Tournament.IsActive) // User must be assigned & Tournament must be active
+                    .Select(a => new UserActiveTournamentDto
+                    {
+                        TournamentId = a.Tournament.TournamentId,
+                        TournamentName = a.Tournament.Name,
+                        AssignmentId = a.AssignmentId,
+                        UserName = a.User.UserName,
+                        NumberOfParticipants = a.Tournament.Participants.Count,
+                        Role = a.Role.ToString(),
+                        AssignmentStatus = a.Status.ToString()
+                    })
+                    .ToListAsync();
+
+                return activeTournaments;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching active tournaments for user {userId}");
+                throw;
+            }
+        }
+
+        public async Task<bool> QuitTournamentAsync(int tournamentId, string userId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                _logger.LogInformation($"User {userId} attempting to quit tournament ID {tournamentId}");
+
+                // Find the user assignment
+                var assignment = await _context.CustomTournamentUserAssignments
+                    .FirstOrDefaultAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (assignment == null)
+                {
+                    _logger.LogWarning($"No tournament assignment found for user {userId} in tournament ID {tournamentId}");
+                    return false;
+                }
+
+                // Delete user's bets linked to this tournament
+                var userBets = await _context.Bets
+                    .Where(b => b.UserId == userId && _context.CustomMatches.Any(m => m.MatchId == b.MatchId && m.TournamentId == tournamentId))
+                    .ToListAsync();
+
+                if (userBets.Any())
+                {
+                    _context.Bets.RemoveRange(userBets);
+                    _logger.LogInformation($"Deleted {userBets.Count} bets for user {userId} in tournament ID {tournamentId}");
+                }
+
+                // Remove the user from tournament assignments
+                _context.CustomTournamentUserAssignments.Remove(assignment);
+                _logger.LogInformation($"Removed user {userId} from tournament ID {tournamentId}");
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, $"Error while quitting tournament ID {tournamentId} for user {userId}");
+                throw;
+            }
+        }
+
+        public async Task<bool> AcceptTournamentInvitationAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"User {userId} attempting to accept invitation for tournament ID {tournamentId}");
+
+                // Find the user assignment
+                var assignment = await _context.CustomTournamentUserAssignments
+                    .FirstOrDefaultAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (assignment == null || assignment.Status != AssignmentStatus.Invited)
+                {
+                    _logger.LogWarning($"No valid invitation found for user {userId} in tournament ID {tournamentId}");
+                    return false;
+                }
+
+                // Update assignment status to Accepted
+                assignment.Status = AssignmentStatus.Accepted;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"User {userId} has accepted the invitation for tournament ID {tournamentId}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while accepting invitation for tournament ID {tournamentId}");
+                throw;
+            }
+        }
     }
 }

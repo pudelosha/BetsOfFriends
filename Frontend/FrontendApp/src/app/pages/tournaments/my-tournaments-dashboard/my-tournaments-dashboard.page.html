@@ -1,7 +1,63 @@
-<div class="page-container">
-<br><br><br><br>
-- lista z turniejami<br>
-- guziki do ustalenia widoczny, opuść, aktywny (to zmienia admin), ilosc graczy,<br>
-- klikniecie na nazwe turnieju wybiera go (do pamieci)<br>
-</div>
+<ion-content class="ion-padding page-with-header">
+  <div class="page-container">
+    <div class="page-description">
+      <p>View and manage tournaments you are participating in. Accept invitations or proceed with active tournaments.</p>
+    </div>
 
+    <ion-list *ngIf="!isLoading" class="tournament-list">
+      <ion-item *ngFor="let tournament of tournaments" class="tournament-item">
+        <ion-grid>
+          <ion-row class="tournament-row">
+            <!-- Tournament Info (size 5) -->
+            <ion-col size="5" class="tournament-info">
+              <span class="tournament-title">{{ tournament.tournamentName }}</span>
+              <span class="tournament-meta">
+                Participants: {{ tournament.numberOfParticipants }}
+              </span>
+              <span class="tournament-role">
+                Role: {{ tournament.role }}
+              </span>
+              <span class="tournament-status" 
+                [class.invited]="tournament.assignmentStatus === 'Invited'"
+                [class.accepted]="tournament.assignmentStatus === 'Accepted'">
+                {{ tournament.assignmentStatus }}
+              </span>
+            </ion-col>
+
+            <!-- Eye Icon for Tournament Visibility (size 1) -->
+            <ion-col size="1" class="eye-icon-col">
+              <ion-button fill="clear" color="medium" (click)="toggleTournamentVisibility(tournament)">
+                <ion-icon name="eye-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+
+            <!-- Action Buttons (size 3) -->
+            <ion-col size="3" class="button-col">
+              <!-- Accept Button (for Invited status) -->
+              <ion-button *ngIf="tournament.assignmentStatus === 'Invited'" fill="outline" color="success"
+                (click)="acceptInvitation(tournament)">
+                Accept
+              </ion-button>
+
+              <!-- Select Button (for Accepted status) -->
+              <ion-button *ngIf="tournament.assignmentStatus === 'Accepted'" fill="outline" color="primary"
+                (click)="selectTournament(tournament)">
+                Select
+              </ion-button>
+            </ion-col>
+
+            <!-- Quit Tournament Button (size 3) -->
+            <ion-col size="3" class="quit-button-col">
+              <ion-button fill="outline" color="danger" (click)="quitTournament(tournament)">
+                Quit
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Loading Spinner -->
+  <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+</ion-content>

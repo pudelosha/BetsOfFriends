@@ -98,4 +98,15 @@ namespace Backend.DTOs
         [Required]
         public bool IsActive { get; set; }
     }
+
+    public class UserActiveTournamentDto
+    {
+        public int TournamentId { get; set; }
+        public string TournamentName { get; set; }
+        public int AssignmentId { get; set; }
+        public string UserName { get; set; }
+        public int NumberOfParticipants { get; set; }
+        public string Role { get; set; }
+        public string AssignmentStatus { get; set; }
+    }
 }

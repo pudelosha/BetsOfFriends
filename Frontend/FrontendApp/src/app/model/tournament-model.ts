@@ -44,3 +44,14 @@ export interface Tournament {
   matches: Match[];
   users?: User[]; // Optional users array
 }
+
+export interface UserActiveTournament {
+  tournamentId: number;
+  tournamentName: string;
+  assignmentId: number;
+  userName: string;
+  numberOfParticipants: number;
+  role: string;  // 'Admin' or 'Guest'
+  assignmentStatus: string; // 'New', 'Invited', 'Accepted'
+}
+

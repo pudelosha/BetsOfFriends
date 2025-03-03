@@ -10,5 +10,8 @@ namespace Backend.Repository.Interfaces
         Task<bool?> DeleteCustomTournamentByIdAsync(int tournamentId, string userId);
         Task<bool?> UpdateCustomTournamentAsync(CustomTournamentDto tournamentDto, string userId);
         Task<CustomTournamentDto?> GetCustomTournamentByIdAsync(int tournamentId, string userId);
+        Task<List<UserActiveTournamentDto>> GetUserActiveTournamentsAsync(string userId);
+        Task<bool> QuitTournamentAsync(int tournamentId, string userId);
+        Task<bool> AcceptTournamentInvitationAsync(int tournamentId, string userId);
     }
 }

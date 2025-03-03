@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tournament } from '../model/tournament-model';
 import { environment } from '../../environments/environment';
+import { UserActiveTournament } from '../model/tournament-model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,10 @@ export class CustomTournamentService {
 
   getCustomTournamentById(id: number): Observable<Tournament> {
     return this.http.get<Tournament>(`${this.apiUrl}/get/${id}`);
+  }
+
+  getUserActiveTournaments(): Observable<UserActiveTournament[]> {
+    return this.http.get<UserActiveTournament[]>(`${this.apiUrl}/my-active-tournaments`);
   }
 
   createCustomTournament(tournament: Tournament): Observable<Tournament> {
@@ -40,4 +45,12 @@ export class CustomTournamentService {
   deleteCustomTournament(tournamentId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${tournamentId}`);
   }
+
+  quitTournament(tournamentId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/quit/${tournamentId}`);
+  }  
+
+  acceptTournamentInvitation(tournamentId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/accept-invitation/${tournamentId}`, {});
+  } 
 }

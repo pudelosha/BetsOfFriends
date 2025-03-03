@@ -219,10 +219,87 @@ namespace Backend.Controllers
             }
         }
 
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("my-active-tournaments")]
+        public async Task<IActionResult> GetUserActiveTournaments()
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized access attempt: Missing user ID.");
+                    return Unauthorized("User ID not found in claims.");
+                }
+
+                var tournaments = await _tournamentService.GetUserActiveTournamentsAsync(userId);
+
+                return Ok(tournaments);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching active tournaments for the user.");
+                return StatusCode(500, "An error occurred while fetching active tournaments.");
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpDelete("quit/{tournamentId}")]
+        public async Task<IActionResult> QuitTournament(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (userId == null)
+                {
+                    return Unauthorized("User not found.");
+                }
+
+                var result = await _tournamentService.QuitTournamentAsync(tournamentId, userId);
+                if (!result)
+                {
+                    return NotFound($"Tournament assignment not found for user in tournament ID {tournamentId}.");
+                }
+
+                return Ok(new { Message = "You have successfully quit the tournament." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while quitting tournament ID {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while quitting the tournament." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("accept-invitation/{tournamentId}")]
+        public async Task<IActionResult> AcceptTournamentInvitation(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (userId == null)
+                {
+                    return Unauthorized("User not found.");
+                }
+
+                var result = await _tournamentService.AcceptTournamentInvitationAsync(tournamentId, userId);
+                if (!result)
+                {
+                    return BadRequest("Tournament invitation could not be accepted. You may not be invited.");
+                }
+
+                return Ok(new { Message = "You have successfully accepted the tournament invitation." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while accepting tournament invitation for ID {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while accepting the tournament invitation." });
+            }
+        }
 
 
 
-        // a method where invited user accepts the tournament invitation and sets its own name
+
 
 
     }
