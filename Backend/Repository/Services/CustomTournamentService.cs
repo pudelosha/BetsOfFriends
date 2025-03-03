@@ -2,6 +2,7 @@
 using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
+using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Repository.Services

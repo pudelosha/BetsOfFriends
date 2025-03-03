@@ -90,9 +90,9 @@ export class AppComponent {
     this.router.navigate(['/my-bets']);
   }
 
-  navigateToBetPreview() {
-    console.log('Navigating to bet-preview...');
-    this.router.navigate(['/bet-preview']);
+  navigateToBetsOverview() {
+    console.log('Navigating to bets-overview...');
+    this.router.navigate(['/bets-overview']);
   }
 
   navigateToCreatePredefinedTournament() {
@@ -116,8 +116,13 @@ export class AppComponent {
   }
 
   navigateToCustomTournamentsList() {
-    console.log('Navigating to predefined-custom-list...');
+    console.log('Navigating to custom-tournament-list...');
     this.router.navigate(['/tournaments/custom']);
+  }
+
+  navigateToCustomTournamentsMatches() {
+    console.log('Navigating to custom-tournament-matches...');
+    this.router.navigate(['/tournaments/matches']);
   }
 
   navigateToHome() {

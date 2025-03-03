@@ -53,9 +53,9 @@
           <ion-label>My Bets</ion-label>
         </ion-item>
 
-        <ion-item (click)="navigateToBetPreview()">
+        <ion-item (click)="navigateToBetsOverview()">
           <ion-icon name="eye-outline" slot="start"></ion-icon>
-          <ion-label>Preview</ion-label>
+          <ion-label>Bets Overview</ion-label>
         </ion-item>
 
         <!-- Settings Section -->
@@ -93,6 +93,11 @@
           <ion-item (click)="navigateToCustomTournamentsList()">
             <ion-icon name="hammer-outline" slot="start"></ion-icon>
             <ion-label>Manage Tournaments</ion-label>
+          </ion-item>
+
+          <ion-item (click)="navigateToCustomTournamentsMatches()">
+            <ion-icon name="football-outline" slot="start"></ion-icon>
+            <ion-label>Manage Matches</ion-label>
           </ion-item>
         </ng-container>
 

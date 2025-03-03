@@ -1,6 +1,7 @@
 ﻿using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Backend.Repository.Services;
+using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Backend.Extensions

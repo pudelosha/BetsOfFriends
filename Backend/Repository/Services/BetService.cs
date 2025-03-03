@@ -1,6 +1,7 @@
-﻿using Backend.Model.Database;
+﻿using Backend.DTOs;
+using Backend.Model.Database;
 using Backend.Model.Entities;
-using Backend.Repository.Interfaces;
+using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Repository.Services
@@ -81,6 +82,128 @@ namespace Backend.Repository.Services
                 await transaction.RollbackAsync();
                 _logger.LogError($"Error creating bets for tournament ID {tournamentId}: {ex.Message}");
                 throw;
+            }
+        }
+
+        public async Task<bool> UpdateBetAsync(int betId, string userId, BetUpdateDto betUpdateDto)
+        {
+            try
+            {
+                var bet = await _context.Bets
+                    .FirstOrDefaultAsync(b => b.BetId == betId && b.UserId == userId);
+
+                if (bet == null)
+                {
+                    _logger.LogWarning($"Bet ID {betId} not found or does not belong to user {userId}.");
+                    return false;
+                }
+
+                // Update bet details
+                bet.BaseAmount = betUpdateDto.BaseAmount;
+                bet.BonusAmount = betUpdateDto.BonusAmount;
+                bet.HomeGoals = betUpdateDto.HomeGoals;
+                bet.AwayGoals = betUpdateDto.AwayGoals;
+                bet.QualifiedTeam = betUpdateDto.QualifiedTeam;
+                bet.Submitted = true;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Bet ID {betId} updated successfully.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error updating bet ID {betId} for user {userId}.");
+                return false;
+            }
+        }
+
+        public async Task<List<BetDto>> GetBetsByStatusAsync(int tournamentId, string userId, string status)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching bets for user {userId}, tournament {tournamentId}, status {status}");
+
+                var bets = await _context.Bets
+                    .Include(b => b.Match)
+                    .Where(b => b.Match.TournamentId == tournamentId && b.UserId == userId)
+                    .ToListAsync();
+
+                if (!bets.Any())
+                {
+                    _logger.LogWarning($"No bets found for user {userId}, tournament {tournamentId}, status {status}");
+                    return new List<BetDto>();
+                }
+
+                var betDtos = bets.Select(b => new BetDto
+                {
+                    BetId = b.BetId,
+                    MatchId = b.MatchId,
+                    BaseAmount = b.BaseAmount,
+                    BonusAmount = b.BonusAmount,
+                    HomeGoals = b.HomeGoals,
+                    AwayGoals = b.AwayGoals,
+                    QualifiedTeam = b.QualifiedTeam,
+                    Submitted = b.Submitted,
+                    Payout = b.Payout,
+                    Result = b.Result.ToString()
+                }).ToList();
+
+                return betDtos;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching bets for user {userId} and tournament {tournamentId}");
+                return new List<BetDto>();
+            }
+        }
+
+        public async Task<bool> CalculateBetsAsync(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Calculating bets for tournament {tournamentId}");
+
+                var matches = await _context.CustomMatches
+                    .Include(m => m.Tournament)
+                    .Where(m => m.TournamentId == tournamentId)
+                    .ToListAsync();
+
+                if (!matches.Any())
+                {
+                    _logger.LogWarning($"No matches found for tournament {tournamentId}");
+                    return false;
+                }
+
+                foreach (var match in matches)
+                {
+                    var bets = await _context.Bets.Where(b => b.MatchId == match.MatchId).ToListAsync();
+
+                    foreach (var bet in bets)
+                    {
+                        // Check if the bet is correct and update payout accordingly
+                        if (bet.HomeGoals == match.HomeScore && bet.AwayGoals == match.AwayScore)
+                        {
+                            bet.Payout = bet.BaseAmount * 3; // Example: Triple the bet amount for correct score
+                            bet.Result = Bet.BetResult.Won;
+                        }
+                        else
+                        {
+                            bet.Payout = 0;
+                            bet.Result = Bet.BetResult.Lost;
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
+                _logger.LogInformation($"Bet calculations completed for tournament {tournamentId}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error calculating bets for tournament {tournamentId}");
+                return false;
             }
         }
     }

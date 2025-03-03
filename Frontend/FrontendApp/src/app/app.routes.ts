@@ -23,7 +23,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'to-place', pathMatch: 'full' }
     ]
   },
-  { path: 'bet-preview', loadComponent: () => import('./pages/bets/bet-preview/bet-preview.page').then(m => m.BetPreviewPage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'bets-overview', loadComponent: () => import('./pages/bets/bets-overview/bets-overview.page').then(m => m.BetsOverviewPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
   // Tournaments (Requires "User" role)
   {
