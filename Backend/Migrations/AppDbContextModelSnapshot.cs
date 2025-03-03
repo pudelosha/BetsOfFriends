@@ -152,7 +152,7 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MatchId"));
 
-                    b.Property<decimal>("AwayQualifies")
+                    b.Property<decimal?>("AwayQualifies")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("AwayScore")
@@ -171,7 +171,7 @@ namespace Backend.Migrations
                     b.Property<decimal>("DrawOdds")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("HomeQualifies")
+                    b.Property<decimal?>("HomeQualifies")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("HomeScore")

@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 import { ToastController } from '@ionic/angular';
 import { LoginResponse } from '..//model/login-response'
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root',
@@ -43,17 +44,35 @@ export class AuthService {
     return !!localStorage.getItem(this.authTokenKey);
   }
 
+  getUserRoles(): string[] {
+    const token = this.getToken();
+    if (token) {
+        try {
+            const decodedToken: any = jwtDecode(token);
+            console.log("Decoded Token:", decodedToken); // Debugging step
+
+            // Extract roles correctly from claim URL
+            const roleClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+            return decodedToken[roleClaim] 
+                ? Array.isArray(decodedToken[roleClaim])
+                    ? decodedToken[roleClaim]
+                    : [decodedToken[roleClaim]] 
+                : [];
+        } catch (error) {
+            console.error("Error decoding token:", error);
+            return [];
+        }
+    }
+    return [];
+  }
+
   async logout(message?: string, redirectPath: string = '/login'): Promise<void> {
     console.log('Clearing auth tokens...');
-  
-    // Clear authentication tokens
     localStorage.removeItem(this.authTokenKey);
     sessionStorage.removeItem(this.authTokenKey);
-  
     console.log('Updating authentication state...');
     this.isAuthenticatedSubject.next(false);
   
-    // Show success toast
     if (message) {
       const toast = await this.toastCtrl.create({
         message,

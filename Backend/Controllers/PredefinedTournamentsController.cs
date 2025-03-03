@@ -18,7 +18,7 @@ namespace Backend.Controllers
             _logger = logger;
         }
 
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPost("create")]
         public async Task<IActionResult> CreatePredefinedTournament([FromBody] PredefinedTournamentDto tournamentDto)
         {

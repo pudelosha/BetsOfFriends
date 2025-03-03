@@ -59,14 +59,14 @@ namespace Backend.Repository.Services
             await _userManager.ResetAccessFailedCountAsync(user);
 
             // Generate JWT token
-            var token = GenerateJwtToken(user);
+            var token = await GenerateJwtToken(user);
 
             _logger.LogInformation($"Login successful for user {request.Email}");
 
             return new LoginResponseDto { Success = true, Token = token, Message = "Login successful." };
         }
 
-        private string GenerateJwtToken(ApplicationUser user)
+        private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -77,14 +77,15 @@ namespace Backend.Repository.Services
                 new Claim(ClaimTypes.Email, user.Email)
             };
 
-            var userRoles = _userManager.GetRolesAsync(user).Result;
+            // Corrected: Use await instead of Result to prevent deadlocks
+            var userRoles = await _userManager.GetRolesAsync(user);
             claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddHours(24), // Token expiration time
+                expires: DateTime.UtcNow.AddHours(24),
                 signingCredentials: credentials
             );
 

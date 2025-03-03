@@ -1,4 +1,6 @@
 using Backend.Extensions;
+using Backend.Model.Database;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +34,9 @@ builder.Services.AddSwaggerGen(c =>
 
 // Build App
 var app = builder.Build();
+
+// Apply migrations & seed SuperAdmin via extension method
+await app.ApplyMigrationsAndSeedSuperAdmin();
 
 // Enable CORS
 app.UseCors("AllowFrontend");

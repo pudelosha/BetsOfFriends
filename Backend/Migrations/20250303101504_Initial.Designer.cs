@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250228124918_Initial")]
+    [Migration("20250303101504_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -155,7 +155,7 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MatchId"));
 
-                    b.Property<decimal>("AwayQualifies")
+                    b.Property<decimal?>("AwayQualifies")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("AwayScore")
@@ -174,7 +174,7 @@ namespace Backend.Migrations
                     b.Property<decimal>("DrawOdds")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("HomeQualifies")
+                    b.Property<decimal?>("HomeQualifies")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("HomeScore")

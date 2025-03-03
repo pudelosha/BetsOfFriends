@@ -3,6 +3,7 @@ using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Text;
+using System.Transactions;
 
 namespace Backend.Repository.Services
 {
@@ -13,11 +14,18 @@ namespace Backend.Repository.Services
         private readonly IConfiguration _configuration;
         private readonly ILogger<RegisterService> _logger;
         private readonly IEmailTemplateService _emailTemplateService;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-
-        public RegisterService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<RegisterService> logger, IEmailTemplateService emailTemplateService)
+        public RegisterService(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IEmailService emailService,
+            IConfiguration configuration,
+            ILogger<RegisterService> logger,
+            IEmailTemplateService emailTemplateService)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _emailService = emailService;
             _configuration = configuration;
             _logger = logger;
@@ -40,6 +48,8 @@ namespace Backend.Repository.Services
                 };
             }
 
+            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             var user = new ApplicationUser { UserName = email, Email = email };
             var result = await _userManager.CreateAsync(user, password);
 
@@ -58,9 +68,34 @@ namespace Backend.Repository.Services
 
             _logger.LogInformation($"User registered successfully: {email}");
 
+            // Ensure the "User" role exists
+            if (!await _roleManager.RoleExistsAsync("User"))
+            {
+                _logger.LogInformation("Creating 'User' role since it does not exist.");
+                await _roleManager.CreateAsync(new IdentityRole("User"));
+            }
+
+            // Assign the "User" role to the newly registered user
+            var roleResult = await _userManager.AddToRoleAsync(user, "User");
+            if (!roleResult.Succeeded)
+            {
+                _logger.LogWarning($"Failed to assign 'User' role to {email}. Errors: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}");
+                return new RegisterResultDto
+                {
+                    Success = false,
+                    Message = "Failed to assign role to the user.",
+                    Errors = roleResult.Errors
+                };
+            }
+
+            _logger.LogInformation($"Assigned 'User' role to {email}.");
+
+            // Commit the transaction before sending an email
+            transaction.Complete();
+
+            // Send confirmation email after transaction is complete
             var confirmationUrl = await GenerateEmailConfirmationLinkAsync(user);
             _logger.LogInformation($"Sending confirmation email to {email}");
-
             await SendConfirmationEmailAsync(user.Email, confirmationUrl);
 
             return new RegisterResultDto
@@ -93,6 +128,8 @@ namespace Backend.Repository.Services
                 return existingUser; // Return existing user if they already have an account
             }
 
+            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             var newUser = new ApplicationUser
             {
                 Email = email,
@@ -110,10 +147,31 @@ namespace Backend.Repository.Services
 
             _logger.LogInformation($"User {email} registered successfully without a password.");
 
+            // Ensure the "User" role exists
+            if (!await _roleManager.RoleExistsAsync("User"))
+            {
+                _logger.LogInformation("Creating 'User' role since it does not exist.");
+                await _roleManager.CreateAsync(new IdentityRole("User"));
+            }
+
+            // Assign the "User" role to the invited user
+            var roleResult = await _userManager.AddToRoleAsync(newUser, "User");
+            if (!roleResult.Succeeded)
+            {
+                _logger.LogWarning($"Failed to assign 'User' role to {email}. Errors: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}");
+                return null; // Prevent further execution
+            }
+
+            _logger.LogInformation($"Assigned 'User' role to {email}.");
+
+            // Commit the transaction before sending an email
+            transaction.Complete();
+
             // Generate an email confirmation & password setup link
             var confirmationUrl = await GenerateAccountSetupLinkAsync(newUser);
 
             _logger.LogInformation($"Sending account setup email to {email}");
+            await SendConfirmationEmailAsync(newUser.Email, confirmationUrl);
 
             return newUser;
         }
@@ -169,9 +227,6 @@ namespace Backend.Repository.Services
             return new RegisterResultDto { Success = true, Message = "Confirmation email sent successfully." };
         }
 
-        /// <summary>
-        /// Generates an email confirmation link for a user.
-        /// </summary>
         private async Task<string> GenerateEmailConfirmationLinkAsync(ApplicationUser user)
         {
             _logger.LogInformation($"Generating email confirmation token for user: {user.Email}");

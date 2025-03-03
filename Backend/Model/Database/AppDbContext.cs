@@ -34,9 +34,6 @@ namespace Backend.Model.Database
             SeedRoles(builder);
         }
 
-        /// <summary>
-        /// Renames ASP.NET Identity tables for a cleaner database schema.
-        /// </summary>
         private void RenameIdentityTables(ModelBuilder builder)
         {
             builder.Entity<ApplicationUser>().ToTable("Users");
@@ -48,9 +45,6 @@ namespace Backend.Model.Database
             builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
         }
 
-        /// <summary>
-        /// Define relationships for Predefined Tournaments.
-        /// </summary>
         private void ConfigurePredefinedTournamentRelationships(ModelBuilder builder)
         {
             // Tournament -> Teams
@@ -82,9 +76,6 @@ namespace Backend.Model.Database
                 .OnDelete(DeleteBehavior.Restrict);
         }
 
-        /// <summary>
-        /// Define relationships for Standard Tournaments.
-        /// </summary>
         private void ConfigureTournamentRelationships(ModelBuilder builder)
         {
             // Tournament -> CreatedByUser
@@ -109,9 +100,6 @@ namespace Backend.Model.Database
                 .OnDelete(DeleteBehavior.Cascade);
         }
 
-        /// <summary>
-        /// Define relationships for UserTournament (many-to-many users & tournaments).
-        /// </summary>
         private void ConfigureUserTournamentRelationship(ModelBuilder builder)
         {
             builder.Entity<CustomTournamentUserAssignment>()
@@ -138,9 +126,6 @@ namespace Backend.Model.Database
                 .HasDefaultValue(UserTournamentRole.Guest);
         }
 
-        /// <summary>
-        /// Define relationships for Matches.
-        /// </summary>
         private void ConfigureGameRelationships(ModelBuilder builder)
         {
             builder.Entity<CustomMatch>()
@@ -162,9 +147,6 @@ namespace Backend.Model.Database
                 .OnDelete(DeleteBehavior.Restrict);
         }
 
-        /// <summary>
-        /// Define relationships for Bets.
-        /// </summary>
         private void ConfigureBetRelationships(ModelBuilder builder)
         {
             builder.Entity<Bet>()
@@ -180,9 +162,6 @@ namespace Backend.Model.Database
                 .OnDelete(DeleteBehavior.Restrict);
         }
 
-        /// <summary>
-        /// Seeds default roles ("User", "Admin", "SuperAdmin") into the database.
-        /// </summary>
         private void SeedRoles(ModelBuilder builder)
         {
             builder.Entity<IdentityRole>().HasData(

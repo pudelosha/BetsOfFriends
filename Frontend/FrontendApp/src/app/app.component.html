@@ -97,7 +97,7 @@
         </ng-container>
 
         <!-- Super Admin Section (Visible only to SuperAdmins) -->
-        <ng-container>
+        <ng-container *ngIf="isSuperAdmin">
           <ion-item-divider>
             <ion-label>
               <ion-icon name="star-outline" slot="start"></ion-icon>

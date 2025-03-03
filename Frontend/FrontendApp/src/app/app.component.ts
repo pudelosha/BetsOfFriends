@@ -16,15 +16,18 @@ import { ToastController, MenuController } from '@ionic/angular';
 })
 export class AppComponent {
   isLoggedIn = false;
+  isSuperAdmin = false;
+  isAdmin = false;
   showFab: boolean = false; // Control FAB visibility
 
   constructor(private authService: AuthService, private router: Router, private toastController: ToastController, private menuCtrl: MenuController) {}
 
   ngOnInit() {
-    // Subscribe to authentication changes
+    // Subscribe to authentication status changes
     this.authService.getAuthStatus().subscribe((loggedIn) => {
       this.isLoggedIn = loggedIn;
       console.log('Auth status changed:', loggedIn);
+      this.updateUserRoles();
     });
 
     // Monitor navigation changes
@@ -33,11 +36,20 @@ export class AppComponent {
 
       // Refresh authentication state
       this.isLoggedIn = this.authService.isLoggedIn();
+      this.updateUserRoles();
 
       // Show FAB only on `/my-bets/to-place`
       this.showFab = event.urlAfterRedirects === '/my-bets/to-place';
       console.log("FAB Visibility:", this.showFab);
     });
+  }
+
+  updateUserRoles() {
+    const userRoles = this.authService.getUserRoles();
+    console.log("User roles:", userRoles);
+
+    this.isSuperAdmin = userRoles.includes("SuperAdmin");
+    this.isAdmin = this.isSuperAdmin || userRoles.includes("Admin"); // Admin or SuperAdmin
   }
 
   openFilters() {

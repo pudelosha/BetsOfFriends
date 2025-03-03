@@ -5,58 +5,76 @@ import { GuestGuard } from './guards/guest.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'welcome', pathMatch: 'full' },
 
-  // Only for logged-in users
-  { path: 'home', loadComponent: () => import('./pages/home/home/home.page').then(m => m.HomePage), canActivate: [AuthGuard] },
-  { path: 'profile', loadComponent: () => import('./pages/user/profile/profile.page').then(m => m.ProfilePage), canActivate: [AuthGuard] },
-  { path: 'notification-settings', loadComponent: () => import('./pages/user/notification-settings/notification-settings.page').then(m => m.NotificationSettingsPage), canActivate: [AuthGuard] },
+  // Only for logged-in users (Requires "User" role)
+  { path: 'home', loadComponent: () => import('./pages/home/home/home.page').then(m => m.HomePage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'profile', loadComponent: () => import('./pages/user/profile/profile.page').then(m => m.ProfilePage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'notification-settings', loadComponent: () => import('./pages/user/notification-settings/notification-settings.page').then(m => m.NotificationSettingsPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
-  // My Bets
+  // My Bets (Requires "User" role)
   {
     path: 'my-bets',
     loadComponent: () => import('./pages/bets/my-bets/my-bets.page').then(m => m.MyBetsPage),
     canActivate: [AuthGuard],
+    data: { role: 'User' },
     children: [
-      { path: 'to-place', loadComponent: () => import('./pages/bets/my-bets-to-place/my-bets-to-place.page').then(m => m.MyBetsToPlacePage), canActivate: [AuthGuard] },
-      { path: 'placed', loadComponent: () => import('./pages/bets/my-bets-placed/my-bets-placed.page').then(m => m.MyBetsPlacedPage), canActivate: [AuthGuard] },
-      { path: 'finalised', loadComponent: () => import('./pages/bets/my-bets-finalised/my-bets-finalised.page').then(m => m.MyBetsFinalisedPage), canActivate: [AuthGuard] },
+      { path: 'to-place', loadComponent: () => import('./pages/bets/my-bets-to-place/my-bets-to-place.page').then(m => m.MyBetsToPlacePage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'placed', loadComponent: () => import('./pages/bets/my-bets-placed/my-bets-placed.page').then(m => m.MyBetsPlacedPage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'finalised', loadComponent: () => import('./pages/bets/my-bets-finalised/my-bets-finalised.page').then(m => m.MyBetsFinalisedPage), canActivate: [AuthGuard], data: { role: 'User' } },
       { path: '', redirectTo: 'to-place', pathMatch: 'full' }
     ]
   },
-  { path: 'bet-preview', loadComponent: () => import('./pages/bets/bet-preview/bet-preview.page').then( m => m.BetPreviewPage), canActivate: [AuthGuard] },
+  { path: 'bet-preview', loadComponent: () => import('./pages/bets/bet-preview/bet-preview.page').then(m => m.BetPreviewPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
-  // Tournaments
+  // Tournaments (Requires "User" role)
   {
     path: 'tournaments/manage/stages',
     children: [
-      { path: 'stage-input-type', loadComponent: () => import('./pages/tournaments/manage/stages/stage-input-type/stage-input-type.page').then(m => m.StageInputTypePage), canActivate: [AuthGuard] },
-      { path: 'stage-teams-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-teams-management/stage-teams-management.page').then(m => m.StageTeamsManagementPage), canActivate: [AuthGuard] },
-      { path: 'stage-matches-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-matches-management/stage-matches-management.page').then(m => m.StageMatchesManagementPage), canActivate: [AuthGuard] },
-      { path: 'stage-users-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-users-management/stage-users-management.page').then(m => m.StageUsersManagementPage), canActivate: [AuthGuard] },
-      { path: 'stage-summary', loadComponent: () => import('./pages/tournaments/manage/stages/stage-summary/stage-summary.page').then(m => m.StageSummaryPage), canActivate: [AuthGuard] },
+      { path: 'stage-input-type', loadComponent: () => import('./pages/tournaments/manage/stages/stage-input-type/stage-input-type.page').then(m => m.StageInputTypePage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'stage-teams-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-teams-management/stage-teams-management.page').then(m => m.StageTeamsManagementPage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'stage-matches-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-matches-management/stage-matches-management.page').then(m => m.StageMatchesManagementPage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'stage-users-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-users-management/stage-users-management.page').then(m => m.StageUsersManagementPage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'stage-summary', loadComponent: () => import('./pages/tournaments/manage/stages/stage-summary/stage-summary.page').then(m => m.StageSummaryPage), canActivate: [AuthGuard], data: { role: 'User' } },
     ]
   },
 
+  // SuperAdmin-Only Routes
   {
     path: 'tournaments',
     children: [
-      { path: 'create-predefined', loadComponent: () => import('./pages/tournaments/manage/predefined/build-predefined-tournament/build-predefined-tournament.page').then(m => m.BuildPredefinedTournamentPage), canActivate: [AuthGuard] },
-      { path: 'update-predefined/:id', loadComponent: () => import('./pages/tournaments/manage/predefined/build-predefined-tournament/build-predefined-tournament.page').then(m => m.BuildPredefinedTournamentPage), canActivate: [AuthGuard] },
-      { path: 'predefined', loadComponent: () => import('./pages/tournaments/manage/predefined/predefined-tournaments-list/predefined-tournaments-list.page').then(m => m.PredefinedTournamentsListPage), canActivate: [AuthGuard] },
+      { 
+        path: 'create-predefined', 
+        loadComponent: () => import('./pages/tournaments/manage/predefined/build-predefined-tournament/build-predefined-tournament.page').then(m => m.BuildPredefinedTournamentPage), 
+        canActivate: [AuthGuard], 
+        data: { role: 'SuperAdmin' } 
+      },
+      { 
+        path: 'update-predefined/:id', 
+        loadComponent: () => import('./pages/tournaments/manage/predefined/build-predefined-tournament/build-predefined-tournament.page').then(m => m.BuildPredefinedTournamentPage), 
+        canActivate: [AuthGuard], 
+        data: { role: 'SuperAdmin' } 
+      },
+      { 
+        path: 'predefined', 
+        loadComponent: () => import('./pages/tournaments/manage/predefined/predefined-tournaments-list/predefined-tournaments-list.page').then(m => m.PredefinedTournamentsListPage), 
+        canActivate: [AuthGuard], 
+        data: { role: 'SuperAdmin' } 
+      },
     ]
   },
 
+  // User Tournament Routes (Requires "User" role)
   {
     path: 'tournaments',
     children: [
-      { path: 'create-custom', loadComponent: () => import('./pages/tournaments/manage/custom/build-custom-tournament/build-custom-tournament.page').then(m => m.BuildCustomTournamentPage), canActivate: [AuthGuard] },
-      { path: 'update-custom/:id', loadComponent: () => import('./pages/tournaments/manage/custom/build-custom-tournament/build-custom-tournament.page').then(m => m.BuildCustomTournamentPage), canActivate: [AuthGuard] },
-      { path: 'custom', loadComponent: () => import('./pages/tournaments/manage/custom/custom-tournaments-list/custom-tournaments-list.page').then(m => m.CustomTournamentsListPage), canActivate: [AuthGuard] },
+      { path: 'create-custom', loadComponent: () => import('./pages/tournaments/manage/custom/build-custom-tournament/build-custom-tournament.page').then(m => m.BuildCustomTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'update-custom/:id', loadComponent: () => import('./pages/tournaments/manage/custom/build-custom-tournament/build-custom-tournament.page').then(m => m.BuildCustomTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'custom', loadComponent: () => import('./pages/tournaments/manage/custom/custom-tournaments-list/custom-tournaments-list.page').then(m => m.CustomTournamentsListPage), canActivate: [AuthGuard], data: { role: 'User' } },
     ]
   },
 
-  { path: 'my-tournaments', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard] },
-  { path: 'summary', loadComponent: () => import('./pages/tournaments/summary-dashboard/summary-dashboard.page').then(m => m.SummaryDashboardPage), canActivate: [AuthGuard] },
-  { path: 'live-results', loadComponent: () => import('./pages/tournaments/live-results-dashboard/live-results-dashboard.page').then(m => m.LiveResultsDashboardPage), canActivate: [AuthGuard] },
+  { path: 'my-tournaments', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'summary', loadComponent: () => import('./pages/tournaments/summary-dashboard/summary-dashboard.page').then(m => m.SummaryDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'live-results', loadComponent: () => import('./pages/tournaments/live-results-dashboard/live-results-dashboard.page').then(m => m.LiveResultsDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
   // Only for guests
   { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage), canActivate: [GuestGuard] },
@@ -70,5 +88,4 @@ export const routes: Routes = [
 
   // Default and wildcard routes
   { path: '**', redirectTo: 'welcome' },
-
 ];
