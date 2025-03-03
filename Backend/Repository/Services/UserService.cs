@@ -14,13 +14,15 @@ namespace Backend.Repository.Services
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserService> _logger;
+        private readonly IEmailTemplateService _emailTemplateService;
 
-        public UserService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<UserService> logger)
+        public UserService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<UserService> logger, IEmailTemplateService emailTemplateService)
         {
             _userManager = userManager;
             _emailService = emailService;
             _configuration = configuration;
             _logger = logger;
+            _emailTemplateService = emailTemplateService;
         }
 
         public string GetUserIdFromClaims(ClaimsPrincipal user)
@@ -104,8 +106,17 @@ namespace Backend.Repository.Services
 
             var resetLink = $"{frontendBaseUrl}/reset-password?userId={user.Id}&token={encodedToken}";
 
-            await _emailService.SendEmailAsync(user.Email, "Reset Your Password",
-                $"Click <a href='{resetLink}'>here</a> to reset your password.");
+            // Step 1: Prepare placeholders for the email template
+            var placeholders = new Dictionary<string, string>
+            {
+                { "RESET_LINK", resetLink }
+            };
+
+            // Step 2: Retrieve the email template
+            string emailBody = await _emailTemplateService.GetEmailTemplateAsync("PasswordReset", placeholders);
+
+            // Step 3: Send the email
+            await _emailService.SendEmailAsync(user.Email, "Reset Your Password", emailBody);
 
             _logger.LogInformation($"Generated password reset email for user {user.Email}");
 

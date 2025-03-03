@@ -13,6 +13,7 @@ namespace Backend.Repository.Services
         private readonly IRegisterService _registerService;
         private readonly IEmailService _emailService;
         private readonly IUserService _userService;
+        private readonly IEmailTemplateService _emailTemplateService;
         private readonly IConfiguration _configuration;
         private readonly IBetService _betService;
 
@@ -23,6 +24,7 @@ namespace Backend.Repository.Services
             IUserService userService,
             IBetService betService,
             IEmailService emailService,
+            IEmailTemplateService emailTemplateService,
             IConfiguration configuration)
         {
             _context = context;
@@ -31,6 +33,7 @@ namespace Backend.Repository.Services
             _userService = userService;
             _betService = betService;
             _emailService = emailService;
+            _emailTemplateService = emailTemplateService;
             _configuration = configuration;
         }
 
@@ -51,7 +54,25 @@ namespace Backend.Repository.Services
                 _context.CustomTournaments.Add(tournament);
                 await _context.SaveChangesAsync();
 
-                // Step 2: Insert Teams and Map Their Actual IDs
+                // Step 2: Assign Creator as Admin
+                var creatorUser = await _userService.FindUserByIdAsync(tournamentDto.CreatedBy);
+                if (creatorUser == null)
+                {
+                    throw new Exception($"User with ID {tournamentDto.CreatedBy} not found.");
+                }
+
+                var creatorAssignment = new CustomTournamentUserAssignment
+                {
+                    UserId = creatorUser.Id,
+                    TournamentId = tournament.TournamentId,
+                    UserAdminName = creatorUser.Email,
+                    Role = UserTournamentRole.Admin,
+                    Status = AssignmentStatus.Accepted
+                };
+
+                _context.CustomTournamentUserAssignments.Add(creatorAssignment);
+
+                // Step 3: Insert Teams and Map Their Actual IDs
                 var teams = tournamentDto.Teams.Select(t => new CustomTeam
                 {
                     Name = t.TeamName,
@@ -61,12 +82,12 @@ namespace Backend.Repository.Services
                 _context.CustomTeams.AddRange(teams);
                 await _context.SaveChangesAsync();
 
-                // Step 3: Create a Map of Team Names to Their Actual Database IDs
+                // Step 4: Create a Map of Team Names to Their Actual Database IDs
                 var teamMap = await _context.CustomTeams
                     .Where(t => t.TournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(t => t.Name, t => t.TeamId);
 
-                // Step 4: Insert Matches Using the Actual IDs from Database
+                // Step 5: Insert Matches Using the Actual IDs from Database
                 var matches = tournamentDto.Matches.Select(m => new CustomMatch
                 {
                     TournamentId = tournament.TournamentId,
@@ -85,7 +106,7 @@ namespace Backend.Repository.Services
                 _context.CustomMatches.AddRange(matches);
                 await _context.SaveChangesAsync();
 
-                // Step 5: Process User Assignments (Create users if needed)
+                // Step 6: Process User Assignments (Create users if needed)
                 var invitedUsers = new List<ApplicationUser>(); // Store users who need email invitations
                 foreach (var userDto in tournamentDto.Users)
                 {
@@ -122,29 +143,14 @@ namespace Backend.Repository.Services
 
                 _logger.LogInformation($"Custom tournament {tournament.Name} created successfully.");
 
-                // Step 6: Generate Bets for Users & Matches
+                // Step 7: Generate Bets for Users & Matches
                 await _betService.CreateBetsForTournamentAsync(tournament.TournamentId);
 
-                // Step 7: Send Email Invitations (Outside Transaction)
+                // Step 8: Send Email Invitations (Outside Transaction)
                 foreach (var user in invitedUsers)
                 {
                     string inviteLink = GenerateTournamentInviteLink(user.Email, tournament.TournamentId);
-
-                    string emailBody = $@"
-                                    <p>Hi,</p>
-                                    <p>You have been invited to join the tournament <strong>{tournament.Name}</strong>.</p>
-                                    <p>Click the button below to accept the invitation and start participating:</p>
-                                    <p>
-                                    <a href='{inviteLink}' style='display:inline-block;padding:10px 20px;font-size:16px;color:#fff;background:#007bff;text-decoration:none;border-radius:5px;'>
-                                    Accept Invitation
-                                    </a>
-                                    </p>
-                                    <p>If you did not expect this invitation, you can ignore this email.</p>
-                                    <p>Best regards,<br/>Tournament Management Team</p>";
-
-                    _logger.LogInformation($"Sending tournament invite email to {user.Email} with invite link: {inviteLink}");
-
-                    await _emailService.SendEmailAsync(user.Email, $"You're Invited to {tournament.Name}!", emailBody);
+                    await SendTournamentInvitationEmailAsync(user.Email, tournament.Name, inviteLink);
                 }
 
                 return true;
@@ -155,6 +161,19 @@ namespace Backend.Repository.Services
                 _logger.LogError($"Error inserting custom tournament: {ex.Message}");
                 return false;
             }
+        }
+
+        private async Task SendTournamentInvitationEmailAsync(string email, string tournamentName, string inviteLink)
+        {
+            var placeholders = new Dictionary<string, string>
+            {
+                { "TOURNAMENT_NAME", tournamentName },
+                { "INVITE_LINK", inviteLink }
+            };
+
+            string emailBody = await _emailTemplateService.GetEmailTemplateAsync("TournamentInvite", placeholders);
+
+            await _emailService.SendEmailAsync(email, $"You're Invited to {tournamentName}!", emailBody);
         }
 
         private string GenerateTournamentInviteLink(string email, int tournamentId)
@@ -319,7 +338,6 @@ namespace Backend.Repository.Services
                 }
                 _context.CustomTeams.RemoveRange(teamsToRemove);
 
-                // Update existing teams
                 foreach (var teamDto in updatedTeamsWithIds.Values)
                 {
                     if (existingTeams.TryGetValue(teamDto.TeamId.Value, out var team))
@@ -328,7 +346,6 @@ namespace Backend.Repository.Services
                     }
                 }
 
-                // Add new teams
                 foreach (var newTeamDto in newTeams)
                 {
                     tournament.Teams.Add(new CustomTeam
@@ -340,21 +357,18 @@ namespace Backend.Repository.Services
 
                 await _context.SaveChangesAsync();
 
-                // Step 4: Map team names to IDs
+                // Step 4: Handle Matches
                 var teamMap = await _context.CustomTeams
                     .Where(t => t.TournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(t => t.Name, t => t.TeamId);
 
-                // Step 5: Handle Matches
                 var existingMatches = tournament.Matches.ToDictionary(m => m.MatchId);
                 var updatedMatchesWithIds = tournamentDto.Matches.Where(m => m.MatchId.HasValue).ToDictionary(m => m.MatchId.Value);
                 var newMatches = tournamentDto.Matches.Where(m => !m.MatchId.HasValue).ToList();
 
-                // Remove matches not in the updated list
                 var matchesToRemove = existingMatches.Values.Where(em => !updatedMatchesWithIds.ContainsKey(em.MatchId)).ToList();
                 _context.CustomMatches.RemoveRange(matchesToRemove);
 
-                // Update existing matches
                 foreach (var matchDto in updatedMatchesWithIds.Values)
                 {
                     if (existingMatches.TryGetValue(matchDto.MatchId.Value, out var match))
@@ -372,7 +386,6 @@ namespace Backend.Repository.Services
                     }
                 }
 
-                // Add new matches
                 foreach (var newMatchDto in newMatches)
                 {
                     var homeTeamId = teamMap.TryGetValue(newMatchDto.HomeTeam, out var homeId)
@@ -398,14 +411,12 @@ namespace Backend.Repository.Services
                     });
                 }
 
-                // Step 6: Handle User Assignments (Correct Emails, Remove Wrong Assignments)
+                // Step 5: Handle User Assignments
                 var existingAssignments = tournament.Participants.ToDictionary(p => p.AssignmentId);
                 var updatedUsers = tournamentDto.Users.Where(u => u.AssignmentId.HasValue).ToDictionary(u => u.AssignmentId!.Value);
                 var newUsers = tournamentDto.Users.Where(u => !u.AssignmentId.HasValue).ToList();
 
-                // Find and remove assignments that no longer exist in frontend data
                 var removedAssignments = existingAssignments.Values.Where(ea => !updatedUsers.ContainsKey(ea.AssignmentId)).ToList();
-
                 foreach (var assignment in removedAssignments)
                 {
                     if (assignment.Status == AssignmentStatus.New || assignment.Status == AssignmentStatus.Invited)
@@ -417,7 +428,6 @@ namespace Backend.Repository.Services
 
                 var invitedUsers = new List<ApplicationUser>();
 
-                // Process existing users with changes
                 foreach (var userDto in updatedUsers.Values)
                 {
                     var assignment = existingAssignments[userDto.AssignmentId!.Value];
@@ -465,7 +475,6 @@ namespace Backend.Repository.Services
                     }
                 }
 
-                // Step 7: Add New Users (Not Previously Assigned)
                 foreach (var newUserDto in newUsers)
                 {
                     var existingUser = await _userService.FindUserByEmailAsync(newUserDto.UserEmail);
@@ -483,43 +492,27 @@ namespace Backend.Repository.Services
                         userToAssign = existingUser;
                     }
 
-                    // Assign the new user to the tournament
                     _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
                     {
                         UserId = userToAssign.Id,
                         TournamentId = tournament.TournamentId,
-                        Role = UserTournamentRole.Guest, // Default role
-                        Status = AssignmentStatus.Invited, // New users get invited status
+                        Role = UserTournamentRole.Guest,
+                        Status = AssignmentStatus.Invited,
                         UserAdminName = newUserDto.UserAdminName
                     });
 
                     _logger.LogInformation($"Added new user {userToAssign.Email} to tournament {tournament.TournamentId}");
                 }
 
-                // Save the changes
+                // Step 6: Commit transaction before sending emails
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // Step 8: Send Email Invitations to New Users (Outside Transaction)
+                // Step 7: Send Email Invitations (Outside Transaction)
                 foreach (var user in invitedUsers)
                 {
                     string inviteLink = GenerateTournamentInviteLink(user.Email, tournament.TournamentId);
-
-                    string emailBody = $@"
-                        <p>Hi {user.Email},</p>
-                        <p>You have been invited to join the tournament <strong>{tournament.Name}</strong>.</p>
-                        <p>Click the button below to accept the invitation and start participating:</p>
-                        <p>
-                        <a href='{inviteLink}' style='display:inline-block;padding:10px 20px;font-size:16px;color:#fff;background:#007bff;text-decoration:none;border-radius:5px;'>
-                        Accept Invitation
-                        </a>
-                        </p>
-                        <p>If you did not expect this invitation, you can ignore this email.</p>
-                        <p>Best regards,<br/>Tournament Management Team</p>";
-
-                    _logger.LogInformation($"Sending tournament invite email to {user.Email} with invite link: {inviteLink}");
-
-                    await _emailService.SendEmailAsync(user.Email, $"You're Invited to {tournament.Name}!", emailBody);
+                    await SendTournamentInvitationEmailAsync(user.Email, tournament.Name, inviteLink);
                 }
 
                 return true;

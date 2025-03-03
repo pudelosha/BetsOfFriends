@@ -2,7 +2,7 @@
 
 namespace Backend.Repository.Services
 {
-    public class GameService : IGameService
+    public class MatchService : IMatchService
     {
     }
 }

@@ -12,13 +12,16 @@ namespace Backend.Repository.Services
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
         private readonly ILogger<RegisterService> _logger;
+        private readonly IEmailTemplateService _emailTemplateService;
 
-        public RegisterService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<RegisterService> logger)
+
+        public RegisterService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<RegisterService> logger, IEmailTemplateService emailTemplateService)
         {
             _userManager = userManager;
             _emailService = emailService;
             _configuration = configuration;
             _logger = logger;
+            _emailTemplateService = emailTemplateService;
         }
 
         public async Task<RegisterResultDto> RegisterUserAsync(string email, string password)
@@ -58,14 +61,25 @@ namespace Backend.Repository.Services
             var confirmationUrl = await GenerateEmailConfirmationLinkAsync(user);
             _logger.LogInformation($"Sending confirmation email to {email}");
 
-            await _emailService.SendEmailAsync(user.Email, "Confirm Your Account",
-                $"Click <a href='{confirmationUrl}'>here</a> to confirm your account.");
+            await SendConfirmationEmailAsync(user.Email, confirmationUrl);
 
             return new RegisterResultDto
             {
                 Success = true,
                 Message = "Registration successful. Please check your email to confirm your account."
             };
+        }
+
+        private async Task SendConfirmationEmailAsync(string email, string confirmationUrl)
+        {
+            var placeholders = new Dictionary<string, string>
+        {
+            { "CONFIRMATION_LINK", confirmationUrl }
+        };
+
+            string emailBody = await _emailTemplateService.GetEmailTemplateAsync("ConfirmEmail", placeholders);
+
+            await _emailService.SendEmailAsync(email, "Confirm Your Account", emailBody);
         }
 
         public async Task<ApplicationUser?> RegisterInvitedUserAsync(string email)
@@ -100,15 +114,6 @@ namespace Backend.Repository.Services
             var confirmationUrl = await GenerateAccountSetupLinkAsync(newUser);
 
             _logger.LogInformation($"Sending account setup email to {email}");
-
-            // Send email asking user to confirm account & set password
-            await _emailService.SendEmailAsync(
-                newUser.Email,
-                "You're Invited! Set Up Your Tournament Account",
-                $"Hi,<br><br>You have been invited to join a tournament. " +
-                $"To confirm your account and set your password, please click <a href='{confirmationUrl}'>here</a>.<br><br>" +
-                $"Once completed, you can log in and participate!"
-            );
 
             return newUser;
         }
@@ -159,8 +164,7 @@ namespace Backend.Repository.Services
 
             _logger.LogInformation($"Sending new confirmation email to {email}");
 
-            await _emailService.SendEmailAsync(user.Email, "Confirm Your Account",
-                $"Click <a href='{confirmationUrl}'>here</a> to confirm your account.");
+            await SendConfirmationEmailAsync(user.Email, confirmationUrl);
 
             return new RegisterResultDto { Success = true, Message = "Confirmation email sent successfully." };
         }

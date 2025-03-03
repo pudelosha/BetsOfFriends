@@ -1,6 +1,6 @@
 ﻿namespace Backend.Repository.Interfaces
 {
-    public interface IGameService
+    public interface IMatchService
     {
     }
 }
