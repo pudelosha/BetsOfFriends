@@ -6,7 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BetService } from 'src/app/services/bet.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
-import { Bet } from 'src/app/model/bet';
+import { Bet, BetUpdateDto } from 'src/app/model/bet';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -28,11 +28,14 @@ export class MyBetsToPlacePage implements OnInit {
     private toastController: ToastController
   ) {}
 
-  async ngOnInit() {
-    console.log('loading bets page');
-    await this.loadBets();
+  ngOnInit() {
   }
 
+  ionViewWillEnter() {
+    console.log('Loading bets page...');
+    this.loadBets();
+  }
+  
   async loadBets() {
     this.isLoading = true;
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
@@ -56,16 +59,44 @@ export class MyBetsToPlacePage implements OnInit {
 
   async editBet(bet: Bet, event: Event) {
     event.stopPropagation();
-    console.log("Bet Clicked:", bet);
-
+    console.log("Opening Edit Bet Modal:", bet);
+  
     const modal = await this.modalCtrl.create({
       component: EditBetModalComponent,
-      componentProps: { bet }
+      componentProps: { bet },
+      breakpoints: [0, 0.5, 0.75, 1], // Modal sizes
+      initialBreakpoint: 0.75, // Default to 75% height
     });
-
-    return await modal.present();
-  }
-
+  
+    await modal.present();
+  
+    const { data } = await modal.onWillDismiss();
+    if (data) {
+      console.log("Updated Bet Data:", data);
+  
+      // Construct `BetUpdateDto` for backend
+      const betUpdate: BetUpdateDto = {
+        baseAmount: 1, // Always 1
+        bonusAmount: null, // Always null for now
+        homeGoals: data.homeGoals,
+        awayGoals: data.awayGoals,
+        qualifiedTeam: data.qualifies
+      };
+  
+      try {
+        await firstValueFrom(this.betService.updateBet(bet.betId, betUpdate));
+  
+        // Remove the bet from the list since it's now "Placed"
+        this.bets = this.bets.filter(b => b.betId !== bet.betId);
+  
+        this.showToast("Bet placed successfully!", "success");
+      } catch (error) {
+        console.error("Error placing bet:", error);
+        this.showToast("Failed to place bet. Please try again.", "danger");
+      }
+    }
+  }   
+  
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastController.create({
       message,

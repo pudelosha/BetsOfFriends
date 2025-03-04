@@ -13,18 +13,24 @@ export interface Bet {
   actualHomeGoals?: number | null;
   actualAwayGoals?: number | null;
 
-  odds: {
-    home: number;
-    draw: number;
-    away: number;
-  };
-  qualifyOdds?: {
-    home: number;
-    away: number;
-  };
+  homeOdds: number;
+  drawOdds: number;
+  awayOdds: number;
+
+  qualifyHomeOdds?: number | null;
+  qualifyAwayOdds?: number | null;
 
   qualifiedTeam?: 'Home' | 'Away' | null;
 
   status: 'ToPlace' | 'Placed' | 'Finalised';
   result: 'Pending' | 'Won' | 'Lost';
 }
+
+export interface BetUpdateDto {
+  baseAmount: number;
+  bonusAmount?: number | null;
+  homeGoals?: number | null;
+  awayGoals?: number | null;
+  qualifiedTeam?: 'Home' | 'Away' | null;
+}
+

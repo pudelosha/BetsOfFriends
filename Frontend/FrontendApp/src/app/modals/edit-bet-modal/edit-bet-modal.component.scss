@@ -1,20 +1,23 @@
-/* Team Names */
-.team-names {
-  font-size: 18px;
+/* ============================ */
+/* ✅ General Styles */
+/* ============================ */
+ion-content {
+  --padding-top: 0 !important;
+  --padding-bottom: 0 !important;
+  padding: 0 !important;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 14px;
   font-weight: bold;
-  text-align: center;
-}
-
-.left-align {
-  text-align: left;
-}
-
-.right-align {
-  text-align: right;
-}
-
-.separator {
-  width: 20px;
+  text-align: center; /* ✅ Ensures center alignment */
+  margin: 10px 0;
+  color: #555;
+  display: flex; /* ✅ Flexbox ensures proper centering */
+  justify-content: center; /* ✅ Horizontally centers text */
+  align-items: center; /* ✅ Vertically centers text */
+  width: 100%; /* ✅ Ensures full width for consistency */
 }
 
 /* Divider Line */
@@ -24,46 +27,80 @@
   margin: 10px 0;
 }
 
-/* Section Titles */
-.section-title {
-  font-size: 14px;
+/* ============================ */
+/* ✅ Match Info Styles */
+/* ============================ */
+.team-names {
+  font-size: 18px;
   font-weight: bold;
-  display: block;
   text-align: center;
-  margin: 10px 0;
-  color: #555;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
 }
 
-/* Labels for Odds */
+.left-align {
+  text-align: left;
+  flex: 1;
+}
+
+.right-align {
+  text-align: right;
+  flex: 1;
+}
+
+.separator {
+  width: 20px;
+  text-align: center;
+  flex: none;
+}
+
+/* ============================ */
+/* ✅ Odds Styling */
+/* ============================ */
 .odds-labels {
   font-size: 12px;
   font-weight: bold;
-  text-align: center;
   color: #666;
+  text-align: center;
 }
 
-/* Odds Values */
 .odds-row {
   font-size: 14px;
   font-weight: bold;
   text-align: center;
 }
 
-/* Center content horizontally */
+/* Adjust Select Dropdowns */
+ion-select {
+  width: 100%;
+  --text-align: center;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+}
+
+/* ✅ Force Text & Options to Center Inside Select */
+::ng-deep ion-select::part(text),
+::ng-deep ion-select::part(label) {
+  text-align: center;
+  justify-content: center;
+  display: flex;
+}
+
+/* ============================ */
+/* ✅ Score Prediction Styling */
+/* ============================ */
 .center-grid {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-/* Align score prediction elements */
 .prediction-row {
   text-align: center;
   font-size: 16px;
-}
-
-/* Center alignment */
-.center-align {
-  text-align: center;
 }
 
 /* Wheel Picker Styles */
@@ -103,15 +140,9 @@
   border-top: 2px solid #000;
 }
 
-/* Remove padding from ion-item and inner elements */
-.no-padding {
-  --inner-padding-end: 0px !important;
-  --inner-padding-start: 0px !important;
-  --padding-end: 0px !important;
-  --padding-start: 0px !important;
-}
-
-/* Full-width segment */
+/* ============================ */
+/* ✅ Qualification Selection */
+/* ============================ */
 .full-width {
   width: 100%;
   padding: 0;
@@ -120,28 +151,24 @@
 
 ion-segment {
   width: 100%;
-  margin-bottom: 10px; /* Space before Save button */
-  margin-top: 10px; /* Space above Save button */
-}
-
-ion-button {
-  margin-top: 20px !important; /* Ensure space above footer */
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 ion-segment-button {
-  font-size: 10px !important;  /* Ensures smaller text */
-  --color: #333 !important;    /* Keeps text readable */
+  font-size: 10px !important;
+  --color: #333 !important;
   --font-size: 10px !important;
-  height: auto;                /* Allows flexible height */
-  min-height: 36px;            /* Ensures buttons are not too small */
-  padding: 4px 6px;            /* Adjusts spacing */
-  text-align: center;          /* Centers text */
-  white-space: normal !important; /* Allows text wrapping */
-  word-wrap: break-word !important; /* Breaks long words properly */
-  display: flex;               /* Ensures correct flex behavior */
-  align-items: center;         /* Centers text vertically */
-  justify-content: center;     /* Centers text horizontally */
-  text-overflow: ellipsis;     /* Adds "..." if necessary */
+  height: auto;
+  min-height: 36px;
+  padding: 4px 6px;
+  text-align: center;
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-overflow: ellipsis;
 }
 
 /* Set segment proportions */
@@ -155,4 +182,73 @@ ion-segment-button {
 
 .segment-away {
   flex: 5;
+}
+
+/* ============================ */
+/* ✅ Save Button Styling */
+/* ============================ */
+.save-button-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* ============================ */
+/* ✅ Miscellaneous Styling */
+/* ============================ */
+.no-padding {
+  --inner-padding-end: 0px !important;
+  --inner-padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --padding-start: 0px !important;
+}
+
+.match-label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #666;
+  text-align: center;
+  flex: 1;
+}
+
+.match-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 8px 0;
+  gap: 10px;
+}
+
+.half-width {
+  width: 48%;
+}
+
+.third-width {
+  width: 32%;
+}
+
+.center-select {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+}
+
+.selector-label {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: left;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: none;
+  margin: 0;
+}
+
+.vertical-align {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: 5px;
 }

@@ -9,7 +9,7 @@ namespace Backend.DTOs
         public decimal? BonusAmount { get; set; }
         public int? HomeGoals { get; set; }
         public int? AwayGoals { get; set; }
-        public Bet.Team? QualifiedTeam { get; set; }
+        public string? QualifiedTeam { get; set; }
     }
 
     public class BetDto

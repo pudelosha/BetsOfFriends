@@ -1,3 +1,12 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ bet.betId ? 'Edit Bet' : 'Place Bet' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content class="ion-padding">
   <!-- First Section: Team Names -->
   <ion-grid>
@@ -14,7 +23,6 @@
   <!-- 90-Min Match Odds -->
   <ion-label class="section-title">90-Min Match Odds</ion-label>
 
-  <!-- Odds Labels -->
   <ion-grid>
     <ion-row class="odds-labels">
       <ion-col>Home Win</ion-col>
@@ -23,12 +31,11 @@
     </ion-row>
   </ion-grid>
 
-  <!-- Actual Odds -->
   <ion-grid>
     <ion-row class="odds-row">
-      <ion-col>{{ bet.odds.home }}</ion-col>
-      <ion-col>{{ bet.odds.draw }}</ion-col>
-      <ion-col>{{ bet.odds.away }}</ion-col>
+      <ion-col>{{ bet.homeOdds }}</ion-col>
+      <ion-col>{{ bet.drawOdds }}</ion-col>
+      <ion-col>{{ bet.awayOdds }}</ion-col>      
     </ion-row>
   </ion-grid>
 
@@ -40,7 +47,6 @@
 
   <ion-grid class="center-grid">
     <ion-row class="prediction-row">
-      <!-- Home Goals Picker -->
       <ion-col class="center-align">
         <div class="wheel-container" #homePicker (scroll)="onScroll($event, 'home')">
           <div *ngFor="let num of goalOptions" class="number-item" [class.selected]="num === homeGoals">
@@ -49,10 +55,8 @@
         </div>
       </ion-col>
 
-      <!-- Separator -->
       <ion-col class="center-align">-</ion-col>
 
-      <!-- Away Goals Picker -->
       <ion-col class="center-align">
         <div class="wheel-container" #awayPicker (scroll)="onScroll($event, 'away')">
           <div *ngFor="let num of goalOptions" class="number-item" [class.selected]="num === awayGoals">
@@ -78,8 +82,8 @@
 
   <ion-grid>
     <ion-row class="odds-row">
-      <ion-col>{{ bet.qualifyOdds?.home ?? '-' }}</ion-col>
-      <ion-col>{{ bet.qualifyOdds?.away ?? '-' }}</ion-col>
+      <ion-col>{{ bet.qualifyHomeOdds ?? '-' }}</ion-col>
+      <ion-col>{{ bet.qualifyAwayOdds ?? '-' }}</ion-col>
     </ion-row>
   </ion-grid>
 
@@ -90,7 +94,7 @@
   <ion-label class="section-title">Select the Qualifying Team</ion-label>
 
   <ion-item class="full-width no-padding">
-    <ion-segment [(ngModel)]="qualifySelection" value="neutral" class="full-width">
+    <ion-segment [(ngModel)]="qualifySelection" class="full-width">
       <ion-segment-button value="home" class="segment-home">{{ bet.teamHome }}</ion-segment-button>
       <ion-segment-button value="neutral" class="segment-neutral">-</ion-segment-button>
       <ion-segment-button value="away" class="segment-away">{{ bet.teamAway }}</ion-segment-button>
@@ -99,5 +103,5 @@
 
   <!-- Save Button -->
   <ion-button expand="full" (click)="saveBet()">Save</ion-button>
-
+  
 </ion-content>

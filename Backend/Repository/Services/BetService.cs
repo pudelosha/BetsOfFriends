@@ -103,9 +103,19 @@ namespace Backend.Repository.Services
                 bet.BonusAmount = betUpdateDto.BonusAmount;
                 bet.HomeGoals = betUpdateDto.HomeGoals;
                 bet.AwayGoals = betUpdateDto.AwayGoals;
-                bet.QualifiedTeam = betUpdateDto.QualifiedTeam;
-                bet.Submitted = true;
+                bet.Submitted = true; //TODO not required?
                 bet.Status = Bet.BetStatus.Placed; // Status update after submission
+
+                // Convert string to enum if provided
+                if (!string.IsNullOrEmpty(betUpdateDto.QualifiedTeam) &&
+                    Enum.TryParse<Bet.Team>(betUpdateDto.QualifiedTeam, true, out var qualifiedTeamEnum))
+                {
+                    bet.QualifiedTeam = qualifiedTeamEnum;
+                }
+                else
+                {
+                    bet.QualifiedTeam = null;
+                }
 
                 await _context.SaveChangesAsync();
 

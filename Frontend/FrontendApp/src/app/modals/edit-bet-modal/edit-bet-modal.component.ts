@@ -1,9 +1,10 @@
 import { Component, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { Bet } from '../../model/bet';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-edit-bet-modal',
@@ -14,6 +15,7 @@ import { IonicModule } from '@ionic/angular';
 })
 export class EditBetModalComponent implements AfterViewInit {
   @Input() bet!: Bet;
+
   homeGoals: number = 0;
   awayGoals: number = 0;
   qualifySelection: string = 'neutral';
@@ -22,7 +24,17 @@ export class EditBetModalComponent implements AfterViewInit {
   @ViewChild('homePicker') homePicker!: ElementRef;
   @ViewChild('awayPicker') awayPicker!: ElementRef;
 
-  constructor(private modalCtrl: ModalController) {}
+  constructor(private modalCtrl: ModalController, private toastController: ToastController) {}
+
+  ngOnInit() {
+    if (this.bet) {
+      this.homeGoals = this.bet.playerHomeGoals ?? 0;
+      this.awayGoals = this.bet.playerAwayGoals ?? 0;
+      this.qualifySelection = this.bet.qualifiedTeam === 'Home' ? 'home' 
+                         : this.bet.qualifiedTeam === 'Away' ? 'away' 
+                         : 'neutral';
+    }
+  }
 
   ngAfterViewInit() {
     this.scrollToSelected(this.homePicker.nativeElement, this.homeGoals);
@@ -49,20 +61,45 @@ export class EditBetModalComponent implements AfterViewInit {
   }
 
   saveBet() {
+    // Check if qualification odds are provided
+    const qualificationRequired = this.bet.qualifyHomeOdds !== null && this.bet.qualifyAwayOdds !== null;
+  
+    // Validate selection if qualification odds are available
+    if (qualificationRequired && this.qualifySelection === 'neutral') {
+      this.showToast('Please select the team that qualifies.', 'warning');
+      return; // Prevent saving if no team is selected
+    }
+  
+    // Determine the qualified team (if applicable)
+    const qualifiedTeam =
+      this.qualifySelection === 'home' ? 'Home' :
+      this.qualifySelection === 'away' ? 'Away' :
+      null;
+  
     console.log("Bet Saved:", {
-      matchId: this.bet.matchId,
+      match: this.bet.matchId,
       predictedScore: `${this.homeGoals}-${this.awayGoals}`,
-      qualifies: this.qualifySelection
+      qualifies: qualifiedTeam
     });
-
+  
     this.modalCtrl.dismiss({
       homeGoals: this.homeGoals,
       awayGoals: this.awayGoals,
-      qualifies: this.qualifySelection
+      qualifies: qualifiedTeam
     });
   }
-
+  
   closeModal() {
     this.modalCtrl.dismiss();
+  }
+
+  async showToast(message: string, color: 'success' | 'warning' | 'danger') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color,
+    });
+    await toast.present();
   }
 }
