@@ -2,9 +2,9 @@
   <!-- First Section: Team Names -->
   <ion-grid>
     <ion-row class="team-names">
-      <ion-col class="left-align"><strong>{{ bet.match.teamHome }}</strong></ion-col>
+      <ion-col class="left-align"><strong>{{ bet.teamHome }}</strong></ion-col>
       <ion-col class="separator"></ion-col>
-      <ion-col class="right-align"><strong>{{ bet.match.teamAway }}</strong></ion-col>
+      <ion-col class="right-align"><strong>{{ bet.teamAway }}</strong></ion-col>
     </ion-row>
   </ion-grid>
 
@@ -71,8 +71,8 @@
 
   <ion-grid>
     <ion-row class="odds-labels">
-      <ion-col>{{ bet.match.teamHome }}</ion-col>
-      <ion-col>{{ bet.match.teamAway }}</ion-col>
+      <ion-col>{{ bet.teamHome }}</ion-col>
+      <ion-col>{{ bet.teamAway }}</ion-col>
     </ion-row>
   </ion-grid>
 
@@ -91,13 +91,13 @@
 
   <ion-item class="full-width no-padding">
     <ion-segment [(ngModel)]="qualifySelection" value="neutral" class="full-width">
-      <ion-segment-button value="home" class="segment-home">{{ bet.match.teamHome }}</ion-segment-button>
+      <ion-segment-button value="home" class="segment-home">{{ bet.teamHome }}</ion-segment-button>
       <ion-segment-button value="neutral" class="segment-neutral">-</ion-segment-button>
-      <ion-segment-button value="away" class="segment-away">{{ bet.match.teamAway }}</ion-segment-button>
+      <ion-segment-button value="away" class="segment-away">{{ bet.teamAway }}</ion-segment-button>
     </ion-segment>
   </ion-item>
 
   <!-- Save Button -->
   <ion-button expand="full" (click)="saveBet()">Save</ion-button>
-  
+
 </ion-content>

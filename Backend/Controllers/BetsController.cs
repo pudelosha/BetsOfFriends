@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Repository.Interfaces;
 using Backend.Services.Interfaces;
+using Backend.Model.Entities;
 
 namespace Backend.Controllers
 {
@@ -57,27 +58,32 @@ namespace Backend.Controllers
         {
             try
             {
+                _logger.LogInformation($"Fetching bets for tournament {tournamentId} with status {status}");
+
+                // Convert string to BetStatus enum
+                if (!Enum.TryParse<Bet.BetStatus>(status, true, out var betStatus))
+                {
+                    _logger.LogWarning($"Invalid bet status received: {status}");
+                    return BadRequest(new { Message = "Invalid bet status." });
+                }
+
+                // Get userId from claims
                 var userId = _userService.GetUserIdFromClaims(User);
-                if (userId == null)
+                if (string.IsNullOrEmpty(userId))
                 {
-                    return Unauthorized("User not found.");
+                    _logger.LogWarning("Unauthorized request to fetch bets.");
+                    return Unauthorized(new { Message = "User authentication failed." });
                 }
 
-                _logger.LogInformation($"Fetching bets for user {userId}, tournament {tournamentId}, status {status}");
-
-                var bets = await _betService.GetBetsByStatusAsync(tournamentId, userId, status);
-
-                if (bets == null || !bets.Any())
-                {
-                    return NotFound($"No bets found for tournament {tournamentId} with status {status}.");
-                }
+                // Call service method to get bets
+                var bets = await _betService.GetBetsByStatusAsync(tournamentId, userId, betStatus);
 
                 return Ok(bets);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error fetching bets for tournament {tournamentId} with status {status}");
-                return StatusCode(500, "An error occurred while retrieving bets.");
+                return StatusCode(500, new { Message = "An error occurred while fetching bets." });
             }
         }
 

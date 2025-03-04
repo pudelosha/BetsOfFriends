@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Bet } from '..//..//../model/bet';
+import { BetService } from 'src/app/services/bet.service';
+import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
+import { Bet } from 'src/app/model/bet';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-my-bets-finalised',
@@ -12,37 +15,38 @@ import { Bet } from '..//..//../model/bet';
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
 export class MyBetsFinalisedPage implements OnInit {
-  bets: Bet[] = [
-    { 
-      match: { teamHome: 'Manchester United', teamAway: 'Manchester City', startTime: '2025-02-12T20:00:00Z' }, 
-      playerHomeGoals: 2, playerAwayGoals: 2,  // Player's Prediction
-      actualHomeGoals: 2, actualAwayGoals: 2,  // Actual Game Result
-      odds: { home: 2.0, draw: 3.5, away: 1.8 } 
-    },
-    { 
-      match: { teamHome: 'Liverpool', teamAway: 'Everton', startTime: '2025-02-10T19:30:00Z' }, 
-      playerHomeGoals: 1, playerAwayGoals: 1, 
-      actualHomeGoals: 2, actualAwayGoals: 1, 
-      odds: { home: 2.5, draw: 3.8, away: 1.9 } 
-    },
-    { 
-      match: { teamHome: 'Chelsea', teamAway: 'Arsenal', startTime: '2025-02-14T21:00:00Z' }, 
-      playerHomeGoals: null, playerAwayGoals: null, // Not predicted
-      actualHomeGoals: 1, actualAwayGoals: 0, 
-      odds: { home: 1.5, draw: 3.2, away: 2.0 } 
-    }
-  ];
+  bets: Bet[] = [];
+  isLoading = true;
 
-  constructor() {}
+  constructor(
+    private betService: BetService,
+    private tournamentSelectionService: TournamentSelectionService,
+    private toastController: ToastController
+  ) {}
 
-  ngOnInit() {}
-
-  ionViewWillEnter(): void {
-    this.scrollToTop();
+  async ngOnInit() {
+    await this.loadBets();
   }
 
-  private scrollToTop(): void {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  async loadBets() {
+    this.isLoading = true;
+    const tournamentId = this.tournamentSelectionService.getSelectedTournament();
+
+    if (!tournamentId) {
+      this.showToast('No tournament selected!', 'warning');
+      this.isLoading = false;
+      return;
+    }
+
+    try {
+      this.bets = await firstValueFrom(this.betService.getBetsByStatus(tournamentId, 'Finalised'));
+      console.log('Loaded Finalised Bets:', this.bets);
+    } catch (error) {
+      console.error('Error fetching finalised bets:', error);
+      this.showToast('Failed to load finalised bets.', 'danger');
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   getBetStatus(bet: Bet): string {
@@ -76,7 +80,7 @@ export class MyBetsFinalisedPage implements OnInit {
       playerBetWinner = 'draw';
     }
   
-    // Determine Actual Match Outcome (With Validity Check)
+    // Determine Actual Match Outcome
     if (bet.actualHomeGoals !== null && bet.actualAwayGoals !== null) {
       if (bet.actualHomeGoals > bet.actualAwayGoals) {
         actualMatchWinner = 'home';
@@ -90,5 +94,15 @@ export class MyBetsFinalisedPage implements OnInit {
     }
   
     return playerBetWinner === actualMatchWinner ? 'Won' : 'Lost';
+  }
+
+  async showToast(message: string, color: 'success' | 'warning' | 'danger') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color,
+    });
+    await toast.present();
   }
 }

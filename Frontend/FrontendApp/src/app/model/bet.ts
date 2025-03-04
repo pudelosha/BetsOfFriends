@@ -1,13 +1,18 @@
 export interface Bet {
-  match: {
-    teamHome: string;
-    teamAway: string;
-    startTime: string;
-  };
+  betId: number;
+  matchId: number;
+  teamHome: string;
+  teamAway: string;
+  startTime: string;
+
+  baseAmount: number;
+  bonusAmount?: number | null;
+
   playerHomeGoals?: number | null;
   playerAwayGoals?: number | null;
   actualHomeGoals?: number | null;
   actualAwayGoals?: number | null;
+
   odds: {
     home: number;
     draw: number;
@@ -17,4 +22,9 @@ export interface Bet {
     home: number;
     away: number;
   };
+
+  qualifiedTeam?: 'Home' | 'Away' | null;
+
+  status: 'ToPlace' | 'Placed' | 'Finalised';
+  result: 'Pending' | 'Won' | 'Lost';
 }

@@ -119,7 +119,7 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task<List<BetDto>> GetBetsByStatusAsync(int tournamentId, string userId, string status)
+        public async Task<List<BetDto>> GetBetsByStatusAsync(int tournamentId, string userId, Bet.BetStatus status)
         {
             try
             {
@@ -127,7 +127,10 @@ namespace Backend.Repository.Services
 
                 var bets = await _context.Bets
                     .Include(b => b.Match)
-                    .Where(b => b.Match.TournamentId == tournamentId && b.UserId == userId)
+                        .ThenInclude(m => m.HomeTeam)
+                    .Include(b => b.Match)
+                        .ThenInclude(m => m.AwayTeam)
+                    .Where(b => b.Match.TournamentId == tournamentId && b.UserId == userId && b.Status == status)
                     .ToListAsync();
 
                 if (!bets.Any())
@@ -140,15 +143,28 @@ namespace Backend.Repository.Services
                 {
                     BetId = b.BetId,
                     MatchId = b.MatchId,
+                    TeamHome = b.Match.HomeTeam.Name,
+                    TeamAway = b.Match.AwayTeam.Name,
+                    StartTime = b.Match.MatchStart,
+
                     BaseAmount = b.BaseAmount,
                     BonusAmount = b.BonusAmount,
-                    HomeGoals = b.HomeGoals,
-                    AwayGoals = b.AwayGoals,
-                    QualifiedTeam = b.QualifiedTeam,
-                    Submitted = b.Submitted,
-                    Payout = b.Payout,
-                    Result = b.Result.ToString(),
-                    Status = b.Status.ToString() // Include status in DTO
+
+                    PlayerHomeGoals = b.HomeGoals,
+                    PlayerAwayGoals = b.AwayGoals,
+                    ActualHomeGoals = b.Match.HomeScore,
+                    ActualAwayGoals = b.Match.AwayScore,
+
+                    HomeOdds = b.Match.HomeWinOdds,
+                    DrawOdds = b.Match.DrawOdds,
+                    AwayOdds = b.Match.AwayWinOdds,
+
+                    QualifyHomeOdds = b.Match.HomeWinOdds,
+                    QualifyAwayOdds = b.Match.AwayWinOdds,
+
+                    QualifiedTeam = b.QualifiedTeam?.ToString(),
+                    Status = b.Status.ToString(),
+                    Result = b.Result.ToString()
                 }).ToList();
 
                 return betDtos;

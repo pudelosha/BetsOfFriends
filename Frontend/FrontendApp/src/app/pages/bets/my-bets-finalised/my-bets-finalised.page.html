@@ -1,11 +1,11 @@
 <ion-content class="ion-padding">
-  <ion-list class="bet-list">
+  <ion-list class="bet-list" *ngIf="!isLoading">
     <ion-item *ngFor="let bet of bets" class="bet-item">
       <div class="bet-grid">
         <!-- Teams Column -->
         <div class="bet-details">
-          <span class="team">{{ bet.match.teamHome }}</span>
-          <span class="team">{{ bet.match.teamAway }}</span>
+          <span class="team">{{ bet.teamHome }}</span>
+          <span class="team">{{ bet.teamAway }}</span>
         </div>
 
         <!-- Player Bet Column -->
@@ -27,4 +27,6 @@
       </div>
     </ion-item>
   </ion-list>
+
+  <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
 </ion-content>

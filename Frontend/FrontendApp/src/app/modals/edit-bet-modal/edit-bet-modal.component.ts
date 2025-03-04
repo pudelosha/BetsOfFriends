@@ -1,7 +1,7 @@
 import { Component, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Bet } from '../../model/bet';
-import { ReactiveFormsModule, FormsModule  } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
@@ -50,7 +50,7 @@ export class EditBetModalComponent implements AfterViewInit {
 
   saveBet() {
     console.log("Bet Saved:", {
-      match: this.bet.match,
+      matchId: this.bet.matchId,
       predictedScore: `${this.homeGoals}-${this.awayGoals}`,
       qualifies: this.qualifySelection
     });
