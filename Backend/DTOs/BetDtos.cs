@@ -5,17 +5,10 @@ namespace Backend.DTOs
 {
     public class BetUpdateDto
     {
-        [Required]
         public decimal BaseAmount { get; set; }
-
         public decimal? BonusAmount { get; set; }
-
-        [Range(0, 20, ErrorMessage = "Goals must be between 0 and 20.")]
         public int? HomeGoals { get; set; }
-
-        [Range(0, 20, ErrorMessage = "Goals must be between 0 and 20.")]
         public int? AwayGoals { get; set; }
-
         public Bet.Team? QualifiedTeam { get; set; }
     }
 
@@ -30,6 +23,7 @@ namespace Backend.DTOs
         public Bet.Team? QualifiedTeam { get; set; }
         public bool Submitted { get; set; }
         public decimal? Payout { get; set; }
-        public string Result { get; set; } // Enum stored as a string (Won, Lost, Pending)
+        public string Result { get; set; }
+        public string Status { get; set; }
     }
 }

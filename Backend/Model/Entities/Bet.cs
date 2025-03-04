@@ -22,15 +22,24 @@ namespace Backend.Model.Entities
         public int? AwayGoals { get; set; }
         public Team? QualifiedTeam { get; set; }
 
+
+        public BetStatus Status { get; set; }
         public BetResult Result { get; set; }
         public bool Submitted { get; set; } = false;
         public decimal? Payout { get; set; }
 
+        public enum BetStatus
+        {
+            ToPlace,
+            Placed,
+            Finalised
+        }
+
         public enum BetResult
         {
+            Pending,
             Won,
-            Lost,
-            Pending
+            Lost        
         }
 
         public enum Team

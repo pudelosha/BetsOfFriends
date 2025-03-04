@@ -13,5 +13,6 @@ namespace Backend.Repository.Interfaces
         Task<List<UserActiveTournamentDto>> GetUserActiveTournamentsAsync(string userId);
         Task<bool> QuitTournamentAsync(int tournamentId, string userId);
         Task<bool> AcceptTournamentInvitationAsync(int tournamentId, string userId);
+        Task<bool?> ToggleTournamentVisibilityAsync(int tournamentId, string userId);
     }
 }

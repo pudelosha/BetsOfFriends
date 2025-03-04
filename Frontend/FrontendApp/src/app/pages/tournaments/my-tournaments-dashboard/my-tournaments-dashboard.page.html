@@ -25,12 +25,19 @@
             </ion-col>
 
             <!-- Eye Icon for Tournament Visibility (size 1) -->
-            <ion-col size="1" class="eye-icon-col">
-              <ion-button fill="clear" color="medium" (click)="toggleTournamentVisibility(tournament)">
-                <ion-icon name="eye-outline"></ion-icon>
-              </ion-button>
-            </ion-col>
+<!-- Eye Icon for Tournament Visibility (size 1) -->
+<ion-col size="1" class="eye-icon-col">
+  <ion-button 
+    fill="clear" 
+    (click)="toggleTournamentVisibility(tournament)">
+    <ion-icon 
+      name="eye-outline" 
+      [ngClass]="{'hidden': !tournament.isVisible}">
+    </ion-icon>
+  </ion-button>
+</ion-col>
 
+                  
             <!-- Action Buttons (size 3) -->
             <ion-col size="3" class="button-col">
               <!-- Accept Button (for Invited status) -->

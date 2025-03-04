@@ -52,39 +52,44 @@
   
 /* Eye Icon Column */
 .eye-icon-col {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 !important;
-  }
-  
-  /* Ensure Button Inside Eye Column Is Properly Sized */
-  .eye-icon-col ion-button {
-    --padding-start: 8px;
-    --padding-end: 8px;
-    width: 100%;
-    height: 45px; /* ✅ Increase height for better clickability */
-    min-width: 40px; /* ✅ Ensures it does not shrink */
-  }
-  
-  /* Increase Icon Size */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 !important;
+}
+
+/* Make the Eye Icon Light Gray When Not Visible */
+.eye-icon-col .hidden {
+  color: lightgray !important;
+}
+
+/* Proper Button Size */
+.eye-icon-col ion-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  width: 100%;
+  height: 45px;
+  min-width: 40px;
+}
+
+/* Increase Icon Size */
+.eye-icon-col ion-icon {
+  font-size: 1.6rem;
+  color: #333;
+}
+
+/* Adjust for Smaller Screens */
+@media (max-width: 480px) {
   .eye-icon-col ion-icon {
-    font-size: 1.6rem; /* ✅ Larger size for better visibility */
-    color: #333; /* ✅ Ensures good contrast */
+    font-size: 1.8rem;
   }
-  
-  /* Adjust for Smaller Screens */
-  @media (max-width: 480px) {
-    .eye-icon-col ion-icon {
-      font-size: 1.8rem; /* ✅ Even larger on very small screens */
-    }
-  
-    .eye-icon-col ion-button {
-      height: 50px; /* ✅ Increase tap target */
-      min-width: 45px;
-    }
+
+  .eye-icon-col ion-button {
+    height: 50px;
+    min-width: 45px;
   }
-  
+}
+
   
   /* Action Buttons Column */
   .button-col {

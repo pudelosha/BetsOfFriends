@@ -297,10 +297,38 @@ namespace Backend.Controllers
             }
         }
 
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPatch("visibility/{tournamentId}")]
+        public async Task<IActionResult> ToggleTournamentVisibility(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("User ID not found in claims.");
+                    return Unauthorized("Invalid user credentials.");
+                }
 
+                _logger.LogInformation($"User {userId} is toggling visibility for tournament ID {tournamentId}");
 
+                var updatedVisibility = await _tournamentService.ToggleTournamentVisibilityAsync(tournamentId, userId);
 
+                if (updatedVisibility == null)
+                {
+                    _logger.LogWarning($"Tournament visibility toggle failed for ID {tournamentId}");
+                    return NotFound($"Tournament or assignment not found.");
+                }
 
+                _logger.LogInformation($"Tournament ID {tournamentId} visibility updated to {updatedVisibility}");
 
+                return Ok(updatedVisibility);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error toggling visibility for tournament ID {tournamentId}");
+                return StatusCode(500, "An error occurred while toggling tournament visibility.");
+            }
+        }
     }
 }

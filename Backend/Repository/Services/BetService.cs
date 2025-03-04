@@ -63,6 +63,7 @@ namespace Backend.Repository.Services
                             HomeGoals = null, // No score prediction yet
                             AwayGoals = null,
                             QualifiedTeam = null, // No qualification prediction yet
+                            Status = Bet.BetStatus.ToPlace, // New Status: Bet must be placed
                             Result = Bet.BetResult.Pending, // Bet starts as "Pending"
                             Submitted = false, // Bet is unsubmitted initially
                             Payout = null // No payout calculated yet
@@ -73,7 +74,6 @@ namespace Backend.Repository.Services
                 // Step 4: Bulk insert all bets for efficiency
                 await _context.Bets.AddRangeAsync(bets);
                 await _context.SaveChangesAsync();
-
                 await transaction.CommitAsync();
                 _logger.LogInformation($"Successfully created {bets.Count} bets for tournament ID: {tournamentId}");
             }
@@ -105,6 +105,7 @@ namespace Backend.Repository.Services
                 bet.AwayGoals = betUpdateDto.AwayGoals;
                 bet.QualifiedTeam = betUpdateDto.QualifiedTeam;
                 bet.Submitted = true;
+                bet.Status = Bet.BetStatus.Placed; // Status update after submission
 
                 await _context.SaveChangesAsync();
 
@@ -146,7 +147,8 @@ namespace Backend.Repository.Services
                     QualifiedTeam = b.QualifiedTeam,
                     Submitted = b.Submitted,
                     Payout = b.Payout,
-                    Result = b.Result.ToString()
+                    Result = b.Result.ToString(),
+                    Status = b.Status.ToString() // Include status in DTO
                 }).ToList();
 
                 return betDtos;
@@ -192,6 +194,8 @@ namespace Backend.Repository.Services
                             bet.Payout = 0;
                             bet.Result = Bet.BetResult.Lost;
                         }
+
+                        bet.Status = Bet.BetStatus.Finalised; // Mark as finalised
                     }
 
                     await _context.SaveChangesAsync();

@@ -68,7 +68,8 @@ namespace Backend.Repository.Services
                     TournamentId = tournament.TournamentId,
                     UserAdminName = creatorUser.Email,
                     Role = UserTournamentRole.Admin,
-                    Status = AssignmentStatus.Accepted
+                    Status = AssignmentStatus.Accepted,
+                    IsVisible = true
                 };
 
                 _context.CustomTournamentUserAssignments.Add(creatorAssignment);
@@ -132,7 +133,8 @@ namespace Backend.Repository.Services
                         TournamentId = tournament.TournamentId,
                         UserAdminName = userDto.UserAdminName,
                         Role = UserTournamentRole.Guest, // Default role
-                        Status = AssignmentStatus.Invited
+                        Status = AssignmentStatus.Invited,
+                        IsVisible = true
                     };
 
                     _context.CustomTournamentUserAssignments.Add(assignment);
@@ -478,6 +480,7 @@ namespace Backend.Repository.Services
                                     TournamentId = tournament.TournamentId,
                                     Role = assignment.Role,
                                     Status = AssignmentStatus.Invited,
+                                    IsVisible = true,
                                     UserAdminName = userDto.UserAdminName
                                 });
                             }
@@ -489,6 +492,7 @@ namespace Backend.Repository.Services
                                     TournamentId = tournament.TournamentId,
                                     Role = assignment.Role,
                                     Status = AssignmentStatus.Invited,
+                                    IsVisible = true,
                                     UserAdminName = userDto.UserAdminName
                                 });
                             }
@@ -526,6 +530,7 @@ namespace Backend.Repository.Services
                         TournamentId = tournament.TournamentId,
                         Role = UserTournamentRole.Guest,
                         Status = AssignmentStatus.Invited,
+                        IsVisible = true,
                         UserAdminName = newUserDto.UserAdminName
                     });
 
@@ -643,7 +648,8 @@ namespace Backend.Repository.Services
                         UserName = a.User.UserName,
                         NumberOfParticipants = a.Tournament.Participants.Count,
                         Role = a.Role.ToString(),
-                        AssignmentStatus = a.Status.ToString()
+                        AssignmentStatus = a.Status.ToString(),
+                        IsVisible = a.IsVisible
                     })
                     .ToListAsync();
 
@@ -727,6 +733,33 @@ namespace Backend.Repository.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error while accepting invitation for tournament ID {tournamentId}");
+                throw;
+            }
+        }
+
+        public async Task<bool?> ToggleTournamentVisibilityAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                var assignment = await _context.CustomTournamentUserAssignments
+                    .FirstOrDefaultAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (assignment == null)
+                {
+                    _logger.LogWarning($"Tournament assignment not found for tournament ID {tournamentId} and user ID {userId}");
+                    return null;
+                }
+
+                assignment.IsVisible = !assignment.IsVisible;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"User {userId} updated tournament {tournamentId} visibility to {assignment.IsVisible}");
+
+                return assignment.IsVisible;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error toggling tournament visibility for tournament ID {tournamentId}");
                 throw;
             }
         }

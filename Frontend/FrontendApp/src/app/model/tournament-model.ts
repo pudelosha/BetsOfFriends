@@ -53,5 +53,6 @@ export interface UserActiveTournament {
   numberOfParticipants: number;
   role: string;  // 'Admin' or 'Guest'
   assignmentStatus: string; // 'New', 'Invited', 'Accepted'
+  isVisible: boolean;
 }
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250303101504_Initial")]
+    [Migration("20250304090124_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -129,6 +129,9 @@ namespace Backend.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Result")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<bool>("Submitted")
@@ -293,6 +296,9 @@ namespace Backend.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AssignmentId"));
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Role")
                         .ValueGeneratedOnAdd()

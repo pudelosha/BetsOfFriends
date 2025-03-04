@@ -300,6 +300,7 @@ namespace Backend.Migrations
                     Role = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     UserAdminName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -375,6 +376,7 @@ namespace Backend.Migrations
                     HomeGoals = table.Column<int>(type: "int", nullable: true),
                     AwayGoals = table.Column<int>(type: "int", nullable: true),
                     QualifiedTeam = table.Column<int>(type: "int", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     Result = table.Column<int>(type: "int", nullable: false),
                     Submitted = table.Column<bool>(type: "bit", nullable: false),
                     Payout = table.Column<decimal>(type: "decimal(18,2)", nullable: true)

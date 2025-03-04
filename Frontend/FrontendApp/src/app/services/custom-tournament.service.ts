@@ -53,4 +53,8 @@ export class CustomTournamentService {
   acceptTournamentInvitation(tournamentId: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/accept-invitation/${tournamentId}`, {});
   } 
+
+  toggleTournamentVisibility(tournamentId: number): Observable<boolean> {
+    return this.http.patch<boolean>(`${this.apiUrl}/visibility/${tournamentId}`, {});
+  }
 }

@@ -128,6 +128,9 @@ namespace Backend.Migrations
                     b.Property<int>("Result")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Submitted")
                         .HasColumnType("bit");
 
@@ -290,6 +293,9 @@ namespace Backend.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AssignmentId"));
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Role")
                         .ValueGeneratedOnAdd()
