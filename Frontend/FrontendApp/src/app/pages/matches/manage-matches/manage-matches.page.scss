@@ -1,0 +1,21 @@
+.sticky-menu {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 0px 0;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+
+  .page-container{
+    padding-bottom: 10px;
+  }
+
+  .menu-space {
+    padding-top: 50px;
+  }

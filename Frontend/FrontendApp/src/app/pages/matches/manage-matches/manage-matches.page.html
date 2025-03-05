@@ -1,0 +1,33 @@
+<ion-content class="ion-padding page-with-header">
+    <div class="page-container">
+      <div class="sticky-menu">
+        <ion-segment [(ngModel)]="selectedTab" class="full-width">
+          <ion-segment-button value="upcoming" (click)="changeTab('upcoming')">
+            Upcoming
+          </ion-segment-button>
+          <ion-segment-button value="started" (click)="changeTab('started')">
+            Started
+          </ion-segment-button>
+          <ion-segment-button value="finalised" (click)="changeTab('finalised')">
+            Finalised
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+  
+      <div class="menu-space">
+        <ng-container *ngIf="selectedTab === 'upcoming'">
+          <app-manage-upcoming></app-manage-upcoming>
+        </ng-container>
+        
+        <ng-container *ngIf="selectedTab === 'started'">
+          <app-manage-started></app-manage-started>
+        </ng-container>
+        
+        <ng-container *ngIf="selectedTab === 'finalised'">
+          <app-manage-finalised></app-manage-finalised>
+        </ng-container>
+      </div>
+  
+    </div>
+  </ion-content>
+  

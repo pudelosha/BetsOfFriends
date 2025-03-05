@@ -122,7 +122,7 @@ export class AppComponent {
 
   navigateToCustomTournamentsMatches() {
     console.log('Navigating to custom-tournament-matches...');
-    this.router.navigate(['/tournaments/matches']);
+    this.router.navigate(['/matches']);
   }
 
   navigateToHome() {
