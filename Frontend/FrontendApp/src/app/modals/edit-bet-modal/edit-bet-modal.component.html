@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header *ngIf="bet">
   <ion-toolbar>
     <ion-title>{{ bet.betId ? 'Edit Bet' : 'Place Bet' }}</ion-title>
     <ion-buttons slot="end">
@@ -48,21 +48,19 @@
   <ion-grid class="center-grid">
     <ion-row class="prediction-row">
       <ion-col class="center-align">
-        <div class="wheel-container" #homePicker (scroll)="onScroll($event, 'home')">
-          <div *ngFor="let num of goalOptions" class="number-item" [class.selected]="num === homeGoals">
-            {{ num }}
-          </div>
-        </div>
+        <app-wheeler-number-picker 
+          [selectedNumber]="homeGoals" 
+          (numberChanged)="homeGoals = $event">
+        </app-wheeler-number-picker>
       </ion-col>
 
-      <ion-col class="center-align">-</ion-col>
+      <ion-col class="center-align"> </ion-col>
 
       <ion-col class="center-align">
-        <div class="wheel-container" #awayPicker (scroll)="onScroll($event, 'away')">
-          <div *ngFor="let num of goalOptions" class="number-item" [class.selected]="num === awayGoals">
-            {{ num }}
-          </div>
-        </div>
+        <app-wheeler-number-picker 
+          [selectedNumber]="awayGoals" 
+          (numberChanged)="awayGoals = $event">
+        </app-wheeler-number-picker>
       </ion-col>
     </ion-row>
   </ion-grid>

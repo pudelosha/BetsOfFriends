@@ -62,53 +62,47 @@ export class MyBetsPlacedPage {
   async editBet(bet: Bet, event: Event) {
     event.stopPropagation();
     console.log("Opening Edit Bet Modal:", bet);
-
+  
+    if (!bet) {
+      console.error("Error: bet is undefined or null!");
+      return;
+    }
+  
     const modal = await this.modalCtrl.create({
       component: EditBetModalComponent,
-      componentProps: { bet },
-      breakpoints: [0, 0.5, 0.75, 1], // Modal sizes
-      initialBreakpoint: 1, // Default to 75% height
+      componentProps: { bet }, // Ensure `bet` is passed properly
+      breakpoints: [0, 0.5, 0.75, 1], 
+      initialBreakpoint: 1, 
     });
-
+  
     await modal.present();
-
+  
     const { data } = await modal.onWillDismiss();
     if (data) {
       console.log("Updated Bet Data:", data);
-
-      // Construct `BetUpdateDto` for backend
+  
       const betUpdate: BetUpdateDto = {
-        baseAmount: 1, // Always 1
-        bonusAmount: null, // Always null for now
+        baseAmount: 1,
+        bonusAmount: null,
         homeGoals: data.homeGoals,
         awayGoals: data.awayGoals,
         qualifiedTeam: data.qualifies
       };
-
+  
       try {
         await firstValueFrom(this.betService.updateBet(bet.betId, betUpdate));
-
-        // Update the bet inside the array instead of re-fetching everything
-        const index = this.bets.findIndex(b => b.betId === bet.betId);
-        if (index !== -1) {
-          // Update bet properties
-          this.bets[index] = { ...this.bets[index], ...betUpdate };
-          
-          // Create a new reference to trigger change detection
-          this.bets = [...this.bets];
-
-          // Manually detect changes
-          this.cdRef.detectChanges();
-        }
-
+  
+        // Instead of filtering manually, reload bets from API
+        await this.loadBets(); 
+  
         this.showToast("Bet updated successfully!", "success");
       } catch (error) {
         console.error("Error updating bet:", error);
         this.showToast("Failed to update bet. Please try again.", "danger");
       }
     }
-  }  
-
+  }
+   
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastController.create({
       message,

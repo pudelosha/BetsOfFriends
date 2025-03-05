@@ -1,0 +1,12 @@
+<div class="wheel-container">
+  <div #wheelContainer class="number-wheel">
+    <div 
+      class="number-item" 
+      *ngFor="let number of numberOptions; let i = index"
+      [class.selected]="i === selectedIndex"
+      (click)="selectNumber(i)"
+    >
+      {{ number }}
+    </div>
+  </div>
+</div>
