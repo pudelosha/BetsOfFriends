@@ -28,8 +28,13 @@ export class MyBetsPlacedPage {
     private cdRef: ChangeDetectorRef // Added ChangeDetectorRef
   ) {}
 
+  ngOnInit() {
+    console.log('ngOnInit called - Loading bets page...');
+    this.loadBets();
+  }
+  
   ionViewWillEnter() {
-    console.log('Loading placed bets page...');
+    console.log('ionViewWillEnter called - Loading bets page...');
     this.loadBets();
   }
 
@@ -62,7 +67,7 @@ export class MyBetsPlacedPage {
       component: EditBetModalComponent,
       componentProps: { bet },
       breakpoints: [0, 0.5, 0.75, 1], // Modal sizes
-      initialBreakpoint: 0.75, // Default to 75% height
+      initialBreakpoint: 1, // Default to 75% height
     });
 
     await modal.present();

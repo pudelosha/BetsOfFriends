@@ -1,32 +1,28 @@
-<ion-content class="ion-padding">
   <ion-list class="bet-list" *ngIf="!isLoading">
     <ion-item *ngFor="let bet of bets" class="bet-item">
       <div class="bet-grid">
-        <!-- Teams Column -->
+
         <div class="bet-details">
           <span class="team">{{ bet.teamHome }}</span>
           <span class="team">{{ bet.teamAway }}</span>
         </div>
 
-        <!-- Player Bet Column -->
         <div class="bet-player-prediction">
           <span>{{ bet.playerHomeGoals !== null ? bet.playerHomeGoals : '-' }}</span>
           <span>{{ bet.playerAwayGoals !== null ? bet.playerAwayGoals : '-' }}</span>
         </div>
 
-        <!-- Actual Game Result Column -->
         <div class="bet-actual-result">
           <span>{{ bet.actualHomeGoals !== null ? bet.actualHomeGoals : '-' }}</span>
           <span>{{ bet.actualAwayGoals !== null ? bet.actualAwayGoals : '-' }}</span>
         </div>
 
-        <!-- Bet Result Column -->
         <div class="bet-result">
           <span>{{ getBetStatus(bet) }}</span>
         </div>
+        
       </div>
     </ion-item>
   </ion-list>
 
   <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
-</ion-content>

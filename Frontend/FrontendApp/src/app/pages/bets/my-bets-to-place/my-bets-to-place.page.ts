@@ -14,7 +14,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './my-bets-to-place.page.html',
   styleUrls: ['./my-bets-to-place.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
 export class MyBetsToPlacePage implements OnInit {
   showFabButton: boolean = true; // Control FAB visibility
@@ -29,33 +29,38 @@ export class MyBetsToPlacePage implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.log('ngOnInit called - Loading bets page...');
+    this.loadBets();
   }
-
+  
   ionViewWillEnter() {
-    console.log('Loading bets page...');
+    console.log('ionViewWillEnter called - Loading bets page...');
     this.loadBets();
   }
   
   async loadBets() {
     this.isLoading = true;
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
-
+    console.log("Tournament ID for bets:", tournamentId);
+  
     if (!tournamentId) {
-      this.showToast('No tournament selected!', 'warning');
+      console.warn("No tournament selected.");
       this.isLoading = false;
       return;
     }
-
+  
     try {
       this.bets = await firstValueFrom(this.betService.getBetsByStatus(tournamentId, 'ToPlace'));
-      console.log('Loaded Bets:', this.bets);
+      console.log("Bets received:", this.bets);
+      if (this.bets.length === 0) {
+        console.warn("No bets available.");
+      }
     } catch (error) {
-      console.error('Error fetching bets:', error);
-      this.showToast('Failed to load bets.', 'danger');
+      console.error("API error:", error);
     } finally {
       this.isLoading = false;
     }
-  }
+  }  
 
   async editBet(bet: Bet, event: Event) {
     event.stopPropagation();
@@ -65,7 +70,7 @@ export class MyBetsToPlacePage implements OnInit {
       component: EditBetModalComponent,
       componentProps: { bet },
       breakpoints: [0, 0.5, 0.75, 1], // Modal sizes
-      initialBreakpoint: 0.75, // Default to 75% height
+      initialBreakpoint: 1, // Default to 75% height
     });
   
     await modal.present();

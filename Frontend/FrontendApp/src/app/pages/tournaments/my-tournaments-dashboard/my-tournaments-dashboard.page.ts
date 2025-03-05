@@ -41,7 +41,7 @@ export class MyTournamentsDashboardPage implements OnInit {
       next: (response) => {
         this.tournaments = response.map(t => ({
           ...t,
-          isVisible: !!t.isVisible // ✅ Ensure it's always a boolean
+          isVisible: !!t.isVisible // Ensure it's always a boolean
         }));
         console.log("Loaded tournaments:", this.tournaments); // 🔍 Debug log
       },
@@ -56,18 +56,17 @@ export class MyTournamentsDashboardPage implements OnInit {
     });
   }
    
-  
   selectTournament(tournament: any): void {
     this.tournamentSelectionService.setSelectedTournament(tournament.tournamentId);
     console.log(this.tournamentSelectionService.getSelectedTournament());
-    this.router.navigate(['/my-bets/to-place']);
+    this.router.navigate(['/my-bets']);
   }
 
   toggleTournamentVisibility(tournament: UserActiveTournament) {
     this.tournamentService.toggleTournamentVisibility(tournament.tournamentId).subscribe({
       next: (updatedVisibility: boolean) => {
-        tournament.isVisible = updatedVisibility; // ✅ Update the UI immediately
-        this.cdRef.detectChanges(); // ✅ Force UI refresh
+        tournament.isVisible = updatedVisibility; // Update the UI immediately
+        this.cdRef.detectChanges(); // Force UI refresh
         console.log(`Tournament ${tournament.tournamentName} visibility: ${tournament.isVisible}`); // 🔍 Debug log
         this.showToast(`Tournament visibility updated!`, 'success');
       },

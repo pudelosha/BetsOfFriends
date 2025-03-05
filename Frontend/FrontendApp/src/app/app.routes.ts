@@ -16,12 +16,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/bets/my-bets/my-bets.page').then(m => m.MyBetsPage),
     canActivate: [AuthGuard],
     data: { role: 'User' },
-    children: [
-      { path: 'to-place', loadComponent: () => import('./pages/bets/my-bets-to-place/my-bets-to-place.page').then(m => m.MyBetsToPlacePage), canActivate: [AuthGuard], data: { role: 'User' } },
-      { path: 'placed', loadComponent: () => import('./pages/bets/my-bets-placed/my-bets-placed.page').then(m => m.MyBetsPlacedPage), canActivate: [AuthGuard], data: { role: 'User' } },
-      { path: 'finalised', loadComponent: () => import('./pages/bets/my-bets-finalised/my-bets-finalised.page').then(m => m.MyBetsFinalisedPage), canActivate: [AuthGuard], data: { role: 'User' } },
-      { path: '', redirectTo: 'to-place', pathMatch: 'full' }
-    ]
   },
   { path: 'bets-overview', loadComponent: () => import('./pages/bets/bets-overview/bets-overview.page').then(m => m.BetsOverviewPage), canActivate: [AuthGuard], data: { role: 'User' } },
 

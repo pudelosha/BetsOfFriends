@@ -1,19 +1,32 @@
-<div class="page-container">
-  <ion-tabs>
-    <ion-router-outlet></ion-router-outlet>
-  
-    <ion-tab-bar slot="top" class="my-bets-tab-bar ">
-      <ion-tab-button tab="to-place">
-        <ion-label>To Place</ion-label>
-      </ion-tab-button>
-      <ion-tab-button tab="placed">
-        <ion-label>Placed</ion-label>
-      </ion-tab-button>
-      <ion-tab-button tab="finalised">
-        <ion-label>Finalised</ion-label>
-      </ion-tab-button>
-    </ion-tab-bar>
-  </ion-tabs>
-</div>
+<ion-content class="ion-padding page-with-header">
+  <div class="page-container">
+    <div class="sticky-menu">
+      <ion-segment [(ngModel)]="selectedTab" class="full-width">
+        <ion-segment-button value="to-place" (click)="changeTab('to-place')">
+          To Place
+        </ion-segment-button>
+        <ion-segment-button value="placed" (click)="changeTab('placed')">
+          Placed
+        </ion-segment-button>
+        <ion-segment-button value="finalised" (click)="changeTab('finalised')">
+          Finalised
+        </ion-segment-button>
+      </ion-segment>
+    </div>
 
+    <div class="menu-space">
+      <ng-container *ngIf="selectedTab === 'to-place'">
+        <app-my-bets-to-place></app-my-bets-to-place>
+      </ng-container>
+      
+      <ng-container *ngIf="selectedTab === 'placed'">
+        <app-my-bets-placed></app-my-bets-placed>
+      </ng-container>
+      
+      <ng-container *ngIf="selectedTab === 'finalised'">
+        <app-my-bets-finalised></app-my-bets-finalised>
+      </ng-container>
+    </div>
 
+  </div>
+</ion-content>
