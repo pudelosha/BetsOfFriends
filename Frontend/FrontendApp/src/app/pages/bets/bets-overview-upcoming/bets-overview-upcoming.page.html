@@ -1,13 +1,27 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>bets-overview-upcoming</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-list class="bet-list" *ngIf="!isLoading">
+  <ion-item *ngFor="let bet of bets" class="bet-item">
+    <div class="bet-grid">
+      
+      <!-- Team Names -->
+      <div class="bet-details">
+        <span class="team">{{ bet.teamHome }}</span>
+        <span class="team">{{ bet.teamAway }}</span>
+      </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">bets-overview-upcoming</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+      <!-- My Bet -->
+      <div class="my-bet">
+        <span>{{ bet.playerHomeGoals }} - {{ bet.playerAwayGoals }}</span>
+      </div>
+
+      <!-- Aggregated Bets -->
+      <div class="bet-stats">
+        <span>{{ bet.percentageHomeWin }}%</span>
+        <span>{{ bet.percentageDraw }}%</span>
+        <span>{{ bet.percentageAwayWin }}%</span>
+      </div>
+
+    </div>
+  </ion-item>
+</ion-list>
+
+<ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>

@@ -89,13 +89,6 @@ export const routes: Routes = [
   { path: 'confirm-email', loadComponent: () => import('./pages/user/confirm-email/confirm-email.page').then(m => m.ConfirmEmailPage), canActivate: [GuestGuard] },
 
   // Default and wildcard routes
-  { path: '**', redirectTo: 'welcome' },  {
-    path: 'bets-overview-upcoming',
-    loadComponent: () => import('./pages/bets/bets-overview-upcoming/bets-overview-upcoming.page').then( m => m.BetsOverviewUpcomingPage)
-  },
-  {
-    path: 'bets-overview-finalised',
-    loadComponent: () => import('./pages/bets/bets-overview-finalised/bets-overview-finalised.page').then( m => m.BetsOverviewFinalisedPage)
-  },
+  { path: '**', redirectTo: 'welcome' },
 
 ];

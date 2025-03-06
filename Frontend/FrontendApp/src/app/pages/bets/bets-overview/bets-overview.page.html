@@ -1,15 +1,29 @@
-
-<div class="page-container">
-<br><br><br><br><br>
-
-preview of placed bets compared with other players<br><br>
-zakładki mecze oczekujące (brak podglądu typów poza % podziałem), mecze zakonczone (format wygranego %, szczegołowe typy graczy dostepne z guzika)<br><br>
-
-<br> mecz
-<br> moj typ
-<br> % stawiających na 1
-<br> % stawiających na X
-<br> % stawiających na 2
-<br> guzik szczegoły > po rozwinięciu typy graczy o ile mecz się zaczął
-
-</div>
+<ion-content class="ion-padding page-with-header">
+    <div class="page-container">
+      
+      <!-- Tabs (Sticky) -->
+      <div class="sticky-menu">
+        <ion-segment [(ngModel)]="selectedTab" class="full-width">
+          <ion-segment-button value="upcoming" (click)="changeTab('upcoming')">
+            Upcoming
+          </ion-segment-button>
+          <ion-segment-button value="finalised" (click)="changeTab('finalised')">
+            Finalised
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+  
+      <!-- Dynamic Content -->
+      <div class="menu-space">
+        <ng-container *ngIf="selectedTab === 'upcoming'">
+          <app-bets-overview-upcoming></app-bets-overview-upcoming>
+        </ng-container>
+        
+        <ng-container *ngIf="selectedTab === 'finalised'">
+          <app-bets-overview-finalised></app-bets-overview-finalised>
+        </ng-container>
+      </div>
+  
+    </div>
+  </ion-content>
+  
