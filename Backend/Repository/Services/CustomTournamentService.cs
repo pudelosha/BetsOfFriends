@@ -4,6 +4,7 @@ using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static Backend.Model.Entities.CustomMatch;
 
 namespace Backend.Repository.Services
 {
@@ -102,7 +103,8 @@ namespace Backend.Repository.Services
                     DrawOdds = m.DrawOdds,
                     AwayWinOdds = m.AwayWinOdds,
                     HomeQualifies = m.HomeQualifies ?? 0,
-                    AwayQualifies = m.AwayQualifies ?? 0
+                    AwayQualifies = m.AwayQualifies ?? 0,
+                    Status = MatchStatus.Upcoming
                 }).ToList();
 
                 _context.CustomMatches.AddRange(matches);

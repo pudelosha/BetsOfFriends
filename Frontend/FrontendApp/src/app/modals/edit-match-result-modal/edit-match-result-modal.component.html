@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Edit Match Result</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- First Section: Team Names -->
+  <ion-grid>
+    <ion-row class="team-names">
+      <ion-col class="left-align"><strong>{{ match.homeTeam }}</strong></ion-col>
+      <ion-col class="separator"></ion-col>
+      <ion-col class="right-align"><strong>{{ match.awayTeam }}</strong></ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Divider Line -->
+  <div class="divider"></div>
+
+  <!-- Match Date & Time -->
+  <div class="section-title">Match Date & Time</div>
+  <div class="center-container">
+    <ion-datetime displayFormat="YYYY-MM-DD HH:mm" [(ngModel)]="matchStart" class="full-width"></ion-datetime>
+  </div>
+
+  <!-- Divider Line -->
+  <div class="divider"></div>
+
+  <!-- Final Score Prediction -->
+  <ion-label class="section-title">Final Score</ion-label>
+  <ion-grid class="center-grid">
+    <ion-row class="prediction-row">
+      <!-- Home Goals Picker -->
+      <ion-col class="center-align">
+        <app-wheeler-number-picker 
+          [selectedNumber]="homeScore" 
+          (numberChanged)="homeScore = $event">
+        </app-wheeler-number-picker>
+      </ion-col>
+
+      <!-- Separator -->
+      <ion-col class="center-align">-</ion-col>
+
+      <!-- Away Goals Picker -->
+      <ion-col class="center-align">
+        <app-wheeler-number-picker 
+          [selectedNumber]="awayScore" 
+          (numberChanged)="awayScore = $event">
+        </app-wheeler-number-picker>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Divider Line -->
+  <div class="divider"></div>
+
+  <!-- Who Qualifies? -->
+  <ion-label class="section-title">Select the Qualifying Team</ion-label>
+
+  <ion-item class="full-width no-padding">
+    <ion-segment [(ngModel)]="qualifySelection" class="full-width">
+      <ion-segment-button value="home" class="segment-home">{{ match.homeTeam }}</ion-segment-button>
+      <ion-segment-button value="neutral" class="segment-neutral">-</ion-segment-button>
+      <ion-segment-button value="away" class="segment-away">{{ match.awayTeam }}</ion-segment-button>
+    </ion-segment>
+  </ion-item>
+
+  <!-- Save Button -->
+  <ion-button expand="full" (click)="saveMatchResult()">Save</ion-button>
+</ion-content>

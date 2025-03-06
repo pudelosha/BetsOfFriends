@@ -192,6 +192,9 @@ namespace Backend.Migrations
                     b.Property<string>("Stage")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<int>("TournamentId")
                         .HasColumnType("int");
 

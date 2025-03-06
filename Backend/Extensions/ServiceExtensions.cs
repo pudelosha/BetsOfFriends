@@ -23,6 +23,8 @@ namespace Backend.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPredefinedTournamentService, PredefinedTournamentService>();
 
+            services.AddHostedService<MatchUpdateHostedService>();
+
             return services;
         }
     }

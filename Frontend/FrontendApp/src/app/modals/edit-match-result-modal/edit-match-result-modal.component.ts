@@ -1,0 +1,93 @@
+import { Component, Input, AfterViewInit } from '@angular/core';
+import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { WheelerNumberPickerComponent } from 'src/app/shared/wheeler-number-picker/wheeler-number-picker.component';
+import { Match } from 'src/app/model/match';
+
+@Component({
+  selector: 'app-edit-match-result-modal',
+  templateUrl: './edit-match-result-modal.component.html',
+  styleUrls: ['./edit-match-result-modal.component.scss'],
+  standalone: true,
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, WheelerNumberPickerComponent],
+})
+export class EditMatchResultModalComponent implements AfterViewInit {
+  private _match!: Match;
+
+  @Input() set match(value: Match) {
+    if (!value) {
+      console.error("Received undefined or null match!");
+      return;
+    }
+    this._match = value;
+    this.matchId = value.matchId;
+    this.homeScore = value.homeScore ?? 0;
+    this.awayScore = value.awayScore ?? 0;
+    this.matchStart = value.matchStart;
+    this.qualifySelection = value.qualifiedTeam === 'Home' ? 'home' 
+      : value.qualifiedTeam === 'Away' ? 'away' 
+      : 'neutral';
+  }
+  get match(): Match {
+    return this._match;
+  }
+
+  matchId!: number;
+  homeScore: number = 0;
+  awayScore: number = 0;
+  matchStart: string = '';
+  qualifySelection: string = 'neutral';
+
+  constructor(private modalCtrl: ModalController, private toastController: ToastController) {}
+
+  ngAfterViewInit() {}
+
+  saveMatchResult() {
+    if (!this._match) {
+      console.error("Error: Match is undefined!");
+      return;
+    }
+
+    // Qualification selection validation (only if qualification odds exist)
+    const qualificationRequired = true; //TODO temp solution
+    if (qualificationRequired && this.qualifySelection === 'neutral') {
+      this.showToast('Please select the team that qualifies.', 'warning');
+      return;
+    }
+
+    const qualifiedTeam =
+      this.qualifySelection === 'home' ? 'Home' :
+      this.qualifySelection === 'away' ? 'Away' :
+      null;  
+
+    console.log("Match Result Saved:", {
+      matchId: this.matchId,
+      newMatchStart: this.matchStart,
+      finalScore: `${this.homeScore}-${this.awayScore}`,
+      qualifies: qualifiedTeam
+    });
+
+    this.modalCtrl.dismiss({
+      matchId: this.matchId,
+      matchStart: this.matchStart,
+      homeScore: this.homeScore,
+      awayScore: this.awayScore,
+      qualifies: qualifiedTeam
+    });
+  }
+
+  closeModal() {
+    this.modalCtrl.dismiss();
+  }
+
+  private async showToast(message: string, color: 'success' | 'warning' | 'danger') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color,
+    });
+    await toast.present();
+  }
+}

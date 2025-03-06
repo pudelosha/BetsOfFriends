@@ -1,11 +1,27 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>manage-upcoming</ion-title>
-  </ion-toolbar>
-</ion-header>
+  <ion-list class="match-list" *ngIf="!isLoading">
+    <ion-item *ngFor="let match of matches" class="match-item">
+      <div class="match-grid">
 
-nadchodzące/nierozpoczete mecze<br>
-nazwy druzyn,<br>
-data i godzina rozpoczecia,<br>
-guzik edycja,<br>
-modal bez edycji kursów!<br>
+        <!-- Match Details -->
+        <div class="match-details">
+          <span class="team">{{ match.homeTeam }}</span>
+          <span class="team">{{ match.awayTeam }}</span>
+        </div>
+        
+        <!-- Match Date & Time -->
+        <div class="match-date">
+          <span class="date">{{ match.matchStart | date: 'yyyy.MM.dd' }}</span>
+          <span class="time">{{ match.matchStart | date: 'HH:mm' }}</span>
+        </div>
+
+        <!-- Edit Button -->
+        <div class="match-button-container">
+          <ion-button size="small" class="match-button" (click)="editMatchResult(match, $event)">Edit</ion-button>
+        </div>
+
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <!-- Loading Spinner -->
+  <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>

@@ -1,0 +1,105 @@
+/* Team Names */
+.team-names {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .left-align {
+    text-align: left;
+  }
+  
+  .right-align {
+    text-align: right;
+  }
+  
+  .separator {
+    width: 20px;
+  }
+  
+  /* Divider Line */
+  .divider {
+    height: 1px;
+    background: #ccc;
+    margin: 10px 0;
+  }
+  
+  /* Section Titles */
+  .section-title {
+    font-size: 14px;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+    margin: 10px 0;
+    color: #555;
+  }
+  
+  /* Score Prediction */
+  .center-grid {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .prediction-row {
+    text-align: center;
+    font-size: 16px;
+  }
+  
+  /* Full-width segment */
+  .full-width {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  ion-segment {
+    width: 100%;
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
+  
+  ion-segment-button {
+    font-size: 12px;
+    height: auto;
+    min-height: 36px;
+    padding: 4px 6px;
+    text-align: center;
+  }
+  
+  .segment-home {
+    flex: 5;
+  }
+  
+  .segment-neutral {
+    flex: 2;
+  }
+  
+  .segment-away {
+    flex: 5;
+  }
+
+  /* Center the Match Date & Time Picker */
+.center-container {
+  display: flex;
+  justify-content: center;  /* Centers horizontally */
+  align-items: center;      /* Centers vertically */
+  width: 100%;
+  margin: 10px 0;           /* Adds spacing */
+}
+
+/* Ensure the date picker takes full width */
+ion-datetime {
+  width: 80%;               /* Adjust width to make it more compact */
+  text-align: center;       /* Center text */
+}
+
+/* Align the Section Title Properly */
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px 0;
+  color: #555;
+}
+
+  

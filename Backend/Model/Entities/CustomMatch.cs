@@ -35,6 +35,15 @@ namespace Backend.Model.Entities
         public decimal? HomeQualifies { get; set; }
         public decimal? AwayQualifies { get; set; }
 
+        public MatchStatus Status { get; set; } = MatchStatus.Upcoming;
+
         public ICollection<Bet> Bets { get; set; } = new List<Bet>();
+
+        public enum MatchStatus
+        {
+            Upcoming,
+            InProgress,
+            Finalised
+        }
     }
 }

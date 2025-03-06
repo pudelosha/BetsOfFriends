@@ -1,0 +1,67 @@
+.match-list {
+    --padding-top: 0px !important;
+    --padding-bottom: 0px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  }
+  
+  /* Remove padding/margin from ion-item */
+  .match-item {
+    --inner-padding-end: 0px !important;
+    --inner-padding-start: 0px !important;
+    --padding-end: 0px !important;
+    --padding-start: 0px !important;
+    --ion-item-background: transparent;
+    
+    height: 60px; /* Fixed height for all match rows */
+    --min-height: 60px !important;
+    --max-height: 60px !important;
+    display: flex;
+    align-items: center; /* Centers content vertically */
+  }
+  
+  /* Grid layout for each match item */
+  .match-grid {
+    display: grid;
+    grid-template-columns: 9fr 2fr 1fr; /* 9:2:1 ratio */
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    padding-right: 0px; /* Remove extra right padding */
+  }
+  
+  /* Teams Column */
+  .match-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    font-size: 12px;
+    color: #333;
+  }
+  
+  /* Date & Time Column */
+  .match-date {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  /* Button Column (Forces Right Alignment) */
+  .match-button-container {
+    display: flex;
+    justify-content: flex-end; /* Pushes button to the right */
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* Style the Button (Remove Right Padding) */
+  .match-button {
+    font-size: 12px;
+    height: 30px;
+    padding-left: 8px;
+    padding-right: 0px !important;
+    min-width: 90px;
+  }
+  

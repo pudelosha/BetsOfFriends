@@ -338,7 +338,8 @@ namespace Backend.Migrations
                     DrawOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AwayWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     HomeQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    AwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                    AwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
