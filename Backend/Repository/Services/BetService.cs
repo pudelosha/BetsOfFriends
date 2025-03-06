@@ -177,8 +177,8 @@ namespace Backend.Repository.Services
                     DrawOdds = b.Match.DrawOdds,
                     AwayOdds = b.Match.AwayWinOdds,
 
-                    QualifyHomeOdds = b.Match.HomeWinOdds,
-                    QualifyAwayOdds = b.Match.AwayWinOdds,
+                    QualifyHomeOdds = b.Match.HomeQualifies,
+                    QualifyAwayOdds = b.Match.AwayQualifies,
 
                     QualifiedTeam = b.QualifiedTeam?.ToString(),
                     Status = b.Status.ToString(),

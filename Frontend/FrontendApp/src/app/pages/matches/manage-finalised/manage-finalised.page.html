@@ -2,12 +2,18 @@
   <ion-item *ngFor="let match of matches" class="match-item">
     <div class="match-grid">
 
-      <!-- Match Details -->
+      <!-- Team Names -->
       <div class="match-details">
         <span class="team">{{ match.homeTeam }}</span>
         <span class="team">{{ match.awayTeam }}</span>
       </div>
-      
+
+      <!-- Match Result (Final Score) -->
+      <div class="match-result">
+        <span>{{ match.homeScore !== null ? match.homeScore : '-' }}</span>
+        <span>{{ match.awayScore !== null ? match.awayScore : '-' }}</span>
+      </div>
+
       <!-- Match Date & Time -->
       <div class="match-date">
         <span class="date">{{ match.matchStart | date: 'yyyy.MM.dd' }}</span>
