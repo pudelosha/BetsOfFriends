@@ -427,7 +427,7 @@ namespace Backend.Repository.Services
                         ? awayId
                         : throw new Exception($"Away team '{newMatchDto.AwayTeam}' not found.");
 
-                    tournament.Matches.Add(new CustomMatch
+                    var newMatch = new CustomMatch
                     {
                         TournamentId = tournament.TournamentId,
                         Stage = newMatchDto.Stage,
@@ -440,7 +440,13 @@ namespace Backend.Repository.Services
                         AwayWinOdds = newMatchDto.AwayWinOdds,
                         HomeQualifies = newMatchDto.HomeQualifies,
                         AwayQualifies = newMatchDto.AwayQualifies
-                    });
+                    };
+
+                    _context.CustomMatches.Add(newMatch);
+                    await _context.SaveChangesAsync();
+
+                    // Call BetsService to generate bets for this match
+                    await _betService.GenerateBetsForNewMatchAsync(newMatch.MatchId, tournament.TournamentId);
                 }
 
                 // Step 6: Handle User Assignments

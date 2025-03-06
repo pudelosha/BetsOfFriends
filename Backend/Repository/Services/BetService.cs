@@ -90,6 +90,7 @@ namespace Backend.Repository.Services
             try
             {
                 var bet = await _context.Bets
+                    .Include(b => b.Match) // Ensure we retrieve match details
                     .FirstOrDefaultAsync(b => b.BetId == betId && b.UserId == userId);
 
                 if (bet == null)
@@ -98,12 +99,19 @@ namespace Backend.Repository.Services
                     return false;
                 }
 
+                // Block update if match has already started
+                if (bet.Match.MatchStart <= DateTime.UtcNow)
+                {
+                    _logger.LogWarning($"User {userId} attempted to update Bet ID {betId}, but the match has already started.");
+                    return false; // Prevent bet modification after match start
+                }
+
                 // Update bet details
                 bet.BaseAmount = betUpdateDto.BaseAmount;
                 bet.BonusAmount = betUpdateDto.BonusAmount;
                 bet.HomeGoals = betUpdateDto.HomeGoals;
                 bet.AwayGoals = betUpdateDto.AwayGoals;
-                bet.Submitted = true; //TODO not required?
+                bet.Submitted = true; // TODO: Confirm if necessary
                 bet.Status = Bet.BetStatus.Placed; // Status update after submission
 
                 // Convert string to enum if provided
@@ -280,6 +288,64 @@ namespace Backend.Repository.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while updating bet statuses.");
+            }
+        }
+
+        public async Task GenerateBetsForNewMatchAsync(int matchId, int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Generating bets for match {matchId} in tournament {tournamentId}");
+
+                // Step 1: Get all active users assigned to this tournament
+                var assignedUsers = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.TournamentId == tournamentId)
+                    .Select(a => a.UserId)
+                    .ToListAsync();
+
+                if (!assignedUsers.Any())
+                {
+                    _logger.LogWarning($"No users assigned to tournament {tournamentId}. Skipping bet generation.");
+                    return;
+                }
+
+                // Step 2: Check if bets already exist for this match (to avoid duplicates)
+                var existingBets = await _context.Bets
+                    .Where(b => b.MatchId == matchId)
+                    .Select(b => b.UserId)
+                    .ToListAsync();
+
+                var newBets = assignedUsers
+                    .Where(userId => !existingBets.Contains(userId)) // Add only if the user has no bet for this match
+                    .Select(userId => new Bet
+                    {
+                        MatchId = matchId,
+                        UserId = userId,
+                        BaseAmount = 1,
+                        BonusAmount = null,
+                        HomeGoals = null,
+                        AwayGoals = null,
+                        QualifiedTeam = null,
+                        Status = Bet.BetStatus.ToPlace,
+                        Result = Bet.BetResult.Pending,
+                        Submitted = false
+                    }).ToList();
+
+                // Step 3: Save new bets
+                if (newBets.Any())
+                {
+                    await _context.Bets.AddRangeAsync(newBets);
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation($"Successfully generated {newBets.Count} bets for match {matchId}.");
+                }
+                else
+                {
+                    _logger.LogInformation($"No new bets were added for match {matchId}, all users already have bets.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while generating bets for match {matchId}");
             }
         }
     }
