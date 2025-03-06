@@ -24,6 +24,7 @@ namespace Backend.Extensions
             services.AddScoped<IPredefinedTournamentService, PredefinedTournamentService>();
 
             services.AddHostedService<MatchUpdateHostedService>();
+            services.AddHostedService<BetUpdateHostedService>();
 
             return services;
         }
