@@ -495,22 +495,30 @@ namespace Backend.Repository.Services
                     await _betService.GenerateBetsForNewMatchAsync(newMatch.MatchId, tournament.TournamentId);
                 }
 
-                // Step 6: Handle User Assignments
+                // Step 6: Handle User Assignments (Track Changes)
+                var invitedUsers = new List<ApplicationUser>(); // New users needing setup emails
+                var newTournamentAssignments = new List<ApplicationUser>(); // Existing users getting a new tournament invite
+                var updatedAssignments = new List<ApplicationUser>(); // Updated assignments (no email needed)
+
                 var existingAssignments = tournament.Participants.ToDictionary(p => p.AssignmentId);
-                var updatedUsers = tournamentDto.Users.Where(u => u.AssignmentId.HasValue).ToDictionary(u => u.AssignmentId!.Value);
+                var updatedUsers = tournamentDto.Users
+                    .Where(u => u.AssignmentId.HasValue)
+                    .ToDictionary(u => u.AssignmentId!.Value);
                 var newUsers = tournamentDto.Users.Where(u => !u.AssignmentId.HasValue).ToList();
 
-                var removedAssignments = existingAssignments.Values.Where(ea => !updatedUsers.ContainsKey(ea.AssignmentId)).ToList();
+                var removedAssignments = existingAssignments.Values
+                    .Where(ea => !updatedUsers.ContainsKey(ea.AssignmentId))
+                    .ToList();
+
+                // Remove incorrect user assignments, but do not delete users
                 foreach (var assignment in removedAssignments)
                 {
                     if (assignment.Status == AssignmentStatus.New || assignment.Status == AssignmentStatus.Invited)
                     {
                         _context.CustomTournamentUserAssignments.Remove(assignment);
-                        _logger.LogInformation($"Removed incorrect user assignment for email: {assignment.User.Email}");
+                        _logger.LogInformation($"Removed incorrect assignment for email: {assignment.User.Email}");
                     }
                 }
-
-                var invitedUsers = new List<ApplicationUser>();
 
                 foreach (var userDto in updatedUsers.Values)
                 {
@@ -526,6 +534,7 @@ namespace Backend.Repository.Services
                             {
                                 var newUser = await _registerService.RegisterInvitedUserAsync(userDto.UserEmail);
                                 if (newUser == null) throw new Exception($"Failed to create user with email: {userDto.UserEmail}");
+
                                 invitedUsers.Add(newUser);
 
                                 _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
@@ -549,6 +558,8 @@ namespace Backend.Repository.Services
                                     IsVisible = true,
                                     UserAdminName = userDto.UserAdminName
                                 });
+
+                                newTournamentAssignments.Add(existingUser);
                             }
 
                             _context.CustomTournamentUserAssignments.Remove(assignment);
@@ -556,11 +567,14 @@ namespace Backend.Repository.Services
                         }
                         else
                         {
+                            // User assignment updated, but no email needed
                             assignment.UserAdminName = userDto.UserAdminName;
+                            updatedAssignments.Add(assignment.User);
                         }
                     }
                 }
 
+                // Process New Users (Users not previously assigned)
                 foreach (var newUserDto in newUsers)
                 {
                     var existingUser = await _userService.FindUserByEmailAsync(newUserDto.UserEmail);
@@ -570,11 +584,13 @@ namespace Backend.Repository.Services
                     {
                         var newUser = await _registerService.RegisterInvitedUserAsync(newUserDto.UserEmail);
                         if (newUser == null) throw new Exception($"Failed to create user with email: {newUserDto.UserEmail}");
+
                         invitedUsers.Add(newUser);
                         userToAssign = newUser;
                     }
                     else
                     {
+                        newTournamentAssignments.Add(existingUser);
                         userToAssign = existingUser;
                     }
 
@@ -595,12 +611,24 @@ namespace Backend.Repository.Services
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // Step 8: Send Email Invitations (Outside Transaction)
+                // Step 8: Send Emails (Outside Transaction)
+                var emailTasks = new List<Task>();
+
                 foreach (var user in invitedUsers)
                 {
-                    string inviteLink = GenerateTournamentInviteLink(user.Email, tournament.TournamentId);
-                    await SendTournamentInvitationEmailAsync(user.Email, tournament.Name, inviteLink);
+                    string setupLink = await GenerateAccountSetupLinkAsync(user);
+                    emailTasks.Add(SendAccountSetupEmailAsync(user.Email, tournament.Name, setupLink));
                 }
+
+                foreach (var user in newTournamentAssignments)
+                {
+                    string inviteLink = GenerateTournamentInviteLink(user.Email, tournament.TournamentId);
+                    emailTasks.Add(SendTournamentInvitationEmailAsync(user.Email, tournament.Name, inviteLink));
+                }
+
+                // Wait for all email tasks to complete asynchronously
+                await Task.WhenAll(emailTasks);
+
 
                 return true;
             }
