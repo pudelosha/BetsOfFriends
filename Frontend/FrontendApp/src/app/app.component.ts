@@ -90,11 +90,6 @@ export class AppComponent {
     this.router.navigate(['/my-bets']);
   }
 
-  navigateToBetsOverview() {
-    console.log('Navigating to bets-overview...');
-    this.router.navigate(['/bets-overview']);
-  }
-
   navigateToCreatePredefinedTournament() {
     console.log('Navigating to create-predefined-tournament...');
     this.router.navigate(['/tournaments/create-predefined']);

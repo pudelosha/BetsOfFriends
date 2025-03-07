@@ -17,7 +17,6 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: { role: 'User' },
   },
-  { path: 'bets-overview', loadComponent: () => import('./pages/bets/bets-overview/bets-overview.page').then(m => m.BetsOverviewPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
   // Tournaments (Requires "User" role)
   {
