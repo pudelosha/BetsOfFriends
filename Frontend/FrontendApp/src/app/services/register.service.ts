@@ -63,4 +63,8 @@ export class RegisterService {
     );
   }
   
+  setupAccount(userId: string, token: string, password: string): Observable<any> {
+    const requestBody = { userId, token, password };
+    return this.http.post<any>(`${this.apiUrl}/setup-account`, requestBody);
+  }
 }

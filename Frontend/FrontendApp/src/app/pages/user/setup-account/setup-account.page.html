@@ -1,0 +1,47 @@
+<ion-content class="ion-padding">
+  <div class="unauth-container">
+    <h2>Setup Your Account</h2>
+    <p>Create a password to complete your account setup.</p>
+
+    <form [formGroup]="setupForm" (ngSubmit)="submit()">
+      <!-- Password Field -->
+      <ion-item>
+        <ion-label position="floating">New Password</ion-label>
+        <ion-input formControlName="password" type="password"></ion-input>
+      </ion-item>
+      <div class="validation-message">
+        <p class="error" *ngIf="f['password'].invalid && f['password'].touched">
+          Password must be at least 8 characters long.
+        </p>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <ion-item>
+        <ion-label position="floating">Confirm Password</ion-label>
+        <ion-input formControlName="confirmPassword" type="password"></ion-input>
+      </ion-item>
+      <div class="validation-message">
+        <p class="error" *ngIf="setupForm.errors?.['passwordsMismatch']">
+          Passwords do not match.
+        </p>
+      </div>
+
+      <!-- Terms and Conditions -->
+      <ion-item lines="none" class="terms-item">
+        <ion-checkbox formControlName="consent" slot="start"></ion-checkbox>
+        <ion-label>I agree to the Terms & Conditions</ion-label>
+      </ion-item>
+      <div class="validation-message">
+        <p class="error" *ngIf="!f['consent'].value && f['consent'].touched">
+          You must accept the terms to continue.
+        </p>
+      </div>
+
+      <div class="button-group">
+        <ion-button expand="full" color="primary" class="rounded-button" type="submit" [disabled]="setupForm.invalid">
+          Complete Setup
+        </ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>

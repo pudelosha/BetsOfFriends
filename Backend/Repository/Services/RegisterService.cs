@@ -153,11 +153,6 @@ namespace Backend.Repository.Services
                 _logger.LogInformation($"Assigned 'User' role to {email}.");
             }
 
-            // Generate an email confirmation & password setup link
-            var confirmationUrl = await GenerateAccountSetupLinkAsync(newUser);
-            _logger.LogInformation($"Sending account setup email to {email}");
-            await SendConfirmationEmailAsync(newUser.Email, confirmationUrl);
-
             return newUser;
         }
 

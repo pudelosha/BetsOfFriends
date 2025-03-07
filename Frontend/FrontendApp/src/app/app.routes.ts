@@ -87,8 +87,11 @@ export const routes: Routes = [
   { path: 'reset-password', loadComponent: () => import('./pages/user/reset-password/reset-password.page').then(m => m.ResetPasswordPage), canActivate: [GuestGuard] },
   { path: 'logoff', loadComponent: () => import('./pages/user/logoff/logoff.page').then(m => m.LogoffPage), canActivate: [GuestGuard] },
   { path: 'confirm-email', loadComponent: () => import('./pages/user/confirm-email/confirm-email.page').then(m => m.ConfirmEmailPage), canActivate: [GuestGuard] },
+  { path: 'setup-account',  loadComponent: () => import('./pages/user/setup-account/setup-account.page').then( m => m.SetupAccountPage), canActivate: [GuestGuard] },
 
   // Default and wildcard routes
   { path: '**', redirectTo: 'welcome' },
+
+
 
 ];

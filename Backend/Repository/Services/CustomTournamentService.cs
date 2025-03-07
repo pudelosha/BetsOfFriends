@@ -3,7 +3,9 @@ using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using static Backend.Model.Entities.CustomMatch;
 
 namespace Backend.Repository.Services
@@ -18,6 +20,7 @@ namespace Backend.Repository.Services
         private readonly IEmailTemplateService _emailTemplateService;
         private readonly IConfiguration _configuration;
         private readonly IBetService _betService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public CustomTournamentService(
             AppDbContext context,
@@ -27,6 +30,7 @@ namespace Backend.Repository.Services
             IBetService betService,
             IEmailService emailService,
             IEmailTemplateService emailTemplateService,
+            UserManager<ApplicationUser> userManager,
             IConfiguration configuration)
         {
             _context = context;
@@ -37,6 +41,7 @@ namespace Backend.Repository.Services
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
             _configuration = configuration;
+            _userManager = userManager;
         }
 
         public async Task<bool> CreateCustomTournamentAsync(CustomTournamentDto tournamentDto)
@@ -59,11 +64,9 @@ namespace Backend.Repository.Services
                 // Step 2: Assign Creator as Admin
                 var creatorUser = await _userService.FindUserByIdAsync(tournamentDto.CreatedBy);
                 if (creatorUser == null)
-                {
                     throw new Exception($"User with ID {tournamentDto.CreatedBy} not found.");
-                }
 
-                var creatorAssignment = new CustomTournamentUserAssignment
+                _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
                 {
                     UserId = creatorUser.Id,
                     TournamentId = tournament.TournamentId,
@@ -71,11 +74,9 @@ namespace Backend.Repository.Services
                     Role = UserTournamentRole.Admin,
                     Status = AssignmentStatus.Accepted,
                     IsVisible = true
-                };
+                });
 
-                _context.CustomTournamentUserAssignments.Add(creatorAssignment);
-
-                // Step 3: Insert Teams and Map Their Actual IDs
+                // Step 3: Insert Teams
                 var teams = tournamentDto.Teams.Select(t => new CustomTeam
                 {
                     Name = t.TeamName,
@@ -85,12 +86,12 @@ namespace Backend.Repository.Services
                 _context.CustomTeams.AddRange(teams);
                 await _context.SaveChangesAsync();
 
-                // Step 4: Create a Map of Team Names to Their Actual Database IDs
+                // Step 4: Map Team Names to IDs
                 var teamMap = await _context.CustomTeams
                     .Where(t => t.TournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(t => t.Name, t => t.TeamId);
 
-                // Step 5: Insert Matches Using the Actual IDs from Database
+                // Step 5: Insert Matches
                 var matches = tournamentDto.Matches.Select(m => new CustomMatch
                 {
                     TournamentId = tournament.TournamentId,
@@ -110,53 +111,69 @@ namespace Backend.Repository.Services
                 _context.CustomMatches.AddRange(matches);
                 await _context.SaveChangesAsync();
 
-                // Step 6: Process User Assignments (Create users if needed)
-                var invitedUsers = new List<ApplicationUser>(); // Store users who need email invitations
+                // Step 6: Process User Assignments
+                var invitedUsers = new HashSet<string>(); // Track emails needing account setup
+                var existingUsers = new HashSet<string>(); // Track emails needing tournament invite
+                var emailTasks = new List<Task>();
+
                 foreach (var userDto in tournamentDto.Users)
                 {
                     var existingUser = await _userService.FindUserByEmailAsync(userDto.UserEmail);
+                    ApplicationUser userToAssign = existingUser;
 
                     if (existingUser == null)
                     {
-                        // Create user without password (invite process)
                         var newUser = await _registerService.RegisterInvitedUserAsync(userDto.UserEmail);
                         if (newUser == null)
-                        {
                             throw new Exception($"Failed to create user with email: {userDto.UserEmail}");
-                        }
-                        existingUser = newUser;
-                        invitedUsers.Add(newUser); // Add to email list
+
+                        userToAssign = newUser;
+                        invitedUsers.Add(userDto.UserEmail);
+                    }
+                    else
+                    {
+                        existingUsers.Add(userDto.UserEmail);
                     }
 
-                    // Assign user to the tournament
-                    var assignment = new CustomTournamentUserAssignment
+                    // Assign user to tournament
+                    _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
                     {
-                        UserId = existingUser.Id,
+                        UserId = userToAssign.Id,
                         TournamentId = tournament.TournamentId,
                         UserAdminName = userDto.UserAdminName,
-                        Role = UserTournamentRole.Guest, // Default role
+                        Role = UserTournamentRole.Guest,
                         Status = AssignmentStatus.Invited,
                         IsVisible = true
-                    };
-
-                    _context.CustomTournamentUserAssignments.Add(assignment);
+                    });
                 }
 
                 // Commit Transaction Before Sending Emails
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-
                 _logger.LogInformation($"Custom tournament {tournament.Name} created successfully.");
 
                 // Step 7: Generate Bets for Users & Matches
                 await _betService.CreateBetsForTournamentAsync(tournament.TournamentId);
 
                 // Step 8: Send Email Invitations (Outside Transaction)
-                foreach (var user in invitedUsers)
+                foreach (var email in invitedUsers)
                 {
-                    string inviteLink = GenerateTournamentInviteLink(user.Email, tournament.TournamentId);
-                    await SendTournamentInvitationEmailAsync(user.Email, tournament.Name, inviteLink);
+                    var user = await _userService.FindUserByEmailAsync(email);
+                    if (user != null)
+                    {
+                        var setupLink = await GenerateAccountSetupLinkAsync(user);
+                        emailTasks.Add(SendAccountSetupEmailAsync(user.Email, tournament.Name, setupLink));
+                    }
                 }
+
+                foreach (var email in existingUsers)
+                {
+                    var inviteLink = GenerateTournamentInviteLink(email, tournament.TournamentId);
+                    emailTasks.Add(SendTournamentInvitationEmailAsync(email, tournament.Name, inviteLink));
+                }
+
+                // Send all emails in parallel
+                await Task.WhenAll(emailTasks);
 
                 return true;
             }
@@ -166,6 +183,16 @@ namespace Backend.Repository.Services
                 _logger.LogError($"Error inserting custom tournament: {ex.Message}");
                 return false;
             }
+        }
+
+        private string GenerateTournamentInviteLink(string email, int tournamentId)
+        {
+            var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
+            var frontendBaseUrl = environment == "Development"
+                ? _configuration["App:ClientBaseUrlDev"]
+                : _configuration["App:ClientBaseUrlProd"];
+
+            return $"{frontendBaseUrl}/my-tournaments";
         }
 
         private async Task SendTournamentInvitationEmailAsync(string email, string tournamentName, string inviteLink)
@@ -179,13 +206,6 @@ namespace Backend.Repository.Services
             string emailBody = await _emailTemplateService.GetEmailTemplateAsync("TournamentInvite", placeholders);
 
             await _emailService.SendEmailAsync(email, $"You're Invited to {tournamentName}!", emailBody);
-        }
-
-        private string GenerateTournamentInviteLink(string email, int tournamentId)
-        {
-            var baseUrl = _configuration["App:ClientBaseUrl"]; // Get frontend base URL
-            var encodedEmail = Uri.EscapeDataString(email); // Encode email safely
-            return $"{baseUrl}/accept-invite?tournamentId={tournamentId}&email={encodedEmail}";
         }
 
         public async Task<List<CustomTournamentListDto>> GetAllCustomTournamentsAsync(string userId)
@@ -211,6 +231,32 @@ namespace Backend.Repository.Services
                 _logger.LogError($"Error retrieving custom tournaments for user {userId}: {ex.Message}");
                 throw;
             }
+        }
+
+        private async Task<string> GenerateAccountSetupLinkAsync(ApplicationUser user)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
+
+            var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
+            var frontendBaseUrl = environment == "Development"
+                ? _configuration["App:ClientBaseUrlDev"]
+                : _configuration["App:ClientBaseUrlProd"];
+
+            return $"{frontendBaseUrl}/setup-account?userId={user.Id}&token={encodedToken}";
+        }
+
+        private async Task SendAccountSetupEmailAsync(string email, string tournamentName, string setupLink)
+        {
+            var placeholders = new Dictionary<string, string>
+            {
+                { "TOURNAMENT_NAME", tournamentName },
+                { "SETUP_LINK", setupLink }
+            };
+
+            string emailBody = await _emailTemplateService.GetEmailTemplateAsync("AccountSetup", placeholders);
+
+            await _emailService.SendEmailAsync(email, $"Set Up Your Account for {tournamentName}", emailBody);
         }
 
         public async Task<bool?> UpdateCustomTournamentStatusAsync(int tournamentId, string userId, bool isActive)

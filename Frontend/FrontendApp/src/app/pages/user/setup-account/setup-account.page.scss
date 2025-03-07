@@ -1,0 +1,57 @@
+/* Form field styling */
+ion-item {
+    --background: #ffffff;
+    --border-radius: 10px;
+    margin: 10px 0;
+  }
+  
+  /* "Already have an account?" link */
+  .already-have-account {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  
+  .already-have-account a {
+    color: #264aa5;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  /* Fix checkbox & label spacing */
+  .terms-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Adjust checkbox size */
+  ion-checkbox {
+    transform: scale(1.2);
+  }
+  
+  /* Terms and Conditions styling */
+  .terms {
+    font-size: 14px;
+    text-align: left;
+    margin-top: 10px;
+  }
+  
+  .terms a {
+    color: #264aa5;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  /* Switch between Login/Register */
+  .switch-auth {
+    margin-top: 15px;
+    font-size: 14px;
+    margin-bottom: 50px;
+  }
+  
+  .switch-auth a {
+    color: #264aa5;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
