@@ -102,5 +102,45 @@ namespace Backend.Controllers
                 return StatusCode(500, new RegisterResultDto { Success = false, Message = "An unexpected error occurred. Please try again later." });
             }
         }
+
+        /// <summary>
+        /// Completes the account setup for invited users by setting a new password.
+        /// </summary>
+        [AllowAnonymous]
+        [HttpPost("setup-account")]
+        public async Task<IActionResult> SetupAccount([FromBody] SetupAccountRequestDto request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.UserId) || string.IsNullOrWhiteSpace(request.Token) || string.IsNullOrWhiteSpace(request.Password))
+                    return BadRequest(new RegisterResultDto { Success = false, Message = "Invalid request data." });
+
+                if (request.Password.Length < 8)
+                    return BadRequest(new RegisterResultDto { Success = false, Message = "Password must be at least 8 characters long." });
+
+                _logger.LogInformation($"Processing account setup for user: {request.UserId}");
+
+                var result = await _registerService.SetupAccountAsync(request.UserId, request.Token, request.Password);
+
+                if (!result.Success)
+                {
+                    _logger.LogWarning($"Account setup failed for user {request.UserId}: {result.Message}");
+                    return BadRequest(result);
+                }
+
+                _logger.LogInformation($"Account setup successful for user {request.UserId}");
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Unexpected error during account setup for user {request.UserId}");
+                return StatusCode(500, new RegisterResultDto
+                {
+                    Success = false,
+                    Message = "An unexpected error occurred. Please try again later."
+                });
+            }
+        }
     }
 }

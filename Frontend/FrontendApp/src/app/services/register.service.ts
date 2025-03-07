@@ -63,8 +63,21 @@ export class RegisterService {
     );
   }
   
-  setupAccount(userId: string, token: string, password: string): Observable<any> {
+  setupAccount(userId: string, token: string, password: string): Observable<{ success: boolean; message: string; errors?: string[] }> {
     const requestBody = { userId, token, password };
-    return this.http.post<any>(`${this.apiUrl}/setup-account`, requestBody);
+  
+    return this.http.post<RegisterResult>(`${this.apiUrl}/setup-account`, requestBody).pipe(
+      tap((response) => console.log('Backend response:', response)),
+      map((response) => ({
+        success: response.success,
+        message: response.message || 'Account setup successful! You can now log in.',
+        errors: response.errors ? response.errors.map(err => err.description) : undefined,
+      })),
+      catchError((error) => {
+        console.error('Account setup error:', error);
+        return of({ success: false, message: 'An error occurred while setting up the account. Please try again.', errors: undefined });
+      })
+    );
   }
+  
 }

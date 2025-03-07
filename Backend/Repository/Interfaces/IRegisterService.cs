@@ -9,5 +9,6 @@ namespace Backend.Repository.Interfaces
         Task<ApplicationUser?> RegisterInvitedUserAsync(string email);
         Task<RegisterResultDto> ConfirmEmailAsync(string userId, string token);
         Task<RegisterResultDto> ResendConfirmationEmailAsync(string email);
+        Task<RegisterResultDto> SetupAccountAsync(string userId, string token, string password);
     }
 }

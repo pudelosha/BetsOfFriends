@@ -229,23 +229,31 @@ namespace Backend.Repository.Services
             return confirmationLink;
         }
 
-        private async Task<string> GenerateAccountSetupLinkAsync(ApplicationUser user)
+        public async Task<RegisterResultDto> SetupAccountAsync(string userId, string token, string password)
         {
-            _logger.LogInformation($"Generating account setup link for user: {user.Email}");
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new RegisterResultDto { Success = false, Message = "User not found." };
+            }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
+            var decodedToken = Encoding.UTF8.GetString(Convert.FromBase64String(token));
+            var resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, password);
 
-            var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
-            var frontendBaseUrl = environment == "Development"
-                ? _configuration["App:ClientBaseUrlDev"]
-                : _configuration["App:ClientBaseUrlProd"];
+            if (!resetResult.Succeeded)
+            {
+                return new RegisterResultDto
+                {
+                    Success = false,
+                    Message = "Failed to set password.",
+                    Errors = resetResult.Errors
+                };
+            }
 
-            var setupLink = $"{frontendBaseUrl}/setup-account?userId={user.Id}&token={encodedToken}";
+            user.EmailConfirmed = true;
+            await _userManager.UpdateAsync(user);
 
-            _logger.LogInformation($"Generated account setup link for user {user.Email}: {setupLink}");
-
-            return setupLink;
+            return new RegisterResultDto { Success = true, Message = "Account setup completed successfully!" };
         }
     }
 }
