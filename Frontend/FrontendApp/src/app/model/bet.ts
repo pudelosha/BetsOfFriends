@@ -51,6 +51,40 @@ export interface BetStats {
   resultQualified?: 'home' | 'away' | null;
 }
 
+export interface BetStats {
+  homeTeam: string;
+  awayTeam: string;
+  homeScoreUser?: number | null;
+  awayScoreUser?: number | null;
+  homeScoreActual?: number | null;
+  awayScoreActual?: number | null;
+  qualifiedTeam?: 'home' | 'away' | null;
+  percent1: number;
+  percentX: number;
+  percent2: number;
+  percent1Q?: number | null;
+  percent2Q?: number | null;
+  result?: '1' | 'X' | '2' | null;
+  resultQualified?: 'home' | 'away' | null;
+
+  /** User bets are optional (can be null if match isn't finished) */
+  userBets?: UserBetDetails[] | null;
+}
+
+export interface UserBetDetails {
+  username: string;
+  betScore: string;
+
+  /** 1 = success, 0 = failure, null = not applicable */
+  homeWinSuccess?: number | null;
+  drawSuccess?: number | null;
+  awayWinSuccess?: number | null;
+  homeQualifiesSuccess?: number | null;
+  awayQualifiesSuccess?: number | null;
+  resultSuccess?: number | null;
+}
+
+
 
 
 

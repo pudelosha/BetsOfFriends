@@ -21,7 +21,18 @@
   font-weight: bold;
 }
 
-/* Betting Row Headers */
+/* === Player Name Styling (Smaller, Left-Aligned) === */
+.player-name {
+  text-align: left !important; /* Force left alignment */
+  display: flex;
+  justify-content: flex-start !important; /* Aligns text to the left */
+  align-items: center; /* Keeps vertical alignment */
+  font-size: 10px; /* Smaller font size */
+  font-weight: bold;
+  padding-left: 5px;
+}
+
+/* === Betting Row Headers === */
 .betting-row {
   font-weight: bold;
   font-size: 12px;
@@ -85,7 +96,6 @@
   height: 28px; /* Adjusted height */
   border-radius: 5px;
   overflow: hidden;
-
   padding: 2px 0 !important; /* Only top/bottom padding */
   margin: 0 !important;
 }
@@ -104,7 +114,7 @@ ion-col[size="12"] {
   justify-content: center;
   color: white;
   font-weight: bold;
-  font-size: 12px; /* Reduced font size */
+  font-size: 11px; /* Reduced font size */
   padding: 2px 0; /* Add internal padding to increase height */
 }
 
@@ -121,4 +131,39 @@ ion-col[size="12"] {
 .away,
 .awayQ {
   background-color: #9E9E9E; /* Gray */
+}
+
+/* === Table Header Styling === */
+.bet-table-header {
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  background-color: #f0f0f0;
+  padding: 5px 0;
+  border-bottom: 2px solid white;
+}
+
+/* === Table Body Styling (Smaller Font) === */
+.bet-table-body {
+  font-size: 10px; /* Smaller font size */
+}
+
+/* === Table Cell Formatting === */
+.bet-result {
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+  padding: 4px;
+  border: 1px solid white; /* White Borders */
+}
+
+/* === Success & Failure Cells (Now Hide "1" and "0" Text) === */
+.success {
+  background-color: #4caf50; /* Green for correct bets */
+  color: #4caf50; /* Same as background = invisible */
+}
+
+.failure {
+  background-color: #f44336; /* Red for incorrect bets */
+  color: #f44336; /* Same as background = invisible */
 }

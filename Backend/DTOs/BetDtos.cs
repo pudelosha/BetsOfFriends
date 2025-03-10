@@ -51,7 +51,7 @@ namespace Backend.DTOs
         public int? HomeScoreActual { get; set; }
         public int? AwayScoreActual { get; set; }
 
-        public string? QualifiedTeam { get; set; }  // "home" | "away" | null
+        public string? QualifiedTeam { get; set; }
 
         public decimal Percent1 { get; set; }
         public decimal PercentX { get; set; }
@@ -59,7 +59,23 @@ namespace Backend.DTOs
         public decimal? Percent1Q { get; set; }
         public decimal? Percent2Q { get; set; }
 
-        public string? Result { get; set; } // "1" | "X" | "2" | null
-        public string? ResultQualified { get; set; } // "home" | "away" | null
+        public string? Result { get; set; }
+        public string? ResultQualified { get; set; }
+
+        public List<UserBetDto>? UserBets { get; set; }
+    }
+
+    public class UserBetDto
+    {
+        public string Username { get; set; } // Player's name
+        public string BetScore { get; set; } // Example: "2-1" or "0-0"
+
+        // Success flags (1 = correct, 0 = incorrect, null = not applicable)
+        public int? HomeWinSuccess { get; set; }
+        public int? DrawSuccess { get; set; }
+        public int? AwayWinSuccess { get; set; }
+        public int? HomeQualifiesSuccess { get; set; }
+        public int? AwayQualifiesSuccess { get; set; }
+        public int? ResultSuccess { get; set; }
     }
 }

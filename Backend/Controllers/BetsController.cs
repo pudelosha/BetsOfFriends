@@ -119,7 +119,13 @@ namespace Backend.Controllers
             {
                 _logger.LogInformation($"Received request for bet statistics for match ID: {matchId}");
 
-                var betStats = await _betService.GetBetStatisticsAsync(matchId);
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (userId == null)
+                {
+                    return Unauthorized("User not found.");
+                }
+
+                var betStats = await _betService.GetBetStatisticsAsync(matchId, userId);
 
                 if (betStats == null)
                 {

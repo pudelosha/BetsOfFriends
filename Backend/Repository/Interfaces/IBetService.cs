@@ -11,6 +11,6 @@ namespace Backend.Services.Interfaces
         Task<bool> CalculateBetsAsync(int tournamentId);
         Task AutoUpdateBetStatusAsync();
         Task GenerateBetsForNewMatchAsync(int matchId, int tournamentId);
-        Task<BetStatsDto?> GetBetStatisticsAsync(int matchId);
+        Task<BetStatsDto?> GetBetStatisticsAsync(int matchId, string userId);
     }
 }
