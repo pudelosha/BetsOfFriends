@@ -348,5 +348,74 @@ namespace Backend.Repository.Services
                 _logger.LogError(ex, $"Error while generating bets for match {matchId}");
             }
         }
+
+        public async Task<BetStatsDto?> GetBetStatisticsAsync(int matchId)
+        {
+
+            //TODO check userId
+
+            try
+            {
+                _logger.LogInformation($"Fetching bet statistics for matchId: {matchId}");
+
+                var match = await _context.CustomMatches
+                    .Include(m => m.HomeTeam)
+                    .Include(m => m.AwayTeam)
+                    .Include(m => m.Bets)
+                    .FirstOrDefaultAsync(m => m.MatchId == matchId);
+
+                if (match == null)
+                {
+                    _logger.LogWarning($"Match with ID {matchId} not found.");
+                    return null;
+                }
+
+                var bets = match.Bets.Where(b => b.HomeGoals.HasValue && b.AwayGoals.HasValue).ToList();
+                var qualificationBets = match.Bets.Where(b => b.QualifiedTeam.HasValue).ToList();
+
+                var totalBets = bets.Count;
+                var totalQualificationBets = qualificationBets.Count;
+
+                var betStats = new BetStatsDto
+                {
+                    HomeTeam = match.HomeTeam.Name,
+                    AwayTeam = match.AwayTeam.Name,
+                    HomeScoreActual = match.HomeScore,
+                    AwayScoreActual = match.AwayScore,
+
+                    // Calculate % of users betting on 1X2 outcomes based on their predicted goals
+                    Percent1 = totalBets > 0 ? Math.Round((decimal)bets.Count(b => b.HomeGoals > b.AwayGoals) / totalBets * 100, 2) : 0,
+                    PercentX = totalBets > 0 ? Math.Round((decimal)bets.Count(b => b.HomeGoals == b.AwayGoals) / totalBets * 100, 2) : 0,
+                    Percent2 = totalBets > 0 ? Math.Round((decimal)bets.Count(b => b.HomeGoals < b.AwayGoals) / totalBets * 100, 2) : 0,
+
+                    // Qualification Bets (Calculated based on user selections)
+                    Percent1Q = totalQualificationBets > 0 ? Math.Round((decimal)qualificationBets.Count(b => b.QualifiedTeam == Bet.Team.Home) / totalQualificationBets * 100, 2) : null,
+                    Percent2Q = totalQualificationBets > 0 ? Math.Round((decimal)qualificationBets.Count(b => b.QualifiedTeam == Bet.Team.Away) / totalQualificationBets * 100, 2) : null,
+
+                    // Actual Result Based on Match Score (Handle missing match results)
+                    Result = (match.HomeScore.HasValue && match.AwayScore.HasValue)
+                        ? match.HomeScore > match.AwayScore ? "1"
+                        : match.HomeScore < match.AwayScore ? "2"
+                        : "X"
+                        : null,
+
+                    // Correctly Calculate the Result of Who Qualified
+                    ResultQualified = (match.HomeScore.HasValue && match.AwayScore.HasValue && match.HomeQualifies.HasValue && match.AwayQualifies.HasValue)
+                        ? match.HomeQualifies > match.AwayQualifies ? "home"
+                        : match.AwayQualifies > match.HomeQualifies ? "away"
+                        : null
+                        : null
+                };
+
+                _logger.LogInformation($"Bet statistics for match ID {matchId} successfully retrieved.");
+                return betStats;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving bet statistics for match ID {matchId}: {ex.Message}");
+                return null;
+            }
+        }
+
     }
 }

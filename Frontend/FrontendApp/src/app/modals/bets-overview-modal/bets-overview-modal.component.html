@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Bets Overview</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">✖</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid class="bets-overview-grid">
+
+    <!-- Team Names -->
+    <ion-row class="team-names">
+      <ion-col size="5"><strong>{{ betStats?.homeTeam }}</strong></ion-col>
+      <ion-col size="2" class="centered-text"></ion-col>
+      <ion-col size="5"><strong>{{ betStats?.awayTeam }}</strong></ion-col>
+    </ion-row>
+
+    <!-- Match Scores -->
+    <ion-row class="match-score">
+      <ion-col size="5"><strong>{{ betStats?.homeScoreActual ?? '-' }}</strong></ion-col>
+      <ion-col size="2" class="centered-text">-</ion-col>
+      <ion-col size="5"><strong>{{ betStats?.awayScoreActual ?? '-' }}</strong></ion-col>
+    </ion-row>
+
+    <!-- 1X2 Betting Headers with Underline -->
+    <ion-row class="betting-row">
+      <ion-col size="4" class="centered-text underline home-label"><strong>Home Win</strong></ion-col>
+      <ion-col size="4" class="centered-text underline draw-label"><strong>Draw</strong></ion-col>
+      <ion-col size="4" class="centered-text underline away-label"><strong>Away Win</strong></ion-col>
+    </ion-row>
+
+    <!-- Dynamic Percentage Bars with Text -->
+    <ion-row class="betting-bar">
+      <ion-col size="12">
+        <div class="progress-bar">
+          <div class="bar home" *ngIf="betStats && betStats.percent1 && betStats.percent1 > 0" [style.width.%]="betStats.percent1">
+            <span>{{ betStats.percent1 }}%</span>
+          </div>
+          <div class="bar draw" *ngIf="betStats && betStats.percentX && betStats.percentX > 0" [style.width.%]="betStats.percentX">
+            <span>{{ betStats.percentX }}%</span>
+          </div>
+          <div class="bar away" *ngIf="betStats && betStats.percent2 && betStats.percent2 > 0" [style.width.%]="betStats.percent2">
+            <span>{{ betStats.percent2 }}%</span>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <!-- Qualification Betting Headers with Underline -->
+    <ion-row class="betting-row">
+      <ion-col size="6" class="centered-text underline homeQ-label"><strong>Home Qualifies</strong></ion-col>
+      <ion-col size="6" class="centered-text underline awayQ-label"><strong>Away Qualifies</strong></ion-col>
+    </ion-row>
+
+    <!-- Dynamic Qualification Bars with Text -->
+    <ion-row class="betting-bar">
+      <ion-col size="12">
+        <div class="progress-bar">
+          <div class="bar homeQ" *ngIf="betStats && betStats.percent1Q && betStats.percent1Q > 0" [style.width.%]="betStats.percent1Q">
+            <span>{{ betStats.percent1Q }}%</span>
+          </div>
+          <div class="bar awayQ" *ngIf="betStats && betStats.percent2Q && betStats.percent2Q > 0" [style.width.%]="betStats.percent2Q">
+            <span>{{ betStats.percent2Q }}%</span>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>

@@ -17,6 +17,12 @@
           <span class="time">{{ bet.startTime | date: 'HH:mm' }}</span>
         </div>
 
+        <div class="bet-preview-container">
+          <ion-button size="small" class="preview-button" (click)="openBetsOverview(bet)" fill="clear">
+            <ion-icon name="search-outline"></ion-icon>
+          </ion-button>
+        </div>
+
         <div class="bet-button-container">
           <ion-button size="small" class="bet-button" (click)="editBet(bet, $event)">Edit Bet</ion-button>
         </div>

@@ -23,7 +23,7 @@
   /* Grid layout */
   .bet-grid {
     display: grid;
-    grid-template-columns: 7fr 1fr 1fr 3fr;
+    grid-template-columns: 7fr 1fr 1fr 2fr 1fr;
     align-items: center;
     width: 100%;
     gap: 10px;
@@ -68,4 +68,24 @@
   align-items: center;
   font-size: 12px;  /* Match other columns */
   color: #333;      /* Match text color */
+}
+
+.bet-preview-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 0px !important;  /* Ensure no padding from container */
+}
+
+/* Remove Internal Padding from the Preview Button */
+.preview-button {
+  font-size: 18px;
+  color: var(--ion-color-primary);
+  padding-left: 10px !important;  /* No left padding */
+  padding-right: 0px !important; /* Small right padding */
+
+  /* Override Native Button Padding */
+  --padding-start: 0px !important; /* Remove Ionic button's internal left padding */
+  --padding-end: 0px !important;   /* Keep small right padding */
+  --border-radius: 0px; /* Optional: Adjust if necessary */
 }

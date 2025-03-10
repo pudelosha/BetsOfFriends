@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, ModalController } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BetService } from 'src/app/services/bet.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
-import { Bet } from 'src/app/model/bet';
+import { Bet, BetStats } from 'src/app/model/bet';
 import { firstValueFrom } from 'rxjs';
+import { BetsOverviewModalComponent } from 'src/app/modals/bets-overview-modal/bets-overview-modal.component';
 
 @Component({
   selector: 'app-my-bets-finalised',
@@ -19,6 +20,7 @@ export class MyBetsFinalisedPage implements OnInit {
   isLoading = true;
 
   constructor(
+    private modalCtrl: ModalController,
     private betService: BetService,
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController
@@ -95,6 +97,28 @@ export class MyBetsFinalisedPage implements OnInit {
   
     return playerBetWinner === actualMatchWinner ? 'Won' : 'Lost';
   }
+
+  async openBetsOverview(bet: Bet) {
+    console.log("Fetching bet overview data for matchId:", bet.matchId);
+  
+    try {
+      const betStats: BetStats = await firstValueFrom(this.betService.getBetStatsByMatchId(bet.matchId));
+      console.log("Received bet overview data:", betStats);
+  
+      const modal = await this.modalCtrl.create({
+        component: BetsOverviewModalComponent,
+        componentProps: { betStats }, // Pass the fetched data directly
+        breakpoints: [0, 0.75, 1],
+        initialBreakpoint: 1,
+      });
+  
+      await modal.present();
+  
+    } catch (error) {
+      console.error("Error fetching bet overview data:", error);
+      this.showToast("Failed to load bet overview.", "danger");
+    }
+  }   
 
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastController.create({

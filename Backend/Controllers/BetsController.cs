@@ -110,5 +110,30 @@ namespace Backend.Controllers
                 return StatusCode(500, "An error occurred while calculating bets.");
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("stats/{matchId}")]
+        public async Task<IActionResult> GetBetStatsByMatchId(int matchId)
+        {
+            try
+            {
+                _logger.LogInformation($"Received request for bet statistics for match ID: {matchId}");
+
+                var betStats = await _betService.GetBetStatisticsAsync(matchId);
+
+                if (betStats == null)
+                {
+                    _logger.LogWarning($"No betting statistics found for match ID {matchId}");
+                    return NotFound(new { message = "No betting statistics found for this match." });
+                }
+
+                return Ok(betStats);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Unexpected error while fetching bet stats for match ID {matchId}: {ex.Message}");
+                return StatusCode(500, new { message = "An unexpected error occurred. Please try again later." });
+            }
+        }
     }
 }

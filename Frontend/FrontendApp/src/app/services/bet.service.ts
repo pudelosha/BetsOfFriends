@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Bet, BetUpdateDto, AggregatedBet } from '../model/bet';
+import { Bet, BetUpdateDto, BetStats } from '../model/bet';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +20,7 @@ export class BetService {
     return this.http.put<void>(`${this.apiUrl}/update/${betId}`, betUpdate);
   }
 
-  getAggregatedBetsByStatus(tournamentId: number, status: 'Upcoming' | 'Finalised'): Observable<AggregatedBet[]> {
-    return this.http.get<AggregatedBet[]>(`${this.apiUrl}/aggregated/${tournamentId}/${status}`);
+  getBetStatsByMatchId(matchId: number): Observable<BetStats> {
+    return this.http.get<BetStats>(`${this.apiUrl}/stats/${matchId}`);
   }
-  
 }

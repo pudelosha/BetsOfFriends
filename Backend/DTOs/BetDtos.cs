@@ -40,4 +40,26 @@ namespace Backend.DTOs
         public string Status { get; set; }
         public string Result { get; set; }
     }
+
+    public class BetStatsDto
+    {
+        public string HomeTeam { get; set; }
+        public string AwayTeam { get; set; }
+
+        public int? HomeScoreUser { get; set; }
+        public int? AwayScoreUser { get; set; }
+        public int? HomeScoreActual { get; set; }
+        public int? AwayScoreActual { get; set; }
+
+        public string? QualifiedTeam { get; set; }  // "home" | "away" | null
+
+        public decimal Percent1 { get; set; }
+        public decimal PercentX { get; set; }
+        public decimal Percent2 { get; set; }
+        public decimal? Percent1Q { get; set; }
+        public decimal? Percent2Q { get; set; }
+
+        public string? Result { get; set; } // "1" | "X" | "2" | null
+        public string? ResultQualified { get; set; } // "home" | "away" | null
+    }
 }

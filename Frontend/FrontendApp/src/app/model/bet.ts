@@ -34,19 +34,23 @@ export interface BetUpdateDto {
   qualifiedTeam?: 'Home' | 'Away' | null;
 }
 
-export interface AggregatedBet {
-  matchId: number;
-  
-  teamHome: string;
-  teamAway: string;
-  matchStart: string;
-
-  playerHomeGoals?: number | null;
-  playerAwayGoals?: number | null;
-  
-  percentageHomeWin: number; // % of users betting on home win
-  percentageDraw: number;     // % of users betting on draw
-  percentageAwayWin: number;  // % of users betting on away win
+export interface BetStats {
+  homeTeam: string;
+  awayTeam: string;
+  homeScoreUser?: number | null;
+  awayScoreUser?: number | null;
+  homeScoreActual?: number | null;
+  awayScoreActual?: number | null;
+  qualifiedTeam?: 'home' | 'away' | null;
+  percent1: number;
+  percentX: number;
+  percent2: number;
+  percent1Q?: number | null;
+  percent2Q?: number | null;
+  result?: '1' | 'X' | '2' | null;
+  resultQualified?: 'home' | 'away' | null;
 }
+
+
 
 

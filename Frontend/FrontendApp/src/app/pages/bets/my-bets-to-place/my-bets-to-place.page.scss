@@ -23,11 +23,11 @@
 /* Grid layout for each bet item */
 .bet-grid {
   display: grid;
-  grid-template-columns: 9fr 2fr 1fr; /* 9:2:1 ratio */
+  grid-template-columns: 8fr 2fr 1fr 1fr; /* Adjusted for new column */
   align-items: center;
   width: 100%;
   gap: 10px;
-  padding-right: 0px; /* Remove extra right padding */
+  padding-right: 0px;
 }
 
 /* Teams Column */
@@ -64,4 +64,25 @@
   padding-right: 0px !important;
   min-width: 90px;
 }
+
+.bet-preview-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 0px !important;  /* Ensure no padding from container */
+}
+
+/* Remove Internal Padding from the Preview Button */
+.preview-button {
+  font-size: 18px;
+  color: var(--ion-color-primary);
+  padding-left: 10px !important;  /* No left padding */
+  padding-right: 0px !important; /* Small right padding */
+
+  /* Override Native Button Padding */
+  --padding-start: 0px !important; /* Remove Ionic button's internal left padding */
+  --padding-end: 0px !important;   /* Keep small right padding */
+  --border-radius: 0px; /* Optional: Adjust if necessary */
+}
+
 
