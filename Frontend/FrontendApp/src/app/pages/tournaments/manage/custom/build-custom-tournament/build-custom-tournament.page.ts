@@ -336,16 +336,9 @@ export class BuildCustomTournamentPage implements OnInit {
   }
 
   handleSettingsUpdated(updatedSettings: TournamentSettings): void {
-    if (!updatedSettings) {
-      console.warn("Received undefined settings!");
-      return;
-    }
-  
     console.log("Tournament Settings Updated:", updatedSettings);
     this.settingsGroup.patchValue(updatedSettings);
-    this.settingsConfirmed = true; // Mark settings as confirmed
   }
-  
      
   handleTeamsUpdated(teamsData: { previousTeams: Team[]; updatedTeams: Team[] }): void {
     const { previousTeams, updatedTeams } = teamsData;

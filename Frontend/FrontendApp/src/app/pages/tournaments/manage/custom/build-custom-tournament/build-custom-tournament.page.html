@@ -12,7 +12,7 @@
 
     <div *ngIf="step ===2">
         <app-stage-settings
-        [settingsData]="settingsGroup.value"
+        [settings]="tournamentForm.value.settings"
         (settingsUpdated)="handleSettingsUpdated($event)">
       </app-stage-settings>
     </div>
