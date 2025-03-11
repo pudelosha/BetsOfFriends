@@ -7,10 +7,10 @@ import { StageTeamsManagementPage } from '../../stages/stage-teams-management/st
 import { StageMatchesManagementPage } from '../../stages/stage-matches-management/stage-matches-management.page';
 import { StageUsersManagementPage } from '../../stages/stage-users-management/stage-users-management.page';
 import { StageSummaryPage } from '../../stages/stage-summary/stage-summary.page';
+import { StageSettingsPage } from '../../stages/stage-settings/stage-settings.page';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { buildMatchFormGroup } from '../../../shared/form-utils';
-import { Tournament } from 'src/app/model/tournament-model';
+import { Tournament, TournamentSettings } from 'src/app/model/tournament-model';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { ViewChild } from '@angular/core';
 import { Match, Team, User } from 'src/app/model/tournament-model';
@@ -20,7 +20,7 @@ import { Match, Team, User } from 'src/app/model/tournament-model';
   templateUrl: './build-custom-tournament.page.html',
   styleUrls: ['./build-custom-tournament.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage],
+  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage, StageSettingsPage],
 })
 export class BuildCustomTournamentPage implements OnInit {
   @ViewChild(StageTeamsManagementPage) stageTeamsManagement!: StageTeamsManagementPage;
@@ -31,22 +31,33 @@ export class BuildCustomTournamentPage implements OnInit {
   step = 1;
   tournamentId?: number | null = null; // Optional: null for new tournaments, number for existing ones
   isLoading = false;
+  settingsConfirmed = false; // Ensure settings are saved before proceeding
 
   constructor(private fb: FormBuilder, 
     private toastController: ToastController,
     private router: Router,
     private route: ActivatedRoute,
     private tournamentService: CustomTournamentService,
-    private modalController: ModalController
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       importMethod: ['upload'],
-      teams: this.fb.array([], Validators.required),  // Holds Team models
-      matches: this.fb.array([], Validators.required), // Holds Match models
-      users: this.fb.array([]), // Holds User models
-    });    
+      teams: this.fb.array([], Validators.required),
+      matches: this.fb.array([], Validators.required),
+      users: this.fb.array([]),
+      settings: this.fb.group({
+        allowExactResultBonus: [false],
+        exactResultBonusCalculation: ['FixedValue'],
+        exactResultBonus: [null, Validators.min(1)],
+        allowWhoQualifiesBets: [false],
+        allowBetsWithBonusAmount: [false],
+        maxBetBooster: [1, Validators.min(1)],
+        totalBonusAmount: [null, Validators.min(1)],
+        allowNonSubmittedBetsPenalty: [false],
+        nonSubmittedBetPenalty: [null, Validators.min(1)],
+      }),
+    });
   }
 
   ngOnInit(): void {
@@ -90,23 +101,27 @@ export class BuildCustomTournamentPage implements OnInit {
     return this.tournamentForm.get('users') as FormArray;
   }
 
+  get settingsGroup(): FormGroup {
+    return this.tournamentForm.get('settings') as FormGroup;
+  }
+
   async openAddModal(): Promise<void> {
     switch (this.step) {
-      case 2:
+      case 3:
         if (this.stageTeamsManagement) {
           await this.stageTeamsManagement.addTeam();
         } else {
           console.warn('StageTeamsManagementPage reference is not available.');
         }
         break;
-      case 3:
+      case 4:
         if (this.stageMatchesManagement) {
           await this.stageMatchesManagement.addMatch();
         } else {
           console.warn('StageMatchesManagement reference is not available.');
         }
         break;
-      case 4:
+      case 5:
         if (this.stageUsersManagement) {
           await this.stageUsersManagement.addUser();
         } else {
@@ -144,6 +159,20 @@ export class BuildCustomTournamentPage implements OnInit {
       tournamentName: tournament.tournamentName,
       importMethod: 'upload',
     });
+
+    if (tournament.settings) {
+      this.settingsGroup.patchValue({
+        allowExactResultBonus: tournament.settings.allowExactResultBonus ?? false,
+        exactResultBonusCalculation: tournament.settings.exactResultBonusCalculation ?? 'FixedValue',
+        exactResultBonus: tournament.settings.exactResultBonus ?? null,
+        allowWhoQualifiesBets: tournament.settings.allowWhoQualifiesBets ?? false,
+        allowBetsWithBonusAmount: tournament.settings.allowBetsWithBonusAmount ?? false,
+        maxBetBooster: tournament.settings.maxBetBooster ?? 1,
+        totalBonusAmount: tournament.settings.totalBonusAmount ?? null,
+        allowNonSubmittedBetsPenalty: tournament.settings.allowNonSubmittedBetsPenalty ?? false,
+        nonSubmittedBetPenalty: tournament.settings.nonSubmittedBetPenalty ?? null,
+      });
+    }
   
     // Step 1: Create a lookup map for teams (backendId -> frontendId & name)
     const teamMap = new Map<number, Team>();
@@ -305,6 +334,18 @@ export class BuildCustomTournamentPage implements OnInit {
   handleUsersUpdated(users: any[]): void {
     
   }
+
+  handleSettingsUpdated(updatedSettings: TournamentSettings): void {
+    if (!updatedSettings) {
+      console.warn("Received undefined settings!");
+      return;
+    }
+  
+    console.log("Tournament Settings Updated:", updatedSettings);
+    this.settingsGroup.patchValue(updatedSettings);
+    this.settingsConfirmed = true; // Mark settings as confirmed
+  }
+  
      
   handleTeamsUpdated(teamsData: { previousTeams: Team[]; updatedTeams: Team[] }): void {
     const { previousTeams, updatedTeams } = teamsData;
@@ -421,6 +462,17 @@ export class BuildCustomTournamentPage implements OnInit {
         userEmail: user.userEmail,
         status: user.status,
       })),
+      settings: {
+        allowExactResultBonus: this.tournamentForm.value.settings.allowExactResultBonus,
+        exactResultBonusCalculation: this.tournamentForm.value.settings.exactResultBonusCalculation,
+        exactResultBonus: this.tournamentForm.value.settings.exactResultBonus || null,
+        allowWhoQualifiesBets: this.tournamentForm.value.settings.allowWhoQualifiesBets, 
+        allowBetsWithBonusAmount: this.tournamentForm.value.settings.allowBetsWithBonusAmount,
+        maxBetBooster: this.tournamentForm.value.settings.maxBetBooster || 1,
+        totalBonusAmount: this.tournamentForm.value.settings.totalBonusAmount || null, 
+        allowNonSubmittedBetsPenalty: this.tournamentForm.value.settings.allowNonSubmittedBetsPenalty,
+        nonSubmittedBetPenalty: this.tournamentForm.value.settings.nonSubmittedBetPenalty || null,
+      },
     };
   
     console.log('Finalized Custom Tournament Data:', tournamentData);
@@ -447,7 +499,7 @@ export class BuildCustomTournamentPage implements OnInit {
            
   async nextStep(): Promise<void> {
     const canProceed = await this.canProceed();
-    if (canProceed && this.step < 5) {
+    if (canProceed && this.step < 6) {
       this.scrollToTop();
       this.step++;
     }
@@ -480,31 +532,35 @@ export class BuildCustomTournamentPage implements OnInit {
         return true;
   
       case 2:
+        if (!this.settingsConfirmed) {
+          await this.showToast('Please save tournament settings before proceeding.', 'danger');
+          return false;
+        }
+        return true;
+  
+      case 3:
         if (this.teamsArray.length <= 1) {
           await this.showToast('At least 2 teams are required!', 'danger');
           return false;
         }
         return true;
   
-      case 3:
+      case 4:
         if (this.matchesArray.length === 0) {
           await this.showToast('At least 1 match is required!', 'danger');
           return false;
         }
         return true;
-
-      case 4:
+  
+      case 5:
         if (this.usersArray.length === 0) {
           await this.showToast('At least 1 user is required!', 'danger');
           return false;
         }
         return true;
-  
-      case 5:
-        return true; // No validation needed for the summary
     }
-    return false; // Default fallback
-  }  
+    return false;
+  }   
 
   private generateFrontendId(): string {
     return 'T-' + Math.random().toString(36).substr(2, 9);

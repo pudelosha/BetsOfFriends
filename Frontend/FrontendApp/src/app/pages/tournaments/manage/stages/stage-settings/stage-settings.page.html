@@ -1,0 +1,132 @@
+<form [formGroup]="settingsForm" class="form-container">
+
+  <div class="page-description">
+    <p>Configure additional tournament settings, including exact result bonuses, qualification bet rules, and penalties.</p>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Exact Result Bonus -->
+  <ion-grid class="settings-grid">
+    <ion-row class="align-center">
+      <ion-col size="8" class="left-align">
+        <ion-label>Allow Exact Result Bonus</ion-label>
+      </ion-col>
+      <ion-col size="2" class="right-align">
+        <ion-toggle formControlName="allowExactResultBonus"></ion-toggle>
+      </ion-col>
+      <ion-col size="2" class="right-align">
+        <ion-button fill="clear" size="small" id="exactBonusInfo">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </ion-button>
+        <ion-popover [keepContentsMounted]="true" trigger="exactBonusInfo">
+          <ng-template>
+            <ion-content class="ion-padding">If enabled, users get bonus points for exact match results.</ion-content>
+          </ng-template>
+        </ion-popover>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div *ngIf="settingsForm.value.allowExactResultBonus">
+    <ion-label class="form-label">Bonus Calculation Type</ion-label>
+    <ion-select formControlName="exactResultBonusCalculation">
+      <ion-select-option *ngFor="let type of exactBonusTypes" [value]="type.value">
+        {{ type.label }}
+      </ion-select-option>
+    </ion-select>
+
+    <ion-label class="form-label">Exact Result Bonus Value</ion-label>
+    <ion-input type="number" formControlName="exactResultBonus" placeholder="Enter bonus value"></ion-input>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Who Qualifies Bets -->
+  <ion-grid class="settings-grid">
+    <ion-row class="align-center">
+      <ion-col size="8" class="left-align">
+        <ion-label>Allow Who Qualifies Bets</ion-label>
+      </ion-col>
+      <ion-col size="2" class="right-align">
+        <ion-toggle formControlName="allowWhoQualifiesBets"></ion-toggle>
+      </ion-col>
+      <ion-col size="2" class="right-align">
+        <ion-button fill="clear" size="small" id="whoQualifiesInfo">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </ion-button>
+        <ion-popover [keepContentsMounted]="true" trigger="whoQualifiesInfo">
+          <ng-template>
+            <ion-content class="ion-padding">Allows betting on which team qualifies in knockout rounds.</ion-content>
+          </ng-template>
+        </ion-popover>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <hr class="divider" />
+
+  <!-- Bet Bonus Amount -->
+  <ion-grid class="settings-grid">
+    <ion-row class="align-center">
+      <ion-col size="8" class="left-align">
+        <ion-label>Allow Bets with Bonus Amount</ion-label>
+      </ion-col>
+      <ion-col size="2" class="right-align">
+        <ion-toggle formControlName="allowBetsWithBonusAmount"></ion-toggle>
+      </ion-col>
+      <ion-col size="2" class="right-align">
+        <ion-button fill="clear" size="small" id="bonusAmountInfo">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </ion-button>
+        <ion-popover [keepContentsMounted]="true" trigger="bonusAmountInfo">
+          <ng-template>
+            <ion-content class="ion-padding">Users can increase base odds with additional bet points.</ion-content>
+          </ng-template>
+        </ion-popover>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div *ngIf="settingsForm.value.allowBetsWithBonusAmount">
+    <ion-label class="form-label">Max Bet Booster</ion-label>
+    <ion-range min="1" max="5" step="1" formControlName="maxBetBooster"></ion-range>
+
+    <ion-label class="form-label">Total Bonus Amount</ion-label>
+    <ion-input type="number" formControlName="totalBonusAmount" placeholder="Enter max booster points"></ion-input>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Non-Submitted Bet Penalty -->
+  <ion-grid class="settings-grid">
+    <ion-row class="align-center">
+      <ion-col size="8" class="left-align">
+        <ion-label>Apply Penalty for No Bet</ion-label>
+      </ion-col>
+      <ion-col size="2" class="right-align">
+        <ion-toggle formControlName="allowNonSubmittedBetsPenalty"></ion-toggle>
+      </ion-col>
+      <ion-col size="2" class="right-align">
+        <ion-button fill="clear" size="small" id="penaltyInfo">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </ion-button>
+        <ion-popover [keepContentsMounted]="true" trigger="penaltyInfo">
+          <ng-template>
+            <ion-content class="ion-padding">If enabled, missing bets will incur a penalty.</ion-content>
+          </ng-template>
+        </ion-popover>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div *ngIf="settingsForm.value.allowNonSubmittedBetsPenalty">
+    <ion-label class="form-label">Penalty Points</ion-label>
+    <ion-input type="number" formControlName="nonSubmittedBetPenalty" placeholder="Enter penalty value"></ion-input>
+  </div>
+
+  <ion-button expand="full" (click)="saveSettings()" color="primary">
+    Save Settings
+  </ion-button>
+  
+</form>

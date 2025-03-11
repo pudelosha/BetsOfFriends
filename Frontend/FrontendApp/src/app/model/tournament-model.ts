@@ -43,6 +43,22 @@ export interface Tournament {
   teams: Team[];
   matches: Match[];
   users?: User[]; // Optional users array
+  settings?: TournamentSettings; // Optional tournament settings
+}
+
+export interface TournamentSettings {
+  allowExactResultBonus: boolean;
+  exactResultBonusCalculation: 'FixedValue' | 'OddMultiplied'; // Stored as string
+  exactResultBonus: number | null;
+
+  allowWhoQualifiesBets: boolean;
+
+  allowBetsWithBonusAmount: boolean;
+  maxBetBooster: number;
+  totalBonusAmount: number | null;
+
+  allowNonSubmittedBetsPenalty: boolean;
+  nonSubmittedBetPenalty: number | null;
 }
 
 export interface UserActiveTournament {

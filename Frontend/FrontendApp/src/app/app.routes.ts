@@ -27,6 +27,7 @@ export const routes: Routes = [
       { path: 'stage-matches-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-matches-management/stage-matches-management.page').then(m => m.StageMatchesManagementPage), canActivate: [AuthGuard], data: { role: 'User' } },
       { path: 'stage-users-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-users-management/stage-users-management.page').then(m => m.StageUsersManagementPage), canActivate: [AuthGuard], data: { role: 'User' } },
       { path: 'stage-summary', loadComponent: () => import('./pages/tournaments/manage/stages/stage-summary/stage-summary.page').then(m => m.StageSummaryPage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'stage-settings', loadComponent: () => import('./pages/tournaments/manage/stages/stage-settings/stage-settings.page').then( m => m.StageSettingsPage), canActivate: [AuthGuard], data: { role: 'User' } },
     ]
   },
 
@@ -90,6 +91,8 @@ export const routes: Routes = [
 
   // Default and wildcard routes
   { path: '**', redirectTo: 'welcome' },
+
+
 
 
 

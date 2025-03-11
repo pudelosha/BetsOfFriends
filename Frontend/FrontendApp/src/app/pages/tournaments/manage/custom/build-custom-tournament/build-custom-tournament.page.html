@@ -2,23 +2,29 @@
   <div class="page-container">
     <div *ngIf="step === 1">
       <app-stage-input-type
-      [showPredefinedImport]="true"
-      [tournamentForm]="tournamentForm"
-      (teamsExtracted)="handleTeamsExtracted($event)"
-      (matchesExtracted)="handleMatchesExtracted($event)"
-      (tournamentSelected)="populateForm($event)">
-    </app-stage-input-type>
-    
+        [showPredefinedImport]="true"
+        [tournamentForm]="tournamentForm"
+        (teamsExtracted)="handleTeamsExtracted($event)"
+        (matchesExtracted)="handleMatchesExtracted($event)"
+        (tournamentSelected)="populateForm($event)">
+      </app-stage-input-type>   
+    </div>
+
+    <div *ngIf="step ===2">
+        <app-stage-settings
+        [settingsData]="settingsGroup.value"
+        (settingsUpdated)="handleSettingsUpdated($event)">
+      </app-stage-settings>
     </div>
   
-    <div *ngIf="step === 2">
+    <div *ngIf="step === 3">
       <app-stage-teams-management
         [teamsArray]="teamsArray"
         (teamsUpdated)="handleTeamsUpdated($event)">
       </app-stage-teams-management>
     </div>
     
-    <div *ngIf="step === 3">
+    <div *ngIf="step === 4">
       <app-stage-matches-management
         [matchesArray]="matchesArray"
         [teamsArray]="teamsArray.value"
@@ -26,14 +32,14 @@
       </app-stage-matches-management>
     </div>
   
-    <div *ngIf="step === 4">
+    <div *ngIf="step === 5">
       <app-stage-users-management
         [usersArray]="usersArray"
         (usersUpdated)="handleUsersUpdated($event)">
       </app-stage-users-management>
     </div>
 
-    <div *ngIf="step === 5">
+    <div *ngIf="step === 6">
       <app-stage-summary
         [tournamentName]="tournamentForm.get('tournamentName')?.value"
         [teamsArray]="teamsArray.value"
@@ -56,14 +62,14 @@
       <!-- Slot 2: Add / Submit Button -->
       <div class="button-slot">
         <ion-button
-          *ngIf="step === 2 || step === 3 || step === 4"
+          *ngIf="step === 3 || step === 4 || step === 5"
           class="third-width"
           (click)="openAddModal()">
           Add
         </ion-button>
     
         <ion-button
-          *ngIf="step === 5"
+          *ngIf="step === 6"
           class="third-width"
           (click)="submitTournament()">
           Submit
@@ -73,7 +79,7 @@
       <!-- Slot 3: Next Button -->
       <div class="button-slot">
         <ion-button
-          *ngIf="step !== 5"
+          *ngIf="step !== 6"
           class="third-width"
           (click)="nextStep()">
           Next
