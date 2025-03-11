@@ -84,10 +84,10 @@ export class MyBetsPlacedPage {
   
       const betUpdate: BetUpdateDto = {
         baseAmount: 1,
-        bonusAmount: null,
-        homeGoals: data.homeGoals,
-        awayGoals: data.awayGoals,
-        qualifiedTeam: data.qualifies
+        bonusAmount: null, // Always null for now
+        homeGoals: data.playerHomeGoals,
+        awayGoals: data.playerAwayGoals,
+        qualifiedTeam: data.playerQualifiedTeam,
       };
   
       try {

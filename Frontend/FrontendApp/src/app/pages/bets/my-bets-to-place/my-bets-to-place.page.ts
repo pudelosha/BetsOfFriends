@@ -81,13 +81,12 @@ export class MyBetsToPlacePage implements OnInit {
     if (data) {
       console.log("Updated Bet Data:", data);
   
-      // Construct `BetUpdateDto` for backend
       const betUpdate: BetUpdateDto = {
-        baseAmount: 1, // Always 1
+        baseAmount: 1,
         bonusAmount: null, // Always null for now
-        homeGoals: data.homeGoals,
-        awayGoals: data.awayGoals,
-        qualifiedTeam: data.qualifies
+        homeGoals: data.playerHomeGoals,
+        awayGoals: data.playerAwayGoals,
+        qualifiedTeam: data.playerQualifiedTeam,
       };
   
       try {

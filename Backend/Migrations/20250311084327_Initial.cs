@@ -239,7 +239,7 @@ namespace Backend.Migrations
                     HomeTeamId = table.Column<int>(type: "int", nullable: false),
                     AwayTeamId = table.Column<int>(type: "int", nullable: false),
                     MatchStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BetType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
                     HomeWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DrawOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AwayWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -333,13 +333,14 @@ namespace Backend.Migrations
                     MatchStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     HomeScore = table.Column<int>(type: "int", nullable: true),
                     AwayScore = table.Column<int>(type: "int", nullable: true),
-                    BetType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Qualified = table.Column<int>(type: "int", nullable: true),
                     HomeWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DrawOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AwayWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     HomeQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     AwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

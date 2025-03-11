@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250306091020_Initial")]
+    [Migration("20250311084327_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -170,10 +170,6 @@ namespace Backend.Migrations
                     b.Property<decimal>("AwayWinOdds")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("BetType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("DrawOdds")
                         .HasColumnType("decimal(18,2)");
 
@@ -192,6 +188,9 @@ namespace Backend.Migrations
                     b.Property<DateTime>("MatchStart")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("Qualified")
+                        .HasColumnType("int");
+
                     b.Property<string>("Stage")
                         .HasColumnType("nvarchar(max)");
 
@@ -199,6 +198,9 @@ namespace Backend.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("TournamentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("MatchId");
@@ -352,10 +354,6 @@ namespace Backend.Migrations
                     b.Property<decimal>("AwayWinOdds")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("BetType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("DrawOdds")
                         .HasColumnType("decimal(18,2)");
 
@@ -377,6 +375,9 @@ namespace Backend.Migrations
                     b.Property<string>("Stage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("MatchId");
 

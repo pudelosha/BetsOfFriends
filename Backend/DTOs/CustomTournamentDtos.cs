@@ -50,7 +50,7 @@ namespace Backend.DTOs
         public string AwayTeam { get; set; } = string.Empty;
 
         [Required]
-        public string BetType { get; set; } = "90min"; // Default value if missing
+        public string MatchType { get; set; } = "Regular90Min"; // Default value if missing
 
         public decimal HomeWinOdds { get; set; }
         public decimal DrawOdds { get; set; }

@@ -10,20 +10,20 @@ export interface Bet {
 
   playerHomeGoals?: number | null;
   playerAwayGoals?: number | null;
+  playerQualifiedTeam: 'Home' | 'Away' | 'Neutral' | null;
   actualHomeGoals?: number | null;
   actualAwayGoals?: number | null;
-
+  actualQualifiedTeam?: 'Home' | 'Away' | null;
+ 
   homeOdds: number;
   drawOdds: number;
   awayOdds: number;
-
   qualifyHomeOdds?: number | null;
   qualifyAwayOdds?: number | null;
 
-  qualifiedTeam?: 'Home' | 'Away' | null;
-
   status: 'ToPlace' | 'Placed' | 'Finalised';
   result: 'Pending' | 'Won' | 'Lost';
+  type: 'Regular90Min' | 'ExtendedWithQualification'
 }
 
 export interface BetUpdateDto {

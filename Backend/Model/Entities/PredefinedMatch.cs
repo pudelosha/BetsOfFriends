@@ -29,7 +29,7 @@ namespace Backend.Model.Entities
         public DateTime MatchStart { get; set; }
 
         [Required]
-        public string BetType { get; set; } = string.Empty;
+        public CustomMatch.MatchType Type { get; set; } = CustomMatch.MatchType.Regular90Min;
 
         public decimal HomeWinOdds { get; set; }
         public decimal DrawOdds { get; set; }

@@ -18,7 +18,7 @@ export interface Match {
   awayTeam: string;
 
   matchStart: string;
-  betType: string;
+  matchType: string;
   homeWinOdds: number;
   drawOdds: number;
   awayWinOdds: number;

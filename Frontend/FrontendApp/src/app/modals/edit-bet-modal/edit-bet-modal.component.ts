@@ -24,9 +24,8 @@ export class EditBetModalComponent implements AfterViewInit {
     this._bet = value;
     this.homeGoals = value.playerHomeGoals ?? 0;
     this.awayGoals = value.playerAwayGoals ?? 0;
-    this.qualifySelection = value.qualifiedTeam === 'Home' ? 'home' 
-                          : value.qualifiedTeam === 'Away' ? 'away' 
-                          : 'neutral';
+    this.actualQualifiedTeam = value.actualQualifiedTeam ?? null;
+    this.playerQualifiedTeam = value.playerQualifiedTeam ?? 'Neutral';
   }
   get bet(): Bet {
     return this._bet;
@@ -34,7 +33,8 @@ export class EditBetModalComponent implements AfterViewInit {
 
   homeGoals: number = 0;
   awayGoals: number = 0;
-  qualifySelection: string = 'neutral';
+  actualQualifiedTeam: 'Home' | 'Away' | null = null;
+  playerQualifiedTeam: 'Home' | 'Away' | 'Neutral' | null = 'Neutral'
 
   constructor(private modalCtrl: ModalController, private toastController: ToastController) {}
 
@@ -45,32 +45,34 @@ export class EditBetModalComponent implements AfterViewInit {
       console.error("Error: Bet is undefined!");
       return;
     }
-
-    const qualificationRequired = this._bet.qualifyHomeOdds !== null && this._bet.qualifyAwayOdds !== null;
   
-    if (qualificationRequired && this.qualifySelection === 'neutral') {
+    // Log the original bet data before modification
+    console.log("Original Bet Data Before Saving:", JSON.parse(JSON.stringify(this._bet)));
+  
+    // Check if qualification is required (only for ExtendedWithQualification)
+    const qualificationRequired = this._bet.type === 'ExtendedWithQualification' &&
+                                  this._bet.qualifyHomeOdds !== null && 
+                                  this._bet.qualifyAwayOdds !== null;
+  
+    if (qualificationRequired && this.playerQualifiedTeam === 'Neutral') {
       this.showToast('Please select the team that qualifies.', 'warning');
       return;
     }
   
-    const qualifiedTeam =
-      this.qualifySelection === 'home' ? 'Home' :
-      this.qualifySelection === 'away' ? 'Away' :
-      null;
+    // Create object to emit
+    const emittedBet = {
+      playerHomeGoals: this.homeGoals,
+      playerAwayGoals: this.awayGoals,
+      playerQualifiedTeam: this.playerQualifiedTeam,
+      actualQualifiedTeam: this.actualQualifiedTeam
+    };
   
-    console.log("Bet Saved:", {
-      match: this._bet.matchId,
-      predictedScore: `${this.homeGoals}-${this.awayGoals}`,
-      qualifies: qualifiedTeam
-    });
+    // Log the emitted bet data
+    console.log("Emitting Bet Data:", emittedBet);
   
-    this.modalCtrl.dismiss({
-      homeGoals: this.homeGoals,
-      awayGoals: this.awayGoals,
-      qualifies: qualifiedTeam
-    });
+    this.modalCtrl.dismiss(emittedBet);
   }
-  
+    
   closeModal() {
     this.modalCtrl.dismiss();
   }

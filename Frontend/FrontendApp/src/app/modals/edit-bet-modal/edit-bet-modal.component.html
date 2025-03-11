@@ -65,39 +65,39 @@
     </ion-row>
   </ion-grid>
 
-  <!-- Divider Line -->
-  <div class="divider"></div>
+  <!-- Qualification Odds Section (Visible Only for 'ExtendedWithQualification') -->
+  <ng-container *ngIf="bet.type === 'ExtendedWithQualification'">
+    <div class="divider"></div>
 
-  <!-- Qualification Odds -->
-  <ion-label class="section-title">Who Qualifies? Odds</ion-label>
+    <ion-label class="section-title">Who Qualifies? Odds</ion-label>
 
-  <ion-grid>
-    <ion-row class="odds-labels">
-      <ion-col>{{ bet.teamHome }}</ion-col>
-      <ion-col>{{ bet.teamAway }}</ion-col>
-    </ion-row>
-  </ion-grid>
+    <ion-grid>
+      <ion-row class="odds-labels">
+        <ion-col>{{ bet.teamHome }}</ion-col>
+        <ion-col>{{ bet.teamAway }}</ion-col>
+      </ion-row>
+    </ion-grid>
 
-  <ion-grid>
-    <ion-row class="odds-row">
-      <ion-col>{{ bet.qualifyHomeOdds ?? '-' }}</ion-col>
-      <ion-col>{{ bet.qualifyAwayOdds ?? '-' }}</ion-col>
-    </ion-row>
-  </ion-grid>
+    <ion-grid>
+      <ion-row class="odds-row">
+        <ion-col>{{ bet.qualifyHomeOdds ?? '-' }}</ion-col>
+        <ion-col>{{ bet.qualifyAwayOdds ?? '-' }}</ion-col>
+      </ion-row>
+    </ion-grid>
 
-  <!-- Divider Line -->
-  <div class="divider"></div>
+    <div class="divider"></div>
 
-  <!-- Who Qualifies? Selection -->
-  <ion-label class="section-title">Select the Qualifying Team</ion-label>
+    <!-- Player's Prediction: Who Do You Think Qualifies? -->
+    <ion-label class="section-title">Your Qualification Prediction</ion-label>
 
-  <ion-item class="full-width no-padding">
-    <ion-segment [(ngModel)]="qualifySelection" class="full-width">
-      <ion-segment-button value="home" class="segment-home">{{ bet.teamHome }}</ion-segment-button>
-      <ion-segment-button value="neutral" class="segment-neutral">-</ion-segment-button>
-      <ion-segment-button value="away" class="segment-away">{{ bet.teamAway }}</ion-segment-button>
-    </ion-segment>
-  </ion-item>
+    <ion-item class="full-width no-padding">
+      <ion-segment [(ngModel)]="playerQualifiedTeam" class="full-width">
+        <ion-segment-button value="Home" class="segment-home">{{ bet.teamHome }}</ion-segment-button>
+        <ion-segment-button value="Neutral" class="segment-neutral">-</ion-segment-button>
+        <ion-segment-button value="Away" class="segment-away">{{ bet.teamAway }}</ion-segment-button>
+      </ion-segment>
+    </ion-item>
+  </ng-container>
 
   <!-- Save Button -->
   <ion-button expand="full" (click)="saveBet()">Save</ion-button>

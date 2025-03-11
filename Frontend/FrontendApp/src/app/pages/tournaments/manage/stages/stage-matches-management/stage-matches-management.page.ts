@@ -63,7 +63,7 @@ export class StageMatchesManagementPage implements OnInit {
           awayTeam: result.data.awayTeam,
 
           matchStart: result.data.matchStart || '',
-          betType: result.data.betType || '90min',
+          matchType: result.data.matchType || 'Regular90Min',
           homeWinOdds: result.data.homeWinOdds ?? 0,
           drawOdds: result.data.drawOdds ?? 0,
           awayWinOdds: result.data.awayWinOdds ?? 0,
@@ -72,6 +72,8 @@ export class StageMatchesManagementPage implements OnInit {
         };
 
         this.matchesArray.push(buildMatchFormGroup(this.fb, newMatch));
+        console.log('match before emit');
+        console.log(newMatch);
         this.emitMatches();
         console.log('Added New Match:', newMatch);
       }
@@ -83,6 +85,8 @@ export class StageMatchesManagementPage implements OnInit {
   // Open edit modal for a match
   async openEditModal(index?: number) {
     const existingMatch = index !== undefined ? this.getMatchControl(index).value : null;
+
+    console.log(existingMatch);
 
     const modal = await this.modalController.create({
       component: EditMatchModalComponent,
@@ -109,7 +113,7 @@ export class StageMatchesManagementPage implements OnInit {
           awayTeam: result.data.awayTeam,
 
           matchStart: result.data.matchStart || '',
-          betType: result.data.betType || '90min',
+          matchType: result.data.matchType || 'Regular90Min',
           homeWinOdds: result.data.homeWinOdds ?? 0,
           drawOdds: result.data.drawOdds ?? 0,
           awayWinOdds: result.data.awayWinOdds ?? 0,
@@ -124,6 +128,7 @@ export class StageMatchesManagementPage implements OnInit {
           this.matchesArray.push(buildMatchFormGroup(this.fb, updatedMatch));
         }        
 
+        console.log('match before emit ' + updatedMatch)
         this.emitMatches();
         console.log('Updated Match:', updatedMatch);
       }
@@ -176,7 +181,7 @@ export class StageMatchesManagementPage implements OnInit {
       awayTeam: match.awayTeam,
 
       matchStart: match.matchStart,
-      betType: match.betType,
+      matchType: match.matchType,
       homeWinOdds: match.homeWinOdds,
       drawOdds: match.drawOdds,
       awayWinOdds: match.awayWinOdds,

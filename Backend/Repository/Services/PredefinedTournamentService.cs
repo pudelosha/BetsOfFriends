@@ -57,7 +57,7 @@ namespace Backend.Repository.Services
                     HomeTeamId = teamMap.TryGetValue(m.HomeTeam, out var homeId) ? homeId : throw new Exception($"Home team '{m.HomeTeam}' not found."),
                     AwayTeamId = teamMap.TryGetValue(m.AwayTeam, out var awayId) ? awayId : throw new Exception($"Away team '{m.AwayTeam}' not found."),
                     MatchStart = DateTime.SpecifyKind(m.MatchStart, DateTimeKind.Utc),
-                    BetType = m.BetType,
+                    Type = Enum.Parse<CustomMatch.MatchType>(m.MatchType),
                     HomeWinOdds = m.HomeWinOdds,
                     DrawOdds = m.DrawOdds,
                     AwayWinOdds = m.AwayWinOdds,
@@ -165,7 +165,7 @@ namespace Backend.Repository.Services
                         match.HomeTeamId = matchDto.HomeTeamId.Value;
                         match.AwayTeamId = matchDto.AwayTeamId.Value;
                         match.MatchStart = DateTime.SpecifyKind(matchDto.MatchStart, DateTimeKind.Utc);
-                        match.BetType = matchDto.BetType;
+                        match.Type = Enum.Parse<CustomMatch.MatchType>(matchDto.MatchType);
                         match.HomeWinOdds = matchDto.HomeWinOdds;
                         match.DrawOdds = matchDto.DrawOdds;
                         match.AwayWinOdds = matchDto.AwayWinOdds;
@@ -191,7 +191,7 @@ namespace Backend.Repository.Services
                         HomeTeamId = homeTeamId,
                         AwayTeamId = awayTeamId,
                         MatchStart = DateTime.SpecifyKind(newMatchDto.MatchStart, DateTimeKind.Utc),
-                        BetType = newMatchDto.BetType,
+                        Type = Enum.Parse<CustomMatch.MatchType>(newMatchDto.MatchType),
                         HomeWinOdds = newMatchDto.HomeWinOdds,
                         DrawOdds = newMatchDto.DrawOdds,
                         AwayWinOdds = newMatchDto.AwayWinOdds,
@@ -274,7 +274,7 @@ namespace Backend.Repository.Services
                         HomeTeam = match.HomeTeam.TeamName,
                         AwayTeamId = match.AwayTeamId,
                         AwayTeam = match.AwayTeam.TeamName,
-                        BetType = match.BetType,
+                        MatchType = match.Type.ToString(),
                         MatchStart = match.MatchStart,
                         HomeWinOdds = match.HomeWinOdds,
                         DrawOdds = match.DrawOdds,

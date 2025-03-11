@@ -25,6 +25,8 @@ export class EditMatchResultModalComponent implements AfterViewInit {
     this.homeScore = value.homeScore ?? 0;
     this.awayScore = value.awayScore ?? 0;
     this.matchStart = value.matchStart;
+    this.matchType = value.matchType;
+    this.isFinished = value.isFinished ?? false;
     this.qualifySelection = value.qualifiedTeam === 'Home' ? 'home' 
       : value.qualifiedTeam === 'Away' ? 'away' 
       : 'neutral';
@@ -37,6 +39,8 @@ export class EditMatchResultModalComponent implements AfterViewInit {
   homeScore: number = 0;
   awayScore: number = 0;
   matchStart: string = '';
+  matchType: 'Regular90Min' | 'ExtendedWithQualification' = 'Regular90Min';
+  isFinished: boolean = false;
   qualifySelection: string = 'neutral';
 
   constructor(private modalCtrl: ModalController, private toastController: ToastController) {}
@@ -49,9 +53,7 @@ export class EditMatchResultModalComponent implements AfterViewInit {
       return;
     }
 
-    // Qualification selection validation (only if qualification odds exist)
-    const qualificationRequired = true; //TODO temp solution
-    if (qualificationRequired && this.qualifySelection === 'neutral') {
+    if (this.isFinished && this.matchType === 'ExtendedWithQualification' && this.qualifySelection === 'neutral') {
       this.showToast('Please select the team that qualifies.', 'warning');
       return;
     }
@@ -64,16 +66,18 @@ export class EditMatchResultModalComponent implements AfterViewInit {
     console.log("Match Result Saved:", {
       matchId: this.matchId,
       newMatchStart: this.matchStart,
-      finalScore: `${this.homeScore}-${this.awayScore}`,
-      qualifies: qualifiedTeam
+      finalScore: this.isFinished ? `${this.homeScore}-${this.awayScore}` : 'Match not finished',
+      qualifies: this.isFinished ? qualifiedTeam : null,
+      isFinished: this.isFinished
     });
 
     this.modalCtrl.dismiss({
       matchId: this.matchId,
       matchStart: this.matchStart,
-      homeScore: this.homeScore,
-      awayScore: this.awayScore,
-      qualifies: qualifiedTeam
+      homeScore: this.isFinished ? this.homeScore : null,
+      awayScore: this.isFinished ? this.awayScore : null,
+      qualifiedTeam: this.isFinished ? qualifiedTeam : null,
+      isFinished: this.isFinished
     });
   }
 

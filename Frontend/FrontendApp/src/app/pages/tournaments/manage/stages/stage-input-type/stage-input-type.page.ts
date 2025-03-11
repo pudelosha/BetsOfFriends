@@ -197,7 +197,7 @@ export class StageInputTypePage implements OnInit {
           awayTeam: awayTeamName,
 
           matchStart: this.convertToTimestamp(row['Date'], row['Time'], row['UTC Offset']),
-          betType: row['Bet Type'] || 'default',
+          matchType: row['Match Type'] || 'default',
 
           homeWinOdds: this.parseOdds(row['Home Win Odds']) ?? 0,
           drawOdds: this.parseOdds(row['Draw Odds']) ?? 0,

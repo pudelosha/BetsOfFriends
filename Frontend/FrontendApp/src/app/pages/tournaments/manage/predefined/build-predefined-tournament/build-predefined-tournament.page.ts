@@ -173,7 +173,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
           awayTeam: [awayTeam?.teamName || match.awayTeam], // Ensure correct team name
   
           matchStart: [new Date(match.matchStart).toISOString()],
-          betType: [match.betType || '90min'],
+          matchType: [match.matchType || 'Regular90Min'],
           homeWinOdds: [match.homeWinOdds],
           drawOdds: [match.drawOdds],
           awayWinOdds: [match.awayWinOdds],
@@ -203,7 +203,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
       awayTeam: [match.awayTeam],
   
       matchStart: [match.matchStart],
-      betType: [match.betType || '90min'],
+      matchType: [match.matchType || 'Regular90Min'],
       homeWinOdds: [match.homeWinOdds ?? 0],
       drawOdds: [match.drawOdds ?? 0],
       awayWinOdds: [match.awayWinOdds ?? 0],
@@ -376,7 +376,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
         awayTeamId: isEditing ? match.awayTeamId || null : null,
         homeTeam: match.homeTeam,
         awayTeam: match.awayTeam,
-        betType: match.betType || '90min',
+        matchType: match.matchType || 'Regular90Min',
         matchStart: new Date(match.matchStart).toISOString(),
         homeWinOdds: match.homeWinOdds,
         drawOdds: match.drawOdds,

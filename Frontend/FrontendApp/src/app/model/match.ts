@@ -1,15 +1,15 @@
 export interface Match {
-    matchId: number;
-    
-    homeTeam: string;
-    awayTeam: string;
-    matchStart: string;
+  matchId: number;
+  homeTeam: string;
+  awayTeam: string;
+  matchStart: string;
   
-    homeScore?: number | null;
-    awayScore?: number | null;
+  homeScore?: number | null;
+  awayScore?: number | null;
   
-    status: 'Upcoming' | 'InProgress' | 'Finalized';  // Match status
-
-    qualifiedTeam?: 'Home' | 'Away' | null; 
-  }
+  status: 'Upcoming' | 'InProgress' | 'Finalized';  
+  qualifiedTeam?: 'Home' | 'Away' | null;
   
+  matchType: 'Regular90Min' | 'ExtendedWithQualification';
+  isFinished?: boolean;
+}

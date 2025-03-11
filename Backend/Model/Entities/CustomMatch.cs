@@ -24,9 +24,8 @@ namespace Backend.Model.Entities
 
         public int? HomeScore { get; set; }
         public int? AwayScore { get; set; }
+        public TeamQualified? Qualified { get; set; }
 
-        [Required]
-        public string BetType { get; set; } = string.Empty;
 
         // Betting Odds
         public decimal HomeWinOdds { get; set; }
@@ -36,6 +35,7 @@ namespace Backend.Model.Entities
         public decimal? AwayQualifies { get; set; }
 
         public MatchStatus Status { get; set; } = MatchStatus.Upcoming;
+        public MatchType Type { get; set; } = MatchType.Regular90Min;
 
         public ICollection<Bet> Bets { get; set; } = new List<Bet>();
 
@@ -44,6 +44,18 @@ namespace Backend.Model.Entities
             Upcoming,
             InProgress,
             Finalised
+        }
+
+        public enum MatchType
+        {
+            Regular90Min,
+            ExtendedWithQualification
+        }
+
+        public enum TeamQualified
+        {
+            Home,
+            Away
         }
     }
 }

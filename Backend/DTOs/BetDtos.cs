@@ -26,8 +26,10 @@ namespace Backend.DTOs
 
         public int? PlayerHomeGoals { get; set; }
         public int? PlayerAwayGoals { get; set; }
+        public string? PlayerQualifiedTeam { get; set; }
         public int? ActualHomeGoals { get; set; }
         public int? ActualAwayGoals { get; set; }
+        public string? ActualQualifiedTeam { get; set; }
 
         public decimal HomeOdds { get; set; }
         public decimal DrawOdds { get; set; }
@@ -36,9 +38,10 @@ namespace Backend.DTOs
         public decimal? QualifyHomeOdds { get; set; }
         public decimal? QualifyAwayOdds { get; set; }
 
-        public string? QualifiedTeam { get; set; }
+
         public string Status { get; set; }
         public string Result { get; set; }
+        public string Type { get; set; }
     }
 
     public class BetStatsDto

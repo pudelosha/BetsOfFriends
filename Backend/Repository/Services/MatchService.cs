@@ -68,7 +68,10 @@ namespace Backend.Repository.Services
                     MatchStart = m.MatchStart,
                     HomeScore = m.HomeScore,
                     AwayScore = m.AwayScore,
-                    MatchStatus = m.Status.ToString()
+                    QualifiedTeam = m.Qualified.HasValue ? m.Qualified.ToString() : null,
+                    Status = m.Status.ToString(),
+                    MatchType = m.Type.ToString(),
+                    IsFinished = m.Status == MatchStatus.Finalised
                 }).ToList();
             }
             catch (Exception ex)
@@ -104,33 +107,56 @@ namespace Backend.Repository.Services
                     return false; // Forbidden
                 }
 
-                // Update match details
-                match.MatchStart = matchUpdateDto.MatchStart;
-                match.HomeScore = matchUpdateDto.HomeScore;
-                match.AwayScore = matchUpdateDto.AwayScore;
-                if (matchUpdateDto.HomeScore.HasValue && matchUpdateDto.AwayScore.HasValue)
+                // Update match start time if different
+                if (match.MatchStart != matchUpdateDto.MatchStart)
                 {
+                    _logger.LogInformation($"Updating match start time for Match ID {match.MatchId}");
+                    match.MatchStart = matchUpdateDto.MatchStart;
+                }
+
+                // If the match is finished
+                if (matchUpdateDto.IsFinished)
+                {
+                    _logger.LogInformation($"Finalizing match ID {match.MatchId}");
+
+                    // Update scores
+                    match.HomeScore = matchUpdateDto.HomeScore;
+                    match.AwayScore = matchUpdateDto.AwayScore;
+
+                    // If match type is ExtendedWithQualification, update qualified team
+                    if (match.Type == CustomMatch.MatchType.ExtendedWithQualification)
+                    {
+                        if (!string.IsNullOrEmpty(matchUpdateDto.QualifiedTeam))
+                        {
+                            if (Enum.TryParse(matchUpdateDto.QualifiedTeam, out CustomMatch.TeamQualified qualifiedTeam))
+                            {
+                                match.Qualified = qualifiedTeam;
+                            }
+                            else
+                            {
+                                _logger.LogWarning($"Invalid QualifiedTeam value: {matchUpdateDto.QualifiedTeam}");
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            match.Qualified = null; // Reset if no selection
+                        }
+                    }
+
+                    // Set match as Finalized
                     match.Status = MatchStatus.Finalised;
                 }
                 else
                 {
-                    match.Status = MatchStatus.InProgress;
-                }
+                    // Reset match details if it's not finished
+                    _logger.LogInformation($"Resetting match ID {match.MatchId} to Upcoming");
 
-                //TODO update later
-                //if (!string.IsNullOrEmpty(matchUpdateDto.QualifiedTeam))
-                //{
-                //    if (!Enum.TryParse(matchUpdateDto.QualifiedTeam, out CustomMatch.Team qualifiedTeam))
-                //    {
-                //        _logger.LogWarning($"Invalid QualifiedTeam value: {matchUpdateDto.QualifiedTeam}");
-                //        return false;
-                //    }
-                //    match.QualifiedTeam = qualifiedTeam;
-                //}
-                //else
-                //{
-                //    match.QualifiedTeam = null; // Reset if no selection
-                //}
+                    match.HomeScore = null;
+                    match.AwayScore = null;
+                    match.Qualified = null;
+                    match.Status = MatchStatus.Upcoming;
+                }
 
                 await _context.SaveChangesAsync();
                 _logger.LogInformation($"Match ID {matchUpdateDto.MatchId} updated successfully by User {userId}.");

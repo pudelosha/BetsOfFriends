@@ -23,8 +23,8 @@ export class EditMatchModalComponent implements OnInit {
     private toastController: ToastController
   ) {
     this.matchForm = this.fb.group({
-      frontendId: [null],  
-      backendId: [null],    
+      matchFrontendId: [null],  
+      matchId: [null],    
 
       stage: ['', Validators.required],  
       homeTeamFrontendId: [null],  
@@ -36,12 +36,17 @@ export class EditMatchModalComponent implements OnInit {
       awayTeam: ['', Validators.required],  
 
       matchStart: ['', Validators.required],  
-      betType: ['90min', Validators.required],  
+      matchType: ['Regular90Min', Validators.required],  
       homeWinOdds: [null, Validators.required],  
       drawOdds: [null, Validators.required],  
       awayWinOdds: [null, Validators.required],  
       homeQualifies: [null],  
       awayQualifies: [null],  
+    });
+
+    // Listen for matchType changes
+    this.matchForm.get('matchType')?.valueChanges.subscribe((value) => {
+      this.toggleQualificationOddsValidation(value);
     });
   }
 
@@ -50,16 +55,35 @@ export class EditMatchModalComponent implements OnInit {
       // Ensure `frontendId` is retained
       this.matchForm.patchValue({
         ...this.match,
-        frontendId: this.match.frontendId || this.generateFrontendId(),
+        matchFrontendId: this.match.matchFrontendId || this.generateFrontendId(),
         homeTeamFrontendId: this.match.homeTeamFrontendId || null,
         awayTeamFrontendId: this.match.awayTeamFrontendId || null,
       });
     } else {
       // Generate `frontendId` for new matches
       this.matchForm.patchValue({
-        frontendId: this.generateFrontendId(),
+        matchFrontendId: this.generateFrontendId(),
       });
     }
+  }
+
+  // Function to dynamically apply validation
+  private toggleQualificationOddsValidation(matchType: string) {
+    const homeQualifiesControl = this.matchForm.get('homeQualifies');
+    const awayQualifiesControl = this.matchForm.get('awayQualifies');
+
+    if (matchType === 'ExtendedWithQualification') {
+      homeQualifiesControl?.setValidators([Validators.required]);
+      awayQualifiesControl?.setValidators([Validators.required]);
+    } else {
+      homeQualifiesControl?.clearValidators();
+      awayQualifiesControl?.clearValidators();
+      homeQualifiesControl?.setValue(null);
+      awayQualifiesControl?.setValue(null);
+    }
+
+    homeQualifiesControl?.updateValueAndValidity();
+    awayQualifiesControl?.updateValueAndValidity();
   }
 
   async saveMatch() {
@@ -68,43 +92,58 @@ export class EditMatchModalComponent implements OnInit {
       return;
     }
 
-    // Find selected team objects to ensure correct frontend and backend IDs
-    const selectedHomeTeam = this.teams.find(t => t.teamName === this.matchForm.value.homeTeam);
-    const selectedAwayTeam = this.teams.find(t => t.teamName === this.matchForm.value.awayTeam);
-
+    // If matchType is ExtendedWithQualification, validate homeQualifies and awayQualifies
+    if (this.matchForm.value.matchType === 'ExtendedWithQualification') {
+      if (this.matchForm.value.homeQualifies === null || this.matchForm.value.awayQualifies === null) {
+        this.showToast('Please provide qualification odds for both teams!', 'danger');
+        return;
+      }
+    }
+  
+    console.log('Teams Available:', this.teams);
+    console.log('Searching for Home Team:', this.matchForm.value.homeTeam);
+    console.log('Searching for Away Team:', this.matchForm.value.awayTeam);
+  
+    // Find selected team objects based on team name
+    const selectedHomeTeam = this.teams.find(t => t.teamName.trim().toLowerCase() === this.matchForm.value.homeTeam.trim().toLowerCase());
+    const selectedAwayTeam = this.teams.find(t => t.teamName.trim().toLowerCase() === this.matchForm.value.awayTeam.trim().toLowerCase());
+  
+    console.log('Found Home Team:', selectedHomeTeam);
+    console.log('Found Away Team:', selectedAwayTeam);
+  
     if (!selectedHomeTeam || !selectedAwayTeam) {
       this.showToast('Invalid team selection!', 'danger');
       return;
     }
-
+  
     const matchData = {
-      frontendId: this.matchForm.value.frontendId, // Ensure frontendId is retained
-      backendId: this.match?.backendId || null, // Retain backendId if editing
-
+      matchFrontendId: this.matchForm.value.matchFrontendId, // Ensure matchFrontendId is retained
+      matchId: this.match?.matchId || null, // Retain matchId if editing
+  
       stage: this.matchForm.value.stage || null,
-
-      homeTeamFrontendId: selectedHomeTeam.frontendId, // Ensure correct frontend ID
-      homeTeamId: selectedHomeTeam.backendId || null, // Use backend ID if available
+  
+      homeTeamFrontendId: selectedHomeTeam.teamFrontendId,
+      homeTeamId: selectedHomeTeam.teamId || null,
       homeTeam: selectedHomeTeam.teamName,
-
-      awayTeamFrontendId: selectedAwayTeam.frontendId, // Ensure correct frontend ID
-      awayTeamId: selectedAwayTeam.backendId || null, // Use backend ID if available
+    
+      awayTeamFrontendId: selectedAwayTeam.teamFrontendId,
+      awayTeamId: selectedAwayTeam.teamId || null,
       awayTeam: selectedAwayTeam.teamName,
-
+  
       matchStart: this.matchForm.value.matchStart || '',
-      betType: this.matchForm.value.betType || '90min',
+      matchType: this.matchForm.value.matchType || 'Regular90Min',
       homeWinOdds: this.matchForm.value.homeWinOdds || null,
       drawOdds: this.matchForm.value.drawOdds || null,
       awayWinOdds: this.matchForm.value.awayWinOdds || null,
       homeQualifies: this.matchForm.value.homeQualifies || null,
       awayQualifies: this.matchForm.value.awayQualifies || null,
     };
-
+  
     console.log('Saving Match:', matchData);
-
+  
     await this.modalController.dismiss(matchData);
     this.showToast(this.index !== undefined ? 'Match updated!' : 'New match added!', 'success');
-  }
+  }  
 
   closeModal() {
     this.modalController.dismiss(null);
@@ -121,6 +160,6 @@ export class EditMatchModalComponent implements OnInit {
   }
 
   private generateFrontendId(): string {
-    return 'match-' + Math.random().toString(36).substr(2, 9);
+    return 'M-' + Math.random().toString(36).substr(2, 9);
   }
 }

@@ -170,8 +170,10 @@ namespace Backend.Repository.Services
 
                     PlayerHomeGoals = b.HomeGoals,
                     PlayerAwayGoals = b.AwayGoals,
+                    PlayerQualifiedTeam = b.QualifiedTeam?.ToString(),
                     ActualHomeGoals = b.Match.HomeScore,
                     ActualAwayGoals = b.Match.AwayScore,
+                    ActualQualifiedTeam = b.Match.Qualified.ToString(),
 
                     HomeOdds = b.Match.HomeWinOdds,
                     DrawOdds = b.Match.DrawOdds,
@@ -180,9 +182,9 @@ namespace Backend.Repository.Services
                     QualifyHomeOdds = b.Match.HomeQualifies,
                     QualifyAwayOdds = b.Match.AwayQualifies,
 
-                    QualifiedTeam = b.QualifiedTeam?.ToString(),
                     Status = b.Status.ToString(),
-                    Result = b.Result.ToString()
+                    Result = b.Result.ToString(),
+                    Type = b.Match.Type.ToString()
                 }).ToList();
 
                 return betDtos;
@@ -253,7 +255,8 @@ namespace Backend.Repository.Services
 
                 // Step 1: Get all matches that are in the past AND are not Onhoing
                 var finalisedMatches = await _context.CustomMatches
-                    .Where(m => m.MatchStart < DateTime.UtcNow && m.Status != CustomMatch.MatchStatus.Upcoming)
+                    .Where(m => m.Status == CustomMatch.MatchStatus.Finalised ||
+                                (m.MatchStart < DateTime.UtcNow && m.Status != CustomMatch.MatchStatus.Upcoming))
                     .Select(m => m.MatchId)
                     .ToListAsync();
 
@@ -392,12 +395,7 @@ namespace Backend.Repository.Services
                     : "X"
                     : null;
 
-                string? resultQualified = "home";
-                //TODO fix this when mode is updated
-                //string? resultQualified = (match.HomeScore.HasValue && match.AwayScore.HasValue && match.HomeQualifies.HasValue && match.AwayQualifies.HasValue)
-                //    ? match.HomeQualifies > match.AwayQualifies ? "home"
-                //    : match.AwayQualifies > match.HomeQualifies ? "away"
-                //    : null;
+                string? resultQualified = match.Qualified.ToString();
 
                 // Create DTO
                 var betStats = new BetStatsDto

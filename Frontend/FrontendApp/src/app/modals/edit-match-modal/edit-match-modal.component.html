@@ -34,12 +34,12 @@
       </ion-select>
     </div>
 
-    <!-- Bet Type (Label + Selector in One Row) -->
+    <!-- Match Type (Label + Selector in One Row) -->
     <div class="match-row">
-      <ion-label class="selector-label">Bet Type</ion-label>
-      <ion-select formControlName="betType" class="wide-select">
-        <ion-select-option value="90min">90min</ion-select-option>
-        <ion-select-option value="90min+winner">90min+winner</ion-select-option>
+      <ion-label class="selector-label">Match Type</ion-label>
+      <ion-select formControlName="matchType" class="wide-select">
+        <ion-select-option value="Regular90Min">Regular 90min</ion-select-option>
+        <ion-select-option value="ExtendedWithQualification">90min with qualification</ion-select-option>
       </ion-select>
     </div>
 
@@ -70,18 +70,21 @@
     <div class="divider"></div>
 
     <!-- Qualification Odds Section -->
-    <div class="section-title">Qualification Odds</div>
-    <div class="match-row">
+    <div class="section-title" *ngIf="matchForm.value.matchType === 'ExtendedWithQualification'">
+      Qualification Odds
+    </div>
+
+    <div class="match-row" *ngIf="matchForm.value.matchType === 'ExtendedWithQualification'">
       <ion-label class="match-label center-align">Home Qualifies</ion-label>
       <ion-label class="match-label center-align">Away Qualifies</ion-label>
     </div>
 
-    <div class="match-row">
+    <div class="match-row" *ngIf="matchForm.value.matchType === 'ExtendedWithQualification'">
       <ion-input type="number" formControlName="homeQualifies" class="half-width odds-input"></ion-input>
       <ion-input type="number" formControlName="awayQualifies" class="half-width odds-input"></ion-input>
     </div>
 
-    <div class="divider"></div>
+    <div class="divider" *ngIf="matchForm.value.matchType === 'ExtendedWithQualification'"></div>
 
     <!-- Save Button with Extra Spacing -->
     <div class="save-button-container">
