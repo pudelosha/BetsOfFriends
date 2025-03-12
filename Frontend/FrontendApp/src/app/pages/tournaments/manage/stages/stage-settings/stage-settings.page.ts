@@ -21,42 +21,41 @@ export class StageSettingsPage implements OnDestroy {
   private settingsSubscription!: Subscription;
 
   exactBonusTypes = [
-    { value: 'FixedValue', label: 'Fixed Value' },
-    { value: 'OddMultiplied', label: 'Odd Multiplied' }
+    { value: 'Fixed', label: 'Fixed Value' },
+    { value: 'Multiplied', label: 'Odd Multiplied' }
   ];
 
   constructor(private fb: FormBuilder, private toastController: ToastController) {
     this.settingsForm = this.fb.group({
       allowExactResultBonus: [false],
-      exactResultBonusCalculation: ['FixedValue'],
+      exactResultBonusCalculation: ['Fixed'],
       exactResultBonus: [5, [Validators.required, Validators.min(1)]],
 
       allowWhoQualifiesBets: [false],
 
-      allowBetsWithBonusAmount: [false],
+      allowBetsWithBooster: [false],
       maxBetBooster: [1, [Validators.required, Validators.min(1)]],
-      totalBonusAmount: [100, [Validators.required, Validators.min(1)]],
+      totalBoosterPool: [100, [Validators.required, Validators.min(1)]],
 
       allowNonSubmittedBetsPenalty: [false],
-      nonSubmittedBetPenalty: [-1, [Validators.required]],
+      nonSubmittedBetPenalty: [1, [Validators.required]],
     });
   }
 
   ngOnInit() {
-    // **Ensure defaults are used if input settings contain `null` or `undefined`**
     const mergedSettings: TournamentSettings = {
       allowExactResultBonus: this.settings?.allowExactResultBonus ?? false,
-      exactResultBonusCalculation: this.settings?.exactResultBonusCalculation ?? 'FixedValue',
+      exactResultBonusCalculation: this.settings?.exactResultBonusCalculation ?? 'Fixed',
       exactResultBonus: this.settings?.exactResultBonus ?? 5,
 
       allowWhoQualifiesBets: this.settings?.allowWhoQualifiesBets ?? false,
 
-      allowBetsWithBonusAmount: this.settings?.allowBetsWithBonusAmount ?? false,
+      allowBetsWithBooster: this.settings?.allowBetsWithBooster ?? false,
       maxBetBooster: this.settings?.maxBetBooster ?? 1,
-      totalBonusAmount: this.settings?.totalBonusAmount ?? 100,
+      totalBoosterPool: this.settings?.totalBoosterPool ?? 100,
 
       allowNonSubmittedBetsPenalty: this.settings?.allowNonSubmittedBetsPenalty ?? false,
-      nonSubmittedBetPenalty: this.settings?.nonSubmittedBetPenalty ?? -1,
+      nonSubmittedBetPenalty: this.settings?.nonSubmittedBetPenalty ?? 1,
     };
 
     console.log("Merging Parent Settings with Defaults:", mergedSettings);
@@ -69,32 +68,44 @@ export class StageSettingsPage implements OnDestroy {
         distinctUntilChanged()
       )
       .subscribe(() => {
+        this.handleBoosterValidation();
         this.emitSettings();
       });
 
-    // Emit initial settings only once
     this.emitSettings();
+  }
+
+  /**
+   * Ensures maxBetBooster does not exceed totalBoosterPool
+   */
+  private handleBoosterValidation() {
+    const maxBetBooster = this.settingsForm.get('maxBetBooster')?.value;
+    const totalBoosterPool = this.settingsForm.get('totalBoosterPool')?.value;
+
+    if (maxBetBooster > totalBoosterPool) {
+      this.settingsForm.get('maxBetBooster')?.setValue(totalBoosterPool, { emitEvent: false });
+    }
   }
 
   private emitSettings() {
     if (!this.settingsForm.valid) {
-      console.warn("Form Invalid, Not Emitting");
+      console.warn("Settings form is invalid, not emitting data:", this.settingsForm.errors);
       return;
     }
 
     const settings: TournamentSettings = {
-      allowExactResultBonus: this.settingsForm.value.allowExactResultBonus,
-      exactResultBonusCalculation: this.settingsForm.value.exactResultBonusCalculation,
-      exactResultBonus: this.settingsForm.value.exactResultBonus,
+      allowExactResultBonus: this.settingsForm.value.allowExactResultBonus ?? false,
+      exactResultBonusCalculation: this.settingsForm.value.exactResultBonusCalculation ?? 'Fixed',
+      exactResultBonus: this.settingsForm.value.exactResultBonus ?? null,
 
-      allowWhoQualifiesBets: this.settingsForm.value.allowWhoQualifiesBets,
+      allowWhoQualifiesBets: this.settingsForm.value.allowWhoQualifiesBets ?? false,
 
-      allowBetsWithBonusAmount: this.settingsForm.value.allowBetsWithBonusAmount,
-      maxBetBooster: this.settingsForm.value.maxBetBooster,
-      totalBonusAmount: this.settingsForm.value.totalBonusAmount,
+      allowBetsWithBooster: this.settingsForm.value.allowBetsWithBooster ?? false,
+      maxBetBooster: this.settingsForm.value.maxBetBooster ?? 1,
+      totalBoosterPool: this.settingsForm.value.totalBoosterPool ?? null,
 
-      allowNonSubmittedBetsPenalty: this.settingsForm.value.allowNonSubmittedBetsPenalty,
-      nonSubmittedBetPenalty: this.settingsForm.value.nonSubmittedBetPenalty,
+      allowNonSubmittedBetsPenalty: this.settingsForm.value.allowNonSubmittedBetsPenalty ?? false,
+      nonSubmittedBetPenalty: this.settingsForm.value.nonSubmittedBetPenalty ?? null,
     };
 
     console.log("Emitting Updated Settings:", settings);

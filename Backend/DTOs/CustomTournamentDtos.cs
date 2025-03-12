@@ -25,6 +25,38 @@ namespace Backend.DTOs
 
         [Required]
         public List<CustomUserDto> Users { get; set; } = new();
+
+        public CustomTournamentSettingsDto? Settings { get; set; }
+    }
+
+    public class CustomTournamentSettingsDto
+    {
+        [Required]
+        public bool AllowExactResultBonus { get; set; } = false;
+
+        [Required]
+        public string ExactResultBonusCalculation { get; set; } = "FixedValue"; // Stored as string
+
+        [Range(1, int.MaxValue, ErrorMessage = "Bonus value must be at least 1.")]
+        public int? ExactResultBonus { get; set; }
+
+        [Required]
+        public bool AllowWhoQualifiesBets { get; set; } = false;
+
+        [Required]
+        public bool AllowBetsWithBooster { get; set; } = false;
+
+        [Range(1, int.MaxValue, ErrorMessage = "Max bet booster must be at least 1.")]
+        public int MaxBetBooster { get; set; } = 1;
+
+        [Range(1, int.MaxValue, ErrorMessage = "Total booster pool must be at least 1.")]
+        public int? TotalBoosterPool { get; set; }
+
+        [Required]
+        public bool AllowNonSubmittedBetsPenalty { get; set; } = false;
+
+        [Range(0, int.MaxValue, ErrorMessage = "Penalty must be non-negative.")]
+        public int? NonSubmittedBetPenalty { get; set; }
     }
 
     public class CustomTeamDto

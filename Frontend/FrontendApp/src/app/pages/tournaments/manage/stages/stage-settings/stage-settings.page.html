@@ -66,14 +66,14 @@
 
   <hr class="divider" />
 
-  <!-- Bet Bonus Amount -->
+  <!-- Bets with Booster -->
   <ion-grid class="settings-grid">
     <ion-row class="align-center">
       <ion-col size="8" class="left-align">
-        <ion-label>Allow Bets with Bonus Amount</ion-label>
+        <ion-label>Allow Bets with Booster</ion-label>
       </ion-col>
       <ion-col size="2" class="right-align">
-        <ion-toggle formControlName="allowBetsWithBonusAmount"></ion-toggle>
+        <ion-toggle formControlName="allowBetsWithBooster"></ion-toggle>
       </ion-col>
       <ion-col size="2" class="right-align">
         <ion-button fill="clear" size="small" id="bonusAmountInfo">
@@ -81,19 +81,19 @@
         </ion-button>
         <ion-popover [keepContentsMounted]="true" trigger="bonusAmountInfo">
           <ng-template>
-            <ion-content class="ion-padding">Users can increase base odds with additional bet points.</ion-content>
+            <ion-content class="ion-padding">Users can increase base odds using additional booster points.</ion-content>
           </ng-template>
         </ion-popover>
       </ion-col>
     </ion-row>
   </ion-grid>
 
-  <div *ngIf="settingsForm.value.allowBetsWithBonusAmount">
+  <div *ngIf="settingsForm.value.allowBetsWithBooster">
     <ion-label class="form-label">Max Bet Booster</ion-label>
-    <ion-range min="1" max="5" step="1" formControlName="maxBetBooster"></ion-range>
+    <ion-range min="1" [max]="settingsForm.value.totalBoosterPool" step="1" formControlName="maxBetBooster"></ion-range>
 
-    <ion-label class="form-label">Total Bonus Amount</ion-label>
-    <ion-input type="number" formControlName="totalBonusAmount" placeholder="Enter max booster points"></ion-input>
+    <ion-label class="form-label">Total Booster Pool</ion-label>
+    <ion-input type="number" formControlName="totalBoosterPool" placeholder="Enter booster pool size"></ion-input>
   </div>
 
   <hr class="divider" />

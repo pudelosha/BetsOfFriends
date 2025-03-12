@@ -23,13 +23,28 @@ namespace Backend.Model.Entities
         public ApplicationUser CreatedByUser { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public bool AllowExactResultBonus { get; set; } = false; // Whether exact results get a bonus
-        public ExactResultBonusCalculationType ExactResultBonusCalculation { get; set; } // Fixed Value or Multiplied by Bukmacher Rate
-        public int ExactResultValue { get; set; } // Example: 5 (if fixed value bonus, Bukmacher Rate * 5 otherwise)
+        // Tournament Settings
+        public bool AllowExactResultBonus { get; set; } = false;
+
+        [Required]
+        public ExactResultBonusCalculationType ExactResultBonusCalculation { get; set; } = ExactResultBonusCalculationType.Fixed;
+
+        [Range(1, int.MaxValue)]
+        public int? ExactResultBonus { get; set; }
+
         public bool AllowWhoQualifiesBets { get; set; } = false;
-        public bool AllowBetsWithBonusAmount { get; set; } = false;
-        public int? TotalBonusAmount { get; set; }
+
+        public bool AllowBetsWithBooster { get; set; } = false;
+
+        [Range(1, int.MaxValue)]
+        public int MaxBetBooster { get; set; } = 1;
+
+        [Range(1, int.MaxValue)]
+        public int? TotalBoosterPool { get; set; }
+
         public bool AllowNonSubmittedBetsPenalty { get; set; } = false;
+
+        [Range(0, int.MaxValue)]
         public int? NonSubmittedBetPenalty { get; set; }
 
         public ICollection<CustomTournamentUserAssignment> Participants { get; set; } = new List<CustomTournamentUserAssignment>();

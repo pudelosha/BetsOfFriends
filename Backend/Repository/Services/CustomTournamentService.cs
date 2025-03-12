@@ -49,13 +49,29 @@ namespace Backend.Repository.Services
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Step 1: Insert Tournament
+                // Step 1: Insert Tournament with Settings
                 var tournament = new CustomTournament
                 {
                     Name = tournamentDto.TournamentName,
                     IsActive = tournamentDto.IsActive,
                     CreatedByUserId = tournamentDto.CreatedBy,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+
+                    // Tournament Settings Mapping
+                    AllowExactResultBonus = tournamentDto.Settings?.AllowExactResultBonus ?? false,
+                    ExactResultBonusCalculation = Enum.TryParse<CustomTournament.ExactResultBonusCalculationType>(
+                        tournamentDto.Settings?.ExactResultBonusCalculation, true, out var exactBonusCalculation)
+                        ? exactBonusCalculation : CustomTournament.ExactResultBonusCalculationType.Fixed,
+                    ExactResultBonus = tournamentDto.Settings?.ExactResultBonus,
+
+                    AllowWhoQualifiesBets = tournamentDto.Settings?.AllowWhoQualifiesBets ?? false,
+
+                    AllowBetsWithBooster = tournamentDto.Settings?.AllowBetsWithBooster ?? false,
+                    MaxBetBooster = tournamentDto.Settings?.MaxBetBooster ?? 1,
+                    TotalBoosterPool = tournamentDto.Settings?.TotalBoosterPool,
+
+                    AllowNonSubmittedBetsPenalty = tournamentDto.Settings?.AllowNonSubmittedBetsPenalty ?? false,
+                    NonSubmittedBetPenalty = tournamentDto.Settings?.NonSubmittedBetPenalty
                 };
 
                 _context.CustomTournaments.Add(tournament);
@@ -397,9 +413,29 @@ namespace Backend.Repository.Services
                     return false; // Forbidden
                 }
 
-                // Step 3: Update tournament details
+                // Step 3: Update tournament details and settings
                 tournament.Name = tournamentDto.TournamentName;
                 tournament.IsActive = tournamentDto.IsActive;
+
+                if (tournamentDto.Settings != null)
+                {
+                    tournament.AllowExactResultBonus = tournamentDto.Settings.AllowExactResultBonus;
+                    tournament.ExactResultBonusCalculation = Enum.TryParse<CustomTournament.ExactResultBonusCalculationType>(
+                        tournamentDto.Settings.ExactResultBonusCalculation, true, out var exactBonusCalculation)
+                        ? exactBonusCalculation : CustomTournament.ExactResultBonusCalculationType.Fixed;
+                    tournament.ExactResultBonus = tournamentDto.Settings.ExactResultBonus;
+
+                    tournament.AllowWhoQualifiesBets = tournamentDto.Settings.AllowWhoQualifiesBets;
+
+                    tournament.AllowBetsWithBooster = tournamentDto.Settings.AllowBetsWithBooster;
+                    tournament.MaxBetBooster = tournamentDto.Settings.MaxBetBooster;
+                    tournament.TotalBoosterPool = tournamentDto.Settings.TotalBoosterPool;
+
+                    tournament.AllowNonSubmittedBetsPenalty = tournamentDto.Settings.AllowNonSubmittedBetsPenalty;
+                    tournament.NonSubmittedBetPenalty = tournamentDto.Settings.NonSubmittedBetPenalty;
+                }
+
+                await _context.SaveChangesAsync();
 
                 // Step 4: Handle Teams
                 var existingTeams = tournament.Teams.ToDictionary(t => t.TeamId);
@@ -701,7 +737,22 @@ namespace Backend.Repository.Services
                         UserAdminName = p.User.UserName,
                         UserEmail = p.User.Email,
                         Status = p.Status.ToString()
-                    }).ToList()
+                    }).ToList(),
+                                Settings = new CustomTournamentSettingsDto
+            {
+                AllowExactResultBonus = tournament.AllowExactResultBonus,
+                ExactResultBonusCalculation = tournament.ExactResultBonusCalculation.ToString(),
+                ExactResultBonus = tournament.ExactResultBonus,
+
+                AllowWhoQualifiesBets = tournament.AllowWhoQualifiesBets,
+
+                AllowBetsWithBooster = tournament.AllowBetsWithBooster,
+                MaxBetBooster = tournament.MaxBetBooster,
+                TotalBoosterPool = tournament.TotalBoosterPool,
+
+                AllowNonSubmittedBetsPenalty = tournament.AllowNonSubmittedBetsPenalty,
+                NonSubmittedBetPenalty = tournament.NonSubmittedBetPenalty
+            }
                 };
 
                 _logger.LogInformation($"Successfully fetched custom tournament with ID: {tournamentId} for user {userId}");

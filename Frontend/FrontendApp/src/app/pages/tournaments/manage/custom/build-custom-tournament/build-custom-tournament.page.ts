@@ -48,12 +48,12 @@ export class BuildCustomTournamentPage implements OnInit {
       users: this.fb.array([]),
       settings: this.fb.group({
         allowExactResultBonus: [false],
-        exactResultBonusCalculation: ['FixedValue'],
+        exactResultBonusCalculation: ['Fixed'],
         exactResultBonus: [null, Validators.min(1)],
         allowWhoQualifiesBets: [false],
-        allowBetsWithBonusAmount: [false],
+        allowBetsWithBooster: [false],
         maxBetBooster: [1, Validators.min(1)],
-        totalBonusAmount: [null, Validators.min(1)],
+        totalBoosterPool: [null, Validators.min(1)],
         allowNonSubmittedBetsPenalty: [false],
         nonSubmittedBetPenalty: [null, Validators.min(1)],
       }),
@@ -163,12 +163,12 @@ export class BuildCustomTournamentPage implements OnInit {
     if (tournament.settings) {
       this.settingsGroup.patchValue({
         allowExactResultBonus: tournament.settings.allowExactResultBonus ?? false,
-        exactResultBonusCalculation: tournament.settings.exactResultBonusCalculation ?? 'FixedValue',
+        exactResultBonusCalculation: tournament.settings.exactResultBonusCalculation ?? 'Fixed',
         exactResultBonus: tournament.settings.exactResultBonus ?? null,
         allowWhoQualifiesBets: tournament.settings.allowWhoQualifiesBets ?? false,
-        allowBetsWithBonusAmount: tournament.settings.allowBetsWithBonusAmount ?? false,
+        allowBetsWithBooster: tournament.settings.allowBetsWithBooster ?? false,
         maxBetBooster: tournament.settings.maxBetBooster ?? 1,
-        totalBonusAmount: tournament.settings.totalBonusAmount ?? null,
+        totalBoosterPool: tournament.settings.totalBoosterPool ?? null,
         allowNonSubmittedBetsPenalty: tournament.settings.allowNonSubmittedBetsPenalty ?? false,
         nonSubmittedBetPenalty: tournament.settings.nonSubmittedBetPenalty ?? null,
       });
@@ -460,9 +460,9 @@ export class BuildCustomTournamentPage implements OnInit {
         exactResultBonusCalculation: this.tournamentForm.value.settings.exactResultBonusCalculation,
         exactResultBonus: this.tournamentForm.value.settings.exactResultBonus || null,
         allowWhoQualifiesBets: this.tournamentForm.value.settings.allowWhoQualifiesBets, 
-        allowBetsWithBonusAmount: this.tournamentForm.value.settings.allowBetsWithBonusAmount,
+        allowBetsWithBooster: this.tournamentForm.value.settings.allowBetsWithBooster,
         maxBetBooster: this.tournamentForm.value.settings.maxBetBooster || 1,
-        totalBonusAmount: this.tournamentForm.value.settings.totalBonusAmount || null, 
+        totalBoosterPool: this.tournamentForm.value.settings.totalBoosterPool || null, 
         allowNonSubmittedBetsPenalty: this.tournamentForm.value.settings.allowNonSubmittedBetsPenalty,
         nonSubmittedBetPenalty: this.tournamentForm.value.settings.nonSubmittedBetPenalty || null,
       },
@@ -525,8 +525,8 @@ export class BuildCustomTournamentPage implements OnInit {
         return true;
   
       case 2:
-        if (!this.settingsConfirmed) {
-          await this.showToast('Please save tournament settings before proceeding.', 'danger');
+        if (!this.settingsGroup.valid) {
+          await this.showToast('Tournament settings are incomplete or invalid.', 'danger');
           return false;
         }
         return true;

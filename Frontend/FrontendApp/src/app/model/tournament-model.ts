@@ -48,14 +48,14 @@ export interface Tournament {
 
 export interface TournamentSettings {
   allowExactResultBonus: boolean;
-  exactResultBonusCalculation: 'FixedValue' | 'OddMultiplied'; // Stored as string
+  exactResultBonusCalculation: 'Fixed' | 'Multiplied'; // Stored as string
   exactResultBonus: number | null;
 
   allowWhoQualifiesBets: boolean;
 
-  allowBetsWithBonusAmount: boolean;
+  allowBetsWithBooster: boolean;
   maxBetBooster: number;
-  totalBonusAmount: number | null;
+  totalBoosterPool: number | null;
 
   allowNonSubmittedBetsPenalty: boolean;
   nonSubmittedBetPenalty: number | null;

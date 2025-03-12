@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250311084327_Initial")]
+    [Migration("20250312090542_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -245,7 +245,7 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TournamentId"));
 
-                    b.Property<bool>("AllowBetsWithBonusAmount")
+                    b.Property<bool>("AllowBetsWithBooster")
                         .HasColumnType("bit");
 
                     b.Property<bool>("AllowExactResultBonus")
@@ -264,14 +264,17 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ExactResultBonusCalculation")
+                    b.Property<int?>("ExactResultBonus")
                         .HasColumnType("int");
 
-                    b.Property<int>("ExactResultValue")
+                    b.Property<int>("ExactResultBonusCalculation")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<int>("MaxBetBooster")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -281,7 +284,7 @@ namespace Backend.Migrations
                     b.Property<int?>("NonSubmittedBetPenalty")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TotalBonusAmount")
+                    b.Property<int?>("TotalBoosterPool")
                         .HasColumnType("int");
 
                     b.Property<int>("Type")
