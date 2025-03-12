@@ -896,5 +896,50 @@ namespace Backend.Repository.Services
                 throw;
             }
         }
+
+        public async Task<bool> RecalculateTournamentBetsAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                // Fetch tournament and check if the user is an admin
+                var tournament = await _context.CustomTournaments
+                    .Include(t => t.Participants)
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Tournament with ID {tournamentId} not found.");
+                    return false;
+                }
+
+                bool isTournamentAdmin = tournament.Participants.Any(p => p.UserId == userId && p.Role == UserTournamentRole.Admin);
+                if (!isTournamentAdmin)
+                {
+                    _logger.LogWarning($"User {userId} attempted to recalculate bets for tournament {tournamentId} without permission.");
+                    return false; // Unauthorized access
+                }
+
+                _logger.LogInformation($"Admin {userId} authorized to recalculate bets for tournament {tournamentId}. Initiating recalculation...");
+
+                // Call the bet recalculation process
+                bool success = await _betService.RecalculateBetsForTournamentAsync(tournamentId);
+
+                if (!success)
+                {
+                    _logger.LogWarning($"No matches or bets found to recalculate for tournament ID {tournamentId}.");
+                    return false;
+                }
+
+                _logger.LogInformation($"Bet recalculation completed successfully for tournament ID {tournamentId}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error recalculating bets for tournament ID {tournamentId}");
+                throw;
+            }
+        }
+
+
     }
 }

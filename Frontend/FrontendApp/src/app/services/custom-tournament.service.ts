@@ -57,4 +57,8 @@ export class CustomTournamentService {
   toggleTournamentVisibility(tournamentId: number): Observable<boolean> {
     return this.http.patch<boolean>(`${this.apiUrl}/visibility/${tournamentId}`, {});
   }
+
+  recalculateBetsForTournament(tournamentId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/recalculate/${tournamentId}`, {});
+  }  
 }

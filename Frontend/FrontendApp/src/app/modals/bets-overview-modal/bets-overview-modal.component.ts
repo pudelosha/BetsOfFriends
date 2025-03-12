@@ -34,10 +34,4 @@ export class BetsOverviewModalComponent {
   closeModal() {
     this.modalCtrl.dismiss();
   }
-
-  getFormattedScore(bet: any): string {
-    return bet.homeScoreUser !== null && bet.awayScoreUser !== null
-      ? `${bet.homeScoreUser} - ${bet.awayScoreUser}`
-      : '-';
-  }
 }

@@ -2,7 +2,6 @@
 using Backend.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -328,6 +327,33 @@ namespace Backend.Controllers
             {
                 _logger.LogError(ex, $"Error toggling visibility for tournament ID {tournamentId}");
                 return StatusCode(500, "An error occurred while toggling tournament visibility.");
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        [HttpPost("recalculate/{tournamentId}")]
+        public async Task<IActionResult> RecalculateTournamentBets(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { Message = "User not found." });
+                }
+
+                var success = await _tournamentService.RecalculateTournamentBetsAsync(tournamentId, userId);
+                if (!success)
+                {
+                    return NotFound(new { Message = $"No bets found to recalculate for tournament ID {tournamentId}." });
+                }
+
+                return Ok(new { Message = "Tournament bets recalculated successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while recalculating bets for tournament ID {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while recalculating bets." });
             }
         }
     }

@@ -2,6 +2,7 @@
 using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
+using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using static Backend.Model.Entities.CustomMatch;
 
@@ -11,11 +12,13 @@ namespace Backend.Repository.Services
     {
         private readonly AppDbContext _context;
         private readonly ILogger<MatchService> _logger;
+        private readonly IBetService _betService;
 
-        public MatchService(AppDbContext context, ILogger<MatchService> logger)
+        public MatchService(AppDbContext context, IBetService betService, ILogger<MatchService> logger)
         {
             _context = context;
             _logger = logger;
+            _betService = betService;
         }
 
         public async Task<List<MatchDto>> GetMatchesByStatusAsync(int tournamentId, string userId, MatchStatus status)
@@ -114,6 +117,8 @@ namespace Backend.Repository.Services
                     match.MatchStart = matchUpdateDto.MatchStart;
                 }
 
+                bool matchWasFinalised = false;
+
                 // If the match is finished
                 if (matchUpdateDto.IsFinished)
                 {
@@ -144,8 +149,9 @@ namespace Backend.Repository.Services
                         }
                     }
 
-                    // Set match as Finalized
+                    // Set match as Finalised
                     match.Status = MatchStatus.Finalised;
+                    matchWasFinalised = true;
                 }
                 else
                 {
@@ -160,6 +166,14 @@ namespace Backend.Repository.Services
 
                 await _context.SaveChangesAsync();
                 _logger.LogInformation($"Match ID {matchUpdateDto.MatchId} updated successfully by User {userId}.");
+
+                // **Trigger Bet Recalculation if Match is Finalised**
+                if (matchWasFinalised)
+                {
+                    _logger.LogInformation($"Triggering bet recalculation for Match ID {match.MatchId}");
+                    await _betService.RecalculateBetsForMatchAsync(match.MatchId);
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -168,6 +182,7 @@ namespace Backend.Repository.Services
                 return false;
             }
         }
+
 
         public async Task AutoUpdateMatchStatusAsync()
         {
@@ -203,9 +218,5 @@ namespace Backend.Repository.Services
                 throw;
             }
         }
-
-
-
-
     }
 }

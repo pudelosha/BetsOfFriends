@@ -88,30 +88,6 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
-        [HttpPost("calculate/{tournamentId}")]
-        public async Task<IActionResult> CalculateBets(int tournamentId)
-        {
-            try
-            {
-                _logger.LogInformation($"Calculating bets for tournament {tournamentId}");
-
-                var result = await _betService.CalculateBetsAsync(tournamentId);
-
-                if (!result)
-                {
-                    return BadRequest("Bet calculation failed or no valid bets found.");
-                }
-
-                return Ok(new { message = "Bet calculations completed successfully." });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error calculating bets for tournament {tournamentId}");
-                return StatusCode(500, "An error occurred while calculating bets.");
-            }
-        }
-
-        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("stats/{matchId}")]
         public async Task<IActionResult> GetBetStatsByMatchId(int matchId)
         {

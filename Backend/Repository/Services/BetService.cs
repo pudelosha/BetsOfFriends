@@ -3,6 +3,7 @@ using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static Backend.Model.Entities.CustomTournament;
 
 namespace Backend.Repository.Services
 {
@@ -196,55 +197,159 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task<bool> CalculateBetsAsync(int tournamentId)
+        public async Task RecalculateBetsForMatchAsync(int matchId)
         {
-            try
+            var match = await _context.CustomMatches
+                .Include(m => m.Tournament)
+                .Include(m => m.Bets)
+                .FirstOrDefaultAsync(m => m.MatchId == matchId);
+
+            if (match == null)
             {
-                _logger.LogInformation($"Calculating bets for tournament {tournamentId}");
-
-                var matches = await _context.CustomMatches
-                    .Include(m => m.Tournament)
-                    .Where(m => m.TournamentId == tournamentId)
-                    .ToListAsync();
-
-                if (!matches.Any())
-                {
-                    _logger.LogWarning($"No matches found for tournament {tournamentId}");
-                    return false;
-                }
-
-                foreach (var match in matches)
-                {
-                    var bets = await _context.Bets.Where(b => b.MatchId == match.MatchId).ToListAsync();
-
-                    foreach (var bet in bets)
-                    {
-                        // Check if the bet is correct and update payout accordingly
-                        if (bet.HomeGoals == match.HomeScore && bet.AwayGoals == match.AwayScore)
-                        {
-                            bet.Payout = bet.BaseAmount * 3; // Example: Triple the bet amount for correct score
-                            bet.Result = Bet.BetResult.Won;
-                        }
-                        else
-                        {
-                            bet.Payout = 0;
-                            bet.Result = Bet.BetResult.Lost;
-                        }
-
-                        bet.Status = Bet.BetStatus.Finalised; // Mark as finalised
-                    }
-
-                    await _context.SaveChangesAsync();
-                }
-
-                _logger.LogInformation($"Bet calculations completed for tournament {tournamentId}");
-                return true;
+                _logger.LogWarning($"Match {matchId} not found.");
+                return;
             }
-            catch (Exception ex)
+
+            if (match.Status != CustomMatch.MatchStatus.Finalised)
             {
-                _logger.LogError(ex, $"Error calculating bets for tournament {tournamentId}");
+                _logger.LogWarning($"Match {matchId} is not finalised. Cannot recalculate bets.");
+                return;
+            }
+
+            var tournamentSettings = await _context.CustomTournaments
+                .Where(t => t.TournamentId == match.TournamentId)
+                .Select(t => new
+                {
+                    t.AllowExactResultBonus,
+                    t.ExactResultBonusCalculation,
+                    t.ExactResultBonus,
+                    t.AllowNonSubmittedBetsPenalty,
+                    t.NonSubmittedBetPenalty
+                })
+                .FirstOrDefaultAsync();
+
+            if (tournamentSettings == null)
+            {
+                _logger.LogWarning($"Tournament settings not found for match {matchId}.");
+                return;
+            }
+
+            decimal homeWinOdds = match.HomeWinOdds;
+            decimal drawOdds = match.DrawOdds;
+            decimal awayWinOdds = match.AwayWinOdds;
+            decimal? homeQualifiesOdds = match.HomeQualifies;
+            decimal? awayQualifiesOdds = match.AwayQualifies;
+
+            int homeScore = match.HomeScore ?? -1;
+            int awayScore = match.AwayScore ?? -1;
+            bool isDraw = homeScore == awayScore;
+            bool homeWin = homeScore > awayScore;
+            bool awayWin = homeScore < awayScore;
+            bool hasQualification = match.Type == CustomMatch.MatchType.ExtendedWithQualification;
+            bool homeQualified = hasQualification && match.Qualified == CustomMatch.TeamQualified.Home;
+            bool awayQualified = hasQualification && match.Qualified == CustomMatch.TeamQualified.Away;
+
+            foreach (var bet in match.Bets)
+            {
+                decimal payout = 0;
+                bool won = false;
+
+                // Process 1X2 Bet Outcome
+                if (homeWin && bet.HomeGoals > bet.AwayGoals)
+                {
+                    payout += bet.BaseAmount * homeWinOdds;
+                    won = true;
+                }
+                else if (isDraw && bet.HomeGoals == bet.AwayGoals)
+                {
+                    payout += bet.BaseAmount * drawOdds;
+                    won = true;
+                }
+                else if (awayWin && bet.AwayGoals > bet.HomeGoals)
+                {
+                    payout += bet.BaseAmount * awayWinOdds;
+                    won = true;
+                }
+
+                // Process Qualification Bet
+                if (hasQualification && bet.QualifiedTeam.HasValue)
+                {
+                    if (bet.QualifiedTeam == Bet.Team.Home && homeQualified && homeQualifiesOdds.HasValue)
+                    {
+                        payout += bet.BaseAmount * homeQualifiesOdds.Value;
+                        won = true;
+                    }
+                    else if (bet.QualifiedTeam == Bet.Team.Away && awayQualified && awayQualifiesOdds.HasValue)
+                    {
+                        payout += bet.BaseAmount * awayQualifiesOdds.Value;
+                        won = true;
+                    }
+                }
+
+                // Process Exact Result Bonus
+                if (tournamentSettings.AllowExactResultBonus &&
+                    bet.HomeGoals == homeScore && bet.AwayGoals == awayScore)
+                {
+                    decimal winningOdd = 0;
+
+                    // Determine the correct winning odd
+                    if (homeScore > awayScore)
+                        winningOdd = homeWinOdds;
+                    else if (homeScore < awayScore)
+                        winningOdd = awayWinOdds;
+                    else
+                        winningOdd = drawOdds;
+
+                    if (tournamentSettings.ExactResultBonus.HasValue)
+                    {
+                        if (tournamentSettings.ExactResultBonusCalculation == ExactResultBonusCalculationType.Fixed)
+                        {
+                            payout += tournamentSettings.ExactResultBonus.Value;
+                        }
+                        else if (tournamentSettings.ExactResultBonusCalculation == ExactResultBonusCalculationType.Multiplied)
+                        {
+                            payout += winningOdd * tournamentSettings.ExactResultBonus.Value;
+                        }
+                    }
+                }
+
+                // Apply Non-Submitted Bet Penalty
+                if (tournamentSettings.AllowNonSubmittedBetsPenalty && !bet.Submitted &&
+                    tournamentSettings.NonSubmittedBetPenalty.HasValue)
+                {
+                    payout -= tournamentSettings.NonSubmittedBetPenalty.Value;
+                }
+
+                // Finalize Bet Status
+                bet.Status = Bet.BetStatus.Finalised;
+                bet.Result = won ? Bet.BetResult.Won : Bet.BetResult.Lost;
+                bet.Payout = payout;
+            }
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"Bets recalculated for match {matchId}.");
+        }
+
+        public async Task<bool> RecalculateBetsForTournamentAsync(int tournamentId)
+        {
+            var tournament = await _context.CustomTournaments
+                .Include(t => t.Matches)
+                    .ThenInclude(m => m.Bets)
+                .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+            if (tournament == null || !tournament.Matches.Any())
+            {
+                _logger.LogWarning($"No matches found for tournament ID {tournamentId}");
                 return false;
             }
+
+            foreach (var match in tournament.Matches.Where(m => m.Status == CustomMatch.MatchStatus.Finalised))
+            {
+                await RecalculateBetsForMatchAsync(match.MatchId);
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task AutoUpdateBetStatusAsync()

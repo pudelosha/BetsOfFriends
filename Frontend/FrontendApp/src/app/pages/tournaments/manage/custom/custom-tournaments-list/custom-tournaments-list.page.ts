@@ -14,8 +14,8 @@ import { Router } from '@angular/router';
   imports: [CommonModule, IonicModule],
 })
 export class CustomTournamentsListPage implements OnInit {
-  tournaments: Tournament[] = []; // Store fetched tournaments
-  isLoading = true; // Loader state
+  tournaments: Tournament[] = [];
+  isLoading = true;
 
   constructor(
     private tournamentService: CustomTournamentService,
@@ -65,6 +65,20 @@ export class CustomTournamentsListPage implements OnInit {
     });
   }
 
+  async recalculateBets(tournament: any) {
+    this.isLoading = true;
+  
+    try {
+      await firstValueFrom(this.tournamentService.recalculateBetsForTournament(tournament.tournamentId));
+      this.showToast('Bets recalculated successfully!', 'success');
+    } catch (error) {
+      this.showToast('Error recalculating bets!', 'danger');
+      console.error(error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+  
   async toggleTournamentStatus(tournament: any) {
     const newStatus = !tournament.isActive;
   
@@ -104,6 +118,8 @@ export class CustomTournamentsListPage implements OnInit {
   }
 
   async deleteTournament(tournament: any) {
+    this.isLoading = true;
+  
     try {
       await firstValueFrom(this.tournamentService.deleteCustomTournament(tournament.tournamentId));
       this.tournaments = this.tournaments.filter(t => t.tournamentId !== tournament.tournamentId);
@@ -111,9 +127,11 @@ export class CustomTournamentsListPage implements OnInit {
     } catch (error) {
       this.showToast('Error deleting tournament!', 'danger');
       console.error(error);
+    } finally {
+      this.isLoading = false;
     }
   }
-
+  
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastController.create({
       message,
