@@ -48,9 +48,11 @@
 }
 
 .match-details .team {
-  display: block;
-  font-size: 1rem;
-  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  font-size: 12px;
+  color: #333;
 }
 
 /*  Match Date Styling */
@@ -62,8 +64,8 @@
 .match-date .date,
 .match-date .time {
   display: block;
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 12px;
+  color: #333;
 }
 
 /*  Match Buttons */

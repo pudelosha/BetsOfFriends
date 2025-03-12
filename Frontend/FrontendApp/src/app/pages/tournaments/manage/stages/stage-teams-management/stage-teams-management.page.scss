@@ -48,9 +48,11 @@
 }
 
 .team-details .team-name {
-  font-size: 1rem;
-  font-weight: bold;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  font-size: 12px;
+  color: #333;
 }
 
 /*  Team Buttons */

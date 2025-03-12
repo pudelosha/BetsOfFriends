@@ -87,7 +87,7 @@
 
     <ion-row *ngFor="let bet of betStats.userBets">
       <ion-col size="4" class="centered-text player-name">{{ bet.username }}</ion-col>
-      <ion-col size="2" class="centered-text bet-result">{{ bet.betScore ?? '-' }}</ion-col>
+      <ion-col size="2" class="centered-text bet-result">{{ getFormattedScore(bet) }}</ion-col>
     
       <!-- Home Win Column -->
       <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.homeWinSuccess === 1, 'failure': bet.homeWinSuccess === 0}">

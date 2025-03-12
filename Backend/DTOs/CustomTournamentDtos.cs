@@ -105,7 +105,7 @@ namespace Backend.DTOs
         public int? AssignmentId { get; set; } // Nullable for new users
 
         [MaxLength(100)]
-        public string UserName { get; set; } = string.Empty;
+        public string? UserName { get; set; } = string.Empty;
 
         [Required, MaxLength(100)]
         public string UserAdminName { get; set; } = string.Empty;

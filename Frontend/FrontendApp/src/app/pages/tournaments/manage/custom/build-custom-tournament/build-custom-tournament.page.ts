@@ -239,10 +239,6 @@ export class BuildCustomTournamentPage implements OnInit {
         );
       });
     }
-    
-    console.log('Teams after population:', this.teamsArray.value);
-    console.log('Matches after population:', this.matchesArray.value);
-    console.log('Users after population:', this.usersArray.value);
   } 
 
   private buildMatchFormGroup(match: Match): FormGroup {
@@ -315,25 +311,25 @@ export class BuildCustomTournamentPage implements OnInit {
       });
     }
   }  
-
-  handleUsersExtracted(users: User[]): void {
-    this.usersArray.clear();
-    users.forEach((user) => {
-      this.usersArray.push(this.fb.group({
-        assignmentId: [user.assignmentId],
-        userName: [user.userName, Validators.required],
-        userAdminName: [user.userAdminName],
-        userEmail: [user.userEmail, [Validators.required, Validators.email]],
-        status: [user.status, Validators.required],
-      }));
-    });
-  
-    console.log('Updated Users:', this.usersArray.value);
-  }
   
   handleUsersUpdated(users: any[]): void {
-    
-  }
+    console.log("Received updated users from child:", users);
+  
+    this.usersArray.clear();
+    users.forEach((user) => {
+      this.usersArray.push(
+        this.fb.group({
+          assignmentId: [user.assignmentId || null],
+          userName: [user.userName, Validators.required],
+          userAdminName: [user.userAdminName],
+          userEmail: [user.userEmail, [Validators.required, Validators.email]],
+          status: [user.status, Validators.required],
+        })
+      );
+    });
+  
+    console.log('Updated Users in Parent:', this.usersArray.value);
+  }  
 
   handleSettingsUpdated(updatedSettings: TournamentSettings): void {
     console.log("Tournament Settings Updated:", updatedSettings);

@@ -49,19 +49,21 @@
 }
 
 .user-details .user-name {
-  font-size: 1rem;
-  font-weight: bold;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  font-size: 12px;
+  color: #333;
 }
 
 .user-details .user-email {
-  font-size: 0.9rem;
-  color: #555;
+  font-size: 12px;
+  color: #333;
   display: block;
 }
 
 .user-details .user-status {
-  font-size: 0.85rem;
+  font-size: 12px;
   color: #888;
   display: block;
 }
