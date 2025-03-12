@@ -1,6 +1,40 @@
+<ion-content class="ion-padding page-with-header">
+  <div class="page-container">
 
+    <div class="page-description">
+      <p>
+        This summary provides an overview of participants' performance in the tournament.  
+        The table includes ranking, successful predictions in different bet categories, and total payout.
+      </p>
+    </div>
 
-<div class="page-container">
-<br><br><br><br><br>
-page shows the sumamry/results for selected tournament    
-</div>
+    <!-- Summary Table -->
+    <ion-grid class="summary-grid">
+
+      <!-- Table Header -->
+      <ion-row class="summary-header">
+        <ion-col size="2" class="centered-text"><strong>#</strong></ion-col>
+        <ion-col size="5" class="text-left"><strong>Player</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>W</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>Q</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>P</strong></ion-col>
+        <ion-col size="2" class="centered-text"><strong>Result</strong></ion-col>
+      </ion-row>
+
+      <!-- Table Data -->
+      <ion-row *ngFor="let player of summaryData">
+        <ion-col size="2" class="centered-text">{{ player.position }}</ion-col>
+        <ion-col size="5" class="text-left player-name">{{ player.participantEmail }}</ion-col>
+        <ion-col size="1" class="centered-text">{{ player.successful1X2Results }}</ion-col>
+        <ion-col size="1" class="centered-text">{{ player.successfulQualifications }}</ion-col>
+        <ion-col size="1" class="centered-text">{{ player.successfulExactResults }}</ion-col>
+        <ion-col size="2" class="centered-text payout">{{ player.totalPayout | number: '1.2-2' }}</ion-col>
+      </ion-row>
+
+    </ion-grid>
+
+    <!-- Loading Spinner -->
+    <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+
+  </div>
+</ion-content>

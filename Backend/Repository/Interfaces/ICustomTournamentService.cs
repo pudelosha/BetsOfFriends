@@ -15,5 +15,6 @@ namespace Backend.Repository.Interfaces
         Task<bool> AcceptTournamentInvitationAsync(int tournamentId, string userId);
         Task<bool?> ToggleTournamentVisibilityAsync(int tournamentId, string userId);
         Task<bool> RecalculateTournamentBetsAsync(int tournamentId, string userId);
+        Task<List<TournamentSummaryDto>?> GetTournamentSummaryAsync(int tournamentId, string userId);
     }
 }

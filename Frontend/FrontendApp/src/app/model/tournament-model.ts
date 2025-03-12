@@ -72,3 +72,14 @@ export interface UserActiveTournament {
   isVisible: boolean;
 }
 
+export interface TournamentSummary {
+  position: number;
+  participantEmail: string;
+  totalBetsPlaced: number;
+  successful1X2Results: number;
+  successfulQualifications: number;
+  successfulExactResults: number;
+  totalPayout: number;
+}
+
+

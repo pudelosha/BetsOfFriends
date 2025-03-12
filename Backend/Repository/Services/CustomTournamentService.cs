@@ -940,6 +940,80 @@ namespace Backend.Repository.Services
             }
         }
 
+        public async Task<List<TournamentSummaryDto>?> GetTournamentSummaryAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching tournament summary for ID {tournamentId}, requested by user {userId}");
 
+                // Check if the user is assigned to the tournament
+                var isParticipant = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (!isParticipant)
+                {
+                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}.");
+                    return null; // Unauthorized access
+                }
+
+                // Fetch all tournament bets and participants
+                var tournamentBets = await _context.Bets
+                    .Where(b => b.Match.TournamentId == tournamentId)
+                    .Include(b => b.Match)
+                    .Include(b => b.User)
+                    .ToListAsync();
+
+                if (!tournamentBets.Any())
+                {
+                    _logger.LogWarning($"No bets found for tournament ID {tournamentId}.");
+                    return new List<TournamentSummaryDto>();
+                }
+
+                // Group by user to generate statistics
+                var summary = tournamentBets
+                    .GroupBy(b => b.User)
+                    .Select(group =>
+                    {
+                        var user = group.Key;
+                        var bets = group.ToList();
+                        var successful1X2 = bets.Count(b => b.Status == Bet.BetStatus.Finalised && b.Result == Bet.BetResult.Won);
+                        var successfulQualification = bets.Count(b =>
+                            b.Status == Bet.BetStatus.Finalised &&
+                            b.Match.Type == CustomMatch.MatchType.ExtendedWithQualification &&
+                            b.QualifiedTeam.ToString() == b.Match.Qualified.ToString());    // TODO temp solution!!
+                        var successfulExactResults = bets.Count(b =>
+                            b.Status == Bet.BetStatus.Finalised &&
+                            b.HomeGoals == b.Match.HomeScore &&
+                            b.AwayGoals == b.Match.AwayScore);
+                        var totalPayout = bets.Where(b => b.Status == Bet.BetStatus.Finalised).Sum(b => b.Payout ?? 0);
+
+                        return new TournamentSummaryDto
+                        {
+                            ParticipantEmail = user.Email,
+                            TotalBetsPlaced = bets.Count,
+                            Successful1X2Results = successful1X2,
+                            SuccessfulQualifications = successfulQualification,
+                            SuccessfulExactResults = successfulExactResults,
+                            TotalPayout = totalPayout
+                        };
+                    })
+                    .OrderByDescending(s => s.TotalPayout)
+                    .ToList();
+
+                // Assign positions based on payout ranking
+                for (int i = 0; i < summary.Count; i++)
+                {
+                    summary[i].Position = i + 1;
+                }
+
+                _logger.LogInformation($"Successfully generated tournament summary for ID {tournamentId}.");
+                return summary;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching tournament summary for ID {tournamentId}");
+                throw;
+            }
+        }
     }
 }

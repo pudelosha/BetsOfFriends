@@ -147,4 +147,15 @@ namespace Backend.DTOs
     {
         public bool IsVisible { get; set; }
     }
+
+    public class TournamentSummaryDto
+    {
+        public int Position { get; set; }
+        public string ParticipantEmail { get; set; } = string.Empty;
+        public int TotalBetsPlaced { get; set; }
+        public int Successful1X2Results { get; set; }
+        public int SuccessfulQualifications { get; set; }
+        public int SuccessfulExactResults { get; set; }
+        public decimal TotalPayout { get; set; }
+    }
 }

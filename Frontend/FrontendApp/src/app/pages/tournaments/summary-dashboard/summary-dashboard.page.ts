@@ -1,20 +1,83 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
+import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
+import { TournamentSummary } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-summary-dashboard',
   templateUrl: './summary-dashboard.page.html',
   styleUrls: ['./summary-dashboard.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, IonicModule],
 })
 export class SummaryDashboardPage implements OnInit {
+  tournamentId: number | null = null;
+  summaryData: TournamentSummary[] = [];
+  isLoading = true;
 
-  constructor() { }
+  constructor(
+    private tournamentService: CustomTournamentService,
+    private tournamentSelectionService: TournamentSelectionService,
+    private toastController: ToastController,
+    private loadingController: LoadingController
+  ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.loadTournamentAndFetchSummary();
   }
 
+  async ionViewWillEnter() {
+    await this.loadTournamentAndFetchSummary(); // Ensure summary is refreshed on view enter
+  }
+
+  private async loadTournamentAndFetchSummary() {
+    this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+    
+    if (this.tournamentId === null) {
+      await this.showToast('No tournament selected', 'warning');
+      this.isLoading = false;
+      return;
+    }
+
+    await this.fetchSummary();
+  }
+
+  async fetchSummary() {
+    if (this.tournamentId === null) {
+      console.error('Tournament ID is null, cannot fetch summary.');
+      return;
+    }
+
+    const loading = await this.loadingController.create({
+      message: 'Loading summary...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+
+    this.tournamentService.getTournamentSummary(this.tournamentId).subscribe({
+      next: (summary) => {
+        this.summaryData = summary;
+        this.isLoading = false;
+        loading.dismiss();
+      },
+      error: async (error) => {
+        console.error('Error fetching summary:', error);
+        this.isLoading = false;
+        loading.dismiss();
+        await this.showToast('Error loading summary', 'danger');
+      },
+    });
+  }
+
+  async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color,
+    });
+    await toast.present();
+  }
 }

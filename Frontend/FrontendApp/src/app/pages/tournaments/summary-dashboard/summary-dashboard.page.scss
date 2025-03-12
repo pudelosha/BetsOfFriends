@@ -1,0 +1,49 @@
+/* Summary Grid Styling */
+.summary-grid {
+  width: 100%;
+  padding: 0px;
+}
+
+/* Table Header */
+.summary-header {
+  font-weight: bold;
+  font-size: 12px;
+  background-color: #f0f0f0;
+  padding: 6px 0;
+}
+
+/* Table Row Styling */
+ion-row {
+  border-bottom: 1px solid #ddd;
+  padding: 4px 0;
+}
+
+/* Align Text in Columns */
+.centered-text {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+/* Player Name Styling */
+.player-name {
+  font-size: 12px;
+  color: #333;
+  text-align: left;
+}
+
+/* Payout Column */
+.payout {
+  font-weight: bold;
+  color: #007bff; /* Blue */
+  font-size: 12px;
+}
+
+.page-description {
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}

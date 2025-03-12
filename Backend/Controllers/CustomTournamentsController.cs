@@ -356,5 +356,32 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while recalculating bets." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("summary/{tournamentId}")]
+        public async Task<IActionResult> GetTournamentSummary(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { Message = "User not found." });
+                }
+
+                var summary = await _tournamentService.GetTournamentSummaryAsync(tournamentId, userId);
+                if (summary == null)
+                {
+                    return Forbid("User is not assigned to this tournament.");
+                }
+
+                return Ok(summary);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching tournament summary for ID {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while retrieving the tournament summary." });
+            }
+        }
     }
 }

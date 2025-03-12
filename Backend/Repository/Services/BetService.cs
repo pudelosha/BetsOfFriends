@@ -150,6 +150,7 @@ namespace Backend.Repository.Services
                     .Include(b => b.Match)
                         .ThenInclude(m => m.AwayTeam)
                     .Where(b => b.Match.TournamentId == tournamentId && b.UserId == userId && b.Status == status)
+                    .OrderBy(b => b.Match.MatchStart)
                     .ToListAsync();
 
                 if (!bets.Any())
