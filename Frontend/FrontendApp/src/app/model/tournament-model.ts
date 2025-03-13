@@ -82,4 +82,12 @@ export interface TournamentSummary {
   totalPayout: number;
 }
 
+export interface TournamentPlayerResult {
+  position: number;
+  userName: string;
+  points: number;
+  isCurrentUser: boolean;
+}
+
+
 

@@ -117,5 +117,33 @@ namespace Backend.Controllers
                 return StatusCode(500, new { message = "An unexpected error occurred. Please try again later." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("upcoming/{tournamentId}")]
+        public async Task<IActionResult> GetUpcomingBets(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching upcoming bets for tournament {tournamentId}");
+
+                // Get userId from claims
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized request to fetch upcoming bets.");
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                // Call service method to get upcoming bets
+                var upcomingBets = await _betService.GetUpcomingBetsAsync(tournamentId, userId);
+
+                return Ok(upcomingBets);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching upcoming bets for tournament {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while fetching upcoming bets." });
+            }
+        }
     }
 }

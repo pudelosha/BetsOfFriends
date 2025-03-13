@@ -588,5 +588,35 @@ namespace Backend.Repository.Services
                 return null;
             }
         }
+
+        public async Task<List<UpcomingBetDto>> GetUpcomingBetsAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching upcoming bets for user {userId} in tournament {tournamentId}");
+
+                var upcomingBets = await _context.Bets
+                    .Where(b => b.Match.TournamentId == tournamentId &&
+                                b.UserId == userId &&
+                                b.Status == Bet.BetStatus.ToPlace)
+                    .OrderBy(b => b.Match.MatchStart)
+                    .Take(5)
+                    .Select(b => new UpcomingBetDto
+                    {
+                        MatchId = b.Match.MatchId,
+                        HomeTeam = b.Match.HomeTeam.Name,
+                        AwayTeam = b.Match.AwayTeam.Name,
+                        MatchTime = b.Match.MatchStart
+                    })
+                    .ToListAsync();
+
+                return upcomingBets;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching upcoming bets for tournament {tournamentId} and user {userId}");
+                throw;
+            }
+        }
     }
 }

@@ -1,40 +1,97 @@
-.tournament-summary-container {
-    padding: 15px;
-    border: 1px solid #ddd;
-    background-color: #f9f9f9;
-    min-height: 100px;
-    margin-top: 15px;
-  }
-  
-  .tournament-summary-container h2 {
-    margin: 0;
-    padding: 5px 5px 15px 5px; /* Ensures no extra padding */
-    font-size: 1.2em;
-  }
-  
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  .rank {
-    font-weight: bold;
-  }
-  
-  .player-name {
-    flex-grow: 1;
-    padding: 0 10px;
-  }
-  
-  .you {
-    font-weight: bold;
-    color: green;
-  }
-  
-  .points {
-    font-size: 0.9em;
-    color: #666;
-  }
-  
+/* ✅ Frame Styling */
+.tournament-summary-box {
+  background: #f5f5f5 !important; /* Light gray background */
+  border-radius: 10px; /* Rounded corners */
+  padding: 15px;
+  cursor: pointer; /* ✅ Makes the entire frame clickable */
+  transition: background 0.2s ease-in-out;
+  margin-bottom: 15px;
+
+}
+
+/* ✅ Hover effect */
+.tournament-summary-box:hover {
+  background: #ebebeb !important; /* Slightly darker gray on hover */
+}
+
+/* ✅ Title (Top-left corner) */
+.frame-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 0px 0px 10px 0px;
+  text-align: left;
+}
+
+/* ✅ No tournament data message */
+.no-summary-message {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* ✅ List styling */
+.tournament-summary-list {
+  --background: transparent !important; /* Ensures the list itself is transparent */
+  --padding-top: 0px !important;
+  --padding-bottom: 0px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+/* ✅ Make ion-items transparent so the frame color is visible */
+.tournament-summary-item {
+  --inner-padding-end: 0px !important;
+  --inner-padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --padding-start: 0px !important;
+  --ion-item-background: transparent !important; /* ✅ Ensures no white background */
+  background: transparent !important;
+  height: 40px;
+  --min-height: 60px !important;
+  --max-height: 60px !important;
+  display: flex;
+  align-items: center;
+}
+
+/* ✅ Grid layout */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 6fr 2fr; /* Position, Name, Points */
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  padding-right: 0px;
+}
+
+/* ✅ Position Styling */
+.position {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* ✅ Player Name */
+.player-name {
+  font-size: 14px;
+  font-weight: normal;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ✅ Highlight the current user */
+.highlight-player {
+  font-weight: bold;
+  color: green;
+}
+
+/* ✅ Points Styling */
+.points {
+  font-size: 14px;
+  color: #666;
+  text-align: right;
+  white-space: nowrap;
+}

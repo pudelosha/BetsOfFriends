@@ -81,4 +81,12 @@ namespace Backend.DTOs
         public int? AwayQualifiesSuccess { get; set; }
         public int? ResultSuccess { get; set; }
     }
+
+    public class UpcomingBetDto
+    {
+        public int MatchId { get; set; }
+        public string HomeTeam { get; set; } = string.Empty;
+        public string AwayTeam { get; set; } = string.Empty;
+        public DateTime MatchTime { get; set; }
+    }
 }

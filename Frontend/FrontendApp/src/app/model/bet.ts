@@ -84,6 +84,13 @@ export interface UserBetDetails {
   resultSuccess?: number | null;
 }
 
+export interface UpcomingBet {
+  matchId: number;
+  homeTeam: string;
+  awayTeam: string;
+  matchTime: string; // ISO date string
+}
+
 
 
 

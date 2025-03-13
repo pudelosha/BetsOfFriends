@@ -1,10 +1,22 @@
-<div class="tournament-summary-container">
-  <h2>Tournament Summary</h2>
-  <div *ngFor="let player of topPlayers; let i = index" class="summary-row">
-    <span class="rank">{{ i + 1 }}.</span>
-    <span class="player-name" [ngClass]="{'you': player.name === userName}">
-      {{ player.name }} <span *ngIf="player.name === userName">(you)</span>
-    </span>
-    <span class="points">{{ player.points }} points</span>
-  </div>
+<div class="tournament-summary-box">
+  <h2 class="frame-title">Tournament Summary</h2>
+
+  <ion-list class="tournament-summary-list" *ngIf="tournamentSummary.length > 0">
+    <ion-item *ngFor="let player of tournamentSummary" class="tournament-summary-item">
+      <div class="summary-grid">
+        <!-- Position -->
+        <span class="position"> {{ player.position }}. </span>
+
+        <!-- Player Name -->
+        <span class="player-name" [ngClass]="{ 'highlight-player': player.isCurrentUser }">
+          {{ player.name }} <span *ngIf="player.isCurrentUser">(you)</span>
+        </span>
+
+        <!-- Points -->
+        <span class="points">{{ player.points }} points</span>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <p class="no-summary-message" *ngIf="tournamentSummary.length === 0">No tournament data available.</p>
 </div>

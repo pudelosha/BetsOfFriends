@@ -1,0 +1,27 @@
+<div class="upcoming-bets-box" (click)="goToMyBets()">
+  <h2 class="frame-title">Upcoming Bets</h2>
+
+  <ion-list class="upcoming-bet-list" *ngIf="upcomingGames.length > 0">
+    <ion-item *ngFor="let game of upcomingGames" class="upcoming-bet-item">
+      <div class="upcoming-bet-grid">
+        <!-- Match Details -->
+        <div class="upcoming-bet-details">
+          <span class="teams">{{ game.homeTeam }} - {{ game.awayTeam }}</span>
+        </div>
+
+        <!-- Date & Time -->
+        <div class="upcoming-bet-date">
+          <span class="date-time">{{ game.matchTime | date: 'yyyy.MM.dd HH:mm' }}</span>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <!-- No bets message -->
+  <p class="no-bets-message" *ngIf="!isLoading && upcomingGames.length === 0">
+    No upcoming bets found.
+  </p>
+
+  <!-- Loading Spinner -->
+  <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+</div>
