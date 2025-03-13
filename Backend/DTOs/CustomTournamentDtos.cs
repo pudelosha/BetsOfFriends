@@ -158,4 +158,15 @@ namespace Backend.DTOs
         public int SuccessfulExactResults { get; set; }
         public decimal TotalPayout { get; set; }
     }
+
+    public class TournamentInvitationRequestDto
+    {
+        public string Nickname { get; set; }
+    }
+
+    public class TournamentInvitationResponseDto
+    {
+        public bool Success { get; set; }
+        public string? Message { get; set; }
+    }
 }

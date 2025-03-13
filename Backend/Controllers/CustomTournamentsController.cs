@@ -271,28 +271,29 @@ namespace Backend.Controllers
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPost("accept-invitation/{tournamentId}")]
-        public async Task<IActionResult> AcceptTournamentInvitation(int tournamentId)
+        public async Task<IActionResult> AcceptTournamentInvitation(int tournamentId, [FromBody] TournamentInvitationRequestDto request)
         {
             try
             {
                 var userId = _userService.GetUserIdFromClaims(User);
                 if (userId == null)
                 {
-                    return Unauthorized("User not found.");
+                    return Unauthorized(new { message = "User not found." });
                 }
 
-                var result = await _tournamentService.AcceptTournamentInvitationAsync(tournamentId, userId);
-                if (!result)
+                var result = await _tournamentService.AcceptTournamentInvitationAsync(tournamentId, userId, request.Nickname);
+
+                if (!result.Success)
                 {
-                    return BadRequest("Tournament invitation could not be accepted. You may not be invited.");
+                    return BadRequest(new { message = result.Message });
                 }
 
-                return Ok(new { Message = "You have successfully accepted the tournament invitation." });
+                return Ok(new { message = result.Message });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error while accepting tournament invitation for ID {tournamentId}");
-                return StatusCode(500, new { Message = "An error occurred while accepting the tournament invitation." });
+                return StatusCode(500, new { message = "An error occurred while accepting the tournament invitation." });
             }
         }
 

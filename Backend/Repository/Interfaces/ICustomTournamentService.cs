@@ -12,7 +12,7 @@ namespace Backend.Repository.Interfaces
         Task<CustomTournamentDto?> GetCustomTournamentByIdAsync(int tournamentId, string userId);
         Task<List<UserActiveTournamentDto>> GetUserActiveTournamentsAsync(string userId);
         Task<bool> QuitTournamentAsync(int tournamentId, string userId);
-        Task<bool> AcceptTournamentInvitationAsync(int tournamentId, string userId);
+        Task<TournamentInvitationResponseDto> AcceptTournamentInvitationAsync(int tournamentId, string userId, string nickname);
         Task<bool?> ToggleTournamentVisibilityAsync(int tournamentId, string userId);
         Task<bool> RecalculateTournamentBetsAsync(int tournamentId, string userId);
         Task<List<TournamentSummaryDto>?> GetTournamentSummaryAsync(int tournamentId, string userId);

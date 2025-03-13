@@ -80,9 +80,12 @@ export class MyTournamentsDashboardPage implements OnInit {
   async acceptInvitation(tournament: any): Promise<void> {
     const modal = await this.modalController.create({
       component: AcceptInvitationModalComponent,
-      componentProps: { tournamentName: tournament.tournamentName },
-      breakpoints: [0, 0.3, 1],
-      initialBreakpoint: 0.3,
+      componentProps: {
+        tournamentName: tournament.tournamentName,
+        tournamentId: tournament.tournamentId,
+      },
+      breakpoints: [0, 0.5, 1],
+      initialBreakpoint: 0.5,
     });
   
     await modal.present();
@@ -90,17 +93,10 @@ export class MyTournamentsDashboardPage implements OnInit {
     const { data } = await modal.onWillDismiss();
   
     if (data?.accepted) {
-      try {
-        await firstValueFrom(this.tournamentService.acceptTournamentInvitation(tournament.tournamentId));
-        this.showToast(`You have successfully joined ${tournament.tournamentName}!`, 'success');
-        this.loadTournaments(); // Refresh list
-      } catch (error) {
-        console.error('Error accepting invitation:', error);
-        this.showToast('Failed to accept invitation. Please try again.', 'danger');
-      }
+      this.loadTournaments();
     }
   }
-  
+    
   async quitTournament(tournament: UserActiveTournament) {
     const alert = await this.alertController.create({
       header: 'Confirm Quit',

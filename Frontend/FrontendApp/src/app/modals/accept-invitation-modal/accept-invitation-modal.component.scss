@@ -1,23 +1,49 @@
-h2 {
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
-  p {
-    text-align: center;
-  }
-  
-  ion-footer {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-  }
-  
-  /* Ensure buttons are centered and properly spaced */
-  ion-button {
-    --padding-start: 10px;
-    --padding-end: 10px;
-    font-size: 1.1rem;
-  }
-  
+/* Remove extra padding from ion-content */
+ion-content {
+  --padding-top: 0 !important;
+  --padding-bottom: 0 !important;
+  padding: 0 !important;
+}
+
+/* Section Title Styling */
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin: 12px 0;
+  color: #555;
+}
+
+/* Row Layout for Inputs */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 0;
+}
+
+/* Label Styling */
+.selector-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+/* Ensure Spacing Below Button */
+.save-button-container {
+  margin: 15px;
+}
+
+/* Validation Messages */
+.validation-message {
+  margin-top: 5px;
+}
+
+.validation-message .error {
+  color: red;
+  font-size: 12px;
+  margin: 2px 0;
+}

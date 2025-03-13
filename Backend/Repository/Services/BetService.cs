@@ -23,7 +23,7 @@ namespace Backend.Repository.Services
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                _logger.LogInformation($"Generating bets for tournament ID: {tournamentId}");
+                _logger.LogInformation($"Ensuring bets are created for tournament ID: {tournamentId}");
 
                 // Step 1: Fetch all matches for the tournament
                 var matches = await _context.CustomMatches
@@ -32,56 +32,75 @@ namespace Backend.Repository.Services
 
                 if (!matches.Any())
                 {
-                    _logger.LogWarning($"No matches found for tournament ID: {tournamentId}. No bets will be created.");
+                    _logger.LogWarning($"No matches found for tournament ID: {tournamentId}. Skipping bet creation.");
                     return;
                 }
 
                 // Step 2: Fetch all users participating in this tournament
                 var users = await _context.CustomTournamentUserAssignments
-                    .Where(u => u.TournamentId == tournamentId)
-                    .Select(u => u.UserId) // Select only user IDs
+                    .Where(u => u.TournamentId == tournamentId) // && u.Status == AssignmentStatus.Accepted
+                    .Select(u => u.UserId)
                     .ToListAsync();
 
                 if (!users.Any())
                 {
-                    _logger.LogWarning($"No participants found for tournament ID: {tournamentId}. No bets will be created.");
+                    _logger.LogWarning($"No participants found for tournament ID: {tournamentId}. Skipping bet creation.");
                     return;
                 }
 
-                // Step 3: Create bet entries for each match and each user
-                var bets = new List<Bet>();
+                // Step 3: Fetch existing bets to prevent duplicates
+                var existingBets = await _context.Bets
+                    .Where(b => matches.Select(m => m.MatchId).Contains(b.MatchId) && users.Contains(b.UserId))
+                    .Select(b => new { b.MatchId, b.UserId }) // Select only match-user pairs
+                    .ToListAsync();
+
+                var existingBetPairs = new HashSet<(int MatchId, string UserId)>(existingBets.Select(b => (b.MatchId, b.UserId)));
+
+                // Step 4: Create missing bets
+                var betsToInsert = new List<Bet>();
 
                 foreach (var match in matches)
                 {
                     foreach (var userId in users)
                     {
-                        bets.Add(new Bet
+                        if (!existingBetPairs.Contains((match.MatchId, userId))) // Only add if the bet doesn't already exist
                         {
-                            MatchId = match.MatchId,
-                            UserId = userId,
-                            BaseAmount = 1, // Default bet amount
-                            BonusAmount = null, // No bonus initially
-                            HomeGoals = null, // No score prediction yet
-                            AwayGoals = null,
-                            QualifiedTeam = null, // No qualification prediction yet
-                            Status = Bet.BetStatus.ToPlace, // New Status: Bet must be placed
-                            Result = Bet.BetResult.Pending, // Bet starts as "Pending"
-                            Submitted = false, // Bet is unsubmitted initially
-                            Payout = null // No payout calculated yet
-                        });
+                            betsToInsert.Add(new Bet
+                            {
+                                MatchId = match.MatchId,
+                                UserId = userId,
+                                BaseAmount = 1, // Default bet amount
+                                BonusAmount = null, // No bonus initially
+                                HomeGoals = null, // No score prediction yet
+                                AwayGoals = null,
+                                QualifiedTeam = null, // No qualification prediction yet
+                                Status = Bet.BetStatus.ToPlace, // New Status: Bet must be placed
+                                Result = Bet.BetResult.Pending, // Bet starts as "Pending"
+                                Submitted = false, // Bet is unsubmitted initially
+                                Payout = null // No payout calculated yet
+                            });
+                        }
                     }
                 }
 
-                // Step 4: Bulk insert all bets for efficiency
-                await _context.Bets.AddRangeAsync(bets);
-                await _context.SaveChangesAsync();
+                // Step 5: Bulk insert all missing bets for efficiency
+                if (betsToInsert.Count > 0)
+                {
+                    await _context.Bets.AddRangeAsync(betsToInsert);
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation($"Inserted {betsToInsert.Count} missing bets for tournament ID: {tournamentId}");
+                }
+                else
+                {
+                    _logger.LogInformation($"No missing bets found. Tournament {tournamentId} is already fully populated.");
+                }
+
                 await transaction.CommitAsync();
-                _logger.LogInformation($"Successfully created {bets.Count} bets for tournament ID: {tournamentId}");
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError($"Error creating bets for tournament ID {tournamentId}: {ex.Message}");
+                _logger.LogError($"Error ensuring bets for tournament ID {tournamentId}: {ex.Message}");
                 throw;
             }
         }
@@ -418,14 +437,15 @@ namespace Backend.Repository.Services
                     return;
                 }
 
-                // Step 2: Check if bets already exist for this match (to avoid duplicates)
+                // Step 2: Check existing bets to avoid duplicates
                 var existingBets = await _context.Bets
                     .Where(b => b.MatchId == matchId)
                     .Select(b => b.UserId)
-                    .ToListAsync();
+                    .ToHashSetAsync(); // Uses HashSet for fast lookup
 
+                // Step 3: Generate missing bets only
                 var newBets = assignedUsers
-                    .Where(userId => !existingBets.Contains(userId)) // Add only if the user has no bet for this match
+                    .Where(userId => !existingBets.Contains(userId)) // Avoids inserting duplicates
                     .Select(userId => new Bet
                     {
                         MatchId = matchId,
@@ -440,7 +460,7 @@ namespace Backend.Repository.Services
                         Submitted = false
                     }).ToList();
 
-                // Step 3: Save new bets
+                // Step 4: Save new bets if any
                 if (newBets.Any())
                 {
                     await _context.Bets.AddRangeAsync(newBets);
@@ -455,6 +475,7 @@ namespace Backend.Repository.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error while generating bets for match {matchId}");
+                throw;
             }
         }
 

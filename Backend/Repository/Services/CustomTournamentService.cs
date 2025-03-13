@@ -526,9 +526,6 @@ namespace Backend.Repository.Services
 
                     _context.CustomMatches.Add(newMatch);
                     await _context.SaveChangesAsync();
-
-                    // Call BetsService to generate bets for this match
-                    await _betService.GenerateBetsForNewMatchAsync(newMatch.MatchId, tournament.TournamentId);
                 }
 
                 // Step 6: Handle User Assignments (Track Changes)
@@ -647,7 +644,10 @@ namespace Backend.Repository.Services
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // Step 8: Send Emails (Outside Transaction)
+                // Step 8:  Populate bets
+                await _betService.CreateBetsForTournamentAsync(tournament.TournamentId);
+
+                // Step 9: Send Emails (Outside Transaction)
                 var emailTasks = new List<Task>();
 
                 foreach (var user in invitedUsers)
@@ -840,33 +840,73 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task<bool> AcceptTournamentInvitationAsync(int tournamentId, string userId)
+        public async Task<TournamentInvitationResponseDto> AcceptTournamentInvitationAsync(int tournamentId, string userId, string nickname)
         {
             try
             {
-                _logger.LogInformation($"User {userId} attempting to accept invitation for tournament ID {tournamentId}");
+                _logger.LogInformation($"User {userId} attempting to accept invitation for tournament ID {tournamentId} with nickname {nickname}");
 
-                // Find the user assignment
+                // Validate nickname length
+                if (string.IsNullOrWhiteSpace(nickname) || nickname.Length > 20)
+                {
+                    _logger.LogWarning($"Invalid nickname '{nickname}' for tournament ID {tournamentId}");
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "Nickname cannot be empty or exceed 20 characters."
+                    };
+                }
+
+                // Check if the nickname is already taken within this tournament
+                bool isNicknameTaken = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserName == nickname);
+
+                if (isNicknameTaken)
+                {
+                    _logger.LogWarning($"Nickname '{nickname}' is already taken in tournament ID {tournamentId}.");
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "This nickname is already taken. Please choose a different one."
+                    };
+                }
+
+                // Fetch user tournament assignment
                 var assignment = await _context.CustomTournamentUserAssignments
                     .FirstOrDefaultAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
 
                 if (assignment == null || assignment.Status != AssignmentStatus.Invited)
                 {
                     _logger.LogWarning($"No valid invitation found for user {userId} in tournament ID {tournamentId}");
-                    return false;
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "Tournament invitation could not be accepted. You may not be invited."
+                    };
                 }
 
-                // Update assignment status to Accepted
+                // Accept the invitation and set the nickname
                 assignment.Status = AssignmentStatus.Accepted;
+                assignment.UserName = nickname;
+
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation($"User {userId} has accepted the invitation for tournament ID {tournamentId}");
-                return true;
+                _logger.LogInformation($"User {userId} successfully accepted invitation for tournament ID {tournamentId} with nickname {nickname}");
+
+                return new TournamentInvitationResponseDto
+                {
+                    Success = true,
+                    Message = $"You have successfully joined the tournament as {nickname}."
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error while accepting invitation for tournament ID {tournamentId}");
-                throw;
+                return new TournamentInvitationResponseDto
+                {
+                    Success = false,
+                    Message = "An unexpected error occurred while accepting the invitation. Please try again."
+                };
             }
         }
 

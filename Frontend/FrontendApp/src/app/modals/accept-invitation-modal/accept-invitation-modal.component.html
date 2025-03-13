@@ -1,9 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Accept Invitation</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content class="ion-padding">
-  <h2>Accept Tournament Invitation</h2>
-  <p>Are you sure you want to accept the invitation for <strong>{{ tournamentName }}</strong>?</p>
-  
-  <ion-footer>
-    <ion-button expand="full" color="success" (click)="confirm()">Accept</ion-button>
-    <ion-button expand="full" color="medium" (click)="dismiss()">Cancel</ion-button>
-  </ion-footer>
+  <div class="description">
+    <p>You are invited to join <strong>{{ tournamentName }}</strong>.</p>
+    <p>Please enter a nickname to participate.</p>
+  </div>
+
+  <form [formGroup]="nicknameForm" class="nickname-form">
+    <div class="form-row vertical-align">
+      <ion-label class="selector-label">Nickname</ion-label>
+      <ion-input formControlName="nickname" type="text" maxlength="20" placeholder="Enter nickname"></ion-input>
+    </div>
+
+    <div class="validation-message">
+      <p class="error" *ngIf="nicknameForm.controls['nickname'].hasError('required') && nicknameForm.controls['nickname'].touched">
+        Nickname is required.
+      </p>
+      <p class="error" *ngIf="nicknameForm.controls['nickname'].hasError('maxlength') && nicknameForm.controls['nickname'].touched">
+        Nickname cannot exceed 20 characters.
+      </p>
+      <p class="error" *ngIf="nicknameError">
+        {{ nicknameError }}
+      </p>
+    </div>
+
+    <div class="save-button-container">
+      <ion-button expand="full" color="success" (click)="confirm()" [disabled]="nicknameForm.invalid || isLoading">
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner> Accept
+      </ion-button>
+    </div>
+  </form>
 </ion-content>
+
