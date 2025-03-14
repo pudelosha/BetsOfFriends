@@ -384,5 +384,27 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while retrieving the tournament summary." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("result/{tournamentId}")]
+        public async Task<IActionResult> GetTournamentPlayerResult(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var summary = await _tournamentService.GetTournamentPlayerResultAsync(tournamentId, userId);
+                return Ok(summary);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching tournament result for ID {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while fetching the tournament result." });
+            }
+        }
     }
 }

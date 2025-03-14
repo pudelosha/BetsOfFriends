@@ -32,11 +32,12 @@
 
 /* ✅ Remove extra padding/margins from ion-list */
 .upcoming-bet-list {
-  --background: transparent !important; /* Ensure the list itself is transparent */
+  --background: transparent !important; /* ✅ Ensures the list background is transparent */
   --padding-top: 0px !important;
   --padding-bottom: 0px !important;
   padding-top: 0px !important;
   padding-bottom: 0px !important;
+  background: transparent !important; /* ✅ Override any Ionic defaults */
 }
 
 /* ✅ Make ion-items transparent so the frame color is visible */
@@ -46,7 +47,7 @@
   --padding-end: 0px !important;
   --padding-start: 0px !important;
   --ion-item-background: transparent !important; /* ✅ Ensures no white background */
-  background: transparent !important; /* ✅ Overrides any default white background */
+  background: none !important; /* ✅ Fully remove background */
 
   height: 40px;
   --min-height: 60px !important;
@@ -74,6 +75,7 @@
   white-space: nowrap; /* ✅ Prevents text from breaking into multiple lines */
   overflow: hidden; /* ✅ Ensures text does not overflow */
   text-overflow: ellipsis; /* ✅ Adds "..." if text overflows */
+  background: transparent !important; /* ✅ Ensure no background override */
 }
 
 /* ✅ Date & Time Column */
@@ -82,6 +84,7 @@
   font-size: 12px;
   color: #666;
   white-space: nowrap; /* ✅ Keep date-time in one line */
+  background: transparent !important; /* ✅ Prevents white background */
 }
 
 /* ✅ Ensure clickable behavior does not break flex/grid */

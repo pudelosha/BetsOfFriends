@@ -1055,5 +1055,91 @@ namespace Backend.Repository.Services
                 throw;
             }
         }
+
+        public async Task<List<TournamentPlayerResultDto>> GetTournamentPlayerResultAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching tournament player results for tournament ID {tournamentId}, requested by user {userId}");
+
+                // Check if the user is a participant
+                var isParticipant = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (!isParticipant)
+                {
+                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}.");
+                    return new List<TournamentPlayerResultDto>(); // Unauthorized access
+                }
+
+                // Fetch all bets for the tournament
+                var tournamentBets = await _context.Bets
+                    .Where(b => b.Match.TournamentId == tournamentId)
+                    .Include(b => b.Match)
+                    .Include(b => b.User)
+                    .ToListAsync();
+
+                if (!tournamentBets.Any())
+                {
+                    _logger.LogWarning($"No bets found for tournament ID {tournamentId}.");
+                    return new List<TournamentPlayerResultDto>();
+                }
+
+                // Calculate total payout per user
+                var playerResults = tournamentBets
+                    .GroupBy(b => b.User)
+                    .Select(group =>
+                    {
+                        var user = group.Key;
+                        var totalPayout = group
+                            .Where(b => b.Status == Bet.BetStatus.Finalised)
+                            .Sum(b => b.Payout ?? 0);
+
+                        return new TournamentPlayerResultDto
+                        {
+                            UserName = user.UserName,
+                            Points = totalPayout,
+                            IsCurrentUser = user.Id == userId
+                        };
+                    })
+                    .OrderByDescending(s => s.Points)
+                    .ToList();
+
+                // Assign positions based on payout ranking
+                for (int i = 0; i < playerResults.Count; i++)
+                {
+                    playerResults[i].Position = i + 1;
+                }
+
+                // Select the top 5 players
+                var top5Players = playerResults.Take(5).ToList();
+
+                // Check if the requesting user is already in the top 5
+                bool userInTop5 = top5Players.Any(p => p.IsCurrentUser);
+
+                if (userInTop5)
+                {
+                    return top5Players;
+                }
+                else
+                {
+                    // User is NOT in the top 5, find their position and include them
+                    var userPosition = playerResults.FirstOrDefault(p => p.IsCurrentUser);
+                    if (userPosition != null)
+                    {
+                        // Return the top 4 and the requesting user
+                        return playerResults.Take(4).ToList().Concat(new List<TournamentPlayerResultDto> { userPosition }).ToList();
+                    }
+
+                    // If somehow the user is missing, return just the top 5
+                    return top5Players;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching tournament player results for tournament ID {tournamentId}");
+                throw;
+            }
+        }
     }
 }

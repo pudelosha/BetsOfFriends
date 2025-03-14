@@ -1,22 +1,22 @@
-<div class="tournament-summary-box">
+<div class="tournament-summary-box" (click)="goToMyBets()">
   <h2 class="frame-title">Tournament Summary</h2>
 
-  <ion-list class="tournament-summary-list" *ngIf="tournamentSummary.length > 0">
-    <ion-item *ngFor="let player of tournamentSummary" class="tournament-summary-item">
+  <ion-list class="tournament-summary-list" *ngIf="players.length > 0">
+    <ion-item *ngFor="let player of players" class="tournament-summary-item">
       <div class="summary-grid">
         <!-- Position -->
-        <span class="position"> {{ player.position }}. </span>
+        <span class="position">{{ player.position }}.</span>
 
         <!-- Player Name -->
         <span class="player-name" [ngClass]="{ 'highlight-player': player.isCurrentUser }">
-          {{ player.name }} <span *ngIf="player.isCurrentUser">(you)</span>
+          {{ player.userName }} <span *ngIf="player.isCurrentUser">(you)</span>
         </span>
 
         <!-- Points -->
-        <span class="points">{{ player.points }} points</span>
+        <span class="points">{{ player.points }}</span>
       </div>
     </ion-item>
   </ion-list>
 
-  <p class="no-summary-message" *ngIf="tournamentSummary.length === 0">No tournament data available.</p>
+  <p class="no-summary-message" *ngIf="players.length === 0">No tournament data available.</p>
 </div>

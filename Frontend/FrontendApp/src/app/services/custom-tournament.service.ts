@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tournament } from '../model/tournament-model';
 import { environment } from '../../environments/environment';
-import { UserActiveTournament, TournamentSummary } from '../model/tournament-model';
+import { UserActiveTournament, TournamentSummary, TournamentPlayerResult } from '../model/tournament-model';
 
 @Injectable({
   providedIn: 'root'
@@ -64,5 +64,9 @@ export class CustomTournamentService {
 
   getTournamentSummary(tournamentId: number): Observable<TournamentSummary[]> {
     return this.http.get<TournamentSummary[]>(`${this.apiUrl}/summary/${tournamentId}`);
-  }  
+  } 
+  
+  getTournamentPlayerResult(tournamentId: number): Observable<TournamentPlayerResult[]> {
+    return this.http.get<TournamentPlayerResult[]>(`${this.apiUrl}/result/${tournamentId}`);
+  }
 }

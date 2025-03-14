@@ -169,4 +169,12 @@ namespace Backend.DTOs
         public bool Success { get; set; }
         public string? Message { get; set; }
     }
+
+    public class TournamentPlayerResultDto
+    {
+        public int Position { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public decimal Points { get; set; }
+        public bool IsCurrentUser { get; set; }
+    }
 }

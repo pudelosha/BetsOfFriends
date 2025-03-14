@@ -6,7 +6,6 @@
   cursor: pointer; /* ✅ Makes the entire frame clickable */
   transition: background 0.2s ease-in-out;
   margin-bottom: 15px;
-
 }
 
 /* ✅ Hover effect */
@@ -16,7 +15,7 @@
 
 /* ✅ Title (Top-left corner) */
 .frame-title {
-  font-size: 18px;
+  font-size: 18px; /* ✅ Matches the upcoming bets title */
   font-weight: bold;
   color: #333;
   margin: 0px 0px 10px 0px;
@@ -31,50 +30,54 @@
   margin-top: 10px;
 }
 
-/* ✅ List styling */
+/* ✅ Remove extra padding/margins from ion-list */
 .tournament-summary-list {
-  --background: transparent !important; /* Ensures the list itself is transparent */
+  --background: transparent !important; /* ✅ Ensures the list itself is transparent */
   --padding-top: 0px !important;
   --padding-bottom: 0px !important;
   padding-top: 0px !important;
   padding-bottom: 0px !important;
+  background: transparent !important;
 }
 
-/* ✅ Make ion-items transparent so the frame color is visible */
+/* ✅ Ensure ion-items do NOT have a white background */
 .tournament-summary-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
   --padding-end: 0px !important;
   --padding-start: 0px !important;
-  --ion-item-background: transparent !important; /* ✅ Ensures no white background */
-  background: transparent !important;
+  --ion-item-background: transparent !important; /* ✅ No white background */
+  background: none !important; /* ✅ Fully remove background */
+  
   height: 40px;
   --min-height: 60px !important;
   --max-height: 60px !important;
   display: flex;
   align-items: center;
+  border-bottom: 1px solid #ddd; /* ✅ Light separator for readability */
 }
 
-/* ✅ Grid layout */
+/* ✅ Grid layout for Tournament Summary */
 .summary-grid {
   display: grid;
-  grid-template-columns: 1fr 6fr 2fr; /* Position, Name, Points */
+  grid-template-columns: 1fr 6fr 2fr; /* ✅ Position, Name, Points */
   align-items: center;
   width: 100%;
   gap: 10px;
   padding-right: 0px;
+  background: transparent !important; /* ✅ Ensure no background override */
 }
 
 /* ✅ Position Styling */
 .position {
-  font-size: 14px;
+  font-size: 12px; /* ✅ Matches the upcoming bets font */
   font-weight: bold;
   color: #333;
 }
 
 /* ✅ Player Name */
 .player-name {
-  font-size: 14px;
+  font-size: 12px; /* ✅ Matches upcoming bets font */
   font-weight: normal;
   color: #333;
   white-space: nowrap;
@@ -85,13 +88,22 @@
 /* ✅ Highlight the current user */
 .highlight-player {
   font-weight: bold;
-  color: green;
+  color: #4CAF50 !important; /* ✅ Green for logged-in user */
 }
 
 /* ✅ Points Styling */
 .points {
-  font-size: 14px;
+  font-size: 12px; /* ✅ Matches upcoming bets font */
   color: #666;
   text-align: right;
   white-space: nowrap;
+}
+
+/* ✅ Ensure clickable behavior does not break flex/grid */
+.tournament-summary-clickable {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: transparent !important; /* ✅ Prevents white background */
 }
