@@ -89,5 +89,12 @@ export interface TournamentPlayerResult {
   isCurrentUser: boolean;
 }
 
+export interface TournamentInvite {
+  tournamentName: string;
+  numberOfParticipants: number;
+  assignmentStatus: string; // "Invited" or "Accepted"
+}
+
+
 
 

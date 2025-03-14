@@ -92,8 +92,4 @@ export const routes: Routes = [
   // Default and wildcard routes
   { path: '**', redirectTo: 'welcome' },
 
-
-
-
-
 ];

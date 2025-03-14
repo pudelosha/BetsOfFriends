@@ -177,4 +177,11 @@ namespace Backend.DTOs
         public decimal Points { get; set; }
         public bool IsCurrentUser { get; set; }
     }
+
+    public class TournamentInviteDto
+    {
+        public string TournamentName { get; set; }
+        public int NumberOfParticipants { get; set; }
+        public string AssignmentStatus { get; set; }
+    }
 }

@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { LatestMessagesPage } from '../latest-messages/latest-messages.page';
 import { UpcomingBetsPage } from '../upcoming-bets/upcoming-bets.page';
 import { TournamentSummaryPage } from '../tournament-summary/tournament-summary.page';
+import { TournamentInvitesPage } from '../tournament-invites/tournament-invites.page';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { TournamentSummaryPage } from '../tournament-summary/tournament-summary.
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, LatestMessagesPage, UpcomingBetsPage, TournamentSummaryPage],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, LatestMessagesPage, UpcomingBetsPage, TournamentSummaryPage, TournamentInvitesPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class HomePage {

@@ -1,0 +1,15 @@
+<ng-container *ngIf="invites.length > 0">
+  <div class="tournament-invites-box" (click)="goToMyTournaments()">
+    <h2 class="frame-title">Tournament Invites</h2>
+
+    <ion-list class="tournament-invites-list">
+      <ion-item *ngFor="let invite of invites" class="tournament-invite-item">
+        <div class="invite-grid">
+          <span class="tournament-name">{{ invite.tournamentName }}</span>
+          <span class="participant-count">{{ invite.numberOfParticipants }} participants</span>
+          <span class="status" [class.pending]="invite.assignmentStatus === 'Invited'">{{ invite.assignmentStatus }}</span>
+        </div>
+      </ion-item>
+    </ion-list>
+  </div>
+</ng-container>

@@ -1141,5 +1141,28 @@ namespace Backend.Repository.Services
                 throw;
             }
         }
+
+        public async Task<List<TournamentInviteDto>> GetPendingTournamentInvitesAsync(string userId)
+        {
+            try
+            {
+                var invites = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.UserId == userId && a.Status == AssignmentStatus.Invited)
+                    .Select(a => new TournamentInviteDto
+                    {
+                        TournamentName = a.Tournament.Name,
+                        NumberOfParticipants = a.Tournament.Participants.Count(),
+                        AssignmentStatus = a.Status.ToString()
+                    })
+                    .ToListAsync();
+
+                return invites;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching pending tournament invites for user {userId}", userId);
+                throw;
+            }
+        }
     }
 }

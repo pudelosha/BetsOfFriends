@@ -406,5 +406,27 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while fetching the tournament result." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("invites/pending")]
+        public async Task<IActionResult> GetPendingTournamentInvites()
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var invites = await _tournamentService.GetPendingTournamentInvitesAsync(userId);
+                return Ok(invites);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching pending tournament invites");
+                return StatusCode(500, new { Message = "An error occurred while fetching invites." });
+            }
+        }
     }
 }

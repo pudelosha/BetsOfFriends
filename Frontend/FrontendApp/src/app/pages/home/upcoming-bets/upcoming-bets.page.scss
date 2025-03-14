@@ -3,7 +3,7 @@
   background: #f5f5f5 !important; /* Light gray background */
   border-radius: 10px; /* Rounded corners */
   padding: 15px;
-  margin-bottom: 15px;
+  margin-top: 15px;
   cursor: pointer; /* ✅ Make the entire frame clickable */
   transition: background 0.2s ease-in-out;
 }
@@ -48,6 +48,7 @@
   --padding-start: 0px !important;
   --ion-item-background: transparent !important; /* ✅ Ensures no white background */
   background: none !important; /* ✅ Fully remove background */
+  border-bottom: 1px solid #ddd; /* ✅ Light separator for readability */
 
   height: 40px;
   --min-height: 60px !important;
