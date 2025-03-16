@@ -1,24 +1,68 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from 'src/app/services/notification.service';
+import { Notification as AppMessage } from 'src/app/model/notification';
+import { firstValueFrom } from 'rxjs';
+import { ReactiveFormsModule } from '@angular/forms';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-latest-messages',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
   templateUrl: './latest-messages.page.html',
   styleUrls: ['./latest-messages.page.scss']
 })
-export class LatestMessagesPage {
-  messages = [
-    { sender: 'Alice', content: 'Hello!', timestamp: '10:00 AM' },
-    { sender: 'Bob', content: 'How are you?', timestamp: '10:05 AM' },
-    { sender: 'Charlie', content: 'Meeting at 3?', timestamp: '10:10 AM' },
-    { sender: 'David', content: 'Sure!', timestamp: '10:15 AM' },
-    { sender: 'Eve', content: 'See you then.', timestamp: '10:20 AM' }
-  ];
+export class LatestMessagesPage implements OnInit {
+  messages: AppMessage[] = [];
+  isLoading = true;
+  errorMessage: string | null = null;
 
-  constructor() {
-    console.log('Messages:', this.messages); // Debugging: Ensure data exists
+  constructor(
+    private notificationService: NotificationService,
+    private toastController: ToastController,
+    private router: Router,
+    private loadingController: LoadingController
+  ) {}
+
+  async ngOnInit() {
+    await this.loadMessages();
+  }
+
+  async ionViewWillEnter() {
+    await this.loadMessages(); // Refresh messages on page enter
+  }
+
+  async loadMessages() {
+    const loading = await this.loadingController.create({
+      message: 'Loading messages...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+
+    try {
+      this.messages = await firstValueFrom(this.notificationService.getLatestUserNotifications()) as AppMessage[];
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      this.errorMessage = 'Failed to load messages.';
+    } finally {
+      this.isLoading = false;
+      loading.dismiss();
+    }
+  }
+
+  goToMessages(){
+    this.router.navigate(['/messages']);
+  }
+
+  async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color,
+    });
+    await toast.present();
   }
 }
-

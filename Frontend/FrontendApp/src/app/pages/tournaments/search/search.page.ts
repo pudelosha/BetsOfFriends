@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
 @Component({
-  selector: 'app-live-results-dashboard',
-  templateUrl: './live-results-dashboard.page.html',
-  styleUrls: ['./live-results-dashboard.page.scss'],
+  selector: 'app-search',
+  templateUrl: './search.page.html',
+  styleUrls: ['./search.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class LiveResultsDashboardPage implements OnInit {
+export class SearchPage implements OnInit {
 
   constructor() { }
 

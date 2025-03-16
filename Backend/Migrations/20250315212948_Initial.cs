@@ -14,6 +14,21 @@ namespace Backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PredefinedTournaments",
                 columns: table => new
                 {
@@ -51,6 +66,18 @@ namespace Backend.Migrations
                     MemberSince = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AcceptedRegulations = table.Column<bool>(type: "bit", nullable: false),
                     AcceptedMarketingConsent = table.Column<bool>(type: "bit", nullable: false),
+                    ReceiveEmailMatchClosed = table.Column<bool>(type: "bit", nullable: false),
+                    ReceivePushMatchClosed = table.Column<bool>(type: "bit", nullable: false),
+                    ReceiveEmailDailyUpdates = table.Column<bool>(type: "bit", nullable: false),
+                    ReceivePushDailyUpdates = table.Column<bool>(type: "bit", nullable: false),
+                    ReceiveEmailTournamentInvitation = table.Column<bool>(type: "bit", nullable: false),
+                    ReceivePushTournamentInvitation = table.Column<bool>(type: "bit", nullable: false),
+                    ReceiveEmailPendingBets = table.Column<bool>(type: "bit", nullable: false),
+                    ReceivePushPendingBets = table.Column<bool>(type: "bit", nullable: false),
+                    ReceiveEmailNewGames = table.Column<bool>(type: "bit", nullable: false),
+                    ReceivePushNewGames = table.Column<bool>(type: "bit", nullable: false),
+                    ReceiveEmailSpecialOffers = table.Column<bool>(type: "bit", nullable: false),
+                    ReceivePushSpecialOffers = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -142,6 +169,35 @@ namespace Backend.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NotificationRecipients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    NotificationId = table.Column<int>(type: "int", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    SentEmail = table.Column<bool>(type: "bit", nullable: false),
+                    SentPush = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NotificationRecipients", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NotificationRecipients_Notifications_NotificationId",
+                        column: x => x.NotificationId,
+                        principalTable: "Notifications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_NotificationRecipients_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -458,6 +514,16 @@ namespace Backend.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_NotificationRecipients_NotificationId",
+                table: "NotificationRecipients",
+                column: "NotificationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NotificationRecipients_UserId",
+                table: "NotificationRecipients",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PredefinedMatches_AwayTeamId",
                 table: "PredefinedMatches",
                 column: "AwayTeamId");
@@ -527,6 +593,9 @@ namespace Backend.Migrations
                 name: "CustomTournamentUserAssignments");
 
             migrationBuilder.DropTable(
+                name: "NotificationRecipients");
+
+            migrationBuilder.DropTable(
                 name: "PredefinedMatches");
 
             migrationBuilder.DropTable(
@@ -546,6 +615,9 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "CustomMatches");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "PredefinedTeams");

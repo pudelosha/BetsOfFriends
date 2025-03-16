@@ -7,6 +7,7 @@ export const routes: Routes = [
 
   // Only for logged-in users (Requires "User" role)
   { path: 'home', loadComponent: () => import('./pages/home/home/home.page').then(m => m.HomePage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'messages', loadComponent: () => import('./pages/messages/messages/messages.page').then( m => m.MessagesPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'profile', loadComponent: () => import('./pages/user/profile/profile.page').then(m => m.ProfilePage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'notification-settings', loadComponent: () => import('./pages/user/notification-settings/notification-settings.page').then(m => m.NotificationSettingsPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
@@ -76,7 +77,7 @@ export const routes: Routes = [
 
   { path: 'my-tournaments', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'summary', loadComponent: () => import('./pages/tournaments/summary-dashboard/summary-dashboard.page').then(m => m.SummaryDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
-  { path: 'live-results', loadComponent: () => import('./pages/tournaments/live-results-dashboard/live-results-dashboard.page').then(m => m.LiveResultsDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'search', loadComponent: () => import('./pages/tournaments/search/search.page').then( m => m.SearchPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
   // Only for guests
   { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage), canActivate: [GuestGuard] },
@@ -91,5 +92,9 @@ export const routes: Routes = [
 
   // Default and wildcard routes
   { path: '**', redirectTo: 'welcome' },
+
+
+
+
 
 ];

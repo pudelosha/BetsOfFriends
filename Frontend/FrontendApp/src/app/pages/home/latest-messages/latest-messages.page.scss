@@ -1,33 +1,87 @@
-.messages-container {
+/* ✅ Frame Styling */
+.latest-messages-box {
+  background: #f5f5f5 !important;
+  border-radius: 10px;
   padding: 15px;
-  border: 1px solid #ddd;
-  background-color: #f9f9f9;
-  min-height: 100px; /* Ensures visibility */
+  margin-top: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
 }
 
-.messages-container h2 {
-  margin: 0; /* Removes extra space around h2 */
-  padding: 5px 5px 15px 5px; /* Ensures no extra padding */
-  font-size: 1.2em; /* Adjust font size if needed */
+/* ✅ Add hover effect for interactivity */
+.latest-messages-box:hover {
+  background: #ebebeb !important;
 }
 
-.message-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
-}
-
-.sender {
+/* ✅ Title Styling */
+.frame-title {
+  font-size: 18px;
   font-weight: bold;
+  color: #333;
+  margin: 0px 0px 10px 0px;
+  text-align: left;
 }
 
-.content {
-  flex-grow: 1;
-  padding: 0 10px;
-}
-
-.timestamp {
-  font-size: 0.9em;
+/* ✅ No messages message */
+.no-messages-message {
+  text-align: center;
   color: #666;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* ✅ Remove extra padding/margins from ion-list */
+.latest-messages-list {
+  --background: transparent !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  background: transparent !important;
+}
+
+/* ✅ Make ion-items transparent so the frame color is visible */
+.latest-messages-item {
+  --inner-padding-end: 0px !important;
+  --inner-padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --padding-start: 0px !important;
+  --ion-item-background: transparent !important;
+  background: none !important;
+  border-bottom: 1px solid #ddd;
+
+  height: 40px;
+  --min-height: 60px !important;
+  --max-height: 60px !important;
+  display: flex;
+  align-items: center;
+}
+
+/* ✅ Grid layout for latest messages */
+.latest-messages-grid {
+  display: grid;
+  grid-template-columns: 8fr 2fr;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  padding-right: 0px;
+}
+
+/* ✅ Message Title */
+.latest-messages-details {
+  text-align: left;
+  font-size: 12px;
+  font-weight: normal;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: transparent !important;
+}
+
+/* ✅ Date & Time */
+.latest-messages-date {
+  text-align: right;
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  background: transparent !important;
 }

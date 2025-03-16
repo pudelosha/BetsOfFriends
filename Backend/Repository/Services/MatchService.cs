@@ -13,12 +13,14 @@ namespace Backend.Repository.Services
         private readonly AppDbContext _context;
         private readonly ILogger<MatchService> _logger;
         private readonly IBetService _betService;
+        private readonly INotificationService _notificationService;
 
-        public MatchService(AppDbContext context, IBetService betService, ILogger<MatchService> logger)
+        public MatchService(AppDbContext context, IBetService betService, ILogger<MatchService> logger, INotificationService notificationService)
         {
             _context = context;
             _logger = logger;
             _betService = betService;
+            _notificationService = notificationService;
         }
 
         public async Task<List<MatchDto>> GetMatchesByStatusAsync(int tournamentId, string userId, MatchStatus status)
@@ -90,6 +92,8 @@ namespace Backend.Repository.Services
             {
                 var match = await _context.CustomMatches
                     .Include(m => m.Tournament)
+                    .Include(m => m.HomeTeam)
+                    .Include(m => m.AwayTeam)
                     .FirstOrDefaultAsync(m => m.MatchId == matchUpdateDto.MatchId);
 
                 if (match == null)
@@ -167,11 +171,14 @@ namespace Backend.Repository.Services
                 await _context.SaveChangesAsync();
                 _logger.LogInformation($"Match ID {matchUpdateDto.MatchId} updated successfully by User {userId}.");
 
-                // **Trigger Bet Recalculation if Match is Finalised**
                 if (matchWasFinalised)
                 {
+                    // Trigger Bet Recalculation if Match is Finalised
                     _logger.LogInformation($"Triggering bet recalculation for Match ID {match.MatchId}");
                     await _betService.RecalculateBetsForMatchAsync(match.MatchId);
+
+                    // Send notifications via NotificationService
+                    await _notificationService.NotifyMatchClosureAsync(match);
                 }
 
                 return true;
@@ -182,7 +189,6 @@ namespace Backend.Repository.Services
                 return false;
             }
         }
-
 
         public async Task AutoUpdateMatchStatusAsync()
         {

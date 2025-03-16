@@ -73,6 +73,42 @@ namespace Backend.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("ReceiveEmailDailyUpdates")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceiveEmailMatchClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceiveEmailNewGames")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceiveEmailPendingBets")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceiveEmailSpecialOffers")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceiveEmailTournamentInvitation")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceivePushDailyUpdates")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceivePushMatchClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceivePushNewGames")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceivePushPendingBets")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceivePushSpecialOffers")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceivePushTournamentInvitation")
+                        .HasColumnType("bit");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -335,6 +371,65 @@ namespace Backend.Migrations
                         .IsUnique();
 
                     b.ToTable("CustomTournamentUserAssignments");
+                });
+
+            modelBuilder.Entity("Backend.Model.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("Backend.Model.Entities.NotificationRecipient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("NotificationId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("SentEmail")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SentPush")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NotificationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("NotificationRecipients");
                 });
 
             modelBuilder.Entity("Backend.Model.Entities.PredefinedMatch", b =>
@@ -677,6 +772,25 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Tournament");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Backend.Model.Entities.NotificationRecipient", b =>
+                {
+                    b.HasOne("Backend.Model.Entities.Notification", "Notification")
+                        .WithMany()
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Model.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Notification");
 
                     b.Navigation("User");
                 });

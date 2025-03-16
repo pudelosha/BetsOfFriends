@@ -33,8 +33,6 @@
 /* ✅ Remove extra padding/margins from ion-list */
 .upcoming-bet-list {
   --background: transparent !important; /* ✅ Ensures the list background is transparent */
-  --padding-top: 0px !important;
-  --padding-bottom: 0px !important;
   padding-top: 0px !important;
   padding-bottom: 0px !important;
   background: transparent !important; /* ✅ Override any Ionic defaults */

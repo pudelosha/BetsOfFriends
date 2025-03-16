@@ -75,6 +75,10 @@ export class AppComponent {
     await toast.present();
   }
 
+  navigateToMessages(){
+    this.router.navigate(['/messages']);
+  }
+
   navigateToProfile() {
     console.log('Navigating to profile page...');
     this.router.navigate(['/profile']);
@@ -130,9 +134,7 @@ export class AppComponent {
     this.router.navigate(['/summary']);
   }
 
-  navigateToTournamentLiveResults() {
-    console.log('Navigating to live-results...');
-    this.router.navigate(['/live-results']);
-  }
-
+  navigateToTournamentSearch() {
+    this.router.navigate(['/search']);
+  }  
 }

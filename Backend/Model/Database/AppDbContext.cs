@@ -21,6 +21,11 @@ namespace Backend.Model.Database
         public DbSet<CustomMatch> CustomMatches { get; set; }
         public DbSet<Bet> Bets { get; set; }
 
+        // Notifications
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<NotificationRecipient> NotificationRecipients { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -31,6 +36,7 @@ namespace Backend.Model.Database
             ConfigureUserTournamentRelationship(builder);
             ConfigureGameRelationships(builder);
             ConfigureBetRelationships(builder);
+            ConfigureNotificationRelationships(builder);
             SeedRoles(builder);
         }
 
@@ -160,6 +166,29 @@ namespace Backend.Model.Database
                 .WithMany()
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+        }
+
+        private void ConfigureNotificationRelationships(ModelBuilder builder)
+        {
+            // A NotificationRecipient links a user to a notification
+            builder.Entity<NotificationRecipient>()
+                .HasKey(nr => nr.Id);
+
+            builder.Entity<NotificationRecipient>()
+                .HasOne(nr => nr.User)
+                .WithMany()
+                .HasForeignKey(nr => nr.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<NotificationRecipient>()
+                .HasOne(nr => nr.Notification)
+                .WithMany()
+                .HasForeignKey(nr => nr.NotificationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<NotificationRecipient>()
+                .Property(nr => nr.IsRead)
+                .HasDefaultValue(false);
         }
 
         private void SeedRoles(ModelBuilder builder)

@@ -1,8 +1,27 @@
-<div class="messages-container">
-  <h2>Latest Messages</h2>
-  <div *ngFor="let message of messages" class="message-row">
-    <span class="sender">{{ message.sender }}</span>
-    <span class="content">{{ message.content }}</span>
-    <span class="timestamp">{{ message.timestamp }}</span>
-  </div>
+<div class="latest-messages-box" (click)="goToMessages()">
+  <h2 class="frame-title">Latest Messages</h2>
+
+  <ion-list class="latest-messages-list" *ngIf="messages.length > 0">
+    <ion-item *ngFor="let message of messages" class="latest-messages-item">
+      <div class="latest-messages-grid">
+        <!-- Message Title -->
+        <div class="latest-messages-details">
+          <span class="latest-messages-title">{{ message.title }}</span>
+        </div>
+
+        <!-- Date & Time -->
+        <div class="latest-messages-date">
+          <span class="date-time">{{ message.createdAt | date: 'yyyy.MM.dd HH:mm' }}</span>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <!-- No messages message -->
+  <p class="no-messages-message" *ngIf="!isLoading && messages.length === 0">
+    No messages found.
+  </p>
+
+  <!-- Loading Spinner -->
+  <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
 </div>
