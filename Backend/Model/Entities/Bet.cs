@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Backend.Model.Entities.CustomMatch;
 
 namespace Backend.Model.Entities
 {
@@ -20,7 +21,7 @@ namespace Backend.Model.Entities
 
         public int? HomeGoals { get; set; }
         public int? AwayGoals { get; set; }
-        public Team? QualifiedTeam { get; set; }
+        public TeamQualified? Qualified { get; set; }
 
 
         public BetStatus Status { get; set; }
@@ -40,12 +41,6 @@ namespace Backend.Model.Entities
             Pending,
             Won,
             Lost        
-        }
-
-        public enum Team
-        {
-            Home,
-            Away
         }
     }
 }

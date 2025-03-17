@@ -13,18 +13,19 @@ namespace Backend.Model.Database
         public DbSet<PredefinedTournament> PredefinedTournaments { get; set; }
         public DbSet<PredefinedTeam> PredefinedTeams { get; set; }
         public DbSet<PredefinedMatch> PredefinedMatches { get; set; }
+        public DbSet<PredefinedMatchStage> PredefinedMatchStages { get; set; }
 
         // Standard Tournament Tables
         public DbSet<CustomTournament> CustomTournaments { get; set; }
         public DbSet<CustomTournamentUserAssignment> CustomTournamentUserAssignments { get; set; }
         public DbSet<CustomTeam> CustomTeams { get; set; }
         public DbSet<CustomMatch> CustomMatches { get; set; }
+        public DbSet<CustomMatchStage> CustomMatchStages { get; set; }
         public DbSet<Bet> Bets { get; set; }
 
         // Notifications
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<NotificationRecipient> NotificationRecipients { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -34,7 +35,7 @@ namespace Backend.Model.Database
             ConfigurePredefinedTournamentRelationships(builder);
             ConfigureTournamentRelationships(builder);
             ConfigureUserTournamentRelationship(builder);
-            ConfigureGameRelationships(builder);
+            ConfigureMatchRelationships(builder);
             ConfigureBetRelationships(builder);
             ConfigureNotificationRelationships(builder);
             SeedRoles(builder);
@@ -64,7 +65,14 @@ namespace Backend.Model.Database
             builder.Entity<PredefinedMatch>()
                 .HasOne(m => m.PredefinedTournament)
                 .WithMany(t => t.PredefinedMatches)
-                .HasForeignKey(m => m.PredefinedTournamentId)
+                .HasForeignKey(m => m.TournamentId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete
+
+            // Tournament -> Stages
+            builder.Entity<PredefinedMatchStage>()
+                .HasOne(s => s.PredefinedTournament)
+                .WithMany(t => t.PredefinedStages)
+                .HasForeignKey(s => s.TournamentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Match -> Home Team (FK to PredefinedTeam)
@@ -104,6 +112,13 @@ namespace Backend.Model.Database
                 .WithOne(ut => ut.Tournament)
                 .HasForeignKey(ut => ut.TournamentId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Tournament -> Stages
+            builder.Entity<CustomTournament>()
+                .HasMany(t => t.Stages)
+                .WithOne(s => s.Tournament)
+                .HasForeignKey(s => s.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         private void ConfigureUserTournamentRelationship(ModelBuilder builder)
@@ -132,12 +147,18 @@ namespace Backend.Model.Database
                 .HasDefaultValue(UserTournamentRole.Guest);
         }
 
-        private void ConfigureGameRelationships(ModelBuilder builder)
+        private void ConfigureMatchRelationships(ModelBuilder builder)
         {
             builder.Entity<CustomMatch>()
                 .HasOne(g => g.Tournament)
                 .WithMany(t => t.Matches)
                 .HasForeignKey(g => g.TournamentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CustomMatch>()
+                .HasOne(g => g.Stage)
+                .WithMany()
+                .HasForeignKey(g => g.StageId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<CustomMatch>()
@@ -151,6 +172,10 @@ namespace Backend.Model.Database
                 .WithMany()
                 .HasForeignKey(g => g.AwayTeamId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CustomMatch>()
+                .HasIndex(m => new { m.TournamentId, m.HomeTeamId, m.AwayTeamId, m.MatchStart })
+                .IsUnique();
         }
 
         private void ConfigureBetRelationships(ModelBuilder builder)

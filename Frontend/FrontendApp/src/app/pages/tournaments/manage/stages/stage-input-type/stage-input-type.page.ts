@@ -4,7 +4,7 @@ import { FormGroup, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
-import { Tournament, Team, Match } from 'src/app/model/tournament-model';
+import { Tournament, Team, Match, Stage } from 'src/app/model/tournament-model';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { ModalController } from '@ionic/angular';
 import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-selection-modal/tournament-selection.modal';
@@ -20,6 +20,7 @@ export class StageInputTypePage implements OnInit {
   @Input() showPredefinedImport: boolean = false;
   @Input() tournamentForm!: FormGroup;
   @Output() teamsExtracted = new EventEmitter<Team[]>(); 
+  @Output() stagesExtracted = new EventEmitter<Stage[]>();
   @Output() matchesExtracted = new EventEmitter<Match[]>(); 
   @Output() tournamentSelected = new EventEmitter<Tournament>();
   @ViewChild('fileInput') fileInput!: ElementRef;
@@ -122,10 +123,12 @@ export class StageInputTypePage implements OnInit {
         const workbook = XLSX.read(data, { type: 'array' });
 
         const teams = this.extractTeams(workbook);
-        const matches = this.extractMatches(workbook, teams);
+        const stages = this.extractStages(workbook);
+        const matches = this.extractMatches(workbook, teams, stages);
 
         this.teamsExtracted.emit(teams);
         this.matchesExtracted.emit(matches);
+        this.stagesExtracted.emit(stages);
 
         this.showToast('Excel file read successfully!', 'success');
       } catch (error) {
@@ -162,61 +165,104 @@ export class StageInputTypePage implements OnInit {
     return teams;
   }
 
-  extractMatches(workbook: XLSX.WorkBook, teams: Team[]): Match[] {
-    const sheet = workbook.Sheets['Games'];
-    const matches: Match[] = [];
-
+  extractStages(workbook: XLSX.WorkBook): Stage[] {
+    const sheet = workbook.Sheets['Stages'];
+    const stages: Stage[] = [];
+  
     if (sheet) {
       const rows = XLSX.utils.sheet_to_json(sheet);
+  
+      rows.forEach((row: any, index: number) => {
+        const stageName = typeof row['Stage Name'] === 'string' ? row['Stage Name'].trim() : '';
+  
+        if (stageName) {
+          stages.push({
+            stageFrontendId: this.generateFrontendId(),
+            stageId: null,
+            stageName: stageName,
+            order: index + 1, // Assigns order based on position in the list
+          });
+        }
+      });
+  
+      console.log('Extracted Stages:', stages);
+    } else {
+      console.warn('No "Stages" sheet found in the Excel file.');
+    }
+  
+    return stages;
+  }  
+  
+  extractMatches(workbook: XLSX.WorkBook, teams: Team[], stages: Stage[]): Match[] {
+    const sheet = workbook.Sheets['Matches'];
+    const matches: Match[] = [];
+  
+    if (sheet) {
+      const rows = XLSX.utils.sheet_to_json(sheet);
+  
+      // Create lookup maps for teams and stages
       const teamMap = new Map(
-        teams.map(team => [team.teamName, { teamFrontendId: team.teamFrontendId, teamId: team.teamId }])
+        teams.map(team => [team.teamName.trim().toLowerCase(), { teamFrontendId: team.teamFrontendId, teamId: team.teamId }])
       );
-
+      const stageMap = new Map(
+        stages.map(stage => [stage.stageName.trim().toLowerCase(), { stageFrontendId: stage.stageFrontendId, stageId: stage.stageId, stageName: stage.stageName }])
+      );
+  
       rows.forEach((row: any) => {
-        const homeTeamName = row['Home Team'];
-        const awayTeamName = row['Away Team'];
-        const homeTeam = teamMap.get(homeTeamName);
-        const awayTeam = teamMap.get(awayTeamName);
-
+        const homeTeamName = row['Home Team']?.trim();
+        const awayTeamName = row['Away Team']?.trim();
+        const stageName = row['Stage']?.trim()?.toLowerCase();
+  
+        const homeTeam = teamMap.get(homeTeamName?.toLowerCase());
+        const awayTeam = teamMap.get(awayTeamName?.toLowerCase());
+        const selectedStage = stageMap.get(stageName);
+  
         if (!homeTeam || !awayTeam) {
           console.warn(`Unknown teams in match: ${homeTeamName} vs ${awayTeamName}`);
           return;
         }
-
+  
+        if (!selectedStage) {
+          console.warn(`Unknown stage: ${row['Stage']}. Assigning default stage.`);
+        }
+  
         const match: Match = {
           matchFrontendId: this.generateFrontendId(),
           matchId: null,
-          stage: row['Stage'] || null,
-
+  
+          stageFrontendId: selectedStage?.stageFrontendId ?? this.generateFrontendId(), // Ensure non-null string
+          stageId: selectedStage?.stageId ?? null,
+          stageName: selectedStage?.stageName || row['Stage'] || 'Default Stage',
+  
           homeTeamId: homeTeam.teamId,
           homeTeamFrontendId: homeTeam.teamFrontendId,
           homeTeam: homeTeamName,
-
+  
           awayTeamId: awayTeam.teamId,
           awayTeamFrontendId: awayTeam.teamFrontendId,
           awayTeam: awayTeamName,
-
+  
           matchStart: this.convertToTimestamp(row['Date'], row['Time'], row['UTC Offset']),
           matchType: row['Match Type'] || 'default',
-
+  
           homeWinOdds: this.parseOdds(row['Home Win Odds']) ?? 0,
           drawOdds: this.parseOdds(row['Draw Odds']) ?? 0,
           awayWinOdds: this.parseOdds(row['Away Win Odds']) ?? 0,
-
+  
           homeQualifies: null,
           awayQualifies: null,
         };
-
+  
         matches.push(match);
       });
-
+  
       console.log('Extracted Matches:', matches);
     } else {
-      console.warn('No "Games" sheet found in the Excel file.');
+      console.warn('No "Matches" sheet found in the Excel file.');
     }
-
+  
     return matches;
-  }
+  }  
 
   convertToTimestamp(date: string, time: string, utcOffset: number): string {
     if (!date || !time) return '';

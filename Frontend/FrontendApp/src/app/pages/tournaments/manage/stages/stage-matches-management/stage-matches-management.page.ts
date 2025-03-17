@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { ModalController, AlertController } from '@ionic/angular';
 import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
 import { buildMatchFormGroup } from '../../../shared/form-utils';
-import { Match, Team } from 'src/app/model/tournament-model';
+import { Match, Team, Stage } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-stage-matches-management',
@@ -17,6 +17,7 @@ import { Match, Team } from 'src/app/model/tournament-model';
 export class StageMatchesManagementPage implements OnInit {
   @Input() matchesArray!: FormArray; // FormArray for matches
   @Input() teamsArray!: Team[]; // List of structured teams
+  @Input() stagesArray!: Stage[]; // List of structured stages
   @Output() matchesUpdated = new EventEmitter<Match[]>(); // Emits updated matches to parent
 
   constructor(
@@ -44,6 +45,7 @@ export class StageMatchesManagementPage implements OnInit {
         match: null, // Indicate "Add New Match"
         index: undefined, // No existing match to edit
         teams: this.teamsArray, // Pass full team objects
+        stages: this.stagesArray, // Pass full stage objects
       },
     });
 
@@ -53,7 +55,10 @@ export class StageMatchesManagementPage implements OnInit {
           matchFrontendId: this.generateFrontendId(), // Generate frontend ID for new matches
           matchId: null, // New matches have no backend ID initially
 
-          stage: result.data.stage || null,
+          stageId: result.data.stageId ?? null,
+          stageFrontendId: result.data.stageFrontendId,
+          stageName: result.data.stageName,
+
           homeTeamId: result.data.homeTeamId ?? null,
           homeTeamFrontendId: result.data.homeTeamFrontendId,
           homeTeam: result.data.homeTeam,
@@ -87,6 +92,7 @@ export class StageMatchesManagementPage implements OnInit {
     const existingMatch = index !== undefined ? this.getMatchControl(index).value : null;
 
     console.log(existingMatch);
+    console.log(this.stagesArray);
 
     const modal = await this.modalController.create({
       component: EditMatchModalComponent,
@@ -94,6 +100,7 @@ export class StageMatchesManagementPage implements OnInit {
         match: existingMatch || {}, // Pass existing match or an empty object
         index,
         teams: this.teamsArray, // Pass full structured teams
+        stages: this.stagesArray, // Pass full stages
       },
     });
 
@@ -103,7 +110,10 @@ export class StageMatchesManagementPage implements OnInit {
           matchFrontendId: result.data.matchFrontendId, // Preserve frontend tracking ID
           matchId: result.data.matchId ?? null,
 
-          stage: result.data.stage || null,
+          stageId: result.data.stageId ?? null,
+          stageFrontendId: result.data.stageFrontendId,
+          stageName: result.data.stageName,
+
           homeTeamId: result.data.homeTeamId ?? null,
           homeTeamFrontendId: result.data.homeTeamFrontendId, // Preserve frontend ID
           homeTeam: result.data.homeTeam,
@@ -171,7 +181,10 @@ export class StageMatchesManagementPage implements OnInit {
       matchFrontendId: match.matchFrontendId,
       matchId: match.matchId,
 
-      stage: match.stage || null,
+      stageId: match.stageId,
+      stageFrontendId: match.stageFrontendId, // Ensure frontendId is preserved
+      stageName: match.stageName,
+
       homeTeamId: match.homeTeamId,
       homeTeamFrontendId: match.homeTeamFrontendId, // Ensure frontendId is preserved
       homeTeam: match.homeTeam,

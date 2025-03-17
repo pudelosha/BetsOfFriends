@@ -31,6 +31,7 @@ namespace Backend.Model.Entities
         public string UserAdminName { get; set; }
         public string? UserName { get; set; }
         public bool IsVisible { get; set; } = true;
+        public bool IsSelected { get; set; } = false;
 
         [Required]
         public AssignmentStatus Status { get; set; } = AssignmentStatus.New;

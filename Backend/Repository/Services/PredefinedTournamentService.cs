@@ -44,16 +44,30 @@ namespace Backend.Repository.Services
                 _context.PredefinedTeams.AddRange(teams);
                 await _context.SaveChangesAsync();
 
-                // Step 3: Create a Map of Team Names to Their Actual Database IDs
                 var teamMap = await _context.PredefinedTeams
                     .Where(t => t.PredefinedTournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(t => t.TeamName, t => t.TeamId);
 
+                // Step 3: Insert Stages
+                var stages = tournamentDto.Stages.Select(t => new PredefinedMatchStage
+                {
+                    StageName = t.StageName,
+                    TournamentId = tournament.TournamentId,
+                    Order = t.Order
+                }).ToList();
+
+                _context.PredefinedMatchStages.AddRange(stages);
+                await _context.SaveChangesAsync();
+
+                var stageMap = await _context.PredefinedMatchStages
+                    .Where(t => t.TournamentId == tournament.TournamentId)
+                    .ToDictionaryAsync(t => t.StageName, t => t.StageId);
+
                 // Step 4: Insert Matches Using the Actual IDs from Database
                 var matches = tournamentDto.Matches.Select(m => new PredefinedMatch
                 {
-                    PredefinedTournamentId = tournament.TournamentId,
-                    Stage = m.Stage,
+                    TournamentId = tournament.TournamentId,
+                    StageId = stageMap.TryGetValue(m.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{m.StageName}' not found."),
                     HomeTeamId = teamMap.TryGetValue(m.HomeTeam, out var homeId) ? homeId : throw new Exception($"Home team '{m.HomeTeam}' not found."),
                     AwayTeamId = teamMap.TryGetValue(m.AwayTeam, out var awayId) ? awayId : throw new Exception($"Away team '{m.AwayTeam}' not found."),
                     MatchStart = DateTime.SpecifyKind(m.MatchStart, DateTimeKind.Utc),
@@ -88,6 +102,7 @@ namespace Backend.Repository.Services
                 var tournament = await _context.PredefinedTournaments
                     .Include(t => t.PredefinedTeams)
                     .Include(t => t.PredefinedMatches)
+                    .Include(t => t.PredefinedStages) // Include Stages
                     .FirstOrDefaultAsync(t => t.TournamentId == tournamentDto.TournamentId);
 
                 if (tournament == null)
@@ -147,7 +162,55 @@ namespace Backend.Repository.Services
                     .Where(t => t.PredefinedTournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(t => t.TeamName, t => t.TeamId);
 
-                // Step 5: Handle Matches
+                // Step 5: Handle Stages
+                var existingStages = tournament.PredefinedStages.ToDictionary(s => s.StageId);
+                var updatedStagesWithIds = tournamentDto.Stages.Where(s => s.StageId.HasValue).ToDictionary(s => s.StageId.Value);
+                var newStages = tournamentDto.Stages.Where(s => !s.StageId.HasValue).ToList();
+
+                // Remove stages not in the updated list
+                var stagesToRemove = existingStages.Values.Where(es => !updatedStagesWithIds.ContainsKey(es.StageId)).ToList();
+
+                foreach (var stage in stagesToRemove)
+                {
+                    // Remove related matches that belong to this stage
+                    var relatedMatches = _context.PredefinedMatches
+                        .Where(m => m.StageId == stage.StageId)
+                        .ToList();
+                    _context.PredefinedMatches.RemoveRange(relatedMatches);
+                }
+
+                _context.PredefinedMatchStages.RemoveRange(stagesToRemove);
+
+                // Update existing stages
+                foreach (var stageDto in updatedStagesWithIds.Values)
+                {
+                    if (existingStages.TryGetValue(stageDto.StageId.Value, out var stage))
+                    {
+                        stage.StageName = stageDto.StageName;
+                        stage.Order = stageDto.Order;
+                    }
+                }
+
+                // Add new stages
+                foreach (var newStageDto in newStages)
+                {
+                    tournament.PredefinedStages.Add(new PredefinedMatchStage
+                    {
+                        StageName = newStageDto.StageName,
+                        TournamentId = tournament.TournamentId,
+                        Order = newStageDto.Order
+                    });
+                }
+
+                // Save changes before processing matches
+                await _context.SaveChangesAsync();
+
+                // Step 6: Map stage names to IDs
+                var stageMap = await _context.PredefinedMatchStages
+                    .Where(s => s.TournamentId == tournament.TournamentId)
+                    .ToDictionaryAsync(s => s.StageName, s => s.StageId);
+
+                // Step 7: Handle Matches
                 var existingMatches = tournament.PredefinedMatches.ToDictionary(m => m.MatchId);
                 var updatedMatchesWithIds = tournamentDto.Matches.Where(m => m.MatchId.HasValue).ToDictionary(m => m.MatchId.Value);
                 var newMatches = tournamentDto.Matches.Where(m => !m.MatchId.HasValue).ToList();
@@ -161,7 +224,7 @@ namespace Backend.Repository.Services
                 {
                     if (existingMatches.TryGetValue(matchDto.MatchId.Value, out var match))
                     {
-                        match.Stage = matchDto.Stage;
+                        match.StageId = stageMap.TryGetValue(matchDto.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{matchDto.StageName}' not found.");
                         match.HomeTeamId = matchDto.HomeTeamId.Value;
                         match.AwayTeamId = matchDto.AwayTeamId.Value;
                         match.MatchStart = DateTime.SpecifyKind(matchDto.MatchStart, DateTimeKind.Utc);
@@ -183,11 +246,14 @@ namespace Backend.Repository.Services
                     var awayTeamId = teamMap.TryGetValue(newMatchDto.AwayTeam, out var awayId)
                         ? awayId
                         : throw new Exception($"Away team '{newMatchDto.AwayTeam}' not found.");
+                    var stageId = stageMap.TryGetValue(newMatchDto.StageName, out var stgId)
+                        ? stgId
+                        : throw new Exception($"Stage '{newMatchDto.StageName}' not found.");
 
                     tournament.PredefinedMatches.Add(new PredefinedMatch
                     {
-                        PredefinedTournamentId = tournament.TournamentId,
-                        Stage = newMatchDto.Stage,
+                        TournamentId = tournament.TournamentId,
+                        StageId = stageId,
                         HomeTeamId = homeTeamId,
                         AwayTeamId = awayTeamId,
                         MatchStart = DateTime.SpecifyKind(newMatchDto.MatchStart, DateTimeKind.Utc),
@@ -246,6 +312,7 @@ namespace Backend.Repository.Services
                 var tournament = await _context.PredefinedTournaments
                     .Include(t => t.PredefinedTeams)
                     .Include(t => t.PredefinedMatches)
+                    .Include(t => t.PredefinedStages)
                     .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
 
                 if (tournament == null)
@@ -266,10 +333,17 @@ namespace Backend.Repository.Services
                         TeamId = team.TeamId,
                         TeamName = team.TeamName
                     }).ToList(),
+                    Stages = tournament.PredefinedStages.Select(stage => new PredefinedStageDto
+                    {
+                        StageId = stage.StageId,
+                        StageName = stage.StageName,
+                        Order = stage.Order
+                    }).ToList(),
                     Matches = tournament.PredefinedMatches.Select(match => new PredefinedMatchDto
                     {
                         MatchId = match.MatchId,
-                        Stage = match.Stage,
+                        StageId = match.StageId,
+                        StageName = match.PredefinedStage.StageName,
                         HomeTeamId = match.HomeTeamId,
                         HomeTeam = match.HomeTeam.TeamName,
                         AwayTeamId = match.AwayTeamId,

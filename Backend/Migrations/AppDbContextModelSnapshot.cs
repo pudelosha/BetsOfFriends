@@ -158,7 +158,7 @@ namespace Backend.Migrations
                     b.Property<decimal?>("Payout")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("QualifiedTeam")
+                    b.Property<int?>("Qualified")
                         .HasColumnType("int");
 
                     b.Property<int>("Result")
@@ -224,8 +224,8 @@ namespace Backend.Migrations
                     b.Property<int?>("Qualified")
                         .HasColumnType("int");
 
-                    b.Property<string>("Stage")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("StageId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -242,9 +242,38 @@ namespace Backend.Migrations
 
                     b.HasIndex("HomeTeamId");
 
-                    b.HasIndex("TournamentId");
+                    b.HasIndex("StageId");
+
+                    b.HasIndex("TournamentId", "HomeTeamId", "AwayTeamId", "MatchStart")
+                        .IsUnique();
 
                     b.ToTable("CustomMatches");
+                });
+
+            modelBuilder.Entity("Backend.Model.Entities.CustomMatchStage", b =>
+                {
+                    b.Property<int>("StageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StageId"));
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StageName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("TournamentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("StageId");
+
+                    b.HasIndex("TournamentId");
+
+                    b.ToTable("CustomMatchStages");
                 });
 
             modelBuilder.Entity("Backend.Model.Entities.CustomTeam", b =>
@@ -255,7 +284,7 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TeamId"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("TeamName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -277,6 +306,9 @@ namespace Backend.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TournamentId"));
+
+                    b.Property<bool>("AllowAutoUpdates")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("AllowBetsWithBooster")
                         .HasColumnType("bit");
@@ -323,6 +355,9 @@ namespace Backend.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
+                    b.Property<int>("Visibility")
+                        .HasColumnType("int");
+
                     b.HasKey("TournamentId");
 
                     b.HasIndex("CreatedByUserId");
@@ -337,6 +372,9 @@ namespace Backend.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AssignmentId"));
+
+                    b.Property<bool>("IsSelected")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
@@ -464,12 +502,11 @@ namespace Backend.Migrations
                     b.Property<DateTime>("MatchStart")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PredefinedTournamentId")
+                    b.Property<int>("StageId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Stage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("TournamentId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -480,9 +517,37 @@ namespace Backend.Migrations
 
                     b.HasIndex("HomeTeamId");
 
-                    b.HasIndex("PredefinedTournamentId");
+                    b.HasIndex("StageId");
+
+                    b.HasIndex("TournamentId");
 
                     b.ToTable("PredefinedMatches");
+                });
+
+            modelBuilder.Entity("Backend.Model.Entities.PredefinedMatchStage", b =>
+                {
+                    b.Property<int>("StageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StageId"));
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StageName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("TournamentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("StageId");
+
+                    b.HasIndex("TournamentId");
+
+                    b.ToTable("PredefinedMatchStages");
                 });
 
             modelBuilder.Entity("Backend.Model.Entities.PredefinedTeam", b =>
@@ -722,6 +787,12 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Backend.Model.Entities.CustomMatchStage", "Stage")
+                        .WithMany()
+                        .HasForeignKey("StageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Backend.Model.Entities.CustomTournament", "Tournament")
                         .WithMany("Matches")
                         .HasForeignKey("TournamentId")
@@ -731,6 +802,19 @@ namespace Backend.Migrations
                     b.Navigation("AwayTeam");
 
                     b.Navigation("HomeTeam");
+
+                    b.Navigation("Stage");
+
+                    b.Navigation("Tournament");
+                });
+
+            modelBuilder.Entity("Backend.Model.Entities.CustomMatchStage", b =>
+                {
+                    b.HasOne("Backend.Model.Entities.CustomTournament", "Tournament")
+                        .WithMany("Stages")
+                        .HasForeignKey("TournamentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Tournament");
                 });
@@ -809,15 +893,34 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Backend.Model.Entities.PredefinedMatchStage", "PredefinedStage")
+                        .WithMany()
+                        .HasForeignKey("StageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Backend.Model.Entities.PredefinedTournament", "PredefinedTournament")
                         .WithMany("PredefinedMatches")
-                        .HasForeignKey("PredefinedTournamentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("TournamentId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AwayTeam");
 
                     b.Navigation("HomeTeam");
+
+                    b.Navigation("PredefinedStage");
+
+                    b.Navigation("PredefinedTournament");
+                });
+
+            modelBuilder.Entity("Backend.Model.Entities.PredefinedMatchStage", b =>
+                {
+                    b.HasOne("Backend.Model.Entities.PredefinedTournament", "PredefinedTournament")
+                        .WithMany("PredefinedStages")
+                        .HasForeignKey("TournamentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("PredefinedTournament");
                 });
@@ -900,12 +1003,16 @@ namespace Backend.Migrations
 
                     b.Navigation("Participants");
 
+                    b.Navigation("Stages");
+
                     b.Navigation("Teams");
                 });
 
             modelBuilder.Entity("Backend.Model.Entities.PredefinedTournament", b =>
                 {
                     b.Navigation("PredefinedMatches");
+
+                    b.Navigation("PredefinedStages");
 
                     b.Navigation("PredefinedTeams");
                 });

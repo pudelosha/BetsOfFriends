@@ -9,10 +9,16 @@
 
 <ion-content class="ion-padding">
   <form [formGroup]="matchForm" class="match-form">
-    <div class="match-row vertical-align">
+
+    <!-- Stage Selection -->
+    <div class="match-row">
       <ion-label class="selector-label">Stage</ion-label>
-      <ion-input formControlName="stage" placeholder="Enter stage"></ion-input>
-    </div>    
+      <ion-select formControlName="stageFrontendId">
+        <ion-select-option *ngFor="let stage of stages" [value]="stage.stageFrontendId">
+          {{ stage.stageName }}
+        </ion-select-option>
+      </ion-select>
+    </div>  
        
     <!-- Home Team (Label + Selector in One Row) -->
     <div class="match-row">

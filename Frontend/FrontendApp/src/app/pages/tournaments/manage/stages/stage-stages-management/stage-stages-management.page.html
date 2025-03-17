@@ -1,0 +1,20 @@
+<div class="page-description">
+  <p>
+    Edit the stages for the tournament. Scroll down to the bottom of the list to add a new stage. Click the delete button to remove a stage.
+  </p>
+</div>
+
+<ion-list class="stage-list nav-menu-space">
+  <ion-item *ngFor="let stage of stagesArray.controls; let i = index" class="stage-item" [formGroup]="getStageControl(i)">
+    <div class="stage-grid">
+      <div class="stage-details">
+        <span class="stage-name">{{ getStageControl(i).get('stageName')?.value }}</span>
+      </div>
+
+      <div class="stage-button-container">
+        <ion-button size="small" fill="outline" color="primary" class="stage-button" (click)="editStage(i)">Edit</ion-button>
+        <ion-button size="small" fill="outline" color="danger" class="stage-button" (click)="removeStage(i)">Delete</ion-button>
+      </div>
+    </div>
+  </ion-item>
+</ion-list>

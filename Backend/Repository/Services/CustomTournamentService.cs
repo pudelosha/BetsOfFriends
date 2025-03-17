@@ -56,6 +56,7 @@ namespace Backend.Repository.Services
                     IsActive = tournamentDto.IsActive,
                     CreatedByUserId = tournamentDto.CreatedBy,
                     CreatedAt = DateTime.UtcNow,
+                    Visibility = CustomTournament.TournamentVisibility.Private, //TODO private for now
 
                     // Tournament Settings Mapping
                     AllowExactResultBonus = tournamentDto.Settings?.AllowExactResultBonus ?? false,
@@ -95,23 +96,37 @@ namespace Backend.Repository.Services
                 // Step 3: Insert Teams
                 var teams = tournamentDto.Teams.Select(t => new CustomTeam
                 {
-                    Name = t.TeamName,
+                    TeamName = t.TeamName,
                     TournamentId = tournament.TournamentId
                 }).ToList();
 
                 _context.CustomTeams.AddRange(teams);
                 await _context.SaveChangesAsync();
 
-                // Step 4: Map Team Names to IDs
                 var teamMap = await _context.CustomTeams
                     .Where(t => t.TournamentId == tournament.TournamentId)
-                    .ToDictionaryAsync(t => t.Name, t => t.TeamId);
+                    .ToDictionaryAsync(t => t.TeamName, t => t.TeamId);
+
+                // Step 4: Insert Stages
+                var stages = tournamentDto.Stages.Select(t => new CustomMatchStage
+                {
+                    StageName = t.StageName,
+                    TournamentId = tournament.TournamentId,
+                    Order = t.Order
+                }).ToList();
+
+                _context.CustomMatchStages.AddRange(stages);
+                await _context.SaveChangesAsync();
+
+                var stageMap = await _context.CustomMatchStages
+                    .Where(t => t.TournamentId == tournament.TournamentId)
+                    .ToDictionaryAsync(t => t.StageName, t => t.StageId);
 
                 // Step 5: Insert Matches
                 var matches = tournamentDto.Matches.Select(m => new CustomMatch
                 {
                     TournamentId = tournament.TournamentId,
-                    Stage = m.Stage,
+                    StageId = stageMap.TryGetValue(m.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{m.StageName}' not found."),
                     HomeTeamId = teamMap.TryGetValue(m.HomeTeam, out var homeId) ? homeId : throw new Exception($"Home team '{m.HomeTeam}' not found."),
                     AwayTeamId = teamMap.TryGetValue(m.AwayTeam, out var awayId) ? awayId : throw new Exception($"Away team '{m.AwayTeam}' not found."),
                     MatchStart = DateTime.SpecifyKind(m.MatchStart, DateTimeKind.Utc),
@@ -394,6 +409,7 @@ namespace Backend.Repository.Services
                 var tournament = await _context.CustomTournaments
                     .Include(t => t.Teams)
                     .Include(t => t.Matches)
+                    .Include(t => t.Stages)
                     .Include(t => t.Participants)
                         .ThenInclude(p => p.User)
                     .FirstOrDefaultAsync(t => t.TournamentId == tournamentDto.TournamentId);
@@ -416,6 +432,7 @@ namespace Backend.Repository.Services
                 // Step 3: Update tournament details and settings
                 tournament.Name = tournamentDto.TournamentName;
                 tournament.IsActive = tournamentDto.IsActive;
+                tournament.Visibility = CustomTournament.TournamentVisibility.Private; //TODO private for now
 
                 if (tournamentDto.Settings != null)
                 {
@@ -456,7 +473,7 @@ namespace Backend.Repository.Services
                 {
                     if (existingTeams.TryGetValue(teamDto.TeamId.Value, out var team))
                     {
-                        team.Name = teamDto.TeamName;
+                        team.TeamName = teamDto.TeamName;
                     }
                 }
 
@@ -464,17 +481,63 @@ namespace Backend.Repository.Services
                 {
                     tournament.Teams.Add(new CustomTeam
                     {
-                        Name = newTeamDto.TeamName,
+                        TeamName = newTeamDto.TeamName,
                         TournamentId = tournament.TournamentId
                     });
                 }
 
                 await _context.SaveChangesAsync();
 
-                // Step 5: Handle Matches
+                // Step 5: Handle Stages
+                var existingStages = tournament.Stages.ToDictionary(s => s.StageId);
+                var updatedStagesWithIds = tournamentDto.Stages.Where(s => s.StageId.HasValue).ToDictionary(s => s.StageId.Value);
+                var newStages = tournamentDto.Stages.Where(s => !s.StageId.HasValue).ToList();
+
+                // Remove stages not in the updated list
+                var stagesToRemove = existingStages.Values.Where(es => !updatedStagesWithIds.ContainsKey(es.StageId)).ToList();
+
+                foreach (var stage in stagesToRemove)
+                {
+                    // Remove related matches that belong to this stage
+                    var relatedMatches = _context.CustomMatches
+                        .Where(m => m.StageId == stage.StageId)
+                        .ToList();
+                    _context.CustomMatches.RemoveRange(relatedMatches);
+                }
+
+                _context.CustomMatchStages.RemoveRange(stagesToRemove);
+
+                // Update existing stages
+                foreach (var stageDto in updatedStagesWithIds.Values)
+                {
+                    if (existingStages.TryGetValue(stageDto.StageId.Value, out var stage))
+                    {
+                        stage.StageName = stageDto.StageName;
+                        stage.Order = stageDto.Order;
+                    }
+                }
+
+                // Add new stages
+                foreach (var newStageDto in newStages)
+                {
+                    tournament.Stages.Add(new CustomMatchStage
+                    {
+                        StageName = newStageDto.StageName,
+                        TournamentId = tournament.TournamentId,
+                        Order = newStageDto.Order
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+
+                // Step 6: Handle Matches
                 var teamMap = await _context.CustomTeams
                     .Where(t => t.TournamentId == tournament.TournamentId)
-                    .ToDictionaryAsync(t => t.Name, t => t.TeamId);
+                    .ToDictionaryAsync(t => t.TeamName, t => t.TeamId);
+
+                var stageMap = await _context.CustomMatchStages
+                    .Where(s => s.TournamentId == tournament.TournamentId)
+                    .ToDictionaryAsync(s => s.StageName, s => s.StageId);
 
                 var existingMatches = tournament.Matches.ToDictionary(m => m.MatchId);
                 var updatedMatchesWithIds = tournamentDto.Matches.Where(m => m.MatchId.HasValue).ToDictionary(m => m.MatchId.Value);
@@ -487,7 +550,7 @@ namespace Backend.Repository.Services
                 {
                     if (existingMatches.TryGetValue(matchDto.MatchId.Value, out var match))
                     {
-                        match.Stage = matchDto.Stage;
+                        match.StageId = stageMap.TryGetValue(matchDto.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{matchDto.StageName}' not found.");
                         match.HomeTeamId = matchDto.HomeTeamId.Value;
                         match.AwayTeamId = matchDto.AwayTeamId.Value;
                         match.MatchStart = DateTime.SpecifyKind(matchDto.MatchStart, DateTimeKind.Utc);
@@ -508,11 +571,14 @@ namespace Backend.Repository.Services
                     var awayTeamId = teamMap.TryGetValue(newMatchDto.AwayTeam, out var awayId)
                         ? awayId
                         : throw new Exception($"Away team '{newMatchDto.AwayTeam}' not found.");
+                    var stageId = stageMap.TryGetValue(newMatchDto.StageName, out var stgId)
+                        ? stgId
+                        : throw new Exception($"Stage '{newMatchDto.StageName}' not found.");
 
                     var newMatch = new CustomMatch
                     {
                         TournamentId = tournament.TournamentId,
-                        Stage = newMatchDto.Stage,
+                        StageId = stageId,
                         HomeTeamId = homeTeamId,
                         AwayTeamId = awayTeamId,
                         MatchStart = DateTime.SpecifyKind(newMatchDto.MatchStart, DateTimeKind.Utc),
@@ -528,7 +594,7 @@ namespace Backend.Repository.Services
                     await _context.SaveChangesAsync();
                 }
 
-                // Step 6: Handle User Assignments (Track Changes)
+                // Step 7: Handle User Assignments (Track Changes)
                 var invitedUsers = new List<ApplicationUser>(); // New users needing setup emails
                 var newTournamentAssignments = new List<ApplicationUser>(); // Existing users getting a new tournament invite
                 var updatedAssignments = new List<ApplicationUser>(); // Updated assignments (no email needed)
@@ -640,14 +706,14 @@ namespace Backend.Repository.Services
                     _logger.LogInformation($"Added new user {userToAssign.Email} to tournament {tournament.TournamentId}");
                 }
 
-                // Step 7: Commit transaction before sending emails
+                // Step 8: Commit transaction before sending emails
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // Step 8:  Populate bets
+                // Step 9:  Populate bets
                 await _betService.CreateBetsForTournamentAsync(tournament.TournamentId);
 
-                // Step 9: Send Emails (Outside Transaction)
+                // Step 10: Send Emails (Outside Transaction)
                 var emailTasks = new List<Task>();
 
                 foreach (var user in invitedUsers)
@@ -664,7 +730,6 @@ namespace Backend.Repository.Services
 
                 // Wait for all email tasks to complete asynchronously
                 await Task.WhenAll(emailTasks);
-
 
                 return true;
             }
@@ -685,6 +750,7 @@ namespace Backend.Repository.Services
                 var tournament = await _context.CustomTournaments
                     .Include(t => t.Teams)
                     .Include(t => t.Matches)
+                    .Include(t => t.Stages)
                     .Include(t => t.Participants)
                         .ThenInclude(p => p.User) // Include User Details
                     .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
@@ -713,16 +779,23 @@ namespace Backend.Repository.Services
                     Teams = tournament.Teams.Select(team => new CustomTeamDto
                     {
                         TeamId = team.TeamId,
-                        TeamName = team.Name
+                        TeamName = team.TeamName
+                    }).ToList(),
+                    Stages = tournament.Stages.Select(stage => new CustomStageDto
+                    {
+                        StageId = stage.StageId,
+                        StageName = stage.StageName,
+                        Order = stage.Order
                     }).ToList(),
                     Matches = tournament.Matches.Select(match => new CustomMatchDto
                     {
                         MatchId = match.MatchId,
-                        Stage = match.Stage,
+                        StageId = match.StageId,
+                        StageName = match.Stage.StageName,
                         HomeTeamId = match.HomeTeamId,
-                        HomeTeam = match.HomeTeam.Name,
+                        HomeTeam = match.HomeTeam.TeamName,
                         AwayTeamId = match.AwayTeamId,
-                        AwayTeam = match.AwayTeam.Name,
+                        AwayTeam = match.AwayTeam.TeamName,
                         MatchType = match.Type.ToString(),
                         MatchStart = match.MatchStart,
                         HomeWinOdds = match.HomeWinOdds,
@@ -1020,7 +1093,7 @@ namespace Backend.Repository.Services
                         var successfulQualification = bets.Count(b =>
                             b.Status == Bet.BetStatus.Finalised &&
                             b.Match.Type == CustomMatch.MatchType.ExtendedWithQualification &&
-                            b.QualifiedTeam.ToString() == b.Match.Qualified.ToString());    // TODO temp solution!!
+                            b.Qualified == b.Match.Qualified);
                         var successfulExactResults = bets.Count(b =>
                             b.Status == Bet.BetStatus.Finalised &&
                             b.HomeGoals == b.Match.HomeScore &&

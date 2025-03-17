@@ -21,5 +21,7 @@ namespace Backend.Model.Entities
 
         public ICollection<PredefinedTeam> PredefinedTeams { get; set; } = new List<PredefinedTeam>();
         public ICollection<PredefinedMatch> PredefinedMatches { get; set; } = new List<PredefinedMatch>();
+        public ICollection<PredefinedMatchStage> PredefinedStages { get; set; } = new List<PredefinedMatchStage>();
+
     }
 }

@@ -25,6 +25,7 @@ export const routes: Routes = [
     children: [
       { path: 'stage-input-type', loadComponent: () => import('./pages/tournaments/manage/stages/stage-input-type/stage-input-type.page').then(m => m.StageInputTypePage), canActivate: [AuthGuard], data: { role: 'User' } },
       { path: 'stage-teams-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-teams-management/stage-teams-management.page').then(m => m.StageTeamsManagementPage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'stage-stages-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-stages-management/stage-stages-management.page').then( m => m.StageStagesManagementPage), canActivate: [AuthGuard], data: { role: 'User' } },
       { path: 'stage-matches-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-matches-management/stage-matches-management.page').then(m => m.StageMatchesManagementPage), canActivate: [AuthGuard], data: { role: 'User' } },
       { path: 'stage-users-management', loadComponent: () => import('./pages/tournaments/manage/stages/stage-users-management/stage-users-management.page').then(m => m.StageUsersManagementPage), canActivate: [AuthGuard], data: { role: 'User' } },
       { path: 'stage-summary', loadComponent: () => import('./pages/tournaments/manage/stages/stage-summary/stage-summary.page').then(m => m.StageSummaryPage), canActivate: [AuthGuard], data: { role: 'User' } },
@@ -92,7 +93,6 @@ export const routes: Routes = [
 
   // Default and wildcard routes
   { path: '**', redirectTo: 'welcome' },
-
 
 
 

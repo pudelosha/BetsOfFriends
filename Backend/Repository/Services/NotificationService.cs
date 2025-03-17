@@ -46,8 +46,8 @@ public class NotificationService : INotificationService
 
         await ProcessNotificationsAsync(
             participants,
-            $"Match Closed: {match.HomeTeam.Name} vs {match.AwayTeam.Name}",
-            $"The match {match.HomeTeam.Name} vs {match.AwayTeam.Name} has been finalized.\n" +
+            $"Match Closed: {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName}",
+            $"The match {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName} has been finalized.\n" +
             $"Final Score: {match.HomeScore}-{match.AwayScore}.\nCheck your bets and standings!",
             user => (user.ReceiveEmailMatchClosed, user.ReceivePushMatchClosed)
         );

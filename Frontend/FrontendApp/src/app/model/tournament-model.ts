@@ -7,7 +7,10 @@ export interface Team {
 export interface Match {
   matchFrontendId: string; // Unique frontend match identifier
   matchId: number | null; // Backend match identifier (null for new matches)
-  stage?: string | null;
+
+  stageId: number | null; // Backend ID (if available)
+  stageFrontendId: string; // Always set for tracking in frontend
+  stageName: string; // Readable name of the stage
   
   homeTeamId: number | null; // Backend ID (if available)
   homeTeamFrontendId: string; // Always set for tracking in frontend
@@ -34,6 +37,13 @@ export interface User {
   status: 'New' | 'Invited' | 'Accepted' | 'Banned';
 }
 
+export interface Stage{
+  stageFrontendId: string;  // Unique identifier for frontend tracking
+  stageId: number | null;
+  order: number;
+  stageName: string;
+}
+
 export interface Tournament {
   tournamentId?: number | null;
   tournamentName: string;
@@ -41,6 +51,7 @@ export interface Tournament {
   createdBy: string;
   createdAt: string;
   teams: Team[];
+  stages: Stage[];
   matches: Match[];
   users?: User[]; // Optional users array
   settings?: TournamentSettings; // Optional tournament settings

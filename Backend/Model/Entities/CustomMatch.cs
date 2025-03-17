@@ -9,15 +9,20 @@ namespace Backend.Model.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int MatchId { get; set; }
 
-        public string? Stage { get; set; } = string.Empty;
+        public int StageId { get; set; }
+        [ForeignKey("StageId")]
+        public CustomMatchStage Stage { get; set; }
 
         public int TournamentId { get; set; }
+        [ForeignKey("TournamentId")]
         public CustomTournament Tournament { get; set; }
 
         public int HomeTeamId { get; set; }
+        [ForeignKey("HomeTeamId")]
         public CustomTeam HomeTeam { get; set; }
 
         public int AwayTeamId { get; set; }
+        [ForeignKey("AwayTeamId")]
         public CustomTeam AwayTeam { get; set; }
 
         public DateTime MatchStart { get; set; }

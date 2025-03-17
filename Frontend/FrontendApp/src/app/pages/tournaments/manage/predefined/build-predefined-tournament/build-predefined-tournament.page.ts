@@ -5,13 +5,11 @@ import { IonicModule, ToastController } from '@ionic/angular';
 import { StageInputTypePage } from '../../stages/stage-input-type/stage-input-type.page';
 import { StageTeamsManagementPage } from '../../stages/stage-teams-management/stage-teams-management.page';
 import { StageMatchesManagementPage } from '../../stages/stage-matches-management/stage-matches-management.page';
+import { StageStagesManagementPage } from '../../stages/stage-stages-management/stage-stages-management.page';
 import { StageSummaryPage } from '../../stages/stage-summary/stage-summary.page';
-import { buildMatchFormGroup } from '../../../shared/form-utils';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Tournament, Team, Match } from '../../../../../model/tournament-model';
-import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
-import { EditTeamModalComponent } from 'src/app/modals/edit-team-modal/edit-team-modal.component';
+import { Tournament, Team, Match, Stage } from '../../../../../model/tournament-model';
 import { ModalController } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 
@@ -20,11 +18,12 @@ import { ViewChild } from '@angular/core';
   templateUrl: './build-predefined-tournament.page.html',
   styleUrls: ['./build-predefined-tournament.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageMatchesManagementPage, StageSummaryPage],
+  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageStagesManagementPage, StageMatchesManagementPage, StageSummaryPage],
 })
 export class BuildPredefinedTournamentPage implements OnInit {
   @ViewChild(StageTeamsManagementPage) stageTeamsManagement!: StageTeamsManagementPage;
   @ViewChild(StageMatchesManagementPage) stageMatchesManagement!: StageMatchesManagementPage;
+  @ViewChild(StageStagesManagementPage) stageStagesManagement!: StageStagesManagementPage;
 
   tournamentForm: FormGroup;
   step = 1;
@@ -43,6 +42,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       importMethod: ['upload'],
       teams: this.fb.array([], Validators.required),  // Holds Team models
+      stages: this.fb.array([]),
       matches: this.fb.array([]), // Holds Match models
     });
   }
@@ -84,21 +84,20 @@ export class BuildPredefinedTournamentPage implements OnInit {
     return this.tournamentForm.get('matches') as FormArray;
   }
 
+  get stagesArray(): FormArray {
+    return this.tournamentForm.get('stages') as FormArray;
+  }
+
   async openAddModal(): Promise<void> {
     switch (this.step) {
       case 2:
-        if (this.stageTeamsManagement) {
-          await this.stageTeamsManagement.addTeam();
-        } else {
-          console.warn('StageTeamsManagementPage reference is not available.');
-        }
+        await this.stageTeamsManagement?.addTeam();
         break;
       case 3:
-        if (this.stageMatchesManagement) {
-          await this.stageMatchesManagement.addMatch();
-        } else {
-          console.warn('StageMatchesManagement reference is not available.');
-        }
+        await this.stageStagesManagement?.addStage();
+        break;
+      case 4:
+        await this.stageMatchesManagement?.addMatch();
         break;
       default:
         console.warn('Invalid step for adding data:', this.step);
@@ -151,18 +150,47 @@ export class BuildPredefinedTournamentPage implements OnInit {
         })
       );
     });
+
+    // Step 2: Create a lookup map for stages (backendId -> frontendId & order)
+    const stageMap = new Map<number, Stage>();
+
+    this.stagesArray.clear();
+    tournament.stages.forEach((stage) => {
+      if (!stage.stageFrontendId) {
+        stage.stageFrontendId = this.generateFrontendId(); // Ensure frontend ID exists
+      }
+
+      stageMap.set(stage.stageId ?? 0, stage); // Map backendId to stage object
+
+      this.stagesArray.push(
+        this.fb.group({
+          stageFrontendId: [stage.stageFrontendId], // Ensure unique frontend ID
+          stageId: [stage.stageId], // Backend ID
+          stageName: [stage.stageName, Validators.required],
+          order: [stage.order, [Validators.required, Validators.min(1)]],
+        })
+      );
+    });
   
-    // Step 2: Populate Matches and assign frontend IDs correctly
+    // Step 3: Populate Matches and assign frontend IDs correctly
     this.matchesArray.clear();
     tournament.matches.forEach((match) => {
       const homeTeam = teamMap.get(match.homeTeamId ?? 0);
       const awayTeam = teamMap.get(match.awayTeamId ?? 0);
+      const stage = stageMap.get(match.stageId ?? 0) || { 
+        stageFrontendId: this.generateFrontendId(), 
+        stageId: null, 
+        stageName: match.stageName || 'Default Stage' 
+      };
   
       this.matchesArray.push(
         this.fb.group({
           matchFrontendId: [match.matchFrontendId || this.generateFrontendId()], // Ensure unique frontendId
           matchId: [match.matchId], // Backend ID
-          stage: [match.stage || ''],
+
+          stageFrontendId: [stage.stageFrontendId], // Ensure frontend ID
+          stageId: [stage.stageId], // Backend ID
+          stageName: [stage.stageName], // Stage name
   
           homeTeamId: [match.homeTeamId], // Backend ID
           homeTeamFrontendId: [homeTeam?.teamFrontendId || this.generateFrontendId()], // Assign frontend ID
@@ -189,17 +217,19 @@ export class BuildPredefinedTournamentPage implements OnInit {
   
   private buildMatchFormGroup(match: Match): FormGroup {
     return this.fb.group({
-      matchFrontendId: [match.matchFrontendId], // Unique frontend tracking
-      matchId: [match.matchId], // Backend ID
+      matchFrontendId: [match.matchFrontendId],
+      matchId: [match.matchId],
   
-      stage: [match.stage || null],
+      stageFrontendId: [match.stageFrontendId],
+      stageId: [match.stageId],
+      stageName: [match.stageName],
   
-      homeTeamId: [match.homeTeamId], // Backend team ID
-      homeTeamFrontendId: [match.homeTeamFrontendId], // Frontend tracking
+      homeTeamId: [match.homeTeamId],
+      homeTeamFrontendId: [match.homeTeamFrontendId],
       homeTeam: [match.homeTeam],
   
-      awayTeamId: [match.awayTeamId], // Backend team ID
-      awayTeamFrontendId: [match.awayTeamFrontendId], // Frontend tracking
+      awayTeamId: [match.awayTeamId],
+      awayTeamFrontendId: [match.awayTeamFrontendId],
       awayTeam: [match.awayTeam],
   
       matchStart: [match.matchStart],
@@ -249,6 +279,45 @@ export class BuildPredefinedTournamentPage implements OnInit {
     }
   
     console.log('Updated Teams:', this.teamsArray.value);
+  }
+
+  handleStagesExtracted(stages: Stage[]): void {
+    const importMethod = this.tournamentForm.get('importMethod')?.value;
+  
+    console.log('Importing Stages - Method:', importMethod);
+  
+    if (importMethod === 'upload') {
+      this.stagesArray.clear();
+      stages.forEach(stage => {
+        this.stagesArray.push(
+          this.fb.group({
+            stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
+            stageId: [stage.stageId],
+            stageName: [stage.stageName, Validators.required],
+            order: [stage.order, [Validators.required, Validators.min(1)]],
+          })
+        );
+      });
+    } else if (importMethod === 'append') {
+      stages.forEach(stage => {
+        const exists = this.stagesArray.value.some(
+          (existingStage: any) => existingStage.stageFrontendId === stage.stageFrontendId
+        );
+  
+        if (!exists) {
+          this.stagesArray.push(
+            this.fb.group({
+              stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
+              stageId: [stage.stageId],
+              stageName: [stage.stageName, Validators.required],
+              order: [stage.order, [Validators.required, Validators.min(1)]],
+            })
+          );
+        }
+      });
+    }
+  
+    console.log('Updated Stages:', this.stagesArray.value);
   }  
     
   handleMatchesExtracted(matches: Match[]): void {
@@ -327,6 +396,15 @@ export class BuildPredefinedTournamentPage implements OnInit {
   
     console.log('Updated Matches after team removal:', this.matchesArray.value);
   }
+
+  handleStagesUpdated(stagesData: { previousStages: Stage[]; updatedStages: Stage[] }): void {
+    const { previousStages, updatedStages } = stagesData;
+    this.stagesArray.clear();
+    updatedStages.forEach((stage) => {
+      this.stagesArray.push(this.fb.group(stage));
+    });
+    console.log('Updated Stages:', this.stagesArray.value);
+  }
      
   handleMatchesUpdated(updatedMatches: Match[]): void {
     this.matchesArray.clear();
@@ -347,16 +425,18 @@ export class BuildPredefinedTournamentPage implements OnInit {
       this.showToast('At least 2 teams are required to create a tournament!', 'danger');
       return;
     }
+
+    if (this.stagesArray.length === 0) {
+      this.showToast('At least one stage is required!', 'danger');
+      return;
+    }
   
     if (this.matchesArray.length < 1) {
       this.showToast('At least 1 match is required!', 'danger');
       return;
     }
   
-    // Show the spinner
     this.isLoading = true;
-  
-    // Prepare Tournament Data
     const isEditing = !!this.tournamentId;
   
     const tournamentData: Tournament = {
@@ -365,13 +445,22 @@ export class BuildPredefinedTournamentPage implements OnInit {
       isActive: true,
       createdBy: this.tournamentForm.value.createdBy || 'Admin',
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
+
       teams: this.teamsArray.value.map((team: { teamId: number | null; teamName: string }) => ({
         teamId: isEditing ? team.teamId || null : null, // Use `null` for new teams
         teamName: team.teamName,
       })),
+
+      stages: this.stagesArray.value.map((stage: Stage) => ({
+        stageId: isEditing ? stage.stageId || null : null,
+        stageName: stage.stageName,
+        order: stage.order,
+      })),
+      
       matches: this.matchesArray.value.map((match: any) => ({
         matchId: isEditing ? match.matchId || null : null,
-        stage: match.stage || '',
+        stageId: isEditing ? match.stageId || null : null,
+        stageName: match.stageName,
         homeTeamId: isEditing ? match.homeTeamId || null : null,
         awayTeamId: isEditing ? match.awayTeamId || null : null,
         homeTeam: match.homeTeam,
@@ -410,7 +499,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
          
   async nextStep(): Promise<void> {
     const canProceed = await this.canProceed();
-    if (canProceed && this.step < 4) {
+    if (canProceed && this.step < 5) {
       this.scrollToTop();
       this.step++;
     }
@@ -448,15 +537,22 @@ export class BuildPredefinedTournamentPage implements OnInit {
           return false;
         }
         return true;
-  
+
       case 3:
+        if (this.stagesArray.length === 0) {
+          await this.showToast('At least 1 stage is required!', 'danger');
+          return false;
+        }
+        return true;
+  
+      case 4:
         if (this.matchesArray.length === 0) {
           await this.showToast('At least 1 match is required!', 'danger');
           return false;
         }
         return true;
   
-      case 4:
+      case 5:
         return true; // No validation needed for the summary
     }
     return false; // Default fallback

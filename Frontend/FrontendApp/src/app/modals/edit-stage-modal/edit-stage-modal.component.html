@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ isEditing ? 'Edit Stage' : 'Add New Stage' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="stageForm" class="stage-form">
+    <!-- Stage Name Input -->
+    <div class="form-group">
+      <ion-label class="selector-label">Stage Name</ion-label>
+      <ion-input formControlName="stageName" placeholder="Enter stage name"></ion-input>
+    </div>
+    <div class="error-message" *ngIf="stageForm.get('stageName')?.hasError('required') && stageForm.get('stageName')?.touched">
+      Stage name is required.
+    </div>
+    <div class="error-message" *ngIf="stageForm.get('stageName')?.hasError('maxlength') && stageForm.get('stageName')?.touched">
+      Stage name cannot exceed 50 characters.
+    </div>
+
+    <!-- Stage Order Input -->
+    <div class="form-group">
+      <ion-label class="selector-label">Stage Order</ion-label>
+      <ion-input type="number" formControlName="order" placeholder="Enter stage order"></ion-input>
+    </div>
+    <div class="error-message" *ngIf="stageForm.get('order')?.hasError('required') && stageForm.get('order')?.touched">
+      Order is required.
+    </div>
+    <div class="error-message" *ngIf="stageForm.get('order')?.hasError('min') && stageForm.get('order')?.touched">
+      Order must be 1 or higher.
+    </div>
+
+    <!-- Save Button -->
+    <div class="save-button-container">
+      <ion-button expand="full" color="success" (click)="saveStage()">Save</ion-button>
+    </div>
+  </form>
+</ion-content>

@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Team, Stage } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-edit-match-modal',
@@ -13,7 +14,8 @@ import { CommonModule } from '@angular/common';
 export class EditMatchModalComponent implements OnInit {
   @Input() match: any; // Existing match (if editing), otherwise null
   @Input() index?: number; // Index in the match array
-  @Input() teams: any[] = []; // Available teams for selection
+  @Input() teams: Team[] = [];
+  @Input() stages: Stage[] = [];
 
   matchForm: FormGroup;
 
@@ -26,7 +28,10 @@ export class EditMatchModalComponent implements OnInit {
       matchFrontendId: [null],  
       matchId: [null],    
 
-      stage: ['', Validators.required],  
+      stageFrontendId: [null],
+      stageId: [null],
+      stageName: ['', Validators.required],
+
       homeTeamFrontendId: [null],  
       homeTeamId: [null],  
       homeTeam: ['', Validators.required],  
@@ -53,11 +58,13 @@ export class EditMatchModalComponent implements OnInit {
   ngOnInit() {
     if (this.match) {
       // Ensure `frontendId` is retained
+
       this.matchForm.patchValue({
         ...this.match,
         matchFrontendId: this.match.matchFrontendId || this.generateFrontendId(),
         homeTeamFrontendId: this.match.homeTeamFrontendId || null,
         awayTeamFrontendId: this.match.awayTeamFrontendId || null,
+        stageFrontendId: this.match.stageFrontendId || null
       });
     } else {
       // Generate `frontendId` for new matches
@@ -103,16 +110,24 @@ export class EditMatchModalComponent implements OnInit {
     console.log('Teams Available:', this.teams);
     console.log('Searching for Home Team:', this.matchForm.value.homeTeam);
     console.log('Searching for Away Team:', this.matchForm.value.awayTeam);
+    console.log('Searching for Stage:', this.matchForm.value.stageName);
   
     // Find selected team objects based on team name
-    const selectedHomeTeam = this.teams.find(t => t.teamName.trim().toLowerCase() === this.matchForm.value.homeTeam.trim().toLowerCase());
-    const selectedAwayTeam = this.teams.find(t => t.teamName.trim().toLowerCase() === this.matchForm.value.awayTeam.trim().toLowerCase());
+    const selectedStage = this.stages.find(s => s.stageFrontendId === this.matchForm.value.stageFrontendId);
+    const selectedHomeTeam = this.teams.find(t => t.teamFrontendId === this.matchForm.value.homeTeamFrontendId);
+    const selectedAwayTeam = this.teams.find(t => t.teamFrontendId === this.matchForm.value.awayTeamFrontendId);
   
     console.log('Found Home Team:', selectedHomeTeam);
     console.log('Found Away Team:', selectedAwayTeam);
+    console.log('Selected Stage:', selectedStage);
   
     if (!selectedHomeTeam || !selectedAwayTeam) {
       this.showToast('Invalid team selection!', 'danger');
+      return;
+    }
+
+    if (!selectedStage) {
+      this.showToast('Invalid stage selection!', 'danger');
       return;
     }
   
@@ -120,7 +135,9 @@ export class EditMatchModalComponent implements OnInit {
       matchFrontendId: this.matchForm.value.matchFrontendId, // Ensure matchFrontendId is retained
       matchId: this.match?.matchId || null, // Retain matchId if editing
   
-      stage: this.matchForm.value.stage || null,
+      stageFrontendId: selectedStage.stageFrontendId, // Use frontend ID for tracking
+      stageId: selectedStage.stageId || null, // Backend ID (if available)
+      stageName: selectedStage.stageName, // Ensure proper name assignment
   
       homeTeamFrontendId: selectedHomeTeam.teamFrontendId,
       homeTeamId: selectedHomeTeam.teamId || null,

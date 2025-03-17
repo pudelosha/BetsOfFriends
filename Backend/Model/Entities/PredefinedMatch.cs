@@ -9,11 +9,13 @@ namespace Backend.Model.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int MatchId { get; set; }
 
-        public int PredefinedTournamentId { get; set; }
-        [ForeignKey("PredefinedTournamentId")]
-        public PredefinedTournament PredefinedTournament { get; set; }
+        public int StageId { get; set; }
+        [ForeignKey("StageId")]
+        public PredefinedMatchStage PredefinedStage { get; set; }
 
-        public string Stage { get; set; } = string.Empty;
+        public int TournamentId { get; set; }
+        [ForeignKey("TournamentId")]
+        public PredefinedTournament PredefinedTournament { get; set; }
 
         [Required]
         public int HomeTeamId { get; set; }

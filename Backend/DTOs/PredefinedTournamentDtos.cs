@@ -19,9 +19,10 @@ namespace Backend.DTOs
 
         [Required]
         public List<PredefinedTeamDto> Teams { get; set; } = new();
-
         [Required]
         public List<PredefinedMatchDto> Matches { get; set; } = new();
+        [Required]
+        public List<PredefinedStageDto> Stages { get; set; } = new();
     }
 
     public class PredefinedTeamDto
@@ -32,11 +33,22 @@ namespace Backend.DTOs
         public string TeamName { get; set; } = string.Empty;
     }
 
+    public class PredefinedStageDto
+    {
+        public int? StageId { get; set; }
+        public int Order { get; set; }
+
+        [Required, MaxLength(50)]
+        public string StageName { get; set; } = string.Empty;
+    }
+
     public class PredefinedMatchDto
     {
         public int? MatchId { get; set; } // Nullable for new matches
 
-        public string? Stage { get; set; } // Nullable stage
+        public int? StageId { get; set; } // Nullable for new matches
+        [Required]
+        public string StageName { get; set; }
 
         public int? HomeTeamId { get; set; } // Nullable for new matches
         [Required]

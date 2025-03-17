@@ -68,8 +68,9 @@ namespace Backend.Repository.Services
                 return matches.Select(m => new MatchDto
                 {
                     MatchId = m.MatchId,
-                    HomeTeam = m.HomeTeam.Name,
-                    AwayTeam = m.AwayTeam.Name,
+                    Stage = m.Stage.StageName,
+                    HomeTeam = m.HomeTeam.TeamName,
+                    AwayTeam = m.AwayTeam.TeamName,
                     MatchStart = m.MatchStart,
                     HomeScore = m.HomeScore,
                     AwayScore = m.AwayScore,

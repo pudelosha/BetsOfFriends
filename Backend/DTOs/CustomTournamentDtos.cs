@@ -25,6 +25,8 @@ namespace Backend.DTOs
 
         [Required]
         public List<CustomUserDto> Users { get; set; } = new();
+        [Required]
+        public List<CustomStageDto> Stages { get; set; } = new();
 
         public CustomTournamentSettingsDto? Settings { get; set; }
     }
@@ -61,17 +63,28 @@ namespace Backend.DTOs
 
     public class CustomTeamDto
     {
-        public int? TeamId { get; set; } // Nullable for new teams
+        public int? TeamId { get; set; }
 
         [Required, MaxLength(50)]
         public string TeamName { get; set; } = string.Empty;
+    }
+
+    public class CustomStageDto
+    {
+        public int? StageId { get; set; }
+        public int Order { get; set; }
+
+        [Required, MaxLength(50)]
+        public string StageName { get; set; } = string.Empty;
     }
 
     public class CustomMatchDto
     {
         public int? MatchId { get; set; } // Nullable for new matches
 
-        public string? Stage { get; set; } // Nullable stage
+        public int? StageId { get; set; } // Nullable for new matches
+        [Required]
+        public string StageName { get; set; }
 
         public int? HomeTeamId { get; set; } // Nullable for new matches
         [Required]

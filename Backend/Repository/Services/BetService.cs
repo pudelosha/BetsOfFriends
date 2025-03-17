@@ -73,7 +73,7 @@ namespace Backend.Repository.Services
                                 BonusAmount = null, // No bonus initially
                                 HomeGoals = null, // No score prediction yet
                                 AwayGoals = null,
-                                QualifiedTeam = null, // No qualification prediction yet
+                                Qualified = null, // No qualification prediction yet
                                 Status = Bet.BetStatus.ToPlace, // New Status: Bet must be placed
                                 Result = Bet.BetResult.Pending, // Bet starts as "Pending"
                                 Submitted = false, // Bet is unsubmitted initially
@@ -136,13 +136,13 @@ namespace Backend.Repository.Services
 
                 // Convert string to enum if provided
                 if (!string.IsNullOrEmpty(betUpdateDto.QualifiedTeam) &&
-                    Enum.TryParse<Bet.Team>(betUpdateDto.QualifiedTeam, true, out var qualifiedTeamEnum))
+                    Enum.TryParse<CustomMatch.TeamQualified>(betUpdateDto.QualifiedTeam, true, out var qualifiedTeamEnum))
                 {
-                    bet.QualifiedTeam = qualifiedTeamEnum;
+                    bet.Qualified = qualifiedTeamEnum;
                 }
                 else
                 {
-                    bet.QualifiedTeam = null;
+                    bet.Qualified = null;
                 }
 
                 await _context.SaveChangesAsync();
@@ -182,8 +182,8 @@ namespace Backend.Repository.Services
                 {
                     BetId = b.BetId,
                     MatchId = b.MatchId,
-                    TeamHome = b.Match.HomeTeam.Name,
-                    TeamAway = b.Match.AwayTeam.Name,
+                    TeamHome = b.Match.HomeTeam.TeamName,
+                    TeamAway = b.Match.AwayTeam.TeamName,
                     StartTime = b.Match.MatchStart,
 
                     BaseAmount = b.BaseAmount,
@@ -191,7 +191,7 @@ namespace Backend.Repository.Services
 
                     PlayerHomeGoals = b.HomeGoals,
                     PlayerAwayGoals = b.AwayGoals,
-                    PlayerQualifiedTeam = b.QualifiedTeam?.ToString(),
+                    PlayerQualifiedTeam = b.Qualified?.ToString(),
                     ActualHomeGoals = b.Match.HomeScore,
                     ActualAwayGoals = b.Match.AwayScore,
                     ActualQualifiedTeam = b.Match.Qualified.ToString(),
@@ -292,14 +292,14 @@ namespace Backend.Repository.Services
                 }
 
                 // Process Qualification Bet
-                if (hasQualification && bet.QualifiedTeam.HasValue)
+                if (hasQualification && bet.Qualified.HasValue)
                 {
-                    if (bet.QualifiedTeam == Bet.Team.Home && homeQualified && homeQualifiesOdds.HasValue)
+                    if (bet.Qualified == CustomMatch.TeamQualified.Home && homeQualified && homeQualifiesOdds.HasValue)
                     {
                         payout += bet.BaseAmount * homeQualifiesOdds.Value;
                         won = true;
                     }
-                    else if (bet.QualifiedTeam == Bet.Team.Away && awayQualified && awayQualifiesOdds.HasValue)
+                    else if (bet.Qualified == CustomMatch.TeamQualified.Away && awayQualified && awayQualifiesOdds.HasValue)
                     {
                         payout += bet.BaseAmount * awayQualifiesOdds.Value;
                         won = true;
@@ -454,7 +454,7 @@ namespace Backend.Repository.Services
                         BonusAmount = null,
                         HomeGoals = null,
                         AwayGoals = null,
-                        QualifiedTeam = null,
+                        Qualified = null,
                         Status = Bet.BetStatus.ToPlace,
                         Result = Bet.BetResult.Pending,
                         Submitted = false
@@ -511,7 +511,7 @@ namespace Backend.Repository.Services
 
                 // Filter bets to only include placed bets
                 var bets = match.Bets.Where(b => b.HomeGoals.HasValue && b.AwayGoals.HasValue).ToList();
-                var qualificationBets = match.Bets.Where(b => b.QualifiedTeam.HasValue).ToList();
+                var qualificationBets = match.Bets.Where(b => b.Qualified.HasValue).ToList();
 
                 var totalBets = bets.Count;
                 var totalQualificationBets = qualificationBets.Count;
@@ -527,8 +527,8 @@ namespace Backend.Repository.Services
                 // Create DTO
                 var betStats = new BetStatsDto
                 {
-                    HomeTeam = match.HomeTeam.Name,
-                    AwayTeam = match.AwayTeam.Name,
+                    HomeTeam = match.HomeTeam.TeamName,
+                    AwayTeam = match.AwayTeam.TeamName,
                     HomeScoreActual = match.HomeScore,
                     AwayScoreActual = match.AwayScore,
                     Result = result,
@@ -540,8 +540,8 @@ namespace Backend.Repository.Services
                     Percent2 = totalBets > 0 ? Math.Round((decimal)bets.Count(b => b.HomeGoals < b.AwayGoals) / totalBets * 100, 2) : 0,
 
                     // Qualification Betting Percentages
-                    Percent1Q = totalQualificationBets > 0 ? Math.Round((decimal)qualificationBets.Count(b => b.QualifiedTeam == Bet.Team.Home) / totalQualificationBets * 100, 2) : null,
-                    Percent2Q = totalQualificationBets > 0 ? Math.Round((decimal)qualificationBets.Count(b => b.QualifiedTeam == Bet.Team.Away) / totalQualificationBets * 100, 2) : null,
+                    Percent1Q = totalQualificationBets > 0 ? Math.Round((decimal)qualificationBets.Count(b => b.Qualified == CustomMatch.TeamQualified.Home) / totalQualificationBets * 100, 2) : null,
+                    Percent2Q = totalQualificationBets > 0 ? Math.Round((decimal)qualificationBets.Count(b => b.Qualified == CustomMatch.TeamQualified.Away) / totalQualificationBets * 100, 2) : null,
 
                     // User Bets
                     UserBets = match.Status == CustomMatch.MatchStatus.Finalised ? match.Bets
@@ -562,12 +562,12 @@ namespace Backend.Repository.Services
                                 ? (result == "2" ? 1 : 0) : null,
 
                             // Qualification bets - only if the user placed a qualification bet
-                            HomeQualifiesSuccess = (b.QualifiedTeam.HasValue)
-                                ? (resultQualified == "home" ? (b.QualifiedTeam == Bet.Team.Home ? 1 : 0) : null)
+                            HomeQualifiesSuccess = (b.Qualified.HasValue)
+                                ? (resultQualified == "home" ? (b.Qualified == CustomMatch.TeamQualified.Home ? 1 : 0) : null)
                                 : null,
 
-                            AwayQualifiesSuccess = (b.QualifiedTeam.HasValue)
-                                ? (resultQualified == "away" ? (b.QualifiedTeam == Bet.Team.Away ? 1 : 0) : null)
+                            AwayQualifiesSuccess = (b.Qualified.HasValue)
+                                ? (resultQualified == "away" ? (b.Qualified == CustomMatch.TeamQualified.Away ? 1 : 0) : null)
                                 : null,
 
                             // Determine result success (only if the user placed a score prediction)
@@ -604,8 +604,8 @@ namespace Backend.Repository.Services
                     .Select(b => new UpcomingBetDto
                     {
                         MatchId = b.Match.MatchId,
-                        HomeTeam = b.Match.HomeTeam.Name,
-                        AwayTeam = b.Match.AwayTeam.Name,
+                        HomeTeam = b.Match.HomeTeam.TeamName,
+                        AwayTeam = b.Match.AwayTeam.TeamName,
                         MatchTime = b.Match.MatchStart
                     })
                     .ToListAsync();

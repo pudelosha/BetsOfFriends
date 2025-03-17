@@ -4,26 +4,27 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { StageInputTypePage } from '../../stages/stage-input-type/stage-input-type.page';
 import { StageTeamsManagementPage } from '../../stages/stage-teams-management/stage-teams-management.page';
+import { StageStagesManagementPage } from '../../stages/stage-stages-management/stage-stages-management.page';
 import { StageMatchesManagementPage } from '../../stages/stage-matches-management/stage-matches-management.page';
 import { StageUsersManagementPage } from '../../stages/stage-users-management/stage-users-management.page';
 import { StageSummaryPage } from '../../stages/stage-summary/stage-summary.page';
 import { StageSettingsPage } from '../../stages/stage-settings/stage-settings.page';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ModalController } from '@ionic/angular';
 import { Tournament, TournamentSettings } from 'src/app/model/tournament-model';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { ViewChild } from '@angular/core';
-import { Match, Team, User } from 'src/app/model/tournament-model';
+import { Match, Team, User, Stage } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-build-custom-tournament',
   templateUrl: './build-custom-tournament.page.html',
   styleUrls: ['./build-custom-tournament.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage, StageSettingsPage],
+  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageStagesManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage, StageSettingsPage],
 })
 export class BuildCustomTournamentPage implements OnInit {
   @ViewChild(StageTeamsManagementPage) stageTeamsManagement!: StageTeamsManagementPage;
+  @ViewChild(StageStagesManagementPage) stageStagesManagement!: StageStagesManagementPage;
   @ViewChild(StageMatchesManagementPage) stageMatchesManagement!: StageMatchesManagementPage;
   @ViewChild(StageUsersManagementPage) stageUsersManagement!: StageUsersManagementPage;
 
@@ -44,6 +45,7 @@ export class BuildCustomTournamentPage implements OnInit {
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       importMethod: ['upload'],
       teams: this.fb.array([], Validators.required),
+      stages: this.fb.array([], Validators.required),
       matches: this.fb.array([], Validators.required),
       users: this.fb.array([]),
       settings: this.fb.group({
@@ -93,6 +95,10 @@ export class BuildCustomTournamentPage implements OnInit {
     return this.tournamentForm.get('teams') as FormArray;
   }
 
+  get stagesArray(): FormArray {
+    return this.tournamentForm.get('stages') as FormArray;
+  }
+
   get matchesArray(): FormArray {
     return this.tournamentForm.get('matches') as FormArray;
   }
@@ -108,28 +114,17 @@ export class BuildCustomTournamentPage implements OnInit {
   async openAddModal(): Promise<void> {
     switch (this.step) {
       case 3:
-        if (this.stageTeamsManagement) {
-          await this.stageTeamsManagement.addTeam();
-        } else {
-          console.warn('StageTeamsManagementPage reference is not available.');
-        }
+        await this.stageTeamsManagement?.addTeam();
         break;
       case 4:
-        if (this.stageMatchesManagement) {
-          await this.stageMatchesManagement.addMatch();
-        } else {
-          console.warn('StageMatchesManagement reference is not available.');
-        }
+        await this.stageStagesManagement?.addStage();
         break;
       case 5:
-        if (this.stageUsersManagement) {
-          await this.stageUsersManagement.addUser();
-        } else {
-          console.warn('StageUsersManagement reference is not available.');
-        }
+        await this.stageMatchesManagement?.addMatch();
         break;
-      default:
-        console.warn('Invalid step for adding data:', this.step);
+      case 6:
+        await this.stageUsersManagement?.addUser();
+        break;
     }
   }
       
@@ -193,18 +188,47 @@ export class BuildCustomTournamentPage implements OnInit {
         })
       );
     });
+
+    // Step 2: Create a lookup map for stages (backendId -> frontendId & order)
+    const stageMap = new Map<number, Stage>();
+
+    this.stagesArray.clear();
+    tournament.stages.forEach((stage) => {
+      if (!stage.stageFrontendId) {
+        stage.stageFrontendId = this.generateFrontendId();
+      }
+
+      stageMap.set(stage.stageId ?? 0, stage);
+
+      this.stagesArray.push(
+        this.fb.group({
+          stageFrontendId: [stage.stageFrontendId],
+          stageId: [stage.stageId],
+          stageName: [stage.stageName, Validators.required],
+          order: [stage.order, [Validators.required, Validators.min(1)]],
+        })
+      );
+    });
   
-    // Step 2: Populate Matches and assign frontend IDs correctly
+    // Step 3: Populate Matches and assign frontend IDs correctly
     this.matchesArray.clear();
     tournament.matches.forEach((match) => {
       const homeTeam = teamMap.get(match.homeTeamId ?? 0);
       const awayTeam = teamMap.get(match.awayTeamId ?? 0);
+      const stage = stageMap.get(match.stageId ?? 0) || { 
+        stageFrontendId: this.generateFrontendId(), 
+        stageId: null, 
+        stageName: match.stageName || 'Default Stage' 
+      };
   
       this.matchesArray.push(
         this.fb.group({
           matchFrontendId: [match.matchFrontendId || this.generateFrontendId()], // Ensure unique frontendId
-          matchId: [match.matchId], // Backend ID
-          stage: [match.stage || ''],
+          matchId: [match.matchId],
+
+          stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
+          stageId: [stage.stageId],
+          stageName: [stage.stageName],
   
           homeTeamId: [match.homeTeamId], // Backend ID
           homeTeamFrontendId: [homeTeam?.teamFrontendId || this.generateFrontendId()], // Assign frontend ID
@@ -245,7 +269,9 @@ export class BuildCustomTournamentPage implements OnInit {
     return this.fb.group({
       matchFrontendId: [match.matchFrontendId],
       matchId: [match.matchId],
-      stage: [match.stage || ''],
+      stageFrontendId: [match.stageFrontendId],
+      stageId: [match.stageId],
+      stageName: [match.stageName],
       homeTeamId: [match.homeTeamId],
       homeTeamFrontendId: [match.homeTeamFrontendId],
       homeTeam: [match.homeTeam],
@@ -286,7 +312,46 @@ export class BuildCustomTournamentPage implements OnInit {
       });
     }
   }  
-   
+
+  handleStagesExtracted(stages: Stage[]): void {
+    const importMethod = this.tournamentForm.get('importMethod')?.value;
+  
+    console.log('Importing Stages - Method:', importMethod);
+  
+    if (importMethod === 'upload') {
+      this.stagesArray.clear();
+      stages.forEach(stage => {
+        this.stagesArray.push(
+          this.fb.group({
+            stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
+            stageId: [stage.stageId],
+            stageName: [stage.stageName, Validators.required],
+            order: [stage.order, [Validators.required, Validators.min(1)]],
+          })
+        );
+      });
+    } else if (importMethod === 'append') {
+      stages.forEach(stage => {
+        const exists = this.stagesArray.value.some(
+          (existingStage: any) => existingStage.stageFrontendId === stage.stageFrontendId
+        );
+  
+        if (!exists) {
+          this.stagesArray.push(
+            this.fb.group({
+              stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
+              stageId: [stage.stageId],
+              stageName: [stage.stageName, Validators.required],
+              order: [stage.order, [Validators.required, Validators.min(1)]],
+            })
+          );
+        }
+      });
+    }
+  
+    console.log('Updated Stages:', this.stagesArray.value);
+  }
+     
   handleMatchesExtracted(matches: Match[]): void {
     const importMethod = this.tournamentForm.get('importMethod')?.value;
   
@@ -382,6 +447,25 @@ export class BuildCustomTournamentPage implements OnInit {
   
     console.log('Updated Matches after team update:', this.matchesArray.value);
   }  
+
+  handleStagesUpdated(stagesData: { previousStages: Stage[]; updatedStages: Stage[] }): void {
+    const { updatedStages } = stagesData;
+  
+    this.stagesArray.clear();
+  
+    updatedStages.forEach((stage: Stage) => {
+      this.stagesArray.push(
+        this.fb.group({
+          stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
+          stageId: [stage.stageId], // Backend ID
+          stageName: [stage.stageName, Validators.required],
+          order: [stage.order, [Validators.required, Validators.min(1)]],
+        })
+      );
+    });
+  
+    console.log('Updated Stages:', this.stagesArray.value);
+  }  
     
   handleMatchesUpdated(updatedMatches: Match[]): void {
     this.matchesArray.clear();
@@ -425,13 +509,22 @@ export class BuildCustomTournamentPage implements OnInit {
       isActive: true,
       createdBy: this.tournamentForm.value.createdBy || 'Admin',
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
+
       teams: this.teamsArray.value.map((team: { teamId: number | null; teamName: string }) => ({
         teamId: isEditing ? team.teamId || null : null, // Use `null` for new teams
         teamName: team.teamName,
       })),
+
+      stages: this.stagesArray.value.map((stage: Stage) => ({
+        stageId: isEditing ? stage.stageId || null : null,
+        stageName: stage.stageName,
+        order: stage.order,
+      })),
+
       matches: this.matchesArray.value.map((match: any) => ({
         matchId: isEditing ? match.matchId || null : null,
-        stage: match.stage || '',
+        stageId: isEditing ? match.stageId || null : null,
+        stageName: match.stageName,
         homeTeamId: isEditing ? match.homeTeamId || null : null,
         awayTeamId: isEditing ? match.awayTeamId || null : null,
         homeTeam: match.homeTeam,
@@ -444,6 +537,7 @@ export class BuildCustomTournamentPage implements OnInit {
         homeQualifies: match.homeQualifies,
         awayQualifies: match.awayQualifies,
       })),
+
       users: this.usersArray.value.map((user: any) => ({
         assignmentId: user.assignmentId || null, // Null for new users
         userName: user.userName,
@@ -451,6 +545,7 @@ export class BuildCustomTournamentPage implements OnInit {
         userEmail: user.userEmail,
         status: user.status,
       })),
+
       settings: {
         allowExactResultBonus: this.tournamentForm.value.settings.allowExactResultBonus,
         exactResultBonusCalculation: this.tournamentForm.value.settings.exactResultBonusCalculation,
@@ -488,7 +583,7 @@ export class BuildCustomTournamentPage implements OnInit {
            
   async nextStep(): Promise<void> {
     const canProceed = await this.canProceed();
-    if (canProceed && this.step < 6) {
+    if (canProceed && this.step < 7) {
       this.scrollToTop();
       this.step++;
     }
@@ -533,15 +628,22 @@ export class BuildCustomTournamentPage implements OnInit {
           return false;
         }
         return true;
-  
+
       case 4:
+        if (this.stagesArray.length === 0) {
+          await this.showToast('At least one stage is required!', 'danger');
+          return false;
+        }
+        return true;
+  
+      case 5:
         if (this.matchesArray.length === 0) {
           await this.showToast('At least 1 match is required!', 'danger');
           return false;
         }
         return true;
   
-      case 5:
+      case 6:
         if (this.usersArray.length === 0) {
           await this.showToast('At least 1 user is required!', 'danger');
           return false;
