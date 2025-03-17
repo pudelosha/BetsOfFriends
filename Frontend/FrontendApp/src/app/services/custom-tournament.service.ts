@@ -73,4 +73,8 @@ export class CustomTournamentService {
   getPendingTournamentInvites(): Observable<TournamentInvite[]> {
     return this.http.get<TournamentInvite[]>(`${this.apiUrl}/invites/pending`);
   }
+
+  getTournamentStages(tournamentId: number): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/stages/${tournamentId}`);
+  }  
 }

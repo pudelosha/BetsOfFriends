@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges  } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
 import { EditMatchResultModalComponent } from 'src/app/modals/edit-match-result-modal/edit-match-result-modal.component';
 import { CommonModule } from '@angular/common';
@@ -8,6 +8,7 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { firstValueFrom } from 'rxjs';
 import { MatchService } from 'src/app/services/match.service';
 import { Match } from 'src/app/model/match';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-manage-upcoming',
@@ -16,9 +17,12 @@ import { Match } from 'src/app/model/match';
   standalone: true,
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
-export class ManageUpcomingPage implements OnInit {
+export class ManageUpcomingPage implements OnInit, OnChanges  {
+  @Input() stage!: string; // Receive stage from parent
+
   matches: Match[] = [];
   isLoading = true;
+  errorMessage: string = '';
 
   constructor(
     private modalCtrl: ModalController,
@@ -32,6 +36,13 @@ export class ManageUpcomingPage implements OnInit {
     this.loadMatches(); 
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['stage'] && !changes['stage'].firstChange) {
+      console.log(`Stage changed to: ${this.stage}, reloading matches.`);
+      this.loadMatches();
+    }
+  }
+
   ionViewWillEnter() {
     console.log('Reloading upcoming matches...');
     this.loadMatches(); 
@@ -39,20 +50,39 @@ export class ManageUpcomingPage implements OnInit {
 
   async loadMatches() {
     this.isLoading = true;
+    this.matches = [];
+    this.errorMessage = '';
+
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
-    console.log("Selected Tournament ID:", tournamentId);
 
     if (!tournamentId) {
       console.warn("No tournament selected.");
       this.isLoading = false;
+      this.errorMessage = "No tournament selected.";
       return;
     }
 
     try {
-      this.matches = await firstValueFrom(this.matchService.getMatchesByStatus(tournamentId, 'Upcoming'));
-      console.log("Matches received:", this.matches);
-    } catch (error) {
+      this.matches = await firstValueFrom(
+        this.matchService.getMatchesByTournamentStage(tournamentId, 'Upcoming', this.stage)
+      );
+
+      if (!this.matches.length) {
+        this.errorMessage = "No matches available for this stage.";
+      }
+
+    } catch (error: unknown) {
       console.error("API error:", error);
+
+      if (error instanceof HttpErrorResponse) {
+        if (error.status === 404) {
+          this.errorMessage = "No matches found for the given criteria";
+        } else {
+          this.errorMessage = `An error occurred: ${error.message}`;
+        }
+      } else {
+        this.errorMessage = "An unexpected error occurred";
+      }
     } finally {
       this.isLoading = false;
     }

@@ -1,4 +1,12 @@
-<ion-list class="match-list" *ngIf="!isLoading">
+<!-- Loading Spinner -->
+<ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+
+<!-- Display Message if No Matches Found -->
+<div *ngIf="!isLoading && errorMessage" class="no-matches">
+  <p>{{ errorMessage }}</p>
+</div>
+
+<ion-list *ngIf="!isLoading && matches.length > 0" class="match-list">
   <ion-item *ngFor="let match of matches" class="match-item">
     <div class="match-grid">
 
@@ -22,6 +30,3 @@
     </div>
   </ion-item>
 </ion-list>
-
-<!-- Loading Spinner -->
-<ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>

@@ -12,10 +12,10 @@ export class MatchService {
 
   constructor(private http: HttpClient) {}
 
-  getMatchesByStatus(tournamentId: number, status: 'Upcoming' | 'InProgress' | 'Finalised'): Observable<Match[]> {
-    return this.http.get<Match[]>(`${this.apiUrl}/list/${tournamentId}/${status}`);
+  getMatchesByTournamentStage(tournamentId: number, status: string, stage: string): Observable<Match[]> {
+    return this.http.get<Match[]>(`${this.apiUrl}/matches/${tournamentId}/${status}/${stage}`);
   }
-
+  
   updateMatchResult(matchId: number, matchData: Partial<Match>): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/update/${matchId}`, matchData);
   }

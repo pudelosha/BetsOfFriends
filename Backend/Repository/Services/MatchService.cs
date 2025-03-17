@@ -23,13 +23,20 @@ namespace Backend.Repository.Services
             _notificationService = notificationService;
         }
 
-        public async Task<List<MatchDto>> GetMatchesByStatusAsync(int tournamentId, string userId, MatchStatus status)
+        public async Task<List<MatchDto>> GetMatchesByStatusAndStageAsync(int tournamentId, string userId, string status, string stage)
         {
             try
             {
-                _logger.LogInformation($"Fetching matches with status {status} for tournament {tournamentId} and user {userId}");
+                _logger.LogInformation($"Fetching matches for tournament {tournamentId}, status {status}, stage {stage}, requested by user {userId}");
 
-                // Step 1: Check if the user is assigned to the tournament
+                // Step 1: Validate and parse match status
+                if (!Enum.TryParse<MatchStatus>(status, true, out var matchStatus))
+                {
+                    _logger.LogWarning($"Invalid match status received: {status}");
+                    return new List<MatchDto>(); // Return empty list instead of BadRequest
+                }
+
+                // Step 2: Check if the user is assigned to the tournament
                 var assignment = await _context.CustomTournamentUserAssignments
                     .Where(a => a.TournamentId == tournamentId && a.UserId == userId)
                     .Select(a => new { a.Role })
@@ -41,30 +48,41 @@ namespace Backend.Repository.Services
                     return new List<MatchDto>(); // No access
                 }
 
-                // Step 2: Restrict matches if user is not an admin and IsVisible is false
+                // Step 3: Check if the user is an admin
                 bool isAdmin = assignment.Role == UserTournamentRole.Admin;
                 if (!isAdmin)
                 {
-                    _logger.LogWarning($"User {userId} is not allowed to see matches for tournament {tournamentId}");
+                    _logger.LogWarning($"User {userId} is not allowed to view matches for tournament {tournamentId}");
                     return new List<MatchDto>(); // No access
                 }
 
-                // Step 3: Fetch matches with the given status
+                // Step 4: Validate if the stage exists in the tournament
+                bool stageExists = await _context.CustomMatchStages
+                    .AnyAsync(s => s.TournamentId == tournamentId && s.StageName == stage);
+
+                if (!stageExists)
+                {
+                    _logger.LogWarning($"Stage {stage} does not exist for tournament {tournamentId}");
+                    return new List<MatchDto>();
+                }
+
+                // Step 5: Fetch matches with the given status and stage
                 var matches = await _context.CustomMatches
                     .Include(m => m.Tournament)
+                    .Include(m => m.Stage)
                     .Include(m => m.HomeTeam)
                     .Include(m => m.AwayTeam)
-                    .Where(m => m.TournamentId == tournamentId && m.Status == status)
+                    .Where(m => m.TournamentId == tournamentId && m.Status == matchStatus && m.Stage.StageName == stage)
                     .OrderBy(m => m.MatchStart)
                     .ToListAsync();
 
                 if (!matches.Any())
                 {
-                    _logger.LogWarning($"No matches found with status {status} for tournament {tournamentId}");
+                    _logger.LogWarning($"No matches found with status {status} and stage {stage} for tournament {tournamentId}");
                     return new List<MatchDto>();
                 }
 
-                // Step 4: Convert to DTO
+                // Step 6: Convert matches to DTO format
                 return matches.Select(m => new MatchDto
                 {
                     MatchId = m.MatchId,
@@ -82,7 +100,7 @@ namespace Backend.Repository.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching matches with status {status} for tournament {tournamentId}");
+                _logger.LogError(ex, $"Error fetching matches for tournament {tournamentId}, status {status}, stage {stage}");
                 throw;
             }
         }

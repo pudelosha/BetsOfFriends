@@ -428,5 +428,32 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while fetching invites." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("stages/{tournamentId}")]
+        public async Task<IActionResult> GetTournamentStages(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var stages = await _tournamentService.GetTournamentStagesAsync(tournamentId, userId);
+                if (stages == null)
+                {
+                    return NotFound(new { Message = "Tournament not found or user not a participant." });
+                }
+
+                return Ok(stages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching stages for tournament ID {tournamentId}.");
+                return StatusCode(500, new { Message = "An error occurred while fetching tournament stages." });
+            }
+        }
     }
 }

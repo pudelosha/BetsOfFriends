@@ -6,10 +6,8 @@ namespace Backend.Repository.Interfaces
 {
     public interface IMatchService
     {
-        Task<List<MatchDto>> GetMatchesByStatusAsync(int tournamentId, string userId, MatchStatus status);
         Task<bool> UpdateMatchResultAsync(MatchResultUpdateDto matchUpdateDto, string userId);
         Task AutoUpdateMatchStatusAsync();
-
-
+        Task<List<MatchDto>> GetMatchesByStatusAndStageAsync(int tournamentId, string userId, string status, string stage);
     }
 }

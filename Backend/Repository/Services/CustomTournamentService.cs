@@ -1237,5 +1237,50 @@ namespace Backend.Repository.Services
                 throw;
             }
         }
+
+        public async Task<List<string>> GetTournamentStagesAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching tournament stages for tournament ID {tournamentId}, requested by user {userId}");
+
+                // Check if the tournament exists
+                var tournamentExists = await _context.CustomTournaments.AnyAsync(t => t.TournamentId == tournamentId);
+                if (!tournamentExists)
+                {
+                    _logger.LogWarning($"Tournament {tournamentId} not found.");
+                    return null;
+                }
+
+                // Check if the user is a participant
+                var isParticipant = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (!isParticipant)
+                {
+                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}.");
+                    return null; // Unauthorized access
+                }
+
+                // Fetch tournament stages ordered by 'Order'
+                var stages = await _context.CustomMatchStages
+                    .Where(s => s.TournamentId == tournamentId)
+                    .OrderBy(s => s.Order)
+                    .Select(s => s.StageName)
+                    .ToListAsync();
+
+                if (!stages.Any())
+                {
+                    _logger.LogWarning($"No stages found for tournament ID {tournamentId}.");
+                }
+
+                return stages;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching tournament stages for tournament ID {tournamentId}");
+                throw;
+            }
+        }
     }
 }

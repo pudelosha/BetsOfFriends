@@ -1,27 +1,28 @@
-  <ion-list class="match-list" *ngIf="!isLoading">
-    <ion-item *ngFor="let match of matches" class="match-item">
-      <div class="match-grid">
+<!-- Loading Spinner -->
+<ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
 
-        <!-- Match Details -->
-        <div class="match-details">
-          <span class="team">{{ match.homeTeam }}</span>
-          <span class="team">{{ match.awayTeam }}</span>
-        </div>
-        
-        <!-- Match Date & Time -->
-        <div class="match-date">
-          <span class="date">{{ match.matchStart | date: 'yyyy.MM.dd' }}</span>
-          <span class="time">{{ match.matchStart | date: 'HH:mm' }}</span>
-        </div>
+<!-- Display Message if No Matches Found -->
+<div *ngIf="!isLoading && errorMessage" class="no-matches">
+  <p>{{ errorMessage }}</p>
+</div>
 
-        <!-- Edit Button -->
-        <div class="match-button-container">
-          <ion-button size="small" class="match-button" (click)="editMatchResult(match, $event)">Edit</ion-button>
-        </div>
-
+<!-- Match List -->
+<ion-list *ngIf="!isLoading && matches.length > 0" class="match-list">
+  <ion-item *ngFor="let match of matches" class="match-item">
+    <div class="match-grid">
+      <div class="match-details">
+        <span class="team">{{ match.homeTeam }}</span>
+        <span class="team">{{ match.awayTeam }}</span>
       </div>
-    </ion-item>
-  </ion-list>
 
-  <!-- Loading Spinner -->
-  <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+      <div class="match-date">
+        <span class="date">{{ match.matchStart | date: 'yyyy.MM.dd' }}</span>
+        <span class="time">{{ match.matchStart | date: 'HH:mm' }}</span>
+      </div>
+
+      <div class="match-button-container">
+        <ion-button size="small" class="match-button" (click)="editMatchResult(match, $event)">Edit</ion-button>
+      </div>
+    </div>
+  </ion-item>
+</ion-list>

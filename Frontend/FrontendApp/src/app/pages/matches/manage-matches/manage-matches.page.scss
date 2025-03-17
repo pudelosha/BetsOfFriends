@@ -17,5 +17,26 @@
   }
 
   .menu-space {
-    padding-top: 50px;
+    padding-top: 100px;
+  }
+
+  .sticky-stage-menu {
+    position: fixed;
+    top: 100px; /* Adjusted to not overlap with the main menu */
+    left: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 0px 0px;
+    text-align: center;
+    height: 56px;
+  }
+  
+  .stage-label {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    min-width: 100px;
+    display: inline-block;
   }

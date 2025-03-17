@@ -24,35 +24,29 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
-        [HttpGet("list/{tournamentId}/{status}")]
-        public async Task<IActionResult> GetMatchesByStatus(int tournamentId, string status)
+        [HttpGet("matches/{tournamentId}/{status}/{stage}")]
+        public async Task<IActionResult> GetTournamentMatches(int tournamentId, string status, string stage)
         {
             try
             {
-                _logger.LogInformation($"Fetching matches for tournament {tournamentId} with status {status}");
-
-                // Validate match status
-                if (!Enum.TryParse<MatchStatus>(status, true, out var matchStatus))
-                {
-                    _logger.LogWarning($"Invalid match status received: {status}");
-                    return BadRequest(new { Message = "Invalid match status." });
-                }
-
-                // Fetch user from claims
                 var userId = _userService.GetUserIdFromClaims(User);
                 if (string.IsNullOrEmpty(userId))
                 {
-                    _logger.LogWarning("Unauthorized request to fetch matches.");
                     return Unauthorized(new { Message = "User authentication failed." });
                 }
 
-                // Call service with user ID
-                var matches = await _matchService.GetMatchesByStatusAsync(tournamentId, userId, matchStatus);
+                var matches = await _matchService.GetMatchesByStatusAndStageAsync(tournamentId, userId, status, stage);
+
+                if (matches == null || !matches.Any())
+                {
+                    return NotFound(new { Message = "No matches found for the given criteria." });
+                }
+
                 return Ok(matches);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching matches for tournament {tournamentId} with status {status}");
+                _logger.LogError(ex, $"Error fetching matches for tournament {tournamentId}, status {status}, stage {stage}.");
                 return StatusCode(500, new { Message = "An error occurred while fetching matches." });
             }
         }
