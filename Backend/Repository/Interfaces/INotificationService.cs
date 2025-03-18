@@ -12,7 +12,8 @@ namespace Backend.Repository.Interfaces
             string message,
             Func<ApplicationUser, (bool emailConsent, bool pushConsent)> getConsent);
 
-        Task<IEnumerable<NotificationDto>> GetUserNotificationsAsync(string userId, int limit);
+        Task<List<NotificationDto>> GetUserNotificationsAsync(string userId, int? limit = null);
         Task<bool> MarkNotificationAsReadAsync(int notificationId, string userId);
+        Task<bool> DeleteNotificationAsync(int notificationId, string userId);
     }
 }

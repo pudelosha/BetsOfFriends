@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
-import { Notification as AppMessage } from 'src/app/model/notification';
+import { NotificationDto } from 'src/app/model/notification';
 import { firstValueFrom } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./latest-messages.page.scss']
 })
 export class LatestMessagesPage implements OnInit {
-  messages: AppMessage[] = [];
+  messages: NotificationDto[] = [];
   isLoading = true;
   errorMessage: string | null = null;
 
@@ -42,7 +42,7 @@ export class LatestMessagesPage implements OnInit {
     await loading.present();
 
     try {
-      this.messages = await firstValueFrom(this.notificationService.getLatestUserNotifications()) as AppMessage[];
+      this.messages = await firstValueFrom(this.notificationService.getLatestNotifications()) as NotificationDto[];
     } catch (error) {
       console.error('Error fetching messages:', error);
       this.errorMessage = 'Failed to load messages.';

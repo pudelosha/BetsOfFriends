@@ -53,20 +53,31 @@ public class NotificationService : INotificationService
         );
     }
 
-    public async Task<IEnumerable<NotificationDto>> GetUserNotificationsAsync(string userId, int limit)
+    public async Task<List<NotificationDto>> GetUserNotificationsAsync(string userId, int? limit = null)
     {
-        return await _dbContext.NotificationRecipients
-            .Where(nr => nr.UserId == userId)
-            .OrderByDescending(nr => nr.Notification.CreatedAt)
-            .Take(limit)
-            .Select(nr => new NotificationDto
-            {
-                NotificationId = nr.NotificationId,
-                Title = nr.Notification.Title,
-                CreatedAt = nr.Notification.CreatedAt,
-                IsRead = nr.IsRead
-            })
-            .ToListAsync();
+        try
+        {
+            int maxResults = limit ?? int.MaxValue; // If limit is null, fetch all notifications
+
+            return await _dbContext.NotificationRecipients
+                .Where(nr => nr.UserId == userId)
+                .OrderByDescending(nr => nr.Notification.CreatedAt)
+                .Take(maxResults)
+                .Select(nr => new NotificationDto
+                {
+                    NotificationId = nr.NotificationId,
+                    Title = nr.Notification.Title,
+                    Message = nr.Notification.Message,
+                    CreatedAt = nr.Notification.CreatedAt,
+                    IsRead = nr.IsRead
+                })
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error fetching notifications for user {userId}: {ex.Message}");
+            return new List<NotificationDto>(); // Return empty list on failure
+        }
     }
 
     public async Task<bool> MarkNotificationAsReadAsync(int notificationId, string userId)
@@ -80,10 +91,36 @@ public class NotificationService : INotificationService
             return false;
         }
 
-        notificationRecipient.IsRead = true; // <-- Fixed here
+        notificationRecipient.IsRead = true;
         await _dbContext.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<bool> DeleteNotificationAsync(int notificationId, string userId)
+    {
+        try
+        {
+            var notificationRecipient = await _dbContext.NotificationRecipients
+                .FirstOrDefaultAsync(nr => nr.NotificationId == notificationId && nr.UserId == userId);
+
+            if (notificationRecipient == null)
+            {
+                _logger.LogWarning($"Notification {notificationId} not found for user {userId}");
+                return false;
+            }
+
+            _dbContext.NotificationRecipients.Remove(notificationRecipient);
+            await _dbContext.SaveChangesAsync();
+
+            _logger.LogInformation($"Notification {notificationId} deleted for user {userId}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error deleting notification {notificationId} for user {userId}");
+            return false;
+        }
     }
 
     public async Task ProcessNotificationsAsync(

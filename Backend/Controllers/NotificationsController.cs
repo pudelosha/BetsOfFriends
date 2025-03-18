@@ -4,6 +4,7 @@ using Backend.Services.Interfaces;
 using Backend.Model.Entities;
 using Backend.DTOs;
 using Backend.Repository.Interfaces;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -23,6 +24,28 @@ namespace Backend.Controllers
             _notificationService = notificationService;
             _userService = userService;
             _logger = logger;
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet]
+        public async Task<ActionResult<List<NotificationDto>>> GetNotifications()
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID not found.");
+                }
+
+                var notifications = await _notificationService.GetUserNotificationsAsync(userId);
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving user notifications: {ex.Message}");
+            }
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
@@ -52,7 +75,7 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
-        [HttpPost("read/{notificationId}")]
+        [HttpPut("mark-as-read/{notificationId}")]
         public async Task<IActionResult> MarkAsRead(int notificationId)
         {
             try
@@ -64,13 +87,13 @@ namespace Backend.Controllers
                     return Unauthorized(new { Message = "User authentication failed." });
                 }
 
-                _logger.LogInformation($"User {userId} is marking notification {notificationId} as read");
+                _logger.LogInformation($"User {userId} is marking notification {notificationId} as read.");
 
                 var success = await _notificationService.MarkNotificationAsReadAsync(notificationId, userId);
 
                 if (!success)
                 {
-                    _logger.LogWarning($"Notification {notificationId} not found or does not belong to user {userId}");
+                    _logger.LogWarning($"Notification {notificationId} not found or does not belong to user {userId}.");
                     return NotFound(new { Message = "Notification not found or already read." });
                 }
 
@@ -80,6 +103,38 @@ namespace Backend.Controllers
             {
                 _logger.LogError(ex, $"Error marking notification {notificationId} as read.");
                 return StatusCode(500, new { Message = "An error occurred while marking the notification as read." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpDelete("delete/{notificationId}")]
+        public async Task<IActionResult> DeleteNotification(int notificationId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized request to delete notification.");
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                _logger.LogInformation($"User {userId} is deleting notification {notificationId}.");
+
+                var success = await _notificationService.DeleteNotificationAsync(notificationId, userId);
+
+                if (!success)
+                {
+                    _logger.LogWarning($"Notification {notificationId} not found or does not belong to user {userId}.");
+                    return NotFound(new { Message = "Notification not found or already deleted." });
+                }
+
+                return Ok(new { Message = "Notification deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error deleting notification {notificationId}.");
+                return StatusCode(500, new { Message = "An error occurred while deleting the notification." });
             }
         }
     }
