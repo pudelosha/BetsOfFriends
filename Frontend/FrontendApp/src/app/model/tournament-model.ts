@@ -85,7 +85,8 @@ export interface UserActiveTournament {
 
 export interface TournamentSummary {
   position: number;
-  participantEmail: string;
+  userId: string;
+  userName: string;
   totalBetsPlaced: number;
   successful1X2Results: number;
   successfulQualifications: number;
@@ -104,6 +105,17 @@ export interface TournamentInvite {
   tournamentName: string;
   numberOfParticipants: number;
   assignmentStatus: string; // "Invited" or "Accepted"
+}
+
+export interface UserBettingStats {
+  matchId: number;
+  homeTeam: string;
+  awayTeam: string;
+  userPlacedResult: string | null;
+  betOutcome: string;
+  whoQualifiedBet: string | null;
+  whoQualifiedResult: string | null;
+  payout: number;
 }
 
 

@@ -43,6 +43,10 @@ export class ProfilePage implements OnInit {
     this.loadUserProfile();
   }
 
+  ionViewWillEnter() {
+    this.loadUserProfile();
+  }
+
   get f(): { [key: string]: AbstractControl } {
     return this.profileForm.controls;
   }

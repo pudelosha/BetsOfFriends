@@ -41,6 +41,10 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
     }
   }
 
+  ionViewWillEnter() {
+    this.loadBets();
+  }
+
   async loadBets() {
     this.isLoading = true;
     this.bets = [];

@@ -31,21 +31,44 @@ export class MyBetsPage implements OnInit, AfterViewInit {
     private tournamentSelectionService: TournamentSelectionService
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.selectedTab = 'to-place'; // Ensure the default tab
-    await this.loadStages(); // Load tournament stages
+    this.loadStages(); // Load tournament stages
   }
 
   ngAfterViewInit() {
-    this.selectedTab = 'to-place'; // Ensure the default tab
+    console.log('ngAfterViewInit - Parent Page');
+
     setTimeout(() => {
-      this.scrollToTop();
-    }, 100);
+      this.triggerRefresh();
+    }, 300); // Ensures children are ready
+  }
+
+  ionViewDidEnter() {
+    console.log('ionViewDidEnter - Parent Page, forcing tab reload');
+    this.forceTabReload();
+  }
+
+  triggerRefresh() {
+    console.log('Triggering tab refresh...');
+    this.changeTab(this.selectedTab);
   }
 
   changeTab(tab: string) {
-    this.selectedTab = tab;
-    this.scrollToTop();
+    console.log(`Switching to tab: ${tab}`);
+    this.selectedTab = ''; // Force unmount
+    setTimeout(() => {
+      this.selectedTab = tab; // Remount child
+    }, 100);
+  }
+
+  forceTabReload() {
+    console.log(`Force reloading tab: ${this.selectedTab}`);
+    const currentTab = this.selectedTab;
+    this.selectedTab = ''; // Force reset
+    setTimeout(() => {
+      this.selectedTab = currentTab; // Restore tab
+    }, 100);
   }
 
   prevStage() {

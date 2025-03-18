@@ -10,6 +10,7 @@ import { Bet, BetUpdateDto, BetStats } from 'src/app/model/bet';
 import { firstValueFrom } from 'rxjs';
 import { BetsOverviewModalComponent } from 'src/app/modals/bets-overview-modal/bets-overview-modal.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-my-bets-to-place',
@@ -30,11 +31,11 @@ export class MyBetsToPlacePage implements OnInit {
     private modalCtrl: ModalController,
     private betService: BetService,
     private tournamentSelectionService: TournamentSelectionService,
-    private toastController: ToastController
+    private toastController: ToastController,
   ) {}
 
   ngOnInit() {
-    console.log('ngOnInit called - Loading bets page...');
+    console.log('ngOnInit - Child Page');
     this.loadBets();
   }
 
@@ -43,10 +44,10 @@ export class MyBetsToPlacePage implements OnInit {
       console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadBets();
     }
-  }  
+  }   
   
-  ionViewWillEnter() {
-    console.log('ionViewWillEnter called - Loading bets page...');
+  ionViewDidEnter() {
+    console.log('ionViewDidEnter - Child Page, refreshing bets...');
     this.loadBets();
   }
   

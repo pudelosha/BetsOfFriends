@@ -408,6 +408,34 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("betting-stats/{tournamentId}/{statsUserId}")]
+        public async Task<IActionResult> GetUserBettingStats(int tournamentId, string statsUserId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var stats = await _tournamentService.GetUserBettingStatsAsync(userId, tournamentId, statsUserId);
+
+                if (stats == null || !stats.Any())
+                {
+                    return NotFound(new { Message = "No betting stats found for the user in this tournament." });
+                }
+
+                return Ok(stats);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching betting stats for user {statsUserId} in tournament {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while fetching betting statistics." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("invites/pending")]
         public async Task<IActionResult> GetPendingTournamentInvites()
         {

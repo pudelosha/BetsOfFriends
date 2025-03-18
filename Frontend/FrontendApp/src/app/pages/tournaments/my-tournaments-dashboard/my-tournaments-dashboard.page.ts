@@ -35,6 +35,10 @@ export class MyTournamentsDashboardPage implements OnInit {
     this.loadTournaments();
   }
 
+  async ionViewWillEnter() {
+    this.loadTournaments();
+  }
+
   loadTournaments() {
     this.isLoading = true;
     this.tournamentService.getUserActiveTournaments().subscribe({

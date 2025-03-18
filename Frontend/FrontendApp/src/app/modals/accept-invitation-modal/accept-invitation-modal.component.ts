@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, ModalController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
+import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -24,7 +25,8 @@ export class AcceptInvitationModalComponent implements OnInit {
     private modalController: ModalController,
     private fb: FormBuilder,
     private tournamentService: CustomTournamentService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private tournamentSelectionService: TournamentSelectionService
   ) {
     this.nicknameForm = this.fb.group({
       nickname: ['', [Validators.required, Validators.maxLength(20)]],
@@ -46,12 +48,16 @@ export class AcceptInvitationModalComponent implements OnInit {
     const nickname = this.nicknameForm.value.nickname;
   
     try {
-      // Call backend API
+      // Call backend API to accept invitation
       const response = await firstValueFrom(
         this.tournamentService.acceptTournamentInvitation(this.tournamentId, nickname)
       );
   
       this.showToast(response.message, 'success');
+  
+      // Set selected tournament in frontend
+      this.tournamentSelectionService.setSelectedTournament(this.tournamentId);
+  
       this.modalController.dismiss({ accepted: true });
   
     } catch (error: any) {
@@ -60,8 +66,8 @@ export class AcceptInvitationModalComponent implements OnInit {
     } finally {
       this.isLoading = false;
     }
-  }  
-
+  }
+   
   dismiss() {
     this.modalController.dismiss({ accepted: false });
   }

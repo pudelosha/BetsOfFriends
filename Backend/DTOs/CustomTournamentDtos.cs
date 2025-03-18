@@ -164,7 +164,8 @@ namespace Backend.DTOs
     public class TournamentSummaryDto
     {
         public int Position { get; set; }
-        public string ParticipantEmail { get; set; } = string.Empty;
+        public string UserId { get; set; }
+        public string UserName { get; set; }
         public int TotalBetsPlaced { get; set; }
         public int Successful1X2Results { get; set; }
         public int SuccessfulQualifications { get; set; }

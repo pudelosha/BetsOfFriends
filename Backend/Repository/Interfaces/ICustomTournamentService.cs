@@ -19,5 +19,6 @@ namespace Backend.Repository.Interfaces
         Task<List<TournamentPlayerResultDto>> GetTournamentPlayerResultAsync(int tournamentId, string userId);
         Task<List<TournamentInviteDto>> GetPendingTournamentInvitesAsync(string userId);
         Task<List<string>> GetTournamentStagesAsync(int tournamentId, string userId);
+        Task<List<UserBettingStatsDto>> GetUserBettingStatsAsync(string userId, int tournamentId, string statsUserId);
     }
 }

@@ -807,7 +807,8 @@ namespace Backend.Repository.Services
                     Users = tournament.Participants.Select(p => new CustomUserDto
                     {
                         AssignmentId = p.AssignmentId,  // Use AssignmentId instead of UserId
-                        UserAdminName = p.User.UserName,
+                        UserAdminName = p.UserAdminName,
+                        UserName = p.UserName,
                         UserEmail = p.User.Email,
                         Status = p.Status.ToString()
                     }).ToList(),
@@ -946,9 +947,12 @@ namespace Backend.Repository.Services
 
                 // Fetch user tournament assignment
                 var assignment = await _context.CustomTournamentUserAssignments
-                    .FirstOrDefaultAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+                    .Where(a => a.UserId == userId)
+                    .ToListAsync();
 
-                if (assignment == null || assignment.Status != AssignmentStatus.Invited)
+                var tournamentAssignment = assignment.FirstOrDefault(a => a.TournamentId == tournamentId);
+
+                if (tournamentAssignment == null || tournamentAssignment.Status != AssignmentStatus.Invited)
                 {
                     _logger.LogWarning($"No valid invitation found for user {userId} in tournament ID {tournamentId}");
                     return new TournamentInvitationResponseDto
@@ -959,12 +963,18 @@ namespace Backend.Repository.Services
                 }
 
                 // Accept the invitation and set the nickname
-                assignment.Status = AssignmentStatus.Accepted;
-                assignment.UserName = nickname;
+                tournamentAssignment.Status = AssignmentStatus.Accepted;
+                tournamentAssignment.UserName = nickname;
+
+                // Unselect all other tournaments and select this one
+                foreach (var entry in assignment)
+                {
+                    entry.IsSelected = entry.TournamentId == tournamentId;
+                }
 
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation($"User {userId} successfully accepted invitation for tournament ID {tournamentId} with nickname {nickname}");
+                _logger.LogInformation($"User {userId} successfully accepted invitation for tournament ID {tournamentId} with nickname {nickname}. Tournament set as default.");
 
                 return new TournamentInvitationResponseDto
                 {
@@ -1073,7 +1083,6 @@ namespace Backend.Repository.Services
                 var tournamentBets = await _context.Bets
                     .Where(b => b.Match.TournamentId == tournamentId)
                     .Include(b => b.Match)
-                    .Include(b => b.User)
                     .ToListAsync();
 
                 if (!tournamentBets.Any())
@@ -1082,13 +1091,19 @@ namespace Backend.Repository.Services
                     return new List<TournamentSummaryDto>();
                 }
 
+                // Fetch user assignments (to get UserName)
+                var userAssignments = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.TournamentId == tournamentId)
+                    .ToDictionaryAsync(a => a.UserId, a => a.UserName ?? a.UserAdminName);
+
                 // Group by user to generate statistics
                 var summary = tournamentBets
-                    .GroupBy(b => b.User)
+                    .GroupBy(b => b.UserId)
                     .Select(group =>
                     {
-                        var user = group.Key;
+                        var userId = group.Key;
                         var bets = group.ToList();
+
                         var successful1X2 = bets.Count(b => b.Status == Bet.BetStatus.Finalised && b.Result == Bet.BetResult.Won);
                         var successfulQualification = bets.Count(b =>
                             b.Status == Bet.BetStatus.Finalised &&
@@ -1102,7 +1117,8 @@ namespace Backend.Repository.Services
 
                         return new TournamentSummaryDto
                         {
-                            ParticipantEmail = user.Email,
+                            UserId = userId,
+                            UserName = userAssignments.ContainsKey(userId) ? userAssignments[userId] : "Unknown",
                             TotalBetsPlaced = bets.Count,
                             Successful1X2Results = successful1X2,
                             SuccessfulQualifications = successfulQualification,
@@ -1125,6 +1141,74 @@ namespace Backend.Repository.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error fetching tournament summary for ID {tournamentId}");
+                throw;
+            }
+        }
+
+        public async Task<List<UserBettingStatsDto>> GetUserBettingStatsAsync(string userId, int tournamentId, string statsUserId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching betting stats for user {statsUserId} in tournament {tournamentId}, requested by {userId}");
+
+                // Step 1: Validate that the requesting user is assigned to the tournament
+                bool isParticipant = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (!isParticipant)
+                {
+                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}.");
+                    return new List<UserBettingStatsDto>(); // Unauthorized access
+                }
+
+                // Step 2: Validate that statsUserId is also part of the tournament
+                bool isStatsUserParticipant = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == statsUserId);
+
+                if (!isStatsUserParticipant)
+                {
+                    _logger.LogWarning($"Stats user {statsUserId} is not assigned to tournament {tournamentId}.");
+                    return new List<UserBettingStatsDto>(); // Invalid stats target
+                }
+
+                // Step 3: Fetch all finalised matches in the tournament
+                var finalisedMatches = await _context.CustomMatches
+                    .Where(m => m.TournamentId == tournamentId && m.Status == CustomMatch.MatchStatus.Finalised)
+                    .Include(m => m.HomeTeam)
+                    .Include(m => m.AwayTeam)
+                    .Include(m => m.Bets.Where(b => b.UserId == statsUserId)) // Only fetch bets for statsUserId
+                    .ToListAsync();
+
+                // Step 4: Build Stats DTO List
+                var bettingStats = finalisedMatches.Select(match =>
+                {
+                    var userBet = match.Bets.FirstOrDefault(); // There should be only one bet per match per user
+
+                    return new UserBettingStatsDto
+                    {
+                        MatchId = match.MatchId,
+                        HomeTeam = match.HomeTeam.TeamName,
+                        AwayTeam = match.AwayTeam.TeamName,
+                        BetPlaced = userBet != null
+                            ? $"{userBet.HomeGoals.ToString() ?? "-"}:{userBet.AwayGoals.ToString() ?? "-"}"
+                            : "No Bet",
+                        BetOutcome = userBet != null
+                            ? userBet.Result == Bet.BetResult.Won ? "Won" : "Lost"
+                            : "N/A",
+                        WhoQualifiedBet = userBet?.Qualified?.ToString() ?? "N/A",
+                        WhoQualifiedResult = match.Type == CustomMatch.MatchType.ExtendedWithQualification
+                            ? match.Qualified.ToString()
+                            : "N/A",
+                        Payout = userBet?.Payout ?? 0
+                    };
+                }).ToList();
+
+                _logger.LogInformation($"Successfully fetched betting stats for user {statsUserId} in tournament {tournamentId}");
+                return bettingStats;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching betting stats for user {statsUserId} in tournament {tournamentId}");
                 throw;
             }
         }

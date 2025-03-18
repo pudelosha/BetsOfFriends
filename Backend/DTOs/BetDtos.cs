@@ -89,4 +89,16 @@ namespace Backend.DTOs
         public string AwayTeam { get; set; } = string.Empty;
         public DateTime MatchTime { get; set; }
     }
+
+    public class UserBettingStatsDto
+    {
+        public int MatchId { get; set; }
+        public string HomeTeam { get; set; }
+        public string AwayTeam { get; set; }
+        public string BetPlaced { get; set; } // Example: "2:1" or "No Bet"
+        public string BetOutcome { get; set; } // Won / Lost / N/A
+        public string WhoQualifiedBet { get; set; } // Home / Away / N/A
+        public string WhoQualifiedResult { get; set; } // Home / Away / N/A
+        public decimal Payout { get; set; } // Points Earned
+    }
 }

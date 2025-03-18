@@ -22,9 +22,9 @@
       </ion-row>
 
       <!-- Table Data -->
-      <ion-row *ngFor="let player of summaryData">
+      <ion-row *ngFor="let player of summaryData" (click)="openPlayerStats(player.userId)">
         <ion-col size="2" class="centered-text">{{ player.position }}</ion-col>
-        <ion-col size="5" class="text-left player-name">{{ player.participantEmail }}</ion-col>
+        <ion-col size="5" class="text-left player-name">{{ player.userName }}</ion-col>
         <ion-col size="1" class="centered-text">{{ player.successful1X2Results }}</ion-col>
         <ion-col size="1" class="centered-text">{{ player.successfulQualifications }}</ion-col>
         <ion-col size="1" class="centered-text">{{ player.successfulExactResults }}</ion-col>

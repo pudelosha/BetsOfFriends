@@ -4,6 +4,8 @@ import { IonicModule, ToastController, LoadingController } from '@ionic/angular'
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { TournamentSummary } from 'src/app/model/tournament-model';
+import { ModalController } from '@ionic/angular';
+import { PlayerStatsModalComponent } from 'src/app/modals/player-stats-modal/player-stats-modal.component';
 
 @Component({
   selector: 'app-summary-dashboard',
@@ -21,7 +23,8 @@ export class SummaryDashboardPage implements OnInit {
     private tournamentService: CustomTournamentService,
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private modalController: ModalController
   ) {}
 
   async ngOnInit() {
@@ -69,6 +72,22 @@ export class SummaryDashboardPage implements OnInit {
         await this.showToast('Error loading summary', 'danger');
       },
     });
+  }
+
+  async openPlayerStats(userId: string) {
+    const tournamentId = this.tournamentSelectionService.getSelectedTournament();
+    
+    if (!tournamentId) {
+      console.error("No tournament selected.");
+      return;
+    }
+  
+    const modal = await this.modalController.create({
+      component: PlayerStatsModalComponent,
+      componentProps: { tournamentId, userId }
+    });
+  
+    await modal.present();
   }
 
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary') {
