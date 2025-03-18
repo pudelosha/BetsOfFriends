@@ -129,7 +129,7 @@ namespace Backend.Controllers
                 }
 
                 // Call service method to get upcoming bets
-                var upcomingBets = await _betService.GetUpcomingBetsAsync(tournamentId, userId);
+                var upcomingBets = await _betService.GetUpcomingBetsAsync(tournamentId, userId, 5);
 
                 return Ok(upcomingBets);
             }

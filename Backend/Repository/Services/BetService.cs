@@ -1,5 +1,4 @@
 ﻿using Backend.DTOs;
-using Backend.DTOs.Backend.DTOs;
 using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Services.Interfaces;
@@ -308,21 +307,27 @@ namespace Backend.Repository.Services
                 decimal payout = 0;
                 bool won = false;
 
-                // Process 1X2 Bet Outcome
-                if (homeWin && bet.HomeGoals > bet.AwayGoals)
+                // Ensure the bet has valid numbers before checking conditions
+                bool isBetValid = bet.HomeGoals.HasValue && bet.AwayGoals.HasValue;
+
+                // Process 1X2 Bet Outcome only if valid goals are provided
+                if (isBetValid)
                 {
-                    payout += bet.BaseAmount * homeWinOdds;
-                    won = true;
-                }
-                else if (isDraw && bet.HomeGoals == bet.AwayGoals)
-                {
-                    payout += bet.BaseAmount * drawOdds;
-                    won = true;
-                }
-                else if (awayWin && bet.AwayGoals > bet.HomeGoals)
-                {
-                    payout += bet.BaseAmount * awayWinOdds;
-                    won = true;
+                    if (homeWin && bet.HomeGoals.Value > bet.AwayGoals.Value)
+                    {
+                        payout += bet.BaseAmount * homeWinOdds;
+                        won = true;
+                    }
+                    else if (isDraw && bet.HomeGoals.Value == bet.AwayGoals.Value)
+                    {
+                        payout += bet.BaseAmount * drawOdds;
+                        won = true;
+                    }
+                    else if (awayWin && bet.AwayGoals.Value > bet.HomeGoals.Value)
+                    {
+                        payout += bet.BaseAmount * awayWinOdds;
+                        won = true;
+                    }
                 }
 
                 // Process Qualification Bet
@@ -340,9 +345,9 @@ namespace Backend.Repository.Services
                     }
                 }
 
-                // Process Exact Result Bonus
-                if (tournamentSettings.AllowExactResultBonus &&
-                    bet.HomeGoals == homeScore && bet.AwayGoals == awayScore)
+                // Process Exact Result Bonus only if the bet is valid
+                if (tournamentSettings.AllowExactResultBonus && isBetValid &&
+                    bet.HomeGoals.Value == homeScore && bet.AwayGoals.Value == awayScore)
                 {
                     decimal winningOdd = 0;
 
@@ -623,10 +628,12 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task<List<UpcomingBetDto>> GetUpcomingBetsAsync(int tournamentId, string userId)
+        public async Task<List<UpcomingBetDto>> GetUpcomingBetsAsync(int tournamentId, string userId, int? limit = null)
         {
             try
             {
+                int maxResults = limit ?? int.MaxValue; // If limit is null, fetch all notifications
+
                 _logger.LogInformation($"Fetching upcoming bets for user {userId} in tournament {tournamentId}");
 
                 var upcomingBets = await _context.Bets
@@ -634,7 +641,7 @@ namespace Backend.Repository.Services
                                 b.UserId == userId &&
                                 b.Status == Bet.BetStatus.ToPlace)
                     .OrderBy(b => b.Match.MatchStart)
-                    .Take(5)
+                    .Take(maxResults)
                     .Select(b => new UpcomingBetDto
                     {
                         MatchId = b.Match.MatchId,
