@@ -24,7 +24,7 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
-        [HttpGet("matches/{tournamentId}/{status}/{stage}")]
+        [HttpGet("{tournamentId}/{status}/{stage}")]
         public async Task<IActionResult> GetTournamentMatches(int tournamentId, string status, string stage)
         {
             try

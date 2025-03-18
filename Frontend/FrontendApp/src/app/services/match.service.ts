@@ -13,7 +13,7 @@ export class MatchService {
   constructor(private http: HttpClient) {}
 
   getMatchesByTournamentStage(tournamentId: number, status: string, stage: string): Observable<Match[]> {
-    return this.http.get<Match[]>(`${this.apiUrl}/matches/${tournamentId}/${status}/${stage}`);
+    return this.http.get<Match[]>(`${this.apiUrl}/${tournamentId}/${status}/${stage}`);
   }
   
   updateMatchResult(matchId: number, matchData: Partial<Match>): Observable<void> {

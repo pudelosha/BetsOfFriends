@@ -1,4 +1,5 @@
 ﻿using Backend.DTOs;
+using Backend.DTOs.Backend.DTOs;
 using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Services.Interfaces;
@@ -157,27 +158,60 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task<List<BetDto>> GetBetsByStatusAsync(int tournamentId, string userId, Bet.BetStatus status)
+        public async Task<List<BetDto>> GetBetsByStatusAndStageAsync(int tournamentId, string userId, string status, string stage)
         {
             try
             {
-                _logger.LogInformation($"Fetching bets for user {userId}, tournament {tournamentId}, status {status}");
+                _logger.LogInformation($"Fetching bets for user {userId}, tournament {tournamentId}, status {status}, stage {stage}");
 
+                // Step 1: Validate and parse BetStatus
+                if (!Enum.TryParse<Bet.BetStatus>(status, true, out var betStatus))
+                {
+                    _logger.LogWarning($"Invalid bet status received: {status}");
+                    return new List<BetDto>(); // Return empty list instead of throwing an error
+                }
+
+                // Step 2: Check if the user is assigned to the tournament
+                var isAssigned = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (!isAssigned)
+                {
+                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}");
+                    return new List<BetDto>(); // No access
+                }
+
+                // Step 3: Validate if the stage exists in the tournament
+                bool stageExists = await _context.CustomMatchStages
+                    .AnyAsync(s => s.TournamentId == tournamentId && s.StageName == stage);
+
+                if (!stageExists)
+                {
+                    _logger.LogWarning($"Stage {stage} does not exist for tournament {tournamentId}");
+                    return new List<BetDto>(); // Return empty list if stage doesn't exist
+                }
+
+                // Step 4: Fetch bets with the given criteria (tournament, user, status, and stage)
                 var bets = await _context.Bets
                     .Include(b => b.Match)
                         .ThenInclude(m => m.HomeTeam)
                     .Include(b => b.Match)
                         .ThenInclude(m => m.AwayTeam)
-                    .Where(b => b.Match.TournamentId == tournamentId && b.UserId == userId && b.Status == status)
+                    .Where(b =>
+                        b.Match.TournamentId == tournamentId &&
+                        b.UserId == userId &&
+                        b.Status == betStatus &&
+                        b.Match.Stage.StageName == stage)
                     .OrderBy(b => b.Match.MatchStart)
                     .ToListAsync();
 
                 if (!bets.Any())
                 {
-                    _logger.LogWarning($"No bets found for user {userId}, tournament {tournamentId}, status {status}");
+                    _logger.LogWarning($"No bets found for user {userId}, tournament {tournamentId}, status {status}, stage {stage}");
                     return new List<BetDto>();
                 }
 
+                // Step 5: Convert bets to DTO format
                 var betDtos = bets.Select(b => new BetDto
                 {
                     BetId = b.BetId,
@@ -194,7 +228,7 @@ namespace Backend.Repository.Services
                     PlayerQualifiedTeam = b.Qualified?.ToString(),
                     ActualHomeGoals = b.Match.HomeScore,
                     ActualAwayGoals = b.Match.AwayScore,
-                    ActualQualifiedTeam = b.Match.Qualified.ToString(),
+                    ActualQualifiedTeam = b.Match.Qualified?.ToString(),
 
                     HomeOdds = b.Match.HomeWinOdds,
                     DrawOdds = b.Match.DrawOdds,
@@ -212,7 +246,7 @@ namespace Backend.Repository.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching bets for user {userId} and tournament {tournamentId}");
+                _logger.LogError(ex, $"Error fetching bets for user {userId}, tournament {tournamentId}, status {status}, stage {stage}");
                 return new List<BetDto>();
             }
         }

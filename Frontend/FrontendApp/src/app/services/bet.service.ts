@@ -12,8 +12,8 @@ export class BetService {
 
   constructor(private http: HttpClient) {}
 
-  getBetsByStatus(tournamentId: number, status: 'ToPlace' | 'Placed' | 'Finalised'): Observable<Bet[]> {
-    return this.http.get<Bet[]>(`${this.apiUrl}/list/${tournamentId}/${status}`);
+  getBetsByTournamentStage(tournamentId: number, status: string, stage: string): Observable<Bet[]> {
+    return this.http.get<Bet[]>(`${this.apiUrl}/${tournamentId}/${status}/${stage}`);
   }
   
   updateBet(betId: number, betUpdate: Partial<BetUpdateDto>): Observable<void> {

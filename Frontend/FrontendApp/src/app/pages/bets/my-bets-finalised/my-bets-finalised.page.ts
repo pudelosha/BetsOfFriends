@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, ModalController } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -7,6 +7,7 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { Bet, BetStats } from 'src/app/model/bet';
 import { firstValueFrom } from 'rxjs';
 import { BetsOverviewModalComponent } from 'src/app/modals/bets-overview-modal/bets-overview-modal.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-my-bets-finalised',
@@ -15,9 +16,12 @@ import { BetsOverviewModalComponent } from 'src/app/modals/bets-overview-modal/b
   standalone: true,
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
-export class MyBetsFinalisedPage implements OnInit {
+export class MyBetsFinalisedPage implements OnInit, OnChanges {
+  @Input() stage!: string; // Receive stage from parent
+
   bets: Bet[] = [];
   isLoading = true;
+  errorMessage: string = '';
 
   constructor(
     private modalCtrl: ModalController,
@@ -26,30 +30,56 @@ export class MyBetsFinalisedPage implements OnInit {
     private toastController: ToastController
   ) {}
 
-  async ngOnInit() {
-    await this.loadBets();
+  ngOnInit() {
+    this.loadBets();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['stage'] && !changes['stage'].firstChange) {
+      console.log(`Stage changed to: ${this.stage}, reloading matches.`);
+      this.loadBets();
+    }
   }
 
   async loadBets() {
     this.isLoading = true;
+    this.bets = [];
+    this.errorMessage = '';
+
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
 
     if (!tournamentId) {
-      this.showToast('No tournament selected!', 'warning');
+      console.warn("No tournament selected.");
       this.isLoading = false;
+      this.errorMessage = "No tournament selected.";
       return;
     }
 
     try {
-      this.bets = await firstValueFrom(this.betService.getBetsByStatus(tournamentId, 'Finalised'));
-      console.log('Loaded Finalised Bets:', this.bets);
-    } catch (error) {
-      console.error('Error fetching finalised bets:', error);
-      this.showToast('Failed to load finalised bets.', 'danger');
+      this.bets = await firstValueFrom(
+        this.betService.getBetsByTournamentStage(tournamentId, 'Finalised', this.stage)
+      );
+
+      if (!this.bets.length) {
+        this.errorMessage = "No bets available for this stage.";
+      }
+
+    } catch (error: unknown) {
+      console.error("API error:", error);
+
+      if (error instanceof HttpErrorResponse) {
+        if (error.status === 404) {
+          this.errorMessage = "No bets found for the given criteria";
+        } else {
+          this.errorMessage = `An error occurred: ${error.message}`;
+        }
+      } else {
+        this.errorMessage = "An unexpected error occurred";
+      }
     } finally {
       this.isLoading = false;
     }
-  }
+  } 
 
   getBetStatus(bet: Bet): string {
     if (

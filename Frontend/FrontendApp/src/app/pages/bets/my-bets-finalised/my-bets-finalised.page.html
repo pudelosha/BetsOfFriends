@@ -1,4 +1,12 @@
-  <ion-list class="bet-list" *ngIf="!isLoading">
+<!-- Loading Spinner -->
+<ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+
+<!-- Display Message if No Matches Found -->
+<div *ngIf="!isLoading && errorMessage" class="no-matches">
+  <p>{{ errorMessage }}</p>
+</div>
+
+<ion-list *ngIf="!isLoading && bets.length > 0" class="bet-list">
     <ion-item *ngFor="let bet of bets" class="bet-item">
       <div class="bet-grid">
 
@@ -30,5 +38,3 @@
       </div>
     </ion-item>
   </ion-list>
-
-  <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>

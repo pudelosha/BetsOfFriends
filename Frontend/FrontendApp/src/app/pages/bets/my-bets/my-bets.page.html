@@ -1,5 +1,7 @@
 <ion-content class="ion-padding page-with-header">
   <div class="page-container">
+
+    <!-- Sticky Menu for Tabs -->
     <div class="sticky-menu">
       <ion-segment [(ngModel)]="selectedTab" class="full-width">
         <ion-segment-button value="to-place" (click)="changeTab('to-place')">
@@ -14,17 +16,38 @@
       </ion-segment>
     </div>
 
+    <!-- Sticky Stage Navigation -->
+    <div class="sticky-stage-menu">
+      <ion-grid class="full-width">
+        <ion-row class="ion-justify-content-center ion-align-items-center">
+          <ion-col size="auto">
+            <ion-button fill="clear" (click)="prevStage()" [disabled]="selectedStageIndex === 0">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+          <ion-col size="auto">
+            <span class="stage-label">{{ availableStages[selectedStageIndex] }}</span>
+          </ion-col>
+          <ion-col size="auto">
+            <ion-button fill="clear" (click)="nextStage()" [disabled]="selectedStageIndex === availableStages.length - 1">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>    
+
     <div class="menu-space">
       <ng-container *ngIf="selectedTab === 'to-place'">
-        <app-my-bets-to-place></app-my-bets-to-place>
+        <app-my-bets-to-place [stage]="selectedStage"></app-my-bets-to-place>
       </ng-container>
       
       <ng-container *ngIf="selectedTab === 'placed'">
-        <app-my-bets-placed></app-my-bets-placed>
+        <app-my-bets-placed [stage]="selectedStage"></app-my-bets-placed>
       </ng-container>
       
       <ng-container *ngIf="selectedTab === 'finalised'">
-        <app-my-bets-finalised></app-my-bets-finalised>
+        <app-my-bets-finalised [stage]="selectedStage"></app-my-bets-finalised>
       </ng-container>
     </div>
 

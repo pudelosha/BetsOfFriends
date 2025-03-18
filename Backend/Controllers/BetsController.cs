@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Backend.Repository.Interfaces;
 using Backend.Services.Interfaces;
 using Backend.Model.Entities;
+using Backend.Repository.Services;
 
 namespace Backend.Controllers
 {
@@ -53,36 +54,29 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
-        [HttpGet("list/{tournamentId}/{status}")]
-        public async Task<IActionResult> GetBetsByStatus(int tournamentId, string status)
+        [HttpGet("{tournamentId}/{status}/{stage}")]
+        public async Task<IActionResult> GetTournamentBets(int tournamentId, string status, string stage)
         {
             try
             {
-                _logger.LogInformation($"Fetching bets for tournament {tournamentId} with status {status}");
-
-                // Convert string to BetStatus enum
-                if (!Enum.TryParse<Bet.BetStatus>(status, true, out var betStatus))
-                {
-                    _logger.LogWarning($"Invalid bet status received: {status}");
-                    return BadRequest(new { Message = "Invalid bet status." });
-                }
-
-                // Get userId from claims
                 var userId = _userService.GetUserIdFromClaims(User);
                 if (string.IsNullOrEmpty(userId))
                 {
-                    _logger.LogWarning("Unauthorized request to fetch bets.");
                     return Unauthorized(new { Message = "User authentication failed." });
                 }
 
-                // Call service method to get bets
-                var bets = await _betService.GetBetsByStatusAsync(tournamentId, userId, betStatus);
+                var matches = await _betService.GetBetsByStatusAndStageAsync(tournamentId, userId, status, stage);
 
-                return Ok(bets);
+                if (matches == null || !matches.Any())
+                {
+                    return NotFound(new { Message = "No bets found for the given criteria." });
+                }
+
+                return Ok(matches);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching bets for tournament {tournamentId} with status {status}");
+                _logger.LogError(ex, $"Error fetching bets for tournament {tournamentId}, status {status}, stage {stage}.");
                 return StatusCode(500, new { Message = "An error occurred while fetching bets." });
             }
         }

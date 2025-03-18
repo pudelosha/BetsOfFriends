@@ -6,6 +6,9 @@ import { MyBetsFinalisedPage } from '../my-bets-finalised/my-bets-finalised.page
 import { MyBetsPlacedPage } from '../my-bets-placed/my-bets-placed.page';
 import { MyBetsToPlacePage } from '../my-bets-to-place/my-bets-to-place.page';
 import { FormsModule } from '@angular/forms';
+import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
+import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-my-bets',
@@ -17,13 +20,20 @@ import { FormsModule } from '@angular/forms';
 })
 export class MyBetsPage implements OnInit, AfterViewInit {
   selectedTab: string = 'to-place'; // Default tab
+  availableStages: string[] = [];
+  selectedStageIndex = 0;
+  selectedStage: string = '';
   
   @ViewChild(IonContent, { static: false }) content!: IonContent; // Get content reference
 
-  constructor() {}
+  constructor(
+    private tournamentService: CustomTournamentService,
+    private tournamentSelectionService: TournamentSelectionService
+  ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.selectedTab = 'to-place'; // Ensure the default tab
+    await this.loadStages(); // Load tournament stages
   }
 
   ngAfterViewInit() {
@@ -37,6 +47,39 @@ export class MyBetsPage implements OnInit, AfterViewInit {
     this.selectedTab = tab;
     this.scrollToTop();
   }
+
+  prevStage() {
+    if (this.selectedStageIndex > 0) {
+      this.selectedStageIndex--;
+      this.selectedStage = this.availableStages[this.selectedStageIndex];
+    }
+  }
+  
+  nextStage() {
+    if (this.selectedStageIndex < this.availableStages.length - 1) {
+      this.selectedStageIndex++;
+      this.selectedStage = this.availableStages[this.selectedStageIndex];
+    }
+  }
+
+  async loadStages() {
+    const tournamentId = this.tournamentSelectionService.getSelectedTournament();
+    
+    if (!tournamentId) {
+      console.warn("No tournament selected.");
+      return;
+    }
+
+    try {
+      this.availableStages = await firstValueFrom(this.tournamentService.getTournamentStages(tournamentId));
+      if (this.availableStages.length > 0) {
+        this.selectedStageIndex = 0;
+        this.selectedStage = this.availableStages[0]; // Set the first stage as default
+      }
+    } catch (error) {
+      console.error("Error fetching tournament stages:", error);
+    }
+  }  
 
   scrollToTop() {
     if (this.content) {
