@@ -46,6 +46,7 @@ export class MyBetsPage implements OnInit, AfterViewInit {
 
   ionViewDidEnter() {
     console.log('ionViewDidEnter - Parent Page, forcing tab reload');
+    if (this.selectedTab.length == 0) this.selectedTab = 'to-place'; 
     this.forceTabReload();
   }
 

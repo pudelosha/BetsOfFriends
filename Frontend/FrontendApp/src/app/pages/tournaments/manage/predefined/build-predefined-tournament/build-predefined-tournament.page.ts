@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { StageInputTypePage } from '../../stages/stage-input-type/stage-input-type.page';
 import { StageTeamsManagementPage } from '../../stages/stage-teams-management/stage-teams-management.page';
 import { StageMatchesManagementPage } from '../../stages/stage-matches-management/stage-matches-management.page';
@@ -35,7 +35,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private tournamentService: PredefinedTournamentService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private loadingController: LoadingController
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
@@ -124,97 +125,117 @@ export class BuildPredefinedTournamentPage implements OnInit {
     });
   }  
   
-  private populateForm(tournament: Tournament): void {
-    this.tournamentForm.patchValue({
-      tournamentId: tournament.tournamentId,
-      tournamentName: tournament.tournamentName,
-      importMethod: 'upload',
+  private async populateForm(tournament: Tournament): Promise<void> {
+    const loading = await this.loadingController.create({
+      message: 'Loading tournament data...',
+      spinner: 'crescent',
     });
+    await loading.present();
   
-    // Step 1: Create a lookup map for teams (backendId -> frontendId & name)
-    const teamMap = new Map<number, Team>();
+    const startTime = Date.now(); // Track start time
   
-    this.teamsArray.clear();
-    tournament.teams.forEach((team) => {
-      if (!team.teamFrontendId) {
-        team.teamFrontendId = this.generateFrontendId(); // Ensure frontend ID exists
-      }
-      
-      teamMap.set(team.teamId ?? 0, team); // Map backendId to team object
+    try {
+      this.tournamentForm.patchValue({
+        tournamentId: tournament.tournamentId,
+        tournamentName: tournament.tournamentName,
+        importMethod: 'upload',
+      });
   
-      this.teamsArray.push(
-        this.fb.group({
-          teamFrontendId: [team.teamFrontendId], // Ensure we store frontendId
-          teamId: [team.teamId], // Backend ID
-          teamName: [team.teamName, Validators.required],
-        })
-      );
-    });
-
-    // Step 2: Create a lookup map for stages (backendId -> frontendId & order)
-    const stageMap = new Map<number, Stage>();
-
-    this.stagesArray.clear();
-    tournament.stages.forEach((stage) => {
-      if (!stage.stageFrontendId) {
-        stage.stageFrontendId = this.generateFrontendId(); // Ensure frontend ID exists
-      }
-
-      stageMap.set(stage.stageId ?? 0, stage); // Map backendId to stage object
-
-      this.stagesArray.push(
-        this.fb.group({
-          stageFrontendId: [stage.stageFrontendId], // Ensure unique frontend ID
-          stageId: [stage.stageId], // Backend ID
-          stageName: [stage.stageName, Validators.required],
-          order: [stage.order, [Validators.required, Validators.min(1)]],
-        })
-      );
-    });
+      // Step 1: Create a lookup map for teams (backendId -> frontendId & name)
+      const teamMap = new Map<number, Team>();
   
-    // Step 3: Populate Matches and assign frontend IDs correctly
-    this.matchesArray.clear();
-    tournament.matches.forEach((match) => {
-      const homeTeam = teamMap.get(match.homeTeamId ?? 0);
-      const awayTeam = teamMap.get(match.awayTeamId ?? 0);
-      const stage = stageMap.get(match.stageId ?? 0) || { 
-        stageFrontendId: this.generateFrontendId(), 
-        stageId: null, 
-        stageName: match.stageName || 'Default Stage' 
-      };
+      this.teamsArray.clear();
+      tournament.teams.forEach((team) => {
+        if (!team.teamFrontendId) {
+          team.teamFrontendId = this.generateFrontendId(); // Ensure frontend ID exists
+        }
   
-      this.matchesArray.push(
-        this.fb.group({
-          matchFrontendId: [match.matchFrontendId || this.generateFrontendId()], // Ensure unique frontendId
-          matchId: [match.matchId], // Backend ID
-
-          stageFrontendId: [stage.stageFrontendId], // Ensure frontend ID
-          stageId: [stage.stageId], // Backend ID
-          stageName: [stage.stageName], // Stage name
+        teamMap.set(team.teamId ?? 0, team); // Map backendId to team object
   
-          homeTeamId: [match.homeTeamId], // Backend ID
-          homeTeamFrontendId: [homeTeam?.teamFrontendId || this.generateFrontendId()], // Assign frontend ID
-          homeTeam: [homeTeam?.teamName || match.homeTeam], // Ensure correct team name
+        this.teamsArray.push(
+          this.fb.group({
+            teamFrontendId: [team.teamFrontendId], // Ensure we store frontendId
+            teamId: [team.teamId], // Backend ID
+            teamName: [team.teamName, Validators.required],
+          })
+        );
+      });
   
-          awayTeamId: [match.awayTeamId], // Backend ID
-          awayTeamFrontendId: [awayTeam?.teamFrontendId || this.generateFrontendId()], // Assign frontend ID
-          awayTeam: [awayTeam?.teamName || match.awayTeam], // Ensure correct team name
+      // Step 2: Create a lookup map for stages (backendId -> frontendId & order)
+      const stageMap = new Map<number, Stage>();
   
-          matchStart: [new Date(match.matchStart).toISOString()],
-          matchType: [match.matchType || 'Regular90Min'],
-          homeWinOdds: [match.homeWinOdds],
-          drawOdds: [match.drawOdds],
-          awayWinOdds: [match.awayWinOdds],
-          homeQualifies: [match.homeQualifies],
-          awayQualifies: [match.awayQualifies],
-        })
-      );
-    });
+      this.stagesArray.clear();
+      tournament.stages.forEach((stage) => {
+        if (!stage.stageFrontendId) {
+          stage.stageFrontendId = this.generateFrontendId(); // Ensure frontend ID exists
+        }
   
-    console.log('Teams after population:', this.teamsArray.value);
-    console.log('Matches after population:', this.matchesArray.value);
+        stageMap.set(stage.stageId ?? 0, stage); // Map backendId to stage object
+  
+        this.stagesArray.push(
+          this.fb.group({
+            stageFrontendId: [stage.stageFrontendId], // Ensure unique frontend ID
+            stageId: [stage.stageId], // Backend ID
+            stageName: [stage.stageName, Validators.required],
+            order: [stage.order, [Validators.required, Validators.min(1)]],
+          })
+        );
+      });
+  
+      // Step 3: Populate Matches and assign frontend IDs correctly
+      this.matchesArray.clear();
+      tournament.matches.forEach((match) => {
+        const homeTeam = teamMap.get(match.homeTeamId ?? 0);
+        const awayTeam = teamMap.get(match.awayTeamId ?? 0);
+        const stage = stageMap.get(match.stageId ?? 0) || {
+          stageFrontendId: this.generateFrontendId(),
+          stageId: null,
+          stageName: match.stageName || 'Default Stage'
+        };
+  
+        this.matchesArray.push(
+          this.fb.group({
+            matchFrontendId: [match.matchFrontendId || this.generateFrontendId()], // Ensure unique frontendId
+            matchId: [match.matchId], // Backend ID
+  
+            stageFrontendId: [stage.stageFrontendId], // Ensure frontend ID
+            stageId: [stage.stageId], // Backend ID
+            stageName: [stage.stageName], // Stage name
+  
+            homeTeamId: [match.homeTeamId], // Backend ID
+            homeTeamFrontendId: [homeTeam?.teamFrontendId || this.generateFrontendId()], // Assign frontend ID
+            homeTeam: [homeTeam?.teamName || match.homeTeam], // Ensure correct team name
+  
+            awayTeamId: [match.awayTeamId], // Backend ID
+            awayTeamFrontendId: [awayTeam?.teamFrontendId || this.generateFrontendId()], // Assign frontend ID
+            awayTeam: [awayTeam?.teamName || match.awayTeam], // Ensure correct team name
+  
+            matchStart: [new Date(match.matchStart).toISOString()],
+            matchType: [match.matchType || 'Regular90Min'],
+            homeWinOdds: [match.homeWinOdds],
+            drawOdds: [match.drawOdds],
+            awayWinOdds: [match.awayWinOdds],
+            homeQualifies: [match.homeQualifies],
+            awayQualifies: [match.awayQualifies],
+          })
+        );
+      });
+  
+      console.log('Teams after population:', this.teamsArray.value);
+      console.log('Matches after population:', this.matchesArray.value);
+  
+    } catch (error) {
+      console.error('Error populating tournament form:', error);
+    } finally {
+      const elapsedTime = Date.now() - startTime;
+      const delay = Math.max(0, 500 - elapsedTime);
+  
+      setTimeout(async () => {
+        await loading.dismiss();
+      }, delay);
+    }
   }
-  
+    
   private buildMatchFormGroup(match: Match): FormGroup {
     return this.fb.group({
       matchFrontendId: [match.matchFrontendId],
@@ -414,7 +435,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
     console.log('Updated Matches from Child:', this.matchesArray.value);
   }  
   
-  submitTournament(): void {
+  async submitTournament(): Promise<void> {
     // Validate Tournament Data
     if (!this.tournamentForm.value.tournamentName?.trim()) {
       this.showToast('Tournament name is required!', 'danger');
@@ -425,7 +446,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
       this.showToast('At least 2 teams are required to create a tournament!', 'danger');
       return;
     }
-
+  
     if (this.stagesArray.length === 0) {
       this.showToast('At least one stage is required!', 'danger');
       return;
@@ -436,7 +457,14 @@ export class BuildPredefinedTournamentPage implements OnInit {
       return;
     }
   
-    this.isLoading = true;
+    const loading = await this.loadingController.create({
+      message: 'Submitting tournament...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    const startTime = Date.now(); // Track start time
+  
     const isEditing = !!this.tournamentId;
   
     const tournamentData: Tournament = {
@@ -445,18 +473,15 @@ export class BuildPredefinedTournamentPage implements OnInit {
       isActive: true,
       createdBy: this.tournamentForm.value.createdBy || 'Admin',
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
-
       teams: this.teamsArray.value.map((team: { teamId: number | null; teamName: string }) => ({
-        teamId: isEditing ? team.teamId || null : null, // Use `null` for new teams
+        teamId: isEditing ? team.teamId || null : null,
         teamName: team.teamName,
       })),
-
       stages: this.stagesArray.value.map((stage: Stage) => ({
         stageId: isEditing ? stage.stageId || null : null,
         stageName: stage.stageName,
         order: stage.order,
       })),
-      
       matches: this.matchesArray.value.map((match: any) => ({
         matchId: isEditing ? match.matchId || null : null,
         stageId: isEditing ? match.stageId || null : null,
@@ -482,20 +507,29 @@ export class BuildPredefinedTournamentPage implements OnInit {
       : this.tournamentService.createPredefinedTournament(tournamentData);
   
     submitObservable.subscribe({
-      next: (response) => {
-        console.log('Server response:', response); // Log the plain text response
-        this.router.navigate(['/tournaments/predefined']).then(() => {
-          this.showToast('Tournament updated successfully!', 'success');
-          this.isLoading = false; // Hide the spinner
-        });
+      next: async (response) => {
+        console.log('Server response:', response);
+        await this.router.navigate(['/tournaments/predefined']);
+  
+        this.showToast(
+          isEditing ? 'Tournament updated successfully!' : 'Tournament created successfully!',
+          'success'
+        );
       },
-      error: (error) => {
+      error: async (error) => {
         console.error('Error submitting tournament:', error);
         this.showToast('Error submitting tournament!', 'danger');
-        this.isLoading = false; // Hide the spinner even on error
+      },
+      complete: async () => {
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+        }, delay);
       },
     });
-  }
+  }  
          
   async nextStep(): Promise<void> {
     const canProceed = await this.canProceed();
