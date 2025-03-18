@@ -29,6 +29,7 @@ export class MyTournamentsDashboardPage implements OnInit {
     private modalController: ModalController,
     private router: Router,
     private cdRef: ChangeDetectorRef,
+    private loadingController: LoadingController,
   ) {}
 
   ngOnInit() {
@@ -39,8 +40,17 @@ export class MyTournamentsDashboardPage implements OnInit {
     this.loadTournaments();
   }
 
-  loadTournaments() {
+  async loadTournaments() {
     this.isLoading = true;
+  
+    const loading = await this.loadingController.create({
+      message: 'Loading tournaments...',
+      spinner: 'crescent',
+    });
+    await loading.present(); // Show spinner
+  
+    const startTime = Date.now(); // Capture start time
+  
     this.tournamentService.getUserActiveTournaments().subscribe({
       next: (response) => {
         this.tournaments = response.map(t => ({
@@ -54,12 +64,18 @@ export class MyTournamentsDashboardPage implements OnInit {
         console.error('Error fetching tournaments:', error);
         this.tournaments = [];
       },
-      complete: () => {
-        this.isLoading = false;
+      complete: async () => {
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime); // Ensure at least 500ms delay
+  
+        setTimeout(async () => {
+          this.isLoading = false;
+          await loading.dismiss(); // Dismiss spinner after delay
+        }, delay);
       }
     });
   }
-   
+     
   selectTournament(tournament: any): void {
     this.tournamentSelectionService.setSelectedTournament(tournament.tournamentId);
     console.log(this.tournamentSelectionService.getSelectedTournament());

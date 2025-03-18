@@ -52,28 +52,42 @@ export class SummaryDashboardPage implements OnInit {
       console.error('Tournament ID is null, cannot fetch summary.');
       return;
     }
-
+  
     const loading = await this.loadingController.create({
       message: 'Loading summary...',
       spinner: 'crescent',
     });
-    await loading.present();
-
+    await loading.present(); // Show spinner
+  
+    const startTime = Date.now(); // Capture start time
+  
     this.tournamentService.getTournamentSummary(this.tournamentId).subscribe({
-      next: (summary) => {
+      next: async (summary) => {
         this.summaryData = summary;
         this.isLoading = false;
-        loading.dismiss();
+  
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime); // Ensure 500ms delay
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+        }, delay);
       },
       error: async (error) => {
         console.error('Error fetching summary:', error);
         this.isLoading = false;
-        loading.dismiss();
-        await this.showToast('Error loading summary', 'danger');
+  
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime); // Ensure 500ms delay
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          await this.showToast('Error loading summary', 'danger');
+        }, delay);
       },
     });
   }
-
+  
   async openPlayerStats(userId: string) {
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
     

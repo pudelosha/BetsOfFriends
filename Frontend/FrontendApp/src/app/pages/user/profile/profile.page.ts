@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ToastController, AlertController, IonicModule } from '@ionic/angular';
+import { ToastController, AlertController, IonicModule, LoadingController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
@@ -31,6 +31,7 @@ export class ProfilePage implements OnInit {
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private userService: UserService,
+    private loadingController: LoadingController
   ) {
     this.profileForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]], 
@@ -166,18 +167,31 @@ export class ProfilePage implements OnInit {
           cssClass: 'danger-button',
           handler: async (data) => {
             if (!this.isValidPassword(data.password)) {
-              this.presentToast('Password must be at least 8 characters.', 'warning');
+              await this.presentToast('Password must be at least 8 characters.', 'warning');
               return false;
             }
   
+            const loading = await this.loadingController.create({
+              message: 'Deleting account...',
+              spinner: 'crescent',
+            });
+            await loading.present();
+  
+            const startTime = Date.now();
+  
             try {
               await this.userService.deleteAccount(data.password).toPromise();
-  
-              this.authService.logout('Your account has been deleted. We hope to see you again!', '/register');
-  
+              await this.authService.logout('Your account has been deleted. We hope to see you again!', '/register');
             } catch (error) {
               console.error('Error deleting account:', error);
-              this.presentToast('Failed to delete account. Check your password.', 'danger');
+              await this.presentToast('Failed to delete account. Check your password.', 'danger');
+            } finally {
+              const elapsedTime = Date.now() - startTime;
+              const delay = Math.max(0, 500 - elapsedTime);
+  
+              setTimeout(async () => {
+                await loading.dismiss();
+              }, delay);
             }
   
             return true;
@@ -188,10 +202,18 @@ export class ProfilePage implements OnInit {
   
     await alert.present();
   }
-  
-  loadUserProfile() {
-    console.log('attempting to load user profile');
+    
+  async loadUserProfile() {
+    console.log('Attempting to load user profile');
     this.isLoading = true;
+  
+    const loading = await this.loadingController.create({
+      message: 'Loading profile...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    const startTime = Date.now(); // Start time for delay calculation
   
     this.userService.getUserProfile().subscribe({
       next: (profile: UserProfile) => {
@@ -206,46 +228,65 @@ export class ProfilePage implements OnInit {
         const dateObj = new Date(profile.memberSince);
         this.memberSince = `${dateObj.getFullYear()}.${(dateObj.getMonth() + 1).toString().padStart(2, '0')}.${dateObj.getDate().toString().padStart(2, '0')}`;
       },
-      error: (error) => {
+      error: async (error) => {
         console.error('Error loading profile:', error);
-        this.presentToast('Failed to load profile.', 'danger');
+        await this.presentToast('Failed to load profile.', 'danger');
       },
-      complete: () => {
-        this.isLoading = false;
+      complete: async () => {
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime); // Ensure at least 500ms delay
+  
+        setTimeout(async () => {
+          this.isLoading = false;
+          await loading.dismiss();
+        }, delay);
       }
     });
-  }
+  } 
   
-  
-  onSubmitProfile() {
+  async onSubmitProfile() {
     if (this.profileForm.invalid) {
-      this.presentToast('Please correct the errors before submitting.', 'danger');
+      await this.presentToast('Please correct the errors before submitting.', 'danger');
       return;
     }
-
+  
     this.isUpdating = true;
-
+  
     const updatedProfile = {
       language: this.f['language'].value,
       darkMode: this.f['darkMode'].value,
     };
-
+  
     console.log('Updating profile:', updatedProfile);
-
+  
+    const loading = await this.loadingController.create({
+      message: 'Updating profile...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    const startTime = Date.now();
+  
     this.userService.updateUserProfile(updatedProfile).subscribe({
-      next: () => {
-        this.presentToast('Profile updated successfully!', 'success');
+      next: async () => {
+        await this.presentToast('Profile updated successfully!', 'success');
       },
-      error: (error) => {
+      error: async (error) => {
         console.error('Error updating profile:', error);
-        this.presentToast('Failed to update profile. Please try again.', 'danger');
+        await this.presentToast('Failed to update profile. Please try again.', 'danger');
       },
-      complete: () => {
-        this.isUpdating = false;
+      complete: async () => {
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime);
+  
+        setTimeout(async () => {
+          this.isUpdating = false;
+          await loading.dismiss();
+        }, delay);
       }
     });
-  } 
-
+  }
+  
   getLanguageValue(apiValue: string): string {
     const found = this.languages.find(lang => lang.label === apiValue || lang.value === apiValue);
     return found ? found.value : 'en';

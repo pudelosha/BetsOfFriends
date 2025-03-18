@@ -48,8 +48,6 @@
   </div>
 
   <!-- Spinner when loading user profile -->
-  <div *ngIf="isLoading" class="loading-container">
-    <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
-  </div>
+  <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
 
 </ion-content>

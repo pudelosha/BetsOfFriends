@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges  } from '@angular/core';
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController, ToastController, LoadingController } from '@ionic/angular';
 import { EditMatchResultModalComponent } from 'src/app/modals/edit-match-result-modal/edit-match-result-modal.component';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -28,7 +28,8 @@ export class ManageUpcomingPage implements OnInit, OnChanges  {
     private modalCtrl: ModalController,
     private matchService: MatchService,
     private tournamentSelectionService: TournamentSelectionService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
@@ -52,42 +53,52 @@ export class ManageUpcomingPage implements OnInit, OnChanges  {
     this.isLoading = true;
     this.matches = [];
     this.errorMessage = '';
-
+  
+    const loading = await this.loadingController.create({
+      message: 'Loading matches...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    const startTime = Date.now(); // Start timer
+  
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
-
+  
     if (!tournamentId) {
       console.warn("No tournament selected.");
       this.isLoading = false;
       this.errorMessage = "No tournament selected.";
+      await loading.dismiss();
       return;
     }
-
+  
     try {
       this.matches = await firstValueFrom(
         this.matchService.getMatchesByTournamentStage(tournamentId, 'Upcoming', this.stage)
       );
-
+  
       if (!this.matches.length) {
         this.errorMessage = "No matches available for this stage.";
       }
-
     } catch (error: unknown) {
       console.error("API error:", error);
-
+  
       if (error instanceof HttpErrorResponse) {
-        if (error.status === 404) {
-          this.errorMessage = "No matches found for the given criteria";
-        } else {
-          this.errorMessage = `An error occurred: ${error.message}`;
-        }
+        this.errorMessage = error.status === 404 ? "No matches found for the given criteria" : `An error occurred: ${error.message}`;
       } else {
         this.errorMessage = "An unexpected error occurred";
       }
     } finally {
-      this.isLoading = false;
+      const elapsedTime = Date.now() - startTime;
+      const delay = Math.max(0, 200 - elapsedTime);
+  
+      setTimeout(async () => {
+        this.isLoading = false;
+        await loading.dismiss();
+      }, delay);
     }
   }
-
+  
   async editMatchResult(match: Match, event: Event) {
     event.stopPropagation();
     console.log("Opening Edit Match Result Modal:", match);
