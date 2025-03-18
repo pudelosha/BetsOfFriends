@@ -18,6 +18,15 @@ ion-row {
   padding: 4px 0;
 }
 
+ion-row:not(.summary-header) {
+  transition: background-color 0.3s ease-in-out;
+  cursor: pointer; // Indicates it's clickable
+
+  &:hover {
+    background-color: #F7F8FE; // Light blue hover effect
+  }
+}
+
 /* Align Text in Columns */
 .centered-text {
   text-align: center;

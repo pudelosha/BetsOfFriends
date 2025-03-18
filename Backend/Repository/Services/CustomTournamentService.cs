@@ -1171,18 +1171,19 @@ namespace Backend.Repository.Services
                     return new List<UserBettingStatsDto>(); // Invalid stats target
                 }
 
-                // Step 3: Fetch all finalised matches in the tournament
-                var finalisedMatches = await _context.CustomMatches
-                    .Where(m => m.TournamentId == tournamentId && m.Status == CustomMatch.MatchStatus.Finalised)
+                // Step 3: Fetch all matches (Finalised & Non-Finalised)
+                var tournamentMatches = await _context.CustomMatches
+                    .Where(m => m.TournamentId == tournamentId)
                     .Include(m => m.HomeTeam)
                     .Include(m => m.AwayTeam)
-                    .Include(m => m.Bets.Where(b => b.UserId == statsUserId)) // Only fetch bets for statsUserId
+                    .Include(m => m.Bets.Where(b => b.UserId == statsUserId)) // Fetch only bets for the stats user
                     .ToListAsync();
 
                 // Step 4: Build Stats DTO List
-                var bettingStats = finalisedMatches.Select(match =>
+                var bettingStats = tournamentMatches.Select(match =>
                 {
-                    var userBet = match.Bets.FirstOrDefault(); // There should be only one bet per match per user
+                    bool isFinalised = match.Status == CustomMatch.MatchStatus.Finalised;
+                    var userBet = isFinalised ? match.Bets.FirstOrDefault() : null; // Only show bets for finalised matches
 
                     return new UserBettingStatsDto
                     {
@@ -1190,16 +1191,16 @@ namespace Backend.Repository.Services
                         HomeTeam = match.HomeTeam.TeamName,
                         AwayTeam = match.AwayTeam.TeamName,
                         BetPlaced = userBet != null
-                            ? $"{userBet.HomeGoals.ToString() ?? "-"}:{userBet.AwayGoals.ToString() ?? "-"}"
-                            : "No Bet",
+                            ? $"{userBet.HomeGoals?.ToString() ?? "-"}:{userBet.AwayGoals?.ToString() ?? "-"}"
+                            : isFinalised ? "No Bet" : "N/A",
                         BetOutcome = userBet != null
-                            ? userBet.Result == Bet.BetResult.Won ? "Won" : "Lost"
-                            : "N/A",
-                        WhoQualifiedBet = userBet?.Qualified?.ToString() ?? "N/A",
-                        WhoQualifiedResult = match.Type == CustomMatch.MatchType.ExtendedWithQualification
+                            ? (userBet.Result == Bet.BetResult.Won ? "Won" : "Lost")
+                            : isFinalised ? "N/A" : "Not Finalised",
+                        WhoQualifiedBet = isFinalised ? (userBet?.Qualified?.ToString() ?? "N/A") : "N/A",
+                        WhoQualifiedResult = isFinalised && match.Type == CustomMatch.MatchType.ExtendedWithQualification
                             ? match.Qualified.ToString()
                             : "N/A",
-                        Payout = userBet?.Payout ?? 0
+                        Payout = isFinalised ? (userBet?.Payout ?? 0) : 0 // Show 0 payout for non-finalised matches
                     };
                 }).ToList();
 

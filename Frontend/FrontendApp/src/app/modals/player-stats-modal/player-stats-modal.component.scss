@@ -1,0 +1,70 @@
+.stats-list {
+    --padding-top: 0px !important;
+    --padding-bottom: 0px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  }
+  
+  /* Remove padding/margin from ion-item */
+  .stats-item {
+    --inner-padding-end: 0px !important;
+    --inner-padding-start: 0px !important;
+    --padding-end: 0px !important;
+    --padding-start: 0px !important;
+    --ion-item-background: transparent;
+    
+    height: 70px; /* Adjusted height */
+    --min-height: 70px !important;
+    --max-height: 70px !important;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Grid layout for stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr 2fr 2fr 2fr 1fr; /* Adjusted for stat layout */
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    padding-right: 0px;
+  }
+  
+  /* Match Details */
+  .match-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    font-size: 12px;
+    color: #333;
+  }
+  
+  /* Stacked Stats */
+  .stats-column {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  /* Labels and Values */
+  .stat-label {
+    font-weight: bold;
+    font-size: 11px;
+    color: #444;
+  }
+  
+  .stat-value {
+    font-size: 12px;
+    color: #000;
+  }
+  
+  /* No Stats Message */
+  .no-stats {
+    text-align: center;
+    font-size: 1.2em;
+    color: gray;
+    margin-top: 20px;
+  }
+  

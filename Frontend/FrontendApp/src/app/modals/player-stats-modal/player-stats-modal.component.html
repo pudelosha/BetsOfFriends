@@ -8,18 +8,54 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+  <!-- Loading Spinner -->
+  <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
 
-  <ion-list *ngIf="!isLoading">
-    <ion-item *ngFor="let stat of stats">
-      <ion-label>
-        <h2>{{ stat.homeTeam }} vs {{ stat.awayTeam }}</h2>
-        <p>Prediction: {{ stat.userPlacedResult }}</p>
-        <p>Outcome: {{ stat.betOutcome }}</p>
-        <p>Qualified Bet: {{ stat.whoQualifiedBet }}</p>
-        <p>Qualified Result: {{ stat.whoQualifiedResult }}</p>
-        <p>Payout: {{ stat.payout }}</p>
-      </ion-label>
+  <!-- Display Message if No Matches Found -->
+  <div *ngIf="!isLoading && stats.length === 0" class="no-stats">
+    <p>No stats available.</p>
+  </div>
+
+  <!-- Stats List -->
+  <ion-list *ngIf="!isLoading && stats.length > 0" class="stats-list">
+    <ion-item *ngFor="let stat of stats" class="stats-item">
+      <div class="stats-grid">
+        
+        <!-- Match Details -->
+        <div class="match-details">
+          <span class="team">{{ stat.homeTeam }}</span>
+          <span class="team">{{ stat.awayTeam }}</span>
+        </div>
+
+        <!-- Prediction & Outcome -->
+        <div class="stats-column">
+          <span class="stat-label">Prediction:</span>
+          <span class="stat-value">{{ stat.userPlacedResult }}</span>
+        </div>
+
+        <div class="stats-column">
+          <span class="stat-label">Outcome:</span>
+          <span class="stat-value">{{ stat.betOutcome }}</span>
+        </div>
+
+        <!-- Qualification & Result -->
+        <div class="stats-column">
+          <span class="stat-label">Qualified Bet:</span>
+          <span class="stat-value">{{ stat.whoQualifiedBet }}</span>
+        </div>
+
+        <div class="stats-column">
+          <span class="stat-label">Qualified Result:</span>
+          <span class="stat-value">{{ stat.whoQualifiedResult }}</span>
+        </div>
+
+        <!-- Payout -->
+        <div class="stats-column">
+          <span class="stat-label">Payout:</span>
+          <span class="stat-value">{{ stat.payout }}</span>
+        </div>
+
+      </div>
     </ion-item>
   </ion-list>
 </ion-content>
