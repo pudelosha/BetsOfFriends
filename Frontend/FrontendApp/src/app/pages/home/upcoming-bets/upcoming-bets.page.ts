@@ -58,6 +58,7 @@ export class UpcomingBetsPage implements OnInit {
     const loading = await this.loadingController.create({
       message: 'Loading upcoming bets...',
       spinner: 'crescent',
+      cssClass: 'custom-loading-spinner'
     });
     await loading.present();
 

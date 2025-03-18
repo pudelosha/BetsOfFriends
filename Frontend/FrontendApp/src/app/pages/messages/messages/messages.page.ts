@@ -2,7 +2,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NotificationDto } from 'src/app/model/notification';
 import { NotificationService } from 'src/app/services/notification.service';
 import { Component, OnInit } from '@angular/core';
-import { ToastController, AlertController } from '@ionic/angular';
+import { ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
@@ -21,7 +21,8 @@ export class MessagesPage implements OnInit {
   constructor(
     private notificationService: NotificationService,
     private toastController: ToastController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
@@ -33,22 +34,46 @@ export class MessagesPage implements OnInit {
   }
 
   // Load notifications from API
-  loadNotifications() {
-    this.isLoading = true; // Start loading
+  async loadNotifications() {
+    this.isLoading = true;
+  
+    const loading = await this.loadingController.create({
+      message: 'Loading notifications...',
+      spinner: 'crescent',
+    });
+    await loading.present(); // Show loading UI
+  
+    const startTime = Date.now(); // Track when loading starts
+  
     this.notificationService.getNotifications().subscribe({
-      next: (data) => {
+      next: async (data) => {
         this.notifications = data;
         this.expandedNotificationId = null; // Ensure all accordions are collapsed
-        this.isLoading = false; // Stop loading
+  
+        // Ensure the spinner stays visible for at least 1 second
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 1000 - elapsedTime);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.isLoading = false;
+        }, delay);
       },
-      error: (error) => {
+      error: async (error) => {
         console.error('Error fetching notifications:', error);
         this.showToast('Failed to load notifications', 'danger');
-        this.isLoading = false;
+  
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.isLoading = false;
+        }, delay);
       }
     });
   }
-
+  
   // Toggle message expansion and mark as read
   toggleNotification(notification: NotificationDto) {
     if (this.expandedNotificationId === notification.notificationId) {
@@ -89,20 +114,41 @@ export class MessagesPage implements OnInit {
   }
 
   // Delete a notification
-  deleteNotification(notification: NotificationDto) {
+  async deleteNotification(notification: NotificationDto) {
+    const loading = await this.loadingController.create({
+      message: 'Deleting notification...',
+      spinner: 'crescent',
+    });
+    await loading.present(); // Show loading UI
+  
+    const startTime = Date.now();
+  
     this.notificationService.deleteNotification(notification.notificationId).subscribe({
-      next: () => {
+      next: async () => {
         this.notifications = this.notifications.filter(n => n.notificationId !== notification.notificationId);
         this.expandedNotificationId = null; // Collapse everything after deletion
-        this.showToast('Notification deleted', 'success');
+  
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.showToast('Notification deleted', 'success');
+        }, delay);
       },
-      error: (error) => {
+      error: async (error) => {
         console.error('Error deleting notification:', error);
-        this.showToast('Failed to delete notification', 'danger');
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 1000 - elapsedTime);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.showToast('Failed to delete notification', 'danger');
+        }, delay);
       }
     });
   }
-
+  
   // Display a toast message
   private async showToast(message: string, color: 'success' | 'danger') {
     const toast = await this.toastController.create({
