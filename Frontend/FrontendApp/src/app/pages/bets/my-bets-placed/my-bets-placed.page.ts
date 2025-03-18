@@ -1,4 +1,4 @@
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController, ToastController, LoadingController } from '@ionic/angular';
 import { EditBetModalComponent } from 'src/app/modals/edit-bet-modal/edit-bet-modal.component';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -30,7 +30,7 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
     private betService: BetService,
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
-    private cdRef: ChangeDetectorRef // Added ChangeDetectorRef
+    private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
@@ -54,41 +54,52 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
     this.isLoading = true;
     this.bets = [];
     this.errorMessage = '';
-
+  
+    const loading = await this.loadingController.create({
+      message: 'Loading bets...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    const startTime = Date.now(); // Start timer
+  
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
-
+  
     if (!tournamentId) {
       console.warn("No tournament selected.");
       this.isLoading = false;
       this.errorMessage = "No tournament selected.";
+      await loading.dismiss();
       return;
     }
-
+  
     try {
       this.bets = await firstValueFrom(
         this.betService.getBetsByTournamentStage(tournamentId, 'Placed', this.stage)
       );
-
+  
       if (!this.bets.length) {
         this.errorMessage = "No bets available for this stage.";
       }
-
     } catch (error: unknown) {
       console.error("API error:", error);
-
+  
       if (error instanceof HttpErrorResponse) {
-        if (error.status === 404) {
-          this.errorMessage = "No bets found for the given criteria";
-        } else {
-          this.errorMessage = `An error occurred: ${error.message}`;
-        }
+        this.errorMessage = error.status === 404 ? "No bets found for the given criteria" : `An error occurred: ${error.message}`;
       } else {
         this.errorMessage = "An unexpected error occurred";
       }
     } finally {
-      this.isLoading = false;
+      const elapsedTime = Date.now() - startTime;
+      const delay = Math.max(0, 200 - elapsedTime);
+  
+      setTimeout(async () => {
+        this.isLoading = false;
+        await loading.dismiss();
+      }, delay);
     }
-  } 
+  }
+  
 
   async editBet(bet: Bet, event: Event) {
     event.stopPropagation();

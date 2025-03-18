@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef  } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, ModalController } from '@ionic/angular';
+import { IonicModule, ToastController, ModalController, LoadingController } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BetService } from 'src/app/services/bet.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
@@ -27,7 +27,8 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
     private modalCtrl: ModalController,
     private betService: BetService,
     private tournamentSelectionService: TournamentSelectionService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
@@ -49,42 +50,52 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
     this.isLoading = true;
     this.bets = [];
     this.errorMessage = '';
-
+  
+    const loading = await this.loadingController.create({
+      message: 'Loading bets...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    const startTime = Date.now(); // Start timer
+  
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
-
+  
     if (!tournamentId) {
       console.warn("No tournament selected.");
       this.isLoading = false;
       this.errorMessage = "No tournament selected.";
+      await loading.dismiss();
       return;
     }
-
+  
     try {
       this.bets = await firstValueFrom(
         this.betService.getBetsByTournamentStage(tournamentId, 'Finalised', this.stage)
       );
-
+  
       if (!this.bets.length) {
         this.errorMessage = "No bets available for this stage.";
       }
-
     } catch (error: unknown) {
       console.error("API error:", error);
-
+  
       if (error instanceof HttpErrorResponse) {
-        if (error.status === 404) {
-          this.errorMessage = "No bets found for the given criteria";
-        } else {
-          this.errorMessage = `An error occurred: ${error.message}`;
-        }
+        this.errorMessage = error.status === 404 ? "No bets found for the given criteria" : `An error occurred: ${error.message}`;
       } else {
         this.errorMessage = "An unexpected error occurred";
       }
     } finally {
-      this.isLoading = false;
+      const elapsedTime = Date.now() - startTime;
+      const delay = Math.max(0, 200 - elapsedTime);
+  
+      setTimeout(async () => {
+        this.isLoading = false;
+        await loading.dismiss();
+      }, delay);
     }
-  } 
-
+  }
+  
   getBetStatus(bet: Bet): string {
     if (
       bet.playerHomeGoals === null || bet.playerHomeGoals === undefined ||
