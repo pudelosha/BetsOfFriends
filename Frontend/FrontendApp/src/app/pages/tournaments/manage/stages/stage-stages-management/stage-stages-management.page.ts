@@ -59,6 +59,7 @@ export class StageStagesManagementPage {
           stageId: null,
           stageName: result.data.stageName.trim(),
           order: result.data.order,
+          recordStatus: 'New'
         };
   
         this.insertStageWithOrder(newStage);
@@ -85,14 +86,20 @@ export class StageStagesManagementPage {
         console.warn('No data returned from modal.');
         return;
       }
-
+    
       const updatedStage = result.data;
       const stageGroup = this.stagesArray.at(index) as FormGroup;
-      stageGroup.patchValue({
-        stageName: updatedStage.stageName.trim(),
-        order: updatedStage.order,
-      });
-
+      const currentStage = stageGroup.value;
+    
+      // Only update status if something has changed
+      if (updatedStage.stageName.trim() !== currentStage.stageName.trim() || updatedStage.order !== currentStage.order) {
+        stageGroup.patchValue({
+          stageName: updatedStage.stageName.trim(),
+          order: updatedStage.order,
+          recordStatus: 'Updated'
+        });
+      }
+    
       this.emitStages();
     });
 
@@ -102,7 +109,7 @@ export class StageStagesManagementPage {
   // Remove a stage and update order
   async removeStage(index: number): Promise<void> {
     const stageToRemove = this.stagesArray.at(index).value;
-
+  
     const alert = await this.alertController.create({
       header: 'Confirm Deletion',
       message: `Are you sure you want to delete the stage "${stageToRemove.stageName}"?`,
@@ -115,18 +122,27 @@ export class StageStagesManagementPage {
           text: 'Delete',
           role: 'destructive',
           handler: async () => {
-            this.stagesArray.removeAt(index);
+            if (stageToRemove.recordStatus === 'New') {
+              // If stage is "New", remove it from the array
+              this.stagesArray.removeAt(index);
+            } else {
+              // Otherwise, mark it for deletion
+              const stageGroup = this.stagesArray.at(index) as FormGroup;
+              stageGroup.patchValue({ recordStatus: 'Delete' });
+            }
+  
             this.recalculateStageOrder();
             this.emitStages();
+            await this.showToast(`Stage "${stageToRemove.stageName}" removed successfully!`, 'success');
           },
         },
       ],
     });
-
+  
     await alert.present();
-  }
+  }  
 
-  // 🆕 Insert a stage and handle conflicting orders
+  // Insert a stage and handle conflicting orders
   private insertStageWithOrder(newStage: Stage): void {
     const existingOrders = this.stagesArray.controls.map(control => control.get('order')?.value);
     
@@ -164,6 +180,7 @@ export class StageStagesManagementPage {
       stageId: stage.stageId,
       stageName: stage.stageName,
       order: stage.order,
+      recordStatus: stage.recordStatus ?? 'Uploaded'
     }));
 
     this.stagesUpdated.emit({ previousStages: updatedStages, updatedStages });

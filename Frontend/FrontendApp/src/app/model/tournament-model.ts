@@ -2,6 +2,7 @@ export interface Team {
   teamFrontendId: string;  // Unique identifier for frontend tracking
   teamId: number | null;
   teamName: string;
+  recordStatus: RecordStatus;
 }
 
 export interface Match {
@@ -27,6 +28,8 @@ export interface Match {
   awayWinOdds: number;
   homeQualifies: number | null;
   awayQualifies: number | null;
+
+  recordStatus: RecordStatus;
 }
 
 export interface User {
@@ -36,6 +39,8 @@ export interface User {
   userEmail: string;
   status: 'New' | 'Invited' | 'Accepted' | 'Banned';
   userRole: 'Player' | 'Admin';
+
+  recordStatus: RecordStatus;
 }
 
 export interface Stage{
@@ -43,6 +48,8 @@ export interface Stage{
   stageId: number | null;
   order: number;
   stageName: string;
+
+  recordStatus: RecordStatus;
 }
 
 export interface Tournament {
@@ -122,6 +129,9 @@ export interface UserBettingStats {
   whoQualifiedResult: string | null;
   payout: number;
 }
+
+export type RecordStatus = 'New' | 'Uploaded' | 'Update' | 'Delete';
+
 
 
 

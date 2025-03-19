@@ -79,6 +79,15 @@ export class StageInputTypePage implements OnInit {
       this.tournamentService.getPredefinedTournamentById(this.selectedTournamentId).subscribe({
         next: (tournament) => {
           console.log('Fetched Tournament:', tournament);
+
+          // Ensure all entities are marked as "Uploaded"
+          tournament.teams = tournament.teams.map(team => ({ ...team, recordStatus: 'Uploaded' }));
+          tournament.stages = tournament.stages.map(stage => ({ ...stage, recordStatus: 'Uploaded' }));
+          tournament.matches = tournament.matches.map(match => ({ ...match, recordStatus: 'Uploaded' }));
+          tournament.users = tournament.users
+            ? tournament.users.map(user => ({ ...user, recordStatus: 'Uploaded' }))
+            : []; // Default to an empty array if null
+
           this.tournamentSelected.emit(tournament);
           this.showToast('Tournament loaded successfully!', 'success');
         },
@@ -153,6 +162,7 @@ export class StageInputTypePage implements OnInit {
             teamFrontendId: this.generateFrontendId(), 
             teamId: null,
             teamName: teamName.trim(),
+            recordStatus: 'New' // Mark imported teams as "New"
           });
         }
       });
@@ -181,6 +191,7 @@ export class StageInputTypePage implements OnInit {
             stageId: null,
             stageName: stageName,
             order: index + 1, // Assigns order based on position in the list
+            recordStatus: 'New' // Mark imported stages as "New"
           });
         }
       });
@@ -251,6 +262,8 @@ export class StageInputTypePage implements OnInit {
   
           homeQualifies: null,
           awayQualifies: null,
+
+          recordStatus: 'New' // Mark imported matches as "New"
         };
   
         matches.push(match);

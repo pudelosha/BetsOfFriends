@@ -18,6 +18,7 @@ export class EditUserModalComponent implements OnInit {
     userEmail: string;
     status: 'New' | 'Invited' | 'Accepted';
     userRole: 'Player' | 'Admin';
+    recordStatus: string;
   } | null = null;
 
   @Input() isEditing: boolean = false;
@@ -35,43 +36,63 @@ export class EditUserModalComponent implements OnInit {
       userEmail: ['', [Validators.required, Validators.email]], // Conditionally editable
       userRole: ['Player', Validators.required], // Default to Player
       status: [{ value: 'New', disabled: true }], // Always display-only
+      recordStatus: ['New'], // Track record status
     });
   }
 
   ngOnInit(): void {
     if (this.user) {
-      this.userForm.patchValue(this.user);
-
+      this.userForm.patchValue({
+        ...this.user,
+        recordStatus: this.user.recordStatus ?? 'Uploaded' // Default to "Uploaded"
+      });
+  
       // Disable email input if the user has been invited or accepted
       if (this.user.status !== 'New') {
         this.userForm.get('userEmail')?.disable();
       }
-
+  
       // Ensure "New" status cannot be changed
       this.userForm.get('status')?.disable();
+    } else {
+      this.userForm.patchValue({
+        recordStatus: 'New' // Default for new users
+      });
     }
   }
-
+  
   async saveUser(): Promise<void> {
     if (this.userForm.invalid) {
       await this.showToast('Please provide valid user details!', 'danger');
       return;
     }
   
-    // Get form values and ensure status is included
-    const updatedUser = {
-      ...this.user, // Preserve existing user fields
-      ...this.userForm.getRawValue(), // Get all form values, including disabled ones
-      status: this.user?.status ?? 'New', // Ensure status is included
+    const existingUser = this.user;
+    const updatedUser = this.userForm.getRawValue();
+  
+    // Check if a real change happened
+    const isUpdated = existingUser &&
+      (existingUser.userAdminName !== updatedUser.userAdminName ||
+      existingUser.userEmail !== updatedUser.userEmail ||
+      existingUser.userRole !== updatedUser.userRole);
+  
+    // Preserve existing values but update recordStatus
+    const finalUser = {
+      ...existingUser, // Preserve existing user fields
+      ...updatedUser,  // Apply new form values
+      status: existingUser?.status ?? 'New', // Ensure status is preserved
+      recordStatus: this.isEditing
+        ? (isUpdated ? 'Updated' : existingUser?.recordStatus) // Mark "Updated" only if changed
+        : 'New', // Default for new users
     };
   
-    await this.modalController.dismiss(updatedUser);
+    await this.modalController.dismiss(finalUser);
     await this.showToast(
       this.isEditing ? 'User updated successfully!' : 'New user added successfully!',
       'success'
     );
   }
-  
+    
   async closeModal(): Promise<void> {
     await this.modalController.dismiss(null);
   }

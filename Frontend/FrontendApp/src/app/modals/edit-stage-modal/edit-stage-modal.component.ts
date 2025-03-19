@@ -27,27 +27,28 @@ export class EditStageModalComponent implements OnInit {
       stageId: [null],
       stageName: ['', [Validators.required, Validators.maxLength(50)]],
       order: [1, [Validators.required, Validators.min(1)]],
+      recordStatus: ['New'], // Default to "New"
     });
   }
 
   ngOnInit(): void {
     if (this.stage) {
-      // Populate fields for editing
       this.stageForm.patchValue({
         stageFrontendId: this.stage.stageFrontendId || this.generateFrontendId(),
         stageId: this.stage.stageId ?? null,
         stageName: this.stage.stageName,
-        order: this.stage.order ?? 1, // Ensure order is set
+        order: this.stage.order ?? 1,
+        recordStatus: this.stage.recordStatus ?? 'Uploaded',
       });
     } else {
-      // Generate a new frontend ID and set default order for new stages
       this.stageForm.patchValue({
         stageFrontendId: this.generateFrontendId(),
         stageName: '',
-        order: 1, // Default to 1 if no existing stages
+        order: 1,
+        recordStatus: 'New',
       });
     }
-  }
+  }  
   
   private generateFrontendId(): string {
     return 'S-' + Math.random().toString(36).substr(2, 9);
@@ -64,6 +65,11 @@ export class EditStageModalComponent implements OnInit {
       stageId: this.stageForm.value.stageId,
       stageName: this.stageForm.value.stageName.trim(),
       order: this.stageForm.value.order,
+      recordStatus: this.isEditing
+        ? (this.stage && (this.stage.stageName !== this.stageForm.value.stageName.trim() || this.stage.order !== this.stageForm.value.order)
+            ? 'Updated'
+            : this.stageForm.value.recordStatus)
+        : 'New',
     };
 
     await this.modalController.dismiss(updatedStage);

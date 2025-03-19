@@ -56,6 +56,7 @@ export class StageTeamsManagementPage {
           teamFrontendId: this.generateFrontendId(), // Assign new frontend ID
           teamId: null, // New teams have no backend ID
           teamName: result.data.teamName.trim(),
+          recordStatus: 'New' // Defaulting to 'New'
         };
 
         this.teamsArray.push(this.fb.group(newTeam));
@@ -91,13 +92,16 @@ export class StageTeamsManagementPage {
       if (result.data) {
         const updatedTeam = result.data;
         const teamGroup = this.teamsArray.at(index) as FormGroup;
-        teamGroup.patchValue({
-          teamName: updatedTeam.teamName.trim(), // Ensure trim to remove whitespace issues
-        });
+
+        // Check if the name actually changed before setting the status
+        if (updatedTeam.teamName.trim() !== teamGroup.get('teamName')?.value.trim()) {
+          teamGroup.patchValue({
+            teamName: updatedTeam.teamName.trim(),
+            recordStatus: 'Updated'
+          });
+        }
 
         console.log('Updated Team:', updatedTeam);
-
-        // Emit updated teams with old reference
         this.emitTeams(previousTeamsArray);
       }
     });
@@ -106,43 +110,68 @@ export class StageTeamsManagementPage {
   }
 
   // Remove a team
-  async removeTeam(index: number): Promise<void> {
-    const teamToRemove = this.teamsArray.at(index).value;
-
-    // Snapshot previous state before deletion
-    const previousTeamsArray: Team[] = this.teamsArray.value.map((team: any) => ({ ...team }));
-
-    const alert = await this.alertController.create({
-      header: 'Confirm Removal',
-      message: `Are you sure you want to delete the team "${teamToRemove.teamName}"? Note: Any matches involving this team will also be affected.`,
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Delete',
-          role: 'destructive',
-          handler: async () => {
-            this.teamsArray.removeAt(index);
-
-            console.log('Removed team:', teamToRemove);
-            this.emitTeams(previousTeamsArray);
-            await this.showToast(`Team "${teamToRemove.teamName}" removed successfully!`, 'success');
+  async handleRemoveOrUndoTeam(index: number): Promise<void> {
+    const teamControl = this.getTeamControl(index);
+    const teamToRemove = teamControl.value;
+    const currentStatus = teamToRemove.recordStatus;
+  
+    if (currentStatus === 'Delete') {
+      // If already marked "Delete", undo by setting it to "Updated"
+      teamControl.patchValue({ recordStatus: 'Updated' });
+      console.log(`Undo delete action for team: ${teamToRemove.teamName}`);
+      this.emitTeams();
+      await this.showToast(`Team "${teamToRemove.teamName}" restored successfully!`, 'success');
+    } else {
+      // Otherwise, show confirmation alert before deleting or marking as "Delete"
+      const alert = await this.alertController.create({
+        header: 'Confirm Removal',
+        message: `Are you sure you want to delete the team "${teamToRemove.teamName}"?`,
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
           },
-        },
-      ],
-    });
-
-    await alert.present();
+          {
+            text: 'Delete',
+            role: 'destructive',
+            handler: async () => {
+              if (currentStatus === 'New') {
+                // If team is "New", remove it completely
+                this.teamsArray.removeAt(index);
+              } else {
+                // Otherwise, mark it as "Delete"
+                teamControl.patchValue({ recordStatus: 'Delete' });
+              }
+  
+              console.log('Updated team after removal action:', teamToRemove);
+              this.emitTeams();
+              await this.showToast(`Team "${teamToRemove.teamName}" removed successfully!`, 'success');
+            },
+          },
+        ],
+      });
+  
+      await alert.present();
+    }
   }
-
+  
+  // Determines Delete vs Undo button text
+  getDeleteButtonText(recordStatus: string | null): string {
+    return recordStatus === 'Delete' ? 'Undo' : 'Delete';
+  }
+  
+  // Determines button color based on record status
+  getDeleteButtonColor(recordStatus: string | null): string {
+    return recordStatus === 'Delete' ? 'medium' : 'danger';
+  }
+  
   // Emit updated teams to parent with previous state reference
   private emitTeams(previousTeams?: Team[]): void {
     const updatedTeams: Team[] = this.teamsArray.value.map((team: any) => ({
       teamFrontendId: team.teamFrontendId,
       teamId: team.teamId,
       teamName: team.teamName,
+      recordStatus: team.recordStatus ?? 'Uploaded'  // Ensure default value
     }));
 
     this.teamsUpdated.emit({
@@ -154,6 +183,16 @@ export class StageTeamsManagementPage {
     console.log('Emitted Updated Teams:', updatedTeams);
   }
 
+  getRecordStatusClass(recordStatus: string | null): string {
+    switch (recordStatus) {
+      case 'New': return 'team-status-new';
+      case 'Updated': return 'team-status-updated';
+      case 'Delete': return 'team-status-delete';
+      case 'Uploaded': return 'team-status-uploaded';
+      default: return '';
+    }
+  }  
+  
   // Show toast messages
   private async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary'): Promise<void> {
     const toast = await this.toastController.create({

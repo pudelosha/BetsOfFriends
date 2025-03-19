@@ -47,6 +47,8 @@ export class EditMatchModalComponent implements OnInit {
       awayWinOdds: [null, Validators.required],  
       homeQualifies: [null],  
       awayQualifies: [null],  
+
+      recordStatus: ['New'], // Default to "New"
     });
 
     // Listen for matchType changes
@@ -57,22 +59,21 @@ export class EditMatchModalComponent implements OnInit {
 
   ngOnInit() {
     if (this.match) {
-      // Ensure `frontendId` is retained
-
       this.matchForm.patchValue({
         ...this.match,
         matchFrontendId: this.match.matchFrontendId || this.generateFrontendId(),
         homeTeamFrontendId: this.match.homeTeamFrontendId || null,
         awayTeamFrontendId: this.match.awayTeamFrontendId || null,
-        stageFrontendId: this.match.stageFrontendId || null
+        stageFrontendId: this.match.stageFrontendId || null,
+        recordStatus: this.match.recordStatus ?? 'Uploaded'
       });
     } else {
-      // Generate `frontendId` for new matches
       this.matchForm.patchValue({
         matchFrontendId: this.generateFrontendId(),
+        recordStatus: 'New'
       });
     }
-  }
+  }  
 
   // Function to dynamically apply validation
   private toggleQualificationOddsValidation(matchType: string) {
@@ -130,6 +131,18 @@ export class EditMatchModalComponent implements OnInit {
       this.showToast('Invalid stage selection!', 'danger');
       return;
     }
+
+    const isUpdated = this.match &&
+      (this.match.stageFrontendId !== selectedStage.stageFrontendId ||
+      this.match.homeTeamFrontendId !== selectedHomeTeam.teamFrontendId ||
+      this.match.awayTeamFrontendId !== selectedAwayTeam.teamFrontendId ||
+      this.match.matchStart !== this.matchForm.value.matchStart ||
+      this.match.matchType !== this.matchForm.value.matchType ||
+      this.match.homeWinOdds !== this.matchForm.value.homeWinOdds ||
+      this.match.drawOdds !== this.matchForm.value.drawOdds ||
+      this.match.awayWinOdds !== this.matchForm.value.awayWinOdds ||
+      this.match.homeQualifies !== this.matchForm.value.homeQualifies ||
+      this.match.awayQualifies !== this.matchForm.value.awayQualifies);
   
     const matchData = {
       matchFrontendId: this.matchForm.value.matchFrontendId, // Ensure matchFrontendId is retained
@@ -154,6 +167,10 @@ export class EditMatchModalComponent implements OnInit {
       awayWinOdds: this.matchForm.value.awayWinOdds || null,
       homeQualifies: this.matchForm.value.homeQualifies || null,
       awayQualifies: this.matchForm.value.awayQualifies || null,
+
+      recordStatus: this.index !== undefined
+        ? (isUpdated ? 'Updated' : this.matchForm.value.recordStatus) // Preserve if unchanged
+        : 'New' // Default for new matches
     };
   
     console.log('Saving Match:', matchData);

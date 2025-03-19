@@ -27,20 +27,23 @@ export class EditTeamModalComponent implements OnInit {
       teamFrontendId: [''], // Always required (Renamed correctly)
       teamId: [null], // Backend ID (Renamed correctly)
       teamName: ['', [Validators.required, Validators.maxLength(50)]],
+      recordStatus: ['New'], // Default to "New"
     });
   }
 
   ngOnInit(): void {
     if (this.team) {
-      // Populate fields properly
       this.teamForm.patchValue({
         teamFrontendId: this.team.teamFrontendId || this.generateFrontendId(), // Ensure frontend ID
         teamId: this.team.teamId ?? null, // Preserve backend ID
         teamName: this.team.teamName,
+        recordStatus: this.team.recordStatus ?? 'Uploaded', // Preserve status or default to "Uploaded"
       });
     } else {
-      // Generate a new frontend ID for new teams
-      this.teamForm.patchValue({ teamFrontendId: this.generateFrontendId() });
+      this.teamForm.patchValue({ 
+        teamFrontendId: this.generateFrontendId(),
+        recordStatus: 'New' // Default for new records
+      });
     }
   }
 
@@ -67,11 +70,17 @@ export class EditTeamModalComponent implements OnInit {
       return;
     }
 
+    // Check if a real update was made
+    const isUpdated = this.isEditing && teamName !== currentTeamName;
+
     // Prepare the structured team object with correct naming
     const updatedTeam: Team = {
-      teamFrontendId: this.teamForm.value.teamFrontendId, // Matches new model name
-      teamId: this.teamForm.value.teamId, // Preserve backendId if available
+      teamFrontendId: this.teamForm.value.teamFrontendId,
+      teamId: this.teamForm.value.teamId,
       teamName: this.teamForm.value.teamName.trim(),
+      recordStatus: this.isEditing
+        ? (isUpdated ? 'Updated' : this.teamForm.value.recordStatus) // Only update if changed
+        : 'New', // Default for new teams
     };
 
     await this.modalController.dismiss(updatedTeam);

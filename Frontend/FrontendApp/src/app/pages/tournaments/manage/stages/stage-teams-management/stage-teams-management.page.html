@@ -5,18 +5,31 @@
 </div>
 
 <ion-list class="team-list nav-menu-space">
-  <ion-item *ngFor="let team of teamsArray.controls; let i = index" class="team-item" [formGroup]="getTeamControl(i)">
+  <ion-item *ngFor="let team of teamsArray.controls; let i = index"
+            class="team-item"
+            [formGroup]="getTeamControl(i)"
+            [ngClass]="getRecordStatusClass(getTeamControl(i).get('recordStatus')?.value)">
     <div class="team-grid">
       <!-- Team Name -->
       <div class="team-details">
         <span class="team-name">{{ getTeamControl(i).get('teamName')?.value }}</span>
       </div>
 
-      <!-- Buttons: Edit and Delete -->
+      <!-- Buttons: Edit and Delete/Undo -->
       <div class="team-button-container">
-        <ion-button size="small" fill="outline" color="primary" class="team-button" (click)="editTeam(i)">Edit</ion-button>
-        <ion-button size="small" fill="outline" color="danger" class="team-button" (click)="removeTeam(i)">Delete</ion-button>
+        <ion-button size="small" fill="outline" color="primary" class="team-button"
+                    (click)="editTeam(i)">Edit</ion-button>
+
+        <ion-button size="small" fill="outline"
+                    [color]="getDeleteButtonColor(getTeamControl(i).get('recordStatus')?.value)"
+                    class="team-button fixed-button"
+                    (click)="handleRemoveOrUndoTeam(i)">
+          {{ getDeleteButtonText(getTeamControl(i).get('recordStatus')?.value) }}
+        </ion-button>
       </div>
     </div>
   </ion-item>
 </ion-list>
+
+
+

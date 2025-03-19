@@ -74,6 +74,8 @@ namespace Backend.DTOs
 
         [Required, MaxLength(50)]
         public string TeamName { get; set; } = string.Empty;
+        [Required]
+        public string RecordStatus { get; set; } = "New";
     }
 
     public class CustomStageDto
@@ -83,6 +85,8 @@ namespace Backend.DTOs
 
         [Required, MaxLength(50)]
         public string StageName { get; set; } = string.Empty;
+        [Required]
+        public string RecordStatus { get; set; } = "New";
     }
 
     public class CustomMatchDto
@@ -118,6 +122,9 @@ namespace Backend.DTOs
             get => _matchStart;
             set => _matchStart = DateTime.SpecifyKind(value, DateTimeKind.Utc);
         }
+
+        [Required]
+        public string RecordStatus { get; set; } = "New";
     }
 
     public class CustomUserDto
@@ -136,6 +143,9 @@ namespace Backend.DTOs
         [Required]
         public string Status { get; set; } = "New"; // Status can be 'New', 'Invited', 'Accepted', or 'Banned'
         public string UserRole { get; set; } = "Player"; // Role can be 'Player', 'Admin'
+
+        [Required]
+        public string RecordStatus { get; set; } = "New";
     }
 
     public class CustomTournamentListDto

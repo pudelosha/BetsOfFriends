@@ -1,41 +1,77 @@
 /* ======================== */
-/*  Page Description */
-/* ======================== */
-.page-description {
-  margin-bottom: 1rem;
-  color: #666;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-/* ======================== */
 /*  Team List Formatting */
 /* ======================== */
 .team-list {
   margin: 1rem 0;
-  padding: 0; /* Removes padding */
+  padding: 0;
 }
 
-/*  Team Item Formatting (Consistent with Other Lists) */
+/*  Team Item Formatting */
 .team-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
-  --padding-end: 0px !important;
-  --padding-start: 0px !important;
+  --padding-end: 5px !important;
+  --padding-start: 5px !important;
   --ion-item-background: transparent;
-  height: 60px; /* Matches standard height */
-  --min-height: 60px !important;
-  --max-height: 60px !important;
+  --border-width: 0px; /* Removes default border */
+  --inner-border-width: 0px; /* Ensures inner borders are also removed */
+  border-radius: 12px;
+  margin: 6px 0;
   display: flex;
   align-items: center;
-  padding: 0; /* Remove default padding */
+  transition: all 0.3s ease-in-out;
+  border: 2px solid transparent; /* Default border */
 }
 
+/* ======================== */
+/*  Status-Based Formatting (Matching Borders & Backgrounds) */
+/* ======================== */
+
+/* Ensures Delete & Undo Buttons Have Consistent Width */
+.fixed-button {
+  width: 80px; /* Fixed width for "Delete" and "Undo" buttons */
+}
+
+/* ======================== */
+/*  Status-Based Formatting (Background + Border Colors) */
+/* ======================== */
+
+/* New (Pale Green) */
+.team-status-new {
+  background-color: #e6f9e6;
+  border-color: #e6f9e6;
+  color: #004d00;
+}
+
+/* Uploaded (Pale Gray) */
+.team-status-uploaded {
+  background-color: #f5f5f5;
+  border-color: #f5f5f5;
+  color: #666;
+}
+
+/* Updated (Blue-Gray) */
+.team-status-updated {
+  background-color: #e0ecf8;
+  border-color: #e0ecf8;
+  color: #004080;
+}
+
+/* Delete (Pale Red) */
+.team-status-delete {
+  background-color: #fce6e6;
+  border-color: #fce6e6;
+  color: #800000;
+}
+
+/* ======================== */
 /*  Team Grid Layout */
+/* ======================== */
 .team-grid {
   display: flex;
   justify-content: space-between;
   width: 100%;
+  padding: 10px;
   gap: 10px;
 }
 
@@ -47,15 +83,15 @@
   text-align: left;
 }
 
+/*  Team Name */
 .team-details .team-name {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  font-size: 12px;
-  color: #333;
+  font-size: 14px;
+  font-weight: bold;
 }
 
+/* ======================== */
 /*  Team Buttons */
+/* ======================== */
 .team-button-container {
   flex: 1;
   display: flex;
@@ -75,6 +111,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
 }
 
 /* ======================== */
