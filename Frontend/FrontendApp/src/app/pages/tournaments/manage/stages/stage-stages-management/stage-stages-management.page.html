@@ -5,15 +5,27 @@
 </div>
 
 <ion-list class="stage-list nav-menu-space">
-  <ion-item *ngFor="let stage of stagesArray.controls; let i = index" class="stage-item" [formGroup]="getStageControl(i)">
+  <ion-item *ngFor="let stage of stagesArray.controls; let i = index"
+            class="stage-item"
+            [formGroup]="getStageControl(i)"
+            [ngClass]="getRecordStatusClass(getStageControl(i).get('recordStatus')?.value)">
     <div class="stage-grid">
+      <!-- Stage Name -->
       <div class="stage-details">
         <span class="stage-name">{{ getStageControl(i).get('stageName')?.value }}</span>
       </div>
 
+      <!-- Buttons: Edit and Delete/Undo -->
       <div class="stage-button-container">
-        <ion-button size="small" fill="outline" color="primary" class="stage-button" (click)="editStage(i)">Edit</ion-button>
-        <ion-button size="small" fill="outline" color="danger" class="stage-button" (click)="removeStage(i)">Delete</ion-button>
+        <ion-button size="small" fill="outline" color="primary" class="stage-button"
+                    (click)="editStage(i)">Edit</ion-button>
+
+        <ion-button size="small" fill="outline"
+                    [color]="getDeleteButtonColor(getStageControl(i).get('recordStatus')?.value)"
+                    class="stage-button fixed-button"
+                    (click)="handleRemoveOrUndoStage(i)">
+                    {{ getDeleteButtonText(getStageControl(i).get('recordStatus')?.value) }}
+        </ion-button>
       </div>
     </div>
   </ion-item>

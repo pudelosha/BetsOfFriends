@@ -97,7 +97,7 @@ export class StageTeamsManagementPage {
         if (updatedTeam.teamName.trim() !== teamGroup.get('teamName')?.value.trim()) {
           teamGroup.patchValue({
             teamName: updatedTeam.teamName.trim(),
-            recordStatus: 'Updated'
+            recordStatus: 'Update'
           });
         }
 
@@ -117,7 +117,7 @@ export class StageTeamsManagementPage {
   
     if (currentStatus === 'Delete') {
       // If already marked "Delete", undo by setting it to "Updated"
-      teamControl.patchValue({ recordStatus: 'Updated' });
+      teamControl.patchValue({ recordStatus: 'Update' });
       console.log(`Undo delete action for team: ${teamToRemove.teamName}`);
       this.emitTeams();
       await this.showToast(`Team "${teamToRemove.teamName}" restored successfully!`, 'success');
@@ -186,7 +186,7 @@ export class StageTeamsManagementPage {
   getRecordStatusClass(recordStatus: string | null): string {
     switch (recordStatus) {
       case 'New': return 'team-status-new';
-      case 'Updated': return 'team-status-updated';
+      case 'Update': return 'team-status-updated';
       case 'Delete': return 'team-status-delete';
       case 'Uploaded': return 'team-status-uploaded';
       default: return '';

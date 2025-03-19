@@ -96,7 +96,7 @@ export class StageStagesManagementPage {
         stageGroup.patchValue({
           stageName: updatedStage.stageName.trim(),
           order: updatedStage.order,
-          recordStatus: 'Updated'
+          recordStatus: 'Update'
         });
       }
     
@@ -107,39 +107,51 @@ export class StageStagesManagementPage {
   }
 
   // Remove a stage and update order
-  async removeStage(index: number): Promise<void> {
-    const stageToRemove = this.stagesArray.at(index).value;
-  
-    const alert = await this.alertController.create({
-      header: 'Confirm Deletion',
-      message: `Are you sure you want to delete the stage "${stageToRemove.stageName}"?`,
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Delete',
-          role: 'destructive',
-          handler: async () => {
-            if (stageToRemove.recordStatus === 'New') {
-              // If stage is "New", remove it from the array
-              this.stagesArray.removeAt(index);
-            } else {
-              // Otherwise, mark it for deletion
-              const stageGroup = this.stagesArray.at(index) as FormGroup;
-              stageGroup.patchValue({ recordStatus: 'Delete' });
-            }
-  
-            this.recalculateStageOrder();
-            this.emitStages();
-            await this.showToast(`Stage "${stageToRemove.stageName}" removed successfully!`, 'success');
+  async handleRemoveOrUndoStage(index: number): Promise<void> {
+    const stageControl = this.getStageControl(index);
+    const stageToRemove = stageControl.value;
+    const currentStatus = stageToRemove.recordStatus;
+
+    if (currentStatus === 'Delete') {
+      // If already marked "Delete", undo by setting it to "Update"
+      stageControl.patchValue({ recordStatus: 'Update' });
+      this.emitStages();
+      await this.showToast(`Stage "${stageToRemove.stageName}" restored successfully!`, 'success');
+    } else {
+      // Otherwise, show confirmation alert before deleting or marking as "Delete"
+      const alert = await this.alertController.create({
+        header: 'Confirm Removal',
+        message: `Are you sure you want to delete the stage "${stageToRemove.stageName}"?`,
+        buttons: [
+          { text: 'Cancel', role: 'cancel' },
+          {
+            text: 'Delete',
+            role: 'destructive',
+            handler: async () => {
+              if (currentStatus === 'New') {
+                this.stagesArray.removeAt(index);
+              } else {
+                stageControl.patchValue({ recordStatus: 'Delete' });
+              }
+              this.emitStages();
+              await this.showToast(`Stage "${stageToRemove.stageName}" removed successfully!`, 'success');
+            },
           },
-        },
-      ],
-    });
-  
-    await alert.present();
+        ],
+      });
+
+      await alert.present();
+    }
+  } 
+
+  // Determines Delete vs Undo button text
+  getDeleteButtonText(recordStatus: string | null): string {
+    return recordStatus === 'Delete' ? 'Undo' : 'Delete';
+  }
+
+  // Determines button color based on record status
+  getDeleteButtonColor(recordStatus: string | null): string {
+    return recordStatus === 'Delete' ? 'medium' : 'danger';
   }  
 
   // Insert a stage and handle conflicting orders
@@ -184,6 +196,16 @@ export class StageStagesManagementPage {
     }));
 
     this.stagesUpdated.emit({ previousStages: updatedStages, updatedStages });
+  }
+
+  getRecordStatusClass(recordStatus: string | null): string {
+    switch (recordStatus) {
+      case 'New': return 'stage-status-new';
+      case 'Update': return 'stage-status-updated';
+      case 'Delete': return 'stage-status-delete';
+      case 'Uploaded': return 'stage-status-uploaded';
+      default: return '';
+    }
   }
 
   // Show toast messages
