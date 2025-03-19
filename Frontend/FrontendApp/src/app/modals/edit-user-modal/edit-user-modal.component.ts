@@ -17,6 +17,7 @@ export class EditUserModalComponent implements OnInit {
     userAdminName: string;
     userEmail: string;
     status: 'New' | 'Invited' | 'Accepted';
+    userRole: 'Player' | 'Admin';
   } | null = null;
 
   @Input() isEditing: boolean = false;
@@ -32,6 +33,7 @@ export class EditUserModalComponent implements OnInit {
       userName: [{ value: '', disabled: true }], // Non-editable
       userAdminName: ['', Validators.required], // Editable anytime
       userEmail: ['', [Validators.required, Validators.email]], // Conditionally editable
+      userRole: ['Player', Validators.required], // Default to Player
       status: [{ value: 'New', disabled: true }], // Always display-only
     });
   }
@@ -40,17 +42,13 @@ export class EditUserModalComponent implements OnInit {
     if (this.user) {
       this.userForm.patchValue(this.user);
 
-      // Handle conditional logic for userEmail editability
+      // Disable email input if the user has been invited or accepted
       if (this.user.status !== 'New') {
-        this.userForm.get('userEmail')?.disable(); // Disable email for "Invited" and "Accepted" statuses
+        this.userForm.get('userEmail')?.disable();
       }
 
       // Ensure "New" status cannot be changed
       this.userForm.get('status')?.disable();
-    } else {
-      // Default values for adding a new user
-      this.userForm.get('status')?.setValue('New');
-      this.userForm.get('status')?.disable(); // Fixed status for new users
     }
   }
 

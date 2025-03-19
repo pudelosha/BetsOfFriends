@@ -14,6 +14,7 @@ import { Tournament, TournamentSettings } from 'src/app/model/tournament-model';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { ViewChild } from '@angular/core';
 import { Match, Team, User, Stage } from 'src/app/model/tournament-model';
+import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 
 @Component({
   selector: 'app-build-custom-tournament',
@@ -50,6 +51,9 @@ export class BuildCustomTournamentPage implements OnInit {
       matches: this.fb.array([], Validators.required),
       users: this.fb.array([]),
       settings: this.fb.group({
+        tournamentVisibility: ['Private'],
+        publicTournamentName: [null],
+        updateMethod: ['Manual'],
         allowExactResultBonus: [false],
         exactResultBonusCalculation: ['Fixed'],
         exactResultBonus: [null, Validators.min(1)],
@@ -171,6 +175,9 @@ export class BuildCustomTournamentPage implements OnInit {
 
     if (tournament.settings) {
       this.settingsGroup.patchValue({
+        tournamentVisibility: tournament.settings.tournamentVisibility ?? 'Private',
+        publicTournamentName: tournament.settings.publicTournamentName ?? null,
+        updateMethod: tournament.settings.updateMethod ?? 'Manual',
         allowExactResultBonus: tournament.settings.allowExactResultBonus ?? false,
         exactResultBonusCalculation: tournament.settings.exactResultBonusCalculation ?? 'Fixed',
         exactResultBonus: tournament.settings.exactResultBonus ?? null,
@@ -273,6 +280,7 @@ export class BuildCustomTournamentPage implements OnInit {
             userAdminName: [user.userAdminName || '', Validators.required], // Provide empty string if undefined
             userEmail: [user.userEmail || '', [Validators.required, Validators.email]], // Ensure valid email format
             status: [user.status || 'New', Validators.required], // Default status to 'New'
+            userRole: [user.userRole || 'Player', Validators.required] // Default status to 'Player'
           })
         );
       });
@@ -403,6 +411,7 @@ export class BuildCustomTournamentPage implements OnInit {
           userAdminName: [user.userAdminName],
           userEmail: [user.userEmail, [Validators.required, Validators.email]],
           status: [user.status, Validators.required],
+          userRole: [user.userRole, Validators.required]
         })
       );
     });
@@ -558,9 +567,13 @@ export class BuildCustomTournamentPage implements OnInit {
         userAdminName: user.userAdminName,
         userEmail: user.userEmail,
         status: user.status,
+        userRole: user.userRole,
       })),
 
       settings: {
+        tournamentVisibility: this.tournamentForm.value.settings.tournamentVisibility,
+        publicTournamentName: this.tournamentForm.value.settings.publicTournamentName,
+        updateMethod: this.tournamentForm.value.settings.updateMethod,
         allowExactResultBonus: this.tournamentForm.value.settings.allowExactResultBonus,
         exactResultBonusCalculation: this.tournamentForm.value.settings.exactResultBonusCalculation,
         exactResultBonus: this.tournamentForm.value.settings.exactResultBonus || null,
@@ -629,12 +642,29 @@ export class BuildCustomTournamentPage implements OnInit {
         }
         return true;
   
-      case 2:
-        if (!this.settingsGroup.valid) {
-          await this.showToast('Tournament settings are incomplete or invalid.', 'danger');
-          return false;
-        }
-        return true;
+        case 2:
+          if (!this.settingsGroup.valid) {
+            await this.showToast('Tournament settings are incomplete or invalid.', 'danger');
+            return false;
+          }
+    
+          // Check if Tournament is Public and name is provided
+          if (this.settingsGroup.get('tournamentVisibility')?.value === 'Public') {
+            const publicName = this.settingsGroup.get('publicTournamentName')?.value || '';
+    
+            if (!publicName.trim()) {
+              await this.showToast('Public Tournament Name is required!', 'danger');
+              return false;
+            }
+    
+            // Check name availability with backend
+            const isNameAvailable = await firstValueFrom(this.tournamentService.checkTournamentNameAvailability(publicName));
+            if (!isNameAvailable) {
+              await this.showToast('This tournament name is already taken.', 'danger');
+              return false;
+            }
+          }  
+          return true;
   
       case 3:
         if (this.teamsArray.length <= 1) {

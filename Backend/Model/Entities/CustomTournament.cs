@@ -16,8 +16,6 @@ namespace Backend.Model.Entities
         public string Name { get; set; }
         [Required]
         public bool IsActive { get; set; } = true;
-        public TournamentType Type { get; set; }
-        public TournamentVisibility Visibility { get; set; }
 
 
         [Required]
@@ -49,19 +47,13 @@ namespace Backend.Model.Entities
         [Range(0, int.MaxValue)]
         public int? NonSubmittedBetPenalty { get; set; }
 
-        public bool AllowAutoUpdates { get; set; } = false; // When predefined tournament is updated, transfer new record to cloned custom tournaments
+        public TournamentVisibility Visibility { get; set; } = TournamentVisibility.Private;
+        public TournamentUpdate Update { get; set; } = TournamentUpdate.Manual;
 
         public ICollection<CustomTournamentUserAssignment> Participants { get; set; } = new List<CustomTournamentUserAssignment>();
         public ICollection<CustomTeam> Teams { get; set; } = new List<CustomTeam>();
         public ICollection<CustomMatch> Matches { get; set; } = new List<CustomMatch>();
         public ICollection<CustomMatchStage> Stages { get; set; } = new List<CustomMatchStage>();
-
-        public enum TournamentType
-        {
-            GroupAndKnockout,
-            League,
-            Cup
-        }
 
         public enum ExactResultBonusCalculationType
         {
@@ -73,6 +65,13 @@ namespace Backend.Model.Entities
         {
             Private,
             Public
+        }
+
+        public enum TournamentUpdate
+        {
+            Manual,     // admin can only add new matches
+            Semi,       // admin needs to trigger the insertion of new matches and updates
+            Auto        // match updates occur automaticaly based on predefined tournament changes made by super admin
         }
     }
 }

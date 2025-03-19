@@ -27,6 +27,10 @@ export class StageSettingsPage implements OnDestroy {
 
   constructor(private fb: FormBuilder, private toastController: ToastController) {
     this.settingsForm = this.fb.group({
+      tournamentVisibility: ['Private'],  // Default is Private
+      publicTournamentName: [null], // Optional, only required if Public
+      updateMethod: ['Manual'],           // Default is Manual
+
       allowExactResultBonus: [false],
       exactResultBonusCalculation: ['Fixed'],
       exactResultBonus: [5, [Validators.required, Validators.min(1)]],
@@ -44,6 +48,10 @@ export class StageSettingsPage implements OnDestroy {
 
   ngOnInit() {
     const mergedSettings: TournamentSettings = {
+      tournamentVisibility: this.settings?.tournamentVisibility ?? 'Private',
+      publicTournamentName: this.settings?.publicTournamentName,
+      updateMethod: this.settings?.updateMethod ?? 'Manual',
+
       allowExactResultBonus: this.settings?.allowExactResultBonus ?? false,
       exactResultBonusCalculation: this.settings?.exactResultBonusCalculation ?? 'Fixed',
       exactResultBonus: this.settings?.exactResultBonus ?? 5,
@@ -75,9 +83,6 @@ export class StageSettingsPage implements OnDestroy {
     this.emitSettings();
   }
 
-  /**
-   * Ensures maxBetBooster does not exceed totalBoosterPool
-   */
   private handleBoosterValidation() {
     const maxBetBooster = this.settingsForm.get('maxBetBooster')?.value;
     const totalBoosterPool = this.settingsForm.get('totalBoosterPool')?.value;
@@ -94,6 +99,10 @@ export class StageSettingsPage implements OnDestroy {
     }
 
     const settings: TournamentSettings = {
+      tournamentVisibility: this.settingsForm.value.tournamentVisibility ?? 'Private',
+      publicTournamentName: this.settingsForm.value.publicTournamentName ?? null,
+      updateMethod: this.settingsForm.value.updateMethod ?? 'Manual',
+
       allowExactResultBonus: this.settingsForm.value.allowExactResultBonus ?? false,
       exactResultBonusCalculation: this.settingsForm.value.exactResultBonusCalculation ?? 'Fixed',
       exactResultBonus: this.settingsForm.value.exactResultBonus ?? null,

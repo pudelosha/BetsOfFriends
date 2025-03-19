@@ -35,6 +35,7 @@ export interface User {
   userAdminName: string;
   userEmail: string;
   status: 'New' | 'Invited' | 'Accepted' | 'Banned';
+  userRole: 'Player' | 'Admin';
 }
 
 export interface Stage{
@@ -58,6 +59,10 @@ export interface Tournament {
 }
 
 export interface TournamentSettings {
+  tournamentVisibility: 'Private' | 'Public';
+  publicTournamentName?: string;
+  updateMethod: 'Manual' | 'Semi' | 'Auto';
+
   allowExactResultBonus: boolean;
   exactResultBonusCalculation: 'Fixed' | 'Multiplied'; // Stored as string
   exactResultBonus: number | null;

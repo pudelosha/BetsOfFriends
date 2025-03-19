@@ -144,7 +144,7 @@ namespace Backend.Model.Database
 
             builder.Entity<CustomTournamentUserAssignment>()
                 .Property(ut => ut.Role)
-                .HasDefaultValue(UserTournamentRole.Guest);
+                .HasDefaultValue(UserTournamentRole.Player);
         }
 
         private void ConfigureMatchRelationships(ModelBuilder builder)

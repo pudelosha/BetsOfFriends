@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250317112700_Initial")]
+    [Migration("20250319103432_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -310,9 +310,6 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TournamentId"));
 
-                    b.Property<bool>("AllowAutoUpdates")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("AllowBetsWithBooster")
                         .HasColumnType("bit");
 
@@ -355,7 +352,7 @@ namespace Backend.Migrations
                     b.Property<int?>("TotalBoosterPool")
                         .HasColumnType("int");
 
-                    b.Property<int>("Type")
+                    b.Property<int>("Update")
                         .HasColumnType("int");
 
                     b.Property<int>("Visibility")

@@ -59,6 +59,13 @@ namespace Backend.DTOs
 
         [Range(0, int.MaxValue, ErrorMessage = "Penalty must be non-negative.")]
         public int? NonSubmittedBetPenalty { get; set; }
+
+        [Required]
+        public string TournamentVisibility { get; set; } = "Private";
+        [MaxLength(100)]
+        public string? PublicTournamentName { get; set; }
+        [Required]
+        public string UpdateMethod { get; set; } = "Manual";
     }
 
     public class CustomTeamDto
@@ -128,6 +135,7 @@ namespace Backend.DTOs
 
         [Required]
         public string Status { get; set; } = "New"; // Status can be 'New', 'Invited', 'Accepted', or 'Banned'
+        public string UserRole { get; set; } = "Player"; // Role can be 'Player', 'Admin'
     }
 
     public class CustomTournamentListDto
@@ -197,5 +205,10 @@ namespace Backend.DTOs
         public string TournamentName { get; set; }
         public int NumberOfParticipants { get; set; }
         public string AssignmentStatus { get; set; }
+    }
+
+    public class CustomTournamentNameDto
+    {
+        public string Name { get; set; } = string.Empty;
     }
 }

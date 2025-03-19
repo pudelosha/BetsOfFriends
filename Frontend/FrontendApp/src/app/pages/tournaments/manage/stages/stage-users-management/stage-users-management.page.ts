@@ -40,6 +40,7 @@ export class StageUsersManagementPage {
           userAdminName: '',
           userEmail: '',
           status: 'New',
+          userRole: 'Player',
         },
         isEditing: false,
         allUserEmails,
@@ -56,6 +57,7 @@ export class StageUsersManagementPage {
             userAdminName: [newUser.userAdminName, Validators.required],
             userEmail: [newUser.userEmail, [Validators.required, Validators.email]],
             status: [newUser.status, Validators.required],
+            userRole: [newUser.userRole, Validators.required]
           })
         );
         console.log('Added New User:', newUser);

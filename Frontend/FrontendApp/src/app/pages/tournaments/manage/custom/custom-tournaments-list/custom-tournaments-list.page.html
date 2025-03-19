@@ -9,7 +9,7 @@
           <ion-grid>
             <ion-row class="tournament-row">
               <!-- Tournament Info -->
-              <ion-col size="7" class="tournament-info">
+              <ion-col size="6" class="tournament-info">
                 <span class="tournament-title">{{ tournament.tournamentName }}</span>
                 <span class="tournament-meta">
                   Created: {{ tournament.createdAt | date:'yyyy.MM.dd' }}
@@ -20,13 +20,16 @@
               </ion-col>
     
               <!-- Action Buttons -->
-              <ion-col size="5" class="button-col">
+              <ion-col size="6" class="button-col">
                 <ion-button fill="outline" color="primary" (click)="editTournament(tournament)">
                   <ion-icon name="create-outline"></ion-icon>
                 </ion-button>
                 <ion-button fill="outline" color="success" (click)="recalculateBets(tournament)">
                   <ion-icon name="cog-outline"></ion-icon>
-                </ion-button>                
+                </ion-button>   
+                <ion-button fill="outline" color="success" (click)="resendInvites(tournament)">
+                  <ion-icon name="mail-outline"></ion-icon>
+                </ion-button>               
                 <ion-button fill="outline" color="warning" (click)="toggleTournamentStatus(tournament)">
                   <ion-icon name="pause-outline"></ion-icon>
                 </ion-button>

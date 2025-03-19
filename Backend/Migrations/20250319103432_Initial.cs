@@ -168,8 +168,6 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Visibility = table.Column<int>(type: "int", nullable: false),
                     CreatedByUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AllowExactResultBonus = table.Column<bool>(type: "bit", nullable: false),
@@ -181,7 +179,8 @@ namespace Backend.Migrations
                     TotalBoosterPool = table.Column<int>(type: "int", nullable: true),
                     AllowNonSubmittedBetsPenalty = table.Column<bool>(type: "bit", nullable: false),
                     NonSubmittedBetPenalty = table.Column<int>(type: "int", nullable: true),
-                    AllowAutoUpdates = table.Column<bool>(type: "bit", nullable: false)
+                    Visibility = table.Column<int>(type: "int", nullable: false),
+                    Update = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

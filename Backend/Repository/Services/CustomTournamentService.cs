@@ -5,8 +5,10 @@ using Backend.Repository.Interfaces;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using static Backend.Model.Entities.CustomMatch;
+using static Backend.Model.Entities.CustomTournament;
 
 namespace Backend.Repository.Services
 {
@@ -56,9 +58,12 @@ namespace Backend.Repository.Services
                     IsActive = tournamentDto.IsActive,
                     CreatedByUserId = tournamentDto.CreatedBy,
                     CreatedAt = DateTime.UtcNow,
-                    Visibility = CustomTournament.TournamentVisibility.Private, //TODO private for now
 
                     // Tournament Settings Mapping
+                    Visibility = Enum.TryParse<TournamentVisibility>(tournamentDto.Settings?.TournamentVisibility, true, out var parsedVisibility)
+                        ? parsedVisibility : TournamentVisibility.Private,
+                    Update = Enum.TryParse<TournamentUpdate>(tournamentDto.Settings?.UpdateMethod, true, out var parsedUpdate)
+                        ? parsedUpdate : TournamentUpdate.Manual,
                     AllowExactResultBonus = tournamentDto.Settings?.AllowExactResultBonus ?? false,
                     ExactResultBonusCalculation = Enum.TryParse<CustomTournament.ExactResultBonusCalculationType>(
                         tournamentDto.Settings?.ExactResultBonusCalculation, true, out var exactBonusCalculation)
@@ -87,6 +92,7 @@ namespace Backend.Repository.Services
                 {
                     UserId = creatorUser.Id,
                     TournamentId = tournament.TournamentId,
+                    UserName = creatorUser.Email.Split('@')[0],
                     UserAdminName = creatorUser.Email,
                     Role = UserTournamentRole.Admin,
                     Status = AssignmentStatus.Accepted,
@@ -172,7 +178,7 @@ namespace Backend.Repository.Services
                         UserId = userToAssign.Id,
                         TournamentId = tournament.TournamentId,
                         UserAdminName = userDto.UserAdminName,
-                        Role = UserTournamentRole.Guest,
+                        Role = Enum.TryParse(userDto.UserRole, out UserTournamentRole parsedRole) ? parsedRole : UserTournamentRole.Player,
                         Status = AssignmentStatus.Invited,
                         IsVisible = true
                     });
@@ -432,10 +438,11 @@ namespace Backend.Repository.Services
                 // Step 3: Update tournament details and settings
                 tournament.Name = tournamentDto.TournamentName;
                 tournament.IsActive = tournamentDto.IsActive;
-                tournament.Visibility = CustomTournament.TournamentVisibility.Private; //TODO private for now
 
                 if (tournamentDto.Settings != null)
                 {
+                    tournament.Visibility = Enum.TryParse(tournamentDto.Settings.TournamentVisibility, out TournamentVisibility parsedVisibility) ? parsedVisibility : TournamentVisibility.Private;
+                    tournament.Update = Enum.TryParse(tournamentDto.Settings.UpdateMethod, out TournamentUpdate parsedUpdate) ? parsedUpdate : TournamentUpdate.Manual;
                     tournament.AllowExactResultBonus = tournamentDto.Settings.AllowExactResultBonus;
                     tournament.ExactResultBonusCalculation = Enum.TryParse<CustomTournament.ExactResultBonusCalculationType>(
                         tournamentDto.Settings.ExactResultBonusCalculation, true, out var exactBonusCalculation)
@@ -640,7 +647,7 @@ namespace Backend.Repository.Services
                                 {
                                     UserId = newUser.Id,
                                     TournamentId = tournament.TournamentId,
-                                    Role = assignment.Role,
+                                    Role = Enum.TryParse(userDto.UserRole, out UserTournamentRole parsedRole) ? parsedRole : UserTournamentRole.Player,
                                     Status = AssignmentStatus.Invited,
                                     IsVisible = true,
                                     UserAdminName = userDto.UserAdminName
@@ -652,7 +659,7 @@ namespace Backend.Repository.Services
                                 {
                                     UserId = existingUser.Id,
                                     TournamentId = tournament.TournamentId,
-                                    Role = assignment.Role,
+                                    Role = Enum.TryParse(userDto.UserRole, out UserTournamentRole parsedRole) ? parsedRole : UserTournamentRole.Player,
                                     Status = AssignmentStatus.Invited,
                                     IsVisible = true,
                                     UserAdminName = userDto.UserAdminName
@@ -697,7 +704,7 @@ namespace Backend.Repository.Services
                     {
                         UserId = userToAssign.Id,
                         TournamentId = tournament.TournamentId,
-                        Role = UserTournamentRole.Guest,
+                        Role = Enum.TryParse(newUserDto.UserRole, out UserTournamentRole parsedRole) ? parsedRole : UserTournamentRole.Player,
                         Status = AssignmentStatus.Invited,
                         IsVisible = true,
                         UserAdminName = newUserDto.UserAdminName
@@ -812,21 +819,24 @@ namespace Backend.Repository.Services
                         UserEmail = p.User.Email,
                         Status = p.Status.ToString()
                     }).ToList(),
-                                Settings = new CustomTournamentSettingsDto
-            {
-                AllowExactResultBonus = tournament.AllowExactResultBonus,
-                ExactResultBonusCalculation = tournament.ExactResultBonusCalculation.ToString(),
-                ExactResultBonus = tournament.ExactResultBonus,
+                    Settings = new CustomTournamentSettingsDto
+                    {
+                        TournamentVisibility = tournament.Visibility.ToString(),
+                        UpdateMethod = tournament.Update.ToString(),
 
-                AllowWhoQualifiesBets = tournament.AllowWhoQualifiesBets,
+                        AllowExactResultBonus = tournament.AllowExactResultBonus,
+                        ExactResultBonusCalculation = tournament.ExactResultBonusCalculation.ToString(),
+                        ExactResultBonus = tournament.ExactResultBonus,
 
-                AllowBetsWithBooster = tournament.AllowBetsWithBooster,
-                MaxBetBooster = tournament.MaxBetBooster,
-                TotalBoosterPool = tournament.TotalBoosterPool,
+                        AllowWhoQualifiesBets = tournament.AllowWhoQualifiesBets,
 
-                AllowNonSubmittedBetsPenalty = tournament.AllowNonSubmittedBetsPenalty,
-                NonSubmittedBetPenalty = tournament.NonSubmittedBetPenalty
-            }
+                        AllowBetsWithBooster = tournament.AllowBetsWithBooster,
+                        MaxBetBooster = tournament.MaxBetBooster,
+                        TotalBoosterPool = tournament.TotalBoosterPool,
+
+                        AllowNonSubmittedBetsPenalty = tournament.AllowNonSubmittedBetsPenalty,
+                        NonSubmittedBetPenalty = tournament.NonSubmittedBetPenalty
+                    }
                 };
 
                 _logger.LogInformation($"Successfully fetched custom tournament with ID: {tournamentId} for user {userId}");
@@ -1364,6 +1374,19 @@ namespace Backend.Repository.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error fetching tournament stages for tournament ID {tournamentId}");
+                throw;
+            }
+        }
+
+        public async Task<bool> TournamentNameExistsAsync(string publicTournamentName)
+        {
+            try
+            {
+                return await _context.CustomTournaments.AnyAsync(t => t.Name == publicTournamentName);  //TODO change model, add prop
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error querying database for tournament name: {publicTournamentName}");
                 throw;
             }
         }

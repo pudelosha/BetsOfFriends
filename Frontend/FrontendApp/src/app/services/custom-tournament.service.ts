@@ -80,5 +80,9 @@ export class CustomTournamentService {
   
   getUserBettingStats(tournamentId: number, statsUserId: string): Observable<UserBettingStats[]> {
     return this.http.get<UserBettingStats[]>(`${this.apiUrl}/betting-stats/${tournamentId}/${statsUserId}`);
-  }  
+  } 
+  
+  checkTournamentNameAvailability(name: string): Observable<{ available: boolean }> {
+    return this.http.post<{ available: boolean }>(`${this.apiUrl}/check-name`, { name });
+  } 
 }

@@ -26,7 +26,7 @@ namespace Backend.Model.Entities
         public CustomTournament Tournament { get; set; }
 
         [Required]
-        public UserTournamentRole Role { get; set; } = UserTournamentRole.Guest;
+        public UserTournamentRole Role { get; set; } = UserTournamentRole.Player;
         [Required]
         public string UserAdminName { get; set; }
         public string? UserName { get; set; }
@@ -39,7 +39,7 @@ namespace Backend.Model.Entities
 
     public enum UserTournamentRole
     {
-        Guest,
+        Player,
         Admin
     }
 

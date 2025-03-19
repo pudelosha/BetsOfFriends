@@ -483,5 +483,38 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while fetching tournament stages." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("check-name")]
+        public async Task<IActionResult> CheckTournamentNameAvailability([FromBody] CustomTournamentNameDto request)
+        {
+            try
+            {
+                if (request == null || string.IsNullOrWhiteSpace(request.Name))
+                {
+                    return BadRequest(new { Message = "Tournament name cannot be empty." });
+                }
+
+                _logger.LogInformation($"Checking availability for tournament name: {request.Name}");
+
+                bool nameExists = await _tournamentService.TournamentNameExistsAsync(request.Name);
+
+                if (nameExists)
+                {
+                    _logger.LogWarning($"Tournament name '{request.Name}' is already taken.");
+                }
+                else
+                {
+                    _logger.LogInformation($"Tournament name '{request.Name}' is available.");
+                }
+
+                return Ok(new { Available = !nameExists });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while checking availability for tournament name: {request.Name}");
+                return StatusCode(500, new { Message = "An error occurred while checking tournament name availability." });
+            }
+        }
     }
 }

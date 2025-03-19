@@ -9,13 +9,10 @@
 
 <ion-content class="ion-padding">
   <form [formGroup]="userForm" class="user-form">
-    <!-- User Name -->
-    <div class="form-group">
+    <!-- User-Defined Name (Only If Available) -->
+    <div class="form-group" *ngIf="user?.userName">
       <ion-label class="selector-label">User-Defined Name</ion-label>
       <ion-input formControlName="userName" readonly></ion-input>
-    </div>
-    <div class="error-message" *ngIf="userForm.get('userName')?.hasError('required') && userForm.get('userName')?.touched">
-      User name is required.
     </div>
 
     <!-- Admin-Defined Name -->
@@ -39,7 +36,20 @@
       Please enter a valid email address.
     </div>
 
-    <!-- Status -->
+    <!-- User Role Selection -->
+    <div class="form-group">
+      <ion-label class="selector-label">User Role</ion-label>
+      <ion-segment formControlName="userRole">
+        <ion-segment-button value="Player">
+          <ion-label>Player</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Admin">
+          <ion-label>Admin</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Status (Always Read-Only) -->
     <div class="form-group">
       <ion-label class="selector-label">Status</ion-label>
       <ion-input formControlName="status" readonly></ion-input>
