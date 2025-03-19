@@ -111,7 +111,7 @@ export interface UserBettingStats {
   matchId: number;
   homeTeam: string;
   awayTeam: string;
-  userPlacedResult: string | null;
+  betPlaced: string | null;
   betOutcome: string;
   whoQualifiedBet: string | null;
   whoQualifiedResult: string | null;

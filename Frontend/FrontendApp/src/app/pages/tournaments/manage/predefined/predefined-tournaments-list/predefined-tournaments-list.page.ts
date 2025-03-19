@@ -26,12 +26,10 @@ export class PredefinedTournamentsListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Optional: Load once when component initializes
     this.loadTournaments();
   }
 
   ionViewWillEnter() {
-    // Refresh tournaments every time the page is visited
     this.loadTournaments();
     this.scrollToTop();
   }

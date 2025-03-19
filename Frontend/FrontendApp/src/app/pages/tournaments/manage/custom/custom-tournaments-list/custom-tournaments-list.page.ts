@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, AlertController } from '@ionic/angular';
+import { IonicModule, ToastController, AlertController, LoadingController  } from '@ionic/angular';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { Tournament } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
@@ -21,7 +21,8 @@ export class CustomTournamentsListPage implements OnInit {
     private tournamentService: CustomTournamentService,
     private toastController: ToastController,
     private alertController: AlertController,
-    private router: Router
+    private router: Router,
+    private loadingController: LoadingController 
   ) {}
 
   ngOnInit() {
@@ -37,16 +38,28 @@ export class CustomTournamentsListPage implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  loadTournaments() {
-    this.isLoading = true;
+  async loadTournaments() {
+    const loading = await this.loadingController.create({
+      message: 'Loading tournaments...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+    
+    const startTime = Date.now();
+
     this.tournamentService.getCustomTournaments().subscribe({
       next: (data) => {
         this.tournaments = data ?? [];
-        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error loading tournaments:', err);
         this.tournaments = [];
+        this.showToast('Failed to load tournaments.', 'danger');
+      },
+      complete: async () => {
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime);
+        setTimeout(() => loading.dismiss(), delay);
         this.isLoading = false;
       }
     });
@@ -66,8 +79,14 @@ export class CustomTournamentsListPage implements OnInit {
   }
 
   async recalculateBets(tournament: any) {
-    this.isLoading = true;
-  
+    const loading = await this.loadingController.create({
+      message: 'Recalculating bets...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+
+    const startTime = Date.now();
+
     try {
       await firstValueFrom(this.tournamentService.recalculateBetsForTournament(tournament.tournamentId));
       this.showToast('Bets recalculated successfully!', 'success');
@@ -75,13 +94,23 @@ export class CustomTournamentsListPage implements OnInit {
       this.showToast('Error recalculating bets!', 'danger');
       console.error(error);
     } finally {
-      this.isLoading = false;
+      const elapsedTime = Date.now() - startTime;
+      const delay = Math.max(0, 500 - elapsedTime);
+      setTimeout(() => loading.dismiss(), delay);
     }
   }
   
   async toggleTournamentStatus(tournament: any) {
     const newStatus = !tournament.isActive;
-  
+    
+    const loading = await this.loadingController.create({
+      message: `Updating status...`,
+      spinner: 'crescent',
+    });
+    await loading.present();
+
+    const startTime = Date.now();
+
     try {
       await this.tournamentService.updateCustomTournamentStatus(tournament.tournamentId, newStatus).toPromise();
       tournament.isActive = newStatus;
@@ -90,46 +119,55 @@ export class CustomTournamentsListPage implements OnInit {
       tournament.isActive = !newStatus;
       console.error('Error toggling tournament status:', error);
       this.showToast('Failed to toggle tournament status. Please try again.', 'danger');
+    } finally {
+      const elapsedTime = Date.now() - startTime;
+      const delay = Math.max(0, 500 - elapsedTime);
+      setTimeout(() => loading.dismiss(), delay);
     }
-  }
-
-  async confirmDelete(tournament: any) {
-    const alert = await this.alertController.create({
-      header: 'Confirm Deletion',
-      message: `Are you sure you want to delete ${tournament.tournamentName}?`,
-      buttons: [
-        { text: 'Cancel', role: 'cancel' },
-        {
-          text: 'Delete',
-          handler: async () => {
-            try {
-              await this.deleteTournament(tournament);
-              this.showToast(`${tournament.tournamentName} has been deleted successfully!`, 'success');
-              this.loadTournaments();
-            } catch (error) {
-              console.error('Error deleting tournament:', error);
-              this.showToast('Failed to delete tournament. Please try again.', 'danger');
-            }
-          },
-        },
-      ],
-    });
-    await alert.present();
   }
 
   async deleteTournament(tournament: any) {
-    this.isLoading = true;
-  
-    try {
-      await firstValueFrom(this.tournamentService.deleteCustomTournament(tournament.tournamentId));
-      this.tournaments = this.tournaments.filter(t => t.tournamentId !== tournament.tournamentId);
-      this.showToast('Tournament deleted successfully!', 'success');
-    } catch (error) {
-      this.showToast('Error deleting tournament!', 'danger');
-      console.error(error);
-    } finally {
-      this.isLoading = false;
-    }
+    const alert = await this.alertController.create({
+        header: 'Confirm Deletion',
+        message: `Are you sure you want to delete ${tournament.tournamentName}?`,
+        buttons: [
+            { text: 'Cancel', role: 'cancel' },
+            {
+                text: 'Delete',
+                handler: async () => {
+                    const loading = await this.loadingController.create({
+                        message: `Deleting tournament...`,
+                        spinner: 'crescent',
+                    });
+                    await loading.present();
+
+                    const startTime = Date.now();
+
+                    try {
+                        // Call backend API to delete the tournament
+                        await firstValueFrom(this.tournamentService.deleteCustomTournament(tournament.tournamentId));
+
+                        // Remove the deleted tournament from the local list instantly
+                        this.tournaments = this.tournaments.filter(t => t.tournamentId !== tournament.tournamentId);
+
+                        this.showToast('Tournament deleted successfully!', 'success');
+                    } catch (error) {
+                        this.showToast('Error deleting tournament!', 'danger');
+                        console.error(error);
+                    } finally {
+                        const elapsedTime = Date.now() - startTime;
+                        const delay = Math.max(0, 500 - elapsedTime);
+
+                        setTimeout(async () => {
+                            await loading.dismiss();
+                        }, delay);
+                    }
+                }
+            }
+        ]
+    });
+
+    await alert.present();
   }
   
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {

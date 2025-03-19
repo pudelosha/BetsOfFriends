@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, LoadingController  } from '@ionic/angular';
 import { StageInputTypePage } from '../../stages/stage-input-type/stage-input-type.page';
 import { StageTeamsManagementPage } from '../../stages/stage-teams-management/stage-teams-management.page';
 import { StageStagesManagementPage } from '../../stages/stage-stages-management/stage-stages-management.page';
@@ -39,6 +39,7 @@ export class BuildCustomTournamentPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private tournamentService: CustomTournamentService,
+    private loadingController: LoadingController,
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
@@ -128,25 +129,38 @@ export class BuildCustomTournamentPage implements OnInit {
     }
   }
       
-   private loadTournament(): void {
-     if (!this.tournamentId) {
-       console.error('Tournament ID is missing.');
-       return;
-     }
-   
-     this.tournamentService.getCustomTournamentById(this.tournamentId).subscribe({
-       next: (tournament) => {
-         if (tournament) {
-           this.populateForm(tournament);
-         } else {
-           console.error('Tournament not found:', this.tournamentId);
-         }
-       },
-       error: (err) => {
-         console.error('Error loading tournament:', err);
-       },
-     });
-   }  
+  async loadTournament(): Promise<void> {
+    if (!this.tournamentId) {
+      console.error('Tournament ID is missing.');
+      return;
+    }
+
+    const loading = await this.loadingController.create({
+      message: 'Loading tournament...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+
+    const startTime = Date.now();
+
+    this.tournamentService.getCustomTournamentById(this.tournamentId).subscribe({
+      next: (tournament) => {
+        if (tournament) {
+          this.populateForm(tournament);
+        } else {
+          console.error('Tournament not found:', this.tournamentId);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading tournament:', err);
+      },
+      complete: async () => {
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime);
+        setTimeout(() => loading.dismiss(), delay);
+      }
+    });
+  }
    
    populateForm(tournament: Tournament): void {
     this.tournamentForm.patchValue({

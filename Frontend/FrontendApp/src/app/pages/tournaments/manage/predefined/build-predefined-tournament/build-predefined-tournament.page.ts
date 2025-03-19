@@ -105,12 +105,20 @@ export class BuildPredefinedTournamentPage implements OnInit {
     }
   }
 
-  private loadTournament(): void {
+  async loadTournament(): Promise<void> {
     if (!this.tournamentId) {
       console.error('Tournament ID is missing.');
       return;
     }
-  
+
+    const loading = await this.loadingController.create({
+      message: 'Loading tournament...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+
+    const startTime = Date.now();
+
     this.tournamentService.getPredefinedTournamentById(this.tournamentId).subscribe({
       next: (tournament) => {
         if (tournament) {
@@ -122,18 +130,15 @@ export class BuildPredefinedTournamentPage implements OnInit {
       error: (err) => {
         console.error('Error loading tournament:', err);
       },
+      complete: async () => {
+        const elapsedTime = Date.now() - startTime;
+        const delay = Math.max(0, 500 - elapsedTime);
+        setTimeout(() => loading.dismiss(), delay);
+      }
     });
-  }  
+  } 
   
-  private async populateForm(tournament: Tournament): Promise<void> {
-    const loading = await this.loadingController.create({
-      message: 'Loading tournament data...',
-      spinner: 'crescent',
-    });
-    await loading.present();
-  
-    const startTime = Date.now(); // Track start time
-  
+  private async populateForm(tournament: Tournament): Promise<void> {  
     try {
       this.tournamentForm.patchValue({
         tournamentId: tournament.tournamentId,
@@ -226,13 +231,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
   
     } catch (error) {
       console.error('Error populating tournament form:', error);
-    } finally {
-      const elapsedTime = Date.now() - startTime;
-      const delay = Math.max(0, 500 - elapsedTime);
-  
-      setTimeout(async () => {
-        await loading.dismiss();
-      }, delay);
     }
   }
     
