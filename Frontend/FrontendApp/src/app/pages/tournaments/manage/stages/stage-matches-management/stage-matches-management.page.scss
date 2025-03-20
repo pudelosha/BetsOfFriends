@@ -1,74 +1,102 @@
 /* ======================== */
-/*  Page Description */
-/* ======================== */
-.page-description {
-  margin-bottom: 1rem;
-  color: #666;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-/* ======================== */
-/*  Match List Formatting (No Extra Padding) */
+/*  Match List Formatting */
 /* ======================== */
 .match-list {
   margin: 1rem 0;
-  padding: 0; /* Removes padding */
+  padding: 0;
 }
 
-/*  Match Item Formatting (Consistent with Other Lists) */
+/*  Match Item Formatting */
 .match-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
-  --padding-end: 0px !important;
-  --padding-start: 0px !important;
+  --padding-end: 5px !important;
+  --padding-start: 5px !important;
   --ion-item-background: transparent;
-  height: 60px; /* Matches standard height */
-  --min-height: 60px !important;
-  --max-height: 60px !important;
+  --border-width: 0px;
+  --inner-border-width: 0px;
+  border-radius: 12px;
+  margin: 6px 0;
   display: flex;
   align-items: center;
-  padding: 0; /* Remove default padding */
+  transition: all 0.3s ease-in-out;
+  border: 2px solid transparent;
 }
 
+/* Ensures Delete & Undo Buttons Have Consistent Width */
+.fixed-button {
+  width: 80px;
+}
+
+/* ======================== */
+/*  Status-Based Formatting (Background + Border Colors) */
+/* ======================== */
+
+/* New (Pale Green) */
+.match-status-new {
+  background-color: #e6f9e6;
+  border-color: #e6f9e6;
+  color: #004d00;
+}
+
+/* Uploaded (Pale Gray) */
+.match-status-uploaded {
+  background-color: #f5f5f5;
+  border-color: #f5f5f5;
+  color: #666;
+}
+
+/* Update (Blue-Gray) */
+.match-status-update {
+  background-color: #e0ecf8;
+  border-color: #e0ecf8;
+  color: #004080;
+}
+
+/* Delete (Pale Red) */
+.match-status-delete {
+  background-color: #fce6e6;
+  border-color: #fce6e6;
+  color: #800000;
+}
+
+/* ======================== */
 /*  Match Grid Layout */
+/* ======================== */
 .match-grid {
   display: flex;
   justify-content: space-between;
   width: 100%;
+  padding: 10px;
   gap: 10px;
 }
 
-/*  Match Details */
+/* Match Details */
+/* Match Details */
 .match-details {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;  /* Align text to the left */
+  justify-content: center;  /* Center vertically */
+  text-align: left;
+  font-size: 12px;
+}
+
+/* Match Date */
+.match-date {
   flex: 2;
   display: flex;
   flex-direction: column;
-  text-align: left;
-}
-
-.match-details .team {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  font-size: 12px;
-  color: #333;
-}
-
-/*  Match Date Styling */
-.match-date {
-  flex: 1;
+  justify-content: center; /* Center vertically */
   text-align: center;
-}
-
-.match-date .date,
-.match-date .time {
-  display: block;
   font-size: 12px;
-  color: #333;
 }
 
+
+/* ======================== */
 /*  Match Buttons */
+/* ======================== */
 .match-button-container {
   flex: 1;
   display: flex;
@@ -88,6 +116,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
 }
 
 /* ======================== */
@@ -98,6 +127,7 @@
   text-align: center;
 }
 
-.nav-menu-space{
+/* Ensure bottom space for navigation */
+.nav-menu-space {
   margin-bottom: 80px;
 }

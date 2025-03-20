@@ -28,17 +28,17 @@ export class EditMatchModalComponent implements OnInit {
       matchFrontendId: [null],  
       matchId: [null],    
 
-      stageFrontendId: [null],
+      stageFrontendId: [null, Validators.required], // Use frontendId for validation
       stageId: [null],
-      stageName: ['', Validators.required],
-
-      homeTeamFrontendId: [null],  
+      stageName: [''],
+    
+      homeTeamFrontendId: [null, Validators.required], // Use frontendId for validation
       homeTeamId: [null],  
-      homeTeam: ['', Validators.required],  
-
-      awayTeamFrontendId: [null],  
+      homeTeam: [''],  
+    
+      awayTeamFrontendId: [null, Validators.required], // Use frontendId for validation
       awayTeamId: [null],  
-      awayTeam: ['', Validators.required],  
+      awayTeam: [''], 
 
       matchStart: ['', Validators.required],  
       matchType: ['Regular90Min', Validators.required],  
@@ -75,6 +75,11 @@ export class EditMatchModalComponent implements OnInit {
     }
   }  
 
+  // Ensure `ion-select` properly binds values
+  compareWith(o1: any, o2: any): boolean {
+    return o1 === o2;
+  }
+
   // Function to dynamically apply validation
   private toggleQualificationOddsValidation(matchType: string) {
     const homeQualifiesControl = this.matchForm.get('homeQualifies');
@@ -97,31 +102,22 @@ export class EditMatchModalComponent implements OnInit {
   async saveMatch() {
     if (this.matchForm.invalid) {
       this.showToast('Please fill in all required fields!', 'danger');
+      console.log(this.matchForm);
       return;
     }
 
-    // If matchType is ExtendedWithQualification, validate homeQualifies and awayQualifies
     if (this.matchForm.value.matchType === 'ExtendedWithQualification') {
       if (this.matchForm.value.homeQualifies === null || this.matchForm.value.awayQualifies === null) {
         this.showToast('Please provide qualification odds for both teams!', 'danger');
         return;
       }
     }
-  
-    console.log('Teams Available:', this.teams);
-    console.log('Searching for Home Team:', this.matchForm.value.homeTeam);
-    console.log('Searching for Away Team:', this.matchForm.value.awayTeam);
-    console.log('Searching for Stage:', this.matchForm.value.stageName);
-  
-    // Find selected team objects based on team name
+
+    // Find selected team objects based on frontendId
     const selectedStage = this.stages.find(s => s.stageFrontendId === this.matchForm.value.stageFrontendId);
     const selectedHomeTeam = this.teams.find(t => t.teamFrontendId === this.matchForm.value.homeTeamFrontendId);
-    const selectedAwayTeam = this.teams.find(t => t.teamFrontendId === this.matchForm.value.awayTeamFrontendId);
-  
-    console.log('Found Home Team:', selectedHomeTeam);
-    console.log('Found Away Team:', selectedAwayTeam);
-    console.log('Selected Stage:', selectedStage);
-  
+    const selectedAwayTeam = this.teams.find(t => t.teamFrontendId === this.matchForm.value.awayTeamFrontendId);  
+
     if (!selectedHomeTeam || !selectedAwayTeam) {
       this.showToast('Invalid team selection!', 'danger');
       return;
@@ -143,23 +139,23 @@ export class EditMatchModalComponent implements OnInit {
       this.match.awayWinOdds !== this.matchForm.value.awayWinOdds ||
       this.match.homeQualifies !== this.matchForm.value.homeQualifies ||
       this.match.awayQualifies !== this.matchForm.value.awayQualifies);
-  
+
     const matchData = {
-      matchFrontendId: this.matchForm.value.matchFrontendId, // Ensure matchFrontendId is retained
-      matchId: this.match?.matchId || null, // Retain matchId if editing
-  
-      stageFrontendId: selectedStage.stageFrontendId, // Use frontend ID for tracking
-      stageId: selectedStage.stageId || null, // Backend ID (if available)
-      stageName: selectedStage.stageName, // Ensure proper name assignment
+      matchFrontendId: this.matchForm.value.matchFrontendId,
+      matchId: this.match?.matchId || null,
+
+      stageFrontendId: selectedStage.stageFrontendId,
+      stageId: selectedStage.stageId || null,
+      stageName: selectedStage.stageName,
   
       homeTeamFrontendId: selectedHomeTeam.teamFrontendId,
       homeTeamId: selectedHomeTeam.teamId || null,
       homeTeam: selectedHomeTeam.teamName,
-    
+  
       awayTeamFrontendId: selectedAwayTeam.teamFrontendId,
       awayTeamId: selectedAwayTeam.teamId || null,
       awayTeam: selectedAwayTeam.teamName,
-  
+
       matchStart: this.matchForm.value.matchStart || '',
       matchType: this.matchForm.value.matchType || 'Regular90Min',
       homeWinOdds: this.matchForm.value.homeWinOdds || null,
@@ -169,15 +165,15 @@ export class EditMatchModalComponent implements OnInit {
       awayQualifies: this.matchForm.value.awayQualifies || null,
 
       recordStatus: this.index !== undefined
-        ? (isUpdated ? 'Updated' : this.matchForm.value.recordStatus) // Preserve if unchanged
-        : 'New' // Default for new matches
+        ? (isUpdated ? 'Update' : this.matchForm.value.recordStatus) 
+        : 'New'
     };
-  
+
     console.log('Saving Match:', matchData);
-  
+
     await this.modalController.dismiss(matchData);
     this.showToast(this.index !== undefined ? 'Match updated!' : 'New match added!', 'success');
-  }  
+  }
 
   closeModal() {
     this.modalController.dismiss(null);

@@ -79,7 +79,7 @@ export class EditTeamModalComponent implements OnInit {
       teamId: this.teamForm.value.teamId,
       teamName: this.teamForm.value.teamName.trim(),
       recordStatus: this.isEditing
-        ? (isUpdated ? 'Updated' : this.teamForm.value.recordStatus) // Only update if changed
+        ? (isUpdated ? 'Update' : this.teamForm.value.recordStatus) // Only update if changed
         : 'New', // Default for new teams
     };
 

@@ -385,17 +385,18 @@ export class BuildPredefinedTournamentPage implements OnInit {
   handleTeamsUpdated(teamsData: { previousTeams: Team[]; updatedTeams: Team[] }): void {
     const { previousTeams, updatedTeams } = teamsData;
   
-    // Step 1: Create a lookup map for previous teams (frontendId → team object)
+    // Step 1: Create lookup maps for previous and updated teams
     const previousTeamMap = new Map(previousTeams.map(team => [team.teamFrontendId, team]));
+    const updatedTeamMap = new Map(updatedTeams.map(team => [team.teamFrontendId, team]));
   
-    // Step 2: Identify teams that were removed (mark as 'Delete')
+    // Step 2: Identify removed teams and mark them as "Delete"
     previousTeams.forEach(team => {
-      if (!updatedTeams.some(updated => updated.teamFrontendId === team.teamFrontendId)) {
+      if (!updatedTeamMap.has(team.teamFrontendId)) {
         updatedTeams.push({ ...team, recordStatus: 'Delete' });
       }
     });
   
-    // Step 3: Update teams array and detect name changes
+    // Step 3: Update teamsArray and handle name updates
     this.teamsArray.clear();
     updatedTeams.forEach(team => {
       const previousTeam = previousTeamMap.get(team.teamFrontendId);
@@ -414,7 +415,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
       if (isUpdated) {
         this.matchesArray.controls.forEach((control: AbstractControl) => {
           const match = (control as FormGroup).value;
-  
           if (match.homeTeamFrontendId === team.teamFrontendId) {
             (control as FormGroup).patchValue({ homeTeam: team.teamName });
           }
@@ -425,62 +425,60 @@ export class BuildPredefinedTournamentPage implements OnInit {
       }
     });
   
-    // Step 4: Handle match deletions and status updates using frontendId tracking
-    const updatedTeamFrontendIds = new Set(updatedTeams.map(team => team.teamFrontendId));
+    // Step 4: Handle match deletions and status updates
+    const validTeamFrontendIds = new Set(updatedTeams.map(team => team.teamFrontendId));
     const matchesToKeep: AbstractControl[] = [];
   
     this.matchesArray.controls.forEach((control: AbstractControl) => {
       const match = (control as FormGroup).value;
   
-      const homeTeam = updatedTeams.find(t => t.teamFrontendId === match.homeTeamFrontendId);
-      const awayTeam = updatedTeams.find(t => t.teamFrontendId === match.awayTeamFrontendId);
+      const homeTeam = updatedTeamMap.get(match.homeTeamFrontendId);
+      const awayTeam = updatedTeamMap.get(match.awayTeamFrontendId);
   
-      if (!updatedTeamFrontendIds.has(match.homeTeamFrontendId) || !updatedTeamFrontendIds.has(match.awayTeamFrontendId)) {
-        // If a "New" team was deleted, DELETE its matches completely
+      if (!validTeamFrontendIds.has(match.homeTeamFrontendId) || !validTeamFrontendIds.has(match.awayTeamFrontendId)) {
+        // If a team was deleted from the list (not marked as "Delete"), DELETE its matches
         console.log(`Deleting match: ${match.homeTeam} vs ${match.awayTeam}`);
       } else if (homeTeam?.recordStatus === 'Delete' || awayTeam?.recordStatus === 'Delete') {
         // If a team is marked "Delete", mark its matches as "Delete"
         console.log(`Marking match as 'Delete': ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Delete' });
         matchesToKeep.push(control);
-      } else if (
-        previousTeamMap.get(match.homeTeamFrontendId)?.recordStatus === 'Delete' ||
-        previousTeamMap.get(match.awayTeamFrontendId)?.recordStatus === 'Delete'
-      ) {
-        // If the match was previously 'Deleted' but now the team is restored, update match status
+      } else if (previousTeamMap.get(match.homeTeamFrontendId)?.recordStatus === 'Delete' ||
+                 previousTeamMap.get(match.awayTeamFrontendId)?.recordStatus === 'Delete') {
+        // If a previously deleted team was restored, mark its matches as "Update"
         console.log(`Restoring match: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Update' });
         matchesToKeep.push(control);
       } else {
-        // Keep all valid matches
         matchesToKeep.push(control);
       }
     });
   
-    // Step 5: Clear and rebuild matchesArray with only valid matches
+    // Step 5: Rebuild matchesArray with only valid matches
     this.matchesArray.clear();
     matchesToKeep.forEach(control => this.matchesArray.push(control));
   
     console.log('Updated Matches after team removal or undo:', this.matchesArray.value);
   }
-    
+      
   handleStagesUpdated(stagesData: { previousStages: Stage[]; updatedStages: Stage[] }): void {
     const { previousStages, updatedStages } = stagesData;
   
-    const previousStageFrontendIds = new Set(previousStages.map(stage => stage.stageFrontendId));
-    const updatedStageFrontendIds = new Set(updatedStages.map(stage => stage.stageFrontendId));
+    // Step 1: Create lookup maps for previous and updated stages
+    const previousStageMap = new Map(previousStages.map(stage => [stage.stageFrontendId, stage]));
+    const updatedStageMap = new Map(updatedStages.map(stage => [stage.stageFrontendId, stage]));
   
-    // Step 1: Identify stages marked as "Delete" (existing but flagged for removal)
+    // Step 2: Identify removed stages and mark them as "Delete"
     previousStages.forEach(stage => {
-      if (!updatedStageFrontendIds.has(stage.stageFrontendId)) {
+      if (!updatedStageMap.has(stage.stageFrontendId)) {
         updatedStages.push({ ...stage, recordStatus: 'Delete' });
       }
     });
   
-    // Step 2: Update the stages list and detect changes
+    // Step 3: Update stagesArray and detect changes
     this.stagesArray.clear();
     updatedStages.forEach(stage => {
-      const previousStage = previousStages.find(prev => prev.stageFrontendId === stage.stageFrontendId);
+      const previousStage = previousStageMap.get(stage.stageFrontendId);
       const isUpdated = previousStage &&
         (previousStage.stageName !== stage.stageName || previousStage.order !== stage.order);
   
@@ -490,7 +488,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
           stageId: [stage.stageId],
           stageName: [stage.stageName, Validators.required],
           order: [stage.order, [Validators.required, Validators.min(1)]],
-          recordStatus: [isUpdated ? 'Updated' : stage.recordStatus || 'New']
+          recordStatus: [isUpdated ? 'Update' : stage.recordStatus || 'New']
         })
       );
   
@@ -498,7 +496,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
       if (isUpdated) {
         this.matchesArray.controls.forEach((control: AbstractControl) => {
           const match = (control as FormGroup).value;
-  
           if (match.stageFrontendId === stage.stageFrontendId) {
             (control as FormGroup).patchValue({ stageName: stage.stageName });
           }
@@ -506,53 +503,54 @@ export class BuildPredefinedTournamentPage implements OnInit {
       }
     });
   
-    // Step 3: Handle stage deletions (Remove matches or mark them as "Delete")
+    // Step 4: Handle match deletions and status updates
     const validStageFrontendIds = new Set(updatedStages.map(stage => stage.stageFrontendId));
     const matchesToKeep: AbstractControl[] = [];
   
     this.matchesArray.controls.forEach((control: AbstractControl) => {
       const match = (control as FormGroup).value;
+      const stage = updatedStageMap.get(match.stageFrontendId);
   
       if (!validStageFrontendIds.has(match.stageFrontendId)) {
-        // If a stage was removed, DELETE the match completely
+        // If a stage was deleted from the list (not marked as "Delete"), DELETE its matches
         console.log(`Deleting match due to removed stage: ${match.homeTeam} vs ${match.awayTeam}`);
+      } else if (stage?.recordStatus === 'Delete') {
+        // If a stage is marked "Delete", mark its matches as "Delete"
+        console.log(`Marking match as 'Delete' due to stage deletion: ${match.homeTeam} vs ${match.awayTeam}`);
+        (control as FormGroup).patchValue({ recordStatus: 'Delete' });
+        matchesToKeep.push(control);
+      } else if (previousStageMap.get(match.stageFrontendId)?.recordStatus === 'Delete') {
+        // If a previously deleted stage was restored, mark its matches as "Update"
+        console.log(`Restoring match due to restored stage: ${match.homeTeam} vs ${match.awayTeam}`);
+        (control as FormGroup).patchValue({ recordStatus: 'Update' });
+        matchesToKeep.push(control);
       } else {
-        // If a stage is marked "Delete", mark the match as "Delete" too
-        const stage = updatedStages.find(s => s.stageFrontendId === match.stageFrontendId);
-  
-        if (stage?.recordStatus === 'Delete') {
-          console.log(`Marking match as 'Delete' due to stage deletion: ${match.homeTeam} vs ${match.awayTeam}`);
-          (control as FormGroup).patchValue({ recordStatus: 'Delete' });
-        }
-  
         matchesToKeep.push(control);
       }
     });
   
-    // Step 4: Clear and rebuild matchesArray with only valid matches
+    // Step 5: Rebuild matchesArray with only valid matches
     this.matchesArray.clear();
     matchesToKeep.forEach(control => this.matchesArray.push(control));
   
-    console.log('Updated Matches after stage removal:', this.matchesArray.value);
-  }
+    console.log('Updated Matches after stage removal or undo:', this.matchesArray.value);
+  }  
        
   handleMatchesUpdated(updatedMatches: Match[]): void {
-    const previousMatches: Match[] = this.matchesArray.value; // Explicitly define type
+    const previousMatches: Match[] = this.matchesArray.value; // Previous state
+    const previousMatchMap = new Map(previousMatches.map(match => [match.matchFrontendId, match])); // Fast lookup
   
-    const previousMatchFrontendIds = new Set(previousMatches.map((match: Match) => match.matchFrontendId));
-    const updatedMatchFrontendIds = new Set(updatedMatches.map((match: Match) => match.matchFrontendId));
-  
-    // Step 1: Mark deleted matches
-    previousMatches.forEach((match: Match) => {
-      if (!updatedMatchFrontendIds.has(match.matchFrontendId)) {
+    // Step 1: Identify deleted matches
+    previousMatches.forEach(match => {
+      if (!updatedMatches.some(updated => updated.matchFrontendId === match.matchFrontendId)) {
         updatedMatches.push({ ...match, recordStatus: 'Delete' });
       }
     });
   
-    // Step 2: Detect updates & build new array
+    // Step 2: Detect updates & rebuild matchesArray
     this.matchesArray.clear();
-    updatedMatches.forEach((match: Match) => {
-      const previousMatch = previousMatches.find((prev: Match) => prev.matchFrontendId === match.matchFrontendId);
+    updatedMatches.forEach(match => {
+      const previousMatch = previousMatchMap.get(match.matchFrontendId);
       const isUpdated = previousMatch && (
         previousMatch.stageFrontendId !== match.stageFrontendId ||
         previousMatch.homeTeamFrontendId !== match.homeTeamFrontendId ||
@@ -566,34 +564,55 @@ export class BuildPredefinedTournamentPage implements OnInit {
         previousMatch.awayQualifies !== match.awayQualifies
       );
   
-      this.matchesArray.push(
-        this.fb.group({
-          matchFrontendId: [match.matchFrontendId],
-          matchId: [match.matchId],
-          stageFrontendId: [match.stageFrontendId],
-          stageId: [match.stageId],
-          stageName: [match.stageName],
-          homeTeamId: [match.homeTeamId],
-          homeTeamFrontendId: [match.homeTeamFrontendId],
-          homeTeam: [match.homeTeam],
-          awayTeamId: [match.awayTeamId],
-          awayTeamFrontendId: [match.awayTeamFrontendId],
-          awayTeam: [match.awayTeam],
-          matchStart: [match.matchStart],
-          matchType: [match.matchType || 'Regular90Min'],
-          homeWinOdds: [match.homeWinOdds ?? 0],
-          drawOdds: [match.drawOdds ?? 0],
-          awayWinOdds: [match.awayWinOdds ?? 0],
-          homeQualifies: [match.homeQualifies ?? null],
-          awayQualifies: [match.awayQualifies ?? null],
-          recordStatus: [isUpdated ? 'Updated' : match.recordStatus || 'New']
-        })
-      );
+      this.matchesArray.push(this.fb.group({
+        matchFrontendId: [match.matchFrontendId],
+        matchId: [match.matchId],
+        stageFrontendId: [match.stageFrontendId],
+        stageId: [match.stageId],
+        stageName: [match.stageName],
+        homeTeamId: [match.homeTeamId],
+        homeTeamFrontendId: [match.homeTeamFrontendId],
+        homeTeam: [match.homeTeam],
+        awayTeamId: [match.awayTeamId],
+        awayTeamFrontendId: [match.awayTeamFrontendId],
+        awayTeam: [match.awayTeam],
+        matchStart: [match.matchStart],
+        matchType: [match.matchType || 'Regular90Min'],
+        homeWinOdds: [match.homeWinOdds ?? 0],
+        drawOdds: [match.drawOdds ?? 0],
+        awayWinOdds: [match.awayWinOdds ?? 0],
+        homeQualifies: [match.homeQualifies ?? null],
+        awayQualifies: [match.awayQualifies ?? null],
+        recordStatus: [isUpdated ? 'Update' : match.recordStatus || 'New']
+      }));
+    });
+  
+    // Step 3: Handle match restoration (UNDO)
+    updatedMatches.forEach(match => {
+      if (match.recordStatus === 'Update') {
+        // Check if corresponding teams and stage were "Deleted" and restore them
+        this.teamsArray.controls.forEach(control => {
+          const team = control.value;
+          if ((team.teamFrontendId === match.homeTeamFrontendId || team.teamFrontendId === match.awayTeamFrontendId)
+            && team.recordStatus === 'Delete') {
+            console.log(`Restoring team: ${team.teamName}`);
+            (control as FormGroup).patchValue({ recordStatus: 'Update' });
+          }
+        });
+  
+        this.stagesArray.controls.forEach(control => {
+          const stage = control.value;
+          if (stage.stageFrontendId === match.stageFrontendId && stage.recordStatus === 'Delete') {
+            console.log(`Restoring stage: ${stage.stageName}`);
+            (control as FormGroup).patchValue({ recordStatus: 'Update' });
+          }
+        });
+      }
     });
   
     console.log('Updated Matches:', this.matchesArray.value);
-  }  
-  
+  }
+     
   async submitTournament(): Promise<void> {
     // Validate Tournament Data
     if (!this.tournamentForm.value.tournamentName?.trim()) {

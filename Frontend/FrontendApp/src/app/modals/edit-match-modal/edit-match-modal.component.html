@@ -13,28 +13,28 @@
     <!-- Stage Selection -->
     <div class="match-row">
       <ion-label class="selector-label">Stage</ion-label>
-      <ion-select formControlName="stageFrontendId">
+      <ion-select formControlName="stageFrontendId" [compareWith]="compareWith">
         <ion-select-option *ngFor="let stage of stages" [value]="stage.stageFrontendId">
           {{ stage.stageName }}
         </ion-select-option>
       </ion-select>
     </div>  
-       
-    <!-- Home Team (Label + Selector in One Row) -->
+
+    <!-- Home Team -->
     <div class="match-row">
       <ion-label class="selector-label">Home Team</ion-label>
-      <ion-select formControlName="homeTeam">
-        <ion-select-option *ngFor="let team of teams" [value]="team.teamName">
+      <ion-select formControlName="homeTeamFrontendId" [compareWith]="compareWith">
+        <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
           {{ team.teamName }}
         </ion-select-option>
       </ion-select>
     </div>
 
-    <!-- Away Team (Label + Selector in One Row) -->
+    <!-- Away Team -->
     <div class="match-row">
       <ion-label class="selector-label">Away Team</ion-label>
-      <ion-select formControlName="awayTeam">
-        <ion-select-option *ngFor="let team of teams" [value]="team.teamName">
+      <ion-select formControlName="awayTeamFrontendId" [compareWith]="compareWith">
+        <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
           {{ team.teamName }}
         </ion-select-option>
       </ion-select>

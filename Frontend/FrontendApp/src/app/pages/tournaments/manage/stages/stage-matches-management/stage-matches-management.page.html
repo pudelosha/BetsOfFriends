@@ -5,24 +5,34 @@
 </div>
 
 <ion-list class="match-list nav-menu-space">
-  <ion-item *ngFor="let match of matchesArray.controls; let i = index" class="match-item" [formGroup]="getMatchControl(i)">
+  <ion-item *ngFor="let match of matchesArray.controls; let i = index"
+            class="match-item"
+            [formGroup]="getMatchControl(i)"
+            [ngClass]="getRecordStatusClass(getMatchControl(i).get('recordStatus')?.value)">
     <div class="match-grid">
-      <!-- Home and Away Team Names (Stacked) -->
+      <!-- Home and Away Team Names -->
       <div class="match-details">
         <span class="team">{{ getMatchControl(i).get('homeTeam')?.value }}</span>
         <span class="team">{{ getMatchControl(i).get('awayTeam')?.value }}</span>
       </div>
 
-      <!-- Date and Time (Stacked) -->
+      <!-- Date and Time -->
       <div class="match-date">
         <span class="date">{{ getMatchControl(i).get('matchStart')?.value | date: 'yyyy.MM.dd' }}</span>
         <span class="time">{{ getMatchControl(i).get('matchStart')?.value | date: 'HH:mm' }}</span>
       </div>
 
-      <!-- Buttons: Edit and Delete -->
+      <!-- Buttons: Edit and Delete/Undo -->
       <div class="match-button-container">
-        <ion-button size="small" fill="outline" color="primary" class="match-button" (click)="openEditModal(i)">Edit</ion-button>
-        <ion-button size="small" fill="outline" color="danger" class="match-button" (click)="removeMatch(i)">Delete</ion-button>
+        <ion-button size="small" fill="outline" color="primary" class="match-button"
+                    (click)="openEditModal(i)">Edit</ion-button>
+
+        <ion-button size="small" fill="outline"
+                    [color]="getDeleteButtonColor(getMatchControl(i).get('recordStatus')?.value)"
+                    class="match-button fixed-button"
+                    (click)="handleRemoveOrUndoMatch(i)">
+          {{ getDeleteButtonText(getMatchControl(i).get('recordStatus')?.value) }}
+        </ion-button>
       </div>
     </div>
   </ion-item>

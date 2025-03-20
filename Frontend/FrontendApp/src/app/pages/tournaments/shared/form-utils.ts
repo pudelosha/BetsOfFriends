@@ -5,14 +5,16 @@ export function buildMatchFormGroup(fb: FormBuilder, match: any): FormGroup {
     matchFrontendId: [match.matchFrontendId ?? null],
     matchId: [match.matchId ?? null],
 
-    stage: [match.stage || ''],
+    stageFrontendId: [match.stageFrontendId ?? null, Validators.required], // Ensure valid stage is selected
+    stageId: [match.stageId ?? null],
+    stageName: [match.stageName || '', Validators.required], // Ensure name consistency
 
+    homeTeamFrontendId: [match.homeTeamFrontendId ?? null, Validators.required], // Always set for frontend tracking
     homeTeamId: [match.homeTeamId ?? null],
-    homeTeamFrontendId: [match.homeTeamFrontendId ?? null],
     homeTeam: [match.homeTeam || '', Validators.required],
 
+    awayTeamFrontendId: [match.awayTeamFrontendId ?? null, Validators.required], // Always set for frontend tracking
     awayTeamId: [match.awayTeamId ?? null],
-    awayTeamFrontendId: [match.awayTeamFrontendId ?? null],
     awayTeam: [match.awayTeam || '', Validators.required],
 
     matchStart: [match.matchStart || '', Validators.required],
@@ -25,5 +27,7 @@ export function buildMatchFormGroup(fb: FormBuilder, match: any): FormGroup {
 
     homeQualifies: [match.homeQualifies ?? null],
     awayQualifies: [match.awayQualifies ?? null],
+
+    recordStatus: [match.recordStatus ?? 'New'],
   });
 }

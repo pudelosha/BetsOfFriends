@@ -34,7 +34,7 @@ namespace Backend.Repository.Services
                 _context.PredefinedTournaments.Add(tournament);
                 await _context.SaveChangesAsync();
 
-                // Step 2: Insert Teams and Map Their Actual IDs
+                // Step 2: Insert Teams and Fetch their IDs
                 var teams = tournamentDto.Teams.Select(t => new PredefinedTeam
                 {
                     TeamName = t.TeamName,
@@ -48,35 +48,47 @@ namespace Backend.Repository.Services
                     .Where(t => t.PredefinedTournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(t => t.TeamName, t => t.TeamId);
 
-                // Step 3: Insert Stages
-                var stages = tournamentDto.Stages.Select(t => new PredefinedMatchStage
+                // Step 3: Insert Stages and Fetch their IDs
+                var stages = tournamentDto.Stages.Select(s => new PredefinedMatchStage
                 {
-                    StageName = t.StageName,
+                    StageName = s.StageName,
                     TournamentId = tournament.TournamentId,
-                    Order = t.Order
+                    Order = s.Order
                 }).ToList();
 
                 _context.PredefinedMatchStages.AddRange(stages);
                 await _context.SaveChangesAsync();
 
                 var stageMap = await _context.PredefinedMatchStages
-                    .Where(t => t.TournamentId == tournament.TournamentId)
-                    .ToDictionaryAsync(t => t.StageName, t => t.StageId);
+                    .Where(s => s.TournamentId == tournament.TournamentId)
+                    .ToDictionaryAsync(s => s.StageName, s => s.StageId);
 
-                // Step 4: Insert Matches Using the Actual IDs from Database
-                var matches = tournamentDto.Matches.Select(m => new PredefinedMatch
+                // Step 4: Validate and Insert Matches
+                var matches = tournamentDto.Matches.Select(m =>
                 {
-                    TournamentId = tournament.TournamentId,
-                    StageId = stageMap.TryGetValue(m.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{m.StageName}' not found."),
-                    HomeTeamId = teamMap.TryGetValue(m.HomeTeam, out var homeId) ? homeId : throw new Exception($"Home team '{m.HomeTeam}' not found."),
-                    AwayTeamId = teamMap.TryGetValue(m.AwayTeam, out var awayId) ? awayId : throw new Exception($"Away team '{m.AwayTeam}' not found."),
-                    MatchStart = DateTime.SpecifyKind(m.MatchStart, DateTimeKind.Utc),
-                    Type = Enum.Parse<CustomMatch.MatchType>(m.MatchType),
-                    HomeWinOdds = m.HomeWinOdds,
-                    DrawOdds = m.DrawOdds,
-                    AwayWinOdds = m.AwayWinOdds,
-                    HomeQualifies = m.HomeQualifies ?? 0,
-                    AwayQualifies = m.AwayQualifies ?? 0
+                    if (!teamMap.TryGetValue(m.HomeTeam, out var homeId))
+                        throw new Exception($"Home team '{m.HomeTeam}' not found.");
+
+                    if (!teamMap.TryGetValue(m.AwayTeam, out var awayId))
+                        throw new Exception($"Away team '{m.AwayTeam}' not found.");
+
+                    if (!stageMap.TryGetValue(m.StageName, out var stageId))
+                        throw new Exception($"Stage '{m.StageName}' not found.");
+
+                    return new PredefinedMatch
+                    {
+                        TournamentId = tournament.TournamentId,
+                        StageId = stageId,
+                        HomeTeamId = homeId,
+                        AwayTeamId = awayId,
+                        MatchStart = DateTime.SpecifyKind(m.MatchStart, DateTimeKind.Utc),
+                        Type = Enum.Parse<CustomMatch.MatchType>(m.MatchType),
+                        HomeWinOdds = m.HomeWinOdds,
+                        DrawOdds = m.DrawOdds,
+                        AwayWinOdds = m.AwayWinOdds,
+                        HomeQualifies = m.HomeQualifies ?? 0,
+                        AwayQualifies = m.AwayQualifies ?? 0
+                    };
                 }).ToList();
 
                 _context.PredefinedMatches.AddRange(matches);
@@ -101,8 +113,8 @@ namespace Backend.Repository.Services
                 // Step 1: Fetch the tournament from the database
                 var tournament = await _context.PredefinedTournaments
                     .Include(t => t.PredefinedTeams)
+                    .Include(t => t.PredefinedStages)
                     .Include(t => t.PredefinedMatches)
-                    .Include(t => t.PredefinedStages) // Include Stages
                     .FirstOrDefaultAsync(t => t.TournamentId == tournamentDto.TournamentId);
 
                 if (tournament == null)
@@ -118,43 +130,43 @@ namespace Backend.Repository.Services
 
                 // Step 3: Handle Teams
                 var existingTeams = tournament.PredefinedTeams.ToDictionary(t => t.TeamId);
-                var updatedTeamsWithIds = tournamentDto.Teams.Where(t => t.TeamId.HasValue).ToDictionary(t => t.TeamId.Value);
-                var newTeams = tournamentDto.Teams.Where(t => !t.TeamId.HasValue).ToList();
+                var teamsToRemove = tournamentDto.Teams.Where(t => t.RecordStatus == "Delete").ToList();
+                var teamsToUpdate = tournamentDto.Teams.Where(t => t.RecordStatus == "Update").ToList();
+                var newTeams = tournamentDto.Teams.Where(t => t.RecordStatus == "New").ToList();
 
-                // Remove teams not in the updated list (and their dependent matches)
-                var teamsToRemove = existingTeams.Values.Where(et => !updatedTeamsWithIds.ContainsKey(et.TeamId)).ToList();
-
+                // Delete teams & cascade match deletions
                 foreach (var team in teamsToRemove)
                 {
-                    // Remove related matches
-                    var relatedMatches = _context.PredefinedMatches
-                        .Where(m => m.HomeTeamId == team.TeamId || m.AwayTeamId == team.TeamId)
-                        .ToList();
-                    _context.PredefinedMatches.RemoveRange(relatedMatches);
+                    if (team.TeamId.HasValue && existingTeams.TryGetValue(team.TeamId.Value, out var existingTeam))
+                    {
+                        var relatedMatches = tournament.PredefinedMatches
+                            .Where(m => m.HomeTeamId == team.TeamId || m.AwayTeamId == team.TeamId)
+                            .ToList();
+
+                        _context.PredefinedMatches.RemoveRange(relatedMatches);
+                        _context.PredefinedTeams.Remove(existingTeam);
+                    }
                 }
 
-                _context.PredefinedTeams.RemoveRange(teamsToRemove);
-
-                // Update existing teams
-                foreach (var teamDto in updatedTeamsWithIds.Values)
+                // Update teams
+                foreach (var team in teamsToUpdate)
                 {
-                    if (existingTeams.TryGetValue(teamDto.TeamId.Value, out var team))
+                    if (team.TeamId.HasValue && existingTeams.TryGetValue(team.TeamId.Value, out var existingTeam))
                     {
-                        team.TeamName = teamDto.TeamName;
+                        existingTeam.TeamName = team.TeamName;
                     }
                 }
 
                 // Add new teams
-                foreach (var newTeamDto in newTeams)
+                foreach (var newTeam in newTeams)
                 {
                     tournament.PredefinedTeams.Add(new PredefinedTeam
                     {
-                        TeamName = newTeamDto.TeamName,
+                        TeamName = newTeam.TeamName,
                         PredefinedTournamentId = tournament.TournamentId
                     });
                 }
 
-                // Save changes to ensure updated teams are available for match mapping
                 await _context.SaveChangesAsync();
 
                 // Step 4: Map team names to IDs
@@ -164,45 +176,45 @@ namespace Backend.Repository.Services
 
                 // Step 5: Handle Stages
                 var existingStages = tournament.PredefinedStages.ToDictionary(s => s.StageId);
-                var updatedStagesWithIds = tournamentDto.Stages.Where(s => s.StageId.HasValue).ToDictionary(s => s.StageId.Value);
-                var newStages = tournamentDto.Stages.Where(s => !s.StageId.HasValue).ToList();
+                var stagesToRemove = tournamentDto.Stages.Where(s => s.RecordStatus == "Delete").ToList();
+                var stagesToUpdate = tournamentDto.Stages.Where(s => s.RecordStatus == "Update").ToList();
+                var newStages = tournamentDto.Stages.Where(s => s.RecordStatus == "New").ToList();
 
-                // Remove stages not in the updated list
-                var stagesToRemove = existingStages.Values.Where(es => !updatedStagesWithIds.ContainsKey(es.StageId)).ToList();
-
+                // Delete stages & cascade match deletions
                 foreach (var stage in stagesToRemove)
                 {
-                    // Remove related matches that belong to this stage
-                    var relatedMatches = _context.PredefinedMatches
-                        .Where(m => m.StageId == stage.StageId)
-                        .ToList();
-                    _context.PredefinedMatches.RemoveRange(relatedMatches);
+                    if (stage.StageId.HasValue && existingStages.TryGetValue(stage.StageId.Value, out var existingStage))
+                    {
+                        var relatedMatches = tournament.PredefinedMatches
+                            .Where(m => m.StageId == stage.StageId)
+                            .ToList();
+
+                        _context.PredefinedMatches.RemoveRange(relatedMatches);
+                        _context.PredefinedMatchStages.Remove(existingStage);
+                    }
                 }
 
-                _context.PredefinedMatchStages.RemoveRange(stagesToRemove);
-
-                // Update existing stages
-                foreach (var stageDto in updatedStagesWithIds.Values)
+                // Update stages
+                foreach (var stage in stagesToUpdate)
                 {
-                    if (existingStages.TryGetValue(stageDto.StageId.Value, out var stage))
+                    if (stage.StageId.HasValue && existingStages.TryGetValue(stage.StageId.Value, out var existingStage))
                     {
-                        stage.StageName = stageDto.StageName;
-                        stage.Order = stageDto.Order;
+                        existingStage.StageName = stage.StageName;
+                        existingStage.Order = stage.Order;
                     }
                 }
 
                 // Add new stages
-                foreach (var newStageDto in newStages)
+                foreach (var newStage in newStages)
                 {
                     tournament.PredefinedStages.Add(new PredefinedMatchStage
                     {
-                        StageName = newStageDto.StageName,
+                        StageName = newStage.StageName,
                         TournamentId = tournament.TournamentId,
-                        Order = newStageDto.Order
+                        Order = newStage.Order
                     });
                 }
 
-                // Save changes before processing matches
                 await _context.SaveChangesAsync();
 
                 // Step 6: Map stage names to IDs
@@ -212,43 +224,49 @@ namespace Backend.Repository.Services
 
                 // Step 7: Handle Matches
                 var existingMatches = tournament.PredefinedMatches.ToDictionary(m => m.MatchId);
-                var updatedMatchesWithIds = tournamentDto.Matches.Where(m => m.MatchId.HasValue).ToDictionary(m => m.MatchId.Value);
-                var newMatches = tournamentDto.Matches.Where(m => !m.MatchId.HasValue).ToList();
+                var matchesToRemove = tournamentDto.Matches.Where(m => m.RecordStatus == "Delete").ToList();
+                var matchesToUpdate = tournamentDto.Matches.Where(m => m.RecordStatus == "Update").ToList();
+                var newMatches = tournamentDto.Matches.Where(m => m.RecordStatus == "New").ToList();
 
-                // Remove matches not in the updated list
-                var matchesToRemove = existingMatches.Values.Where(em => !updatedMatchesWithIds.ContainsKey(em.MatchId)).ToList();
-                _context.PredefinedMatches.RemoveRange(matchesToRemove);
-
-                // Update existing matches
-                foreach (var matchDto in updatedMatchesWithIds.Values)
+                // Delete matches
+                foreach (var match in matchesToRemove)
                 {
-                    if (existingMatches.TryGetValue(matchDto.MatchId.Value, out var match))
+                    if (match.MatchId.HasValue && existingMatches.TryGetValue(match.MatchId.Value, out var existingMatch))
                     {
-                        match.StageId = stageMap.TryGetValue(matchDto.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{matchDto.StageName}' not found.");
-                        match.HomeTeamId = matchDto.HomeTeamId.Value;
-                        match.AwayTeamId = matchDto.AwayTeamId.Value;
-                        match.MatchStart = DateTime.SpecifyKind(matchDto.MatchStart, DateTimeKind.Utc);
-                        match.Type = Enum.Parse<CustomMatch.MatchType>(matchDto.MatchType);
-                        match.HomeWinOdds = matchDto.HomeWinOdds;
-                        match.DrawOdds = matchDto.DrawOdds;
-                        match.AwayWinOdds = matchDto.AwayWinOdds;
-                        match.HomeQualifies = matchDto.HomeQualifies;
-                        match.AwayQualifies = matchDto.AwayQualifies;
+                        _context.PredefinedMatches.Remove(existingMatch);
+                    }
+                }
+
+                // Update matches
+                foreach (var match in matchesToUpdate)
+                {
+                    if (match.MatchId.HasValue && existingMatches.TryGetValue(match.MatchId.Value, out var existingMatch))
+                    {
+                        existingMatch.StageId = stageMap.TryGetValue(match.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{match.StageName}' not found.");
+                        existingMatch.HomeTeamId = match.HomeTeamId.Value;
+                        existingMatch.AwayTeamId = match.AwayTeamId.Value;
+                        existingMatch.MatchStart = DateTime.SpecifyKind(match.MatchStart, DateTimeKind.Utc);
+                        existingMatch.Type = Enum.Parse<CustomMatch.MatchType>(match.MatchType);
+                        existingMatch.HomeWinOdds = match.HomeWinOdds;
+                        existingMatch.DrawOdds = match.DrawOdds;
+                        existingMatch.AwayWinOdds = match.AwayWinOdds;
+                        existingMatch.HomeQualifies = match.HomeQualifies;
+                        existingMatch.AwayQualifies = match.AwayQualifies;
                     }
                 }
 
                 // Add new matches
-                foreach (var newMatchDto in newMatches)
+                foreach (var newMatch in newMatches)
                 {
-                    var homeTeamId = teamMap.TryGetValue(newMatchDto.HomeTeam, out var homeId)
+                    var homeTeamId = teamMap.TryGetValue(newMatch.HomeTeam, out var homeId)
                         ? homeId
-                        : throw new Exception($"Home team '{newMatchDto.HomeTeam}' not found.");
-                    var awayTeamId = teamMap.TryGetValue(newMatchDto.AwayTeam, out var awayId)
+                        : throw new Exception($"Home team '{newMatch.HomeTeam}' not found.");
+                    var awayTeamId = teamMap.TryGetValue(newMatch.AwayTeam, out var awayId)
                         ? awayId
-                        : throw new Exception($"Away team '{newMatchDto.AwayTeam}' not found.");
-                    var stageId = stageMap.TryGetValue(newMatchDto.StageName, out var stgId)
+                        : throw new Exception($"Away team '{newMatch.AwayTeam}' not found.");
+                    var stageId = stageMap.TryGetValue(newMatch.StageName, out var stgId)
                         ? stgId
-                        : throw new Exception($"Stage '{newMatchDto.StageName}' not found.");
+                        : throw new Exception($"Stage '{newMatch.StageName}' not found.");
 
                     tournament.PredefinedMatches.Add(new PredefinedMatch
                     {
@@ -256,17 +274,16 @@ namespace Backend.Repository.Services
                         StageId = stageId,
                         HomeTeamId = homeTeamId,
                         AwayTeamId = awayTeamId,
-                        MatchStart = DateTime.SpecifyKind(newMatchDto.MatchStart, DateTimeKind.Utc),
-                        Type = Enum.Parse<CustomMatch.MatchType>(newMatchDto.MatchType),
-                        HomeWinOdds = newMatchDto.HomeWinOdds,
-                        DrawOdds = newMatchDto.DrawOdds,
-                        AwayWinOdds = newMatchDto.AwayWinOdds,
-                        HomeQualifies = newMatchDto.HomeQualifies,
-                        AwayQualifies = newMatchDto.AwayQualifies
+                        MatchStart = DateTime.SpecifyKind(newMatch.MatchStart, DateTimeKind.Utc),
+                        Type = Enum.Parse<CustomMatch.MatchType>(newMatch.MatchType),
+                        HomeWinOdds = newMatch.HomeWinOdds,
+                        DrawOdds = newMatch.DrawOdds,
+                        AwayWinOdds = newMatch.AwayWinOdds,
+                        HomeQualifies = newMatch.HomeQualifies,
+                        AwayQualifies = newMatch.AwayQualifies
                     });
                 }
 
-                // Save all changes
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return true;
@@ -465,6 +482,5 @@ namespace Backend.Repository.Services
                 throw new ApplicationException("An error occurred while fetching predefined tournaments.", ex);
             }
         }
-
     }
 }

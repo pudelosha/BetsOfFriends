@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { ModalController, AlertController } from '@ionic/angular';
 import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
 import { buildMatchFormGroup } from '../../../shared/form-utils';
@@ -23,7 +23,8 @@ export class StageMatchesManagementPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private modalController: ModalController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private toastController: ToastController
   ) {}
 
   ngOnInit(): void {}
@@ -38,7 +39,7 @@ export class StageMatchesManagementPage implements OnInit {
       console.warn('No teams available to add a match.');
       return;
     }
-
+  
     const modal = await this.modalController.create({
       component: EditMatchModalComponent,
       componentProps: {
@@ -48,25 +49,29 @@ export class StageMatchesManagementPage implements OnInit {
         stages: this.stagesArray, // Pass full stage objects
       },
     });
-
+  
     modal.onDidDismiss().then((result) => {
       if (result.data) {
+        const selectedHomeTeam = this.teamsArray.find(t => t.teamFrontendId === result.data.homeTeamFrontendId);
+        const selectedAwayTeam = this.teamsArray.find(t => t.teamFrontendId === result.data.awayTeamFrontendId);
+        const selectedStage = this.stagesArray.find(s => s.stageFrontendId === result.data.stageFrontendId);
+  
         const newMatch: Match = {
           matchFrontendId: this.generateFrontendId(),
           matchId: null,
-    
-          stageId: result.data.stageId ?? null,
-          stageFrontendId: result.data.stageFrontendId,
-          stageName: result.data.stageName,
-    
-          homeTeamId: result.data.homeTeamId ?? null,
-          homeTeamFrontendId: result.data.homeTeamFrontendId,
-          homeTeam: result.data.homeTeam,
-    
-          awayTeamId: result.data.awayTeamId ?? null,
-          awayTeamFrontendId: result.data.awayTeamFrontendId,
-          awayTeam: result.data.awayTeam,
-    
+  
+          stageId: selectedStage?.stageId ?? null,
+          stageFrontendId: selectedStage?.stageFrontendId ?? '',
+          stageName: selectedStage?.stageName ?? '',
+  
+          homeTeamId: selectedHomeTeam?.teamId ?? null,
+          homeTeamFrontendId: selectedHomeTeam?.teamFrontendId ?? '',
+          homeTeam: selectedHomeTeam?.teamName ?? '',
+  
+          awayTeamId: selectedAwayTeam?.teamId ?? null,
+          awayTeamFrontendId: selectedAwayTeam?.teamFrontendId ?? '',
+          awayTeam: selectedAwayTeam?.teamName ?? '',
+  
           matchStart: result.data.matchStart || '',
           matchType: result.data.matchType || 'Regular90Min',
           homeWinOdds: result.data.homeWinOdds ?? 0,
@@ -74,26 +79,24 @@ export class StageMatchesManagementPage implements OnInit {
           awayWinOdds: result.data.awayWinOdds ?? 0,
           homeQualifies: result.data.homeQualifies ?? null,
           awayQualifies: result.data.awayQualifies ?? null,
-    
+  
           recordStatus: 'New'
         };
-    
+  
         this.matchesArray.push(buildMatchFormGroup(this.fb, newMatch));
         this.emitMatches();
         console.log('Added New Match:', newMatch);
       }
     });
-    
+  
     await modal.present();
   }
+  
 
   // Open edit modal for a match
   async openEditModal(index?: number) {
     const existingMatch = index !== undefined ? this.getMatchControl(index).value : null;
-
-    console.log(existingMatch);
-    console.log(this.stagesArray);
-
+  
     const modal = await this.modalController.create({
       component: EditMatchModalComponent,
       componentProps: {
@@ -103,25 +106,29 @@ export class StageMatchesManagementPage implements OnInit {
         stages: this.stagesArray, // Pass full stages
       },
     });
-
+  
     modal.onDidDismiss().then((result) => {
       if (result.data) {
+        const selectedHomeTeam = this.teamsArray.find(t => t.teamFrontendId === result.data.homeTeamFrontendId);
+        const selectedAwayTeam = this.teamsArray.find(t => t.teamFrontendId === result.data.awayTeamFrontendId);
+        const selectedStage = this.stagesArray.find(s => s.stageFrontendId === result.data.stageFrontendId);
+  
         const updatedMatch: Match = {
           matchFrontendId: result.data.matchFrontendId,
           matchId: result.data.matchId ?? null,
-    
-          stageId: result.data.stageId ?? null,
-          stageFrontendId: result.data.stageFrontendId,
-          stageName: result.data.stageName,
-    
-          homeTeamId: result.data.homeTeamId ?? null,
-          homeTeamFrontendId: result.data.homeTeamFrontendId,
-          homeTeam: result.data.homeTeam,
-    
-          awayTeamId: result.data.awayTeamId ?? null,
-          awayTeamFrontendId: result.data.awayTeamFrontendId,
-          awayTeam: result.data.awayTeam,
-    
+  
+          stageId: selectedStage?.stageId ?? null,
+          stageFrontendId: selectedStage?.stageFrontendId ?? '',
+          stageName: selectedStage?.stageName ?? '',
+  
+          homeTeamId: selectedHomeTeam?.teamId ?? null,
+          homeTeamFrontendId: selectedHomeTeam?.teamFrontendId ?? '',
+          homeTeam: selectedHomeTeam?.teamName ?? '',
+  
+          awayTeamId: selectedAwayTeam?.teamId ?? null,
+          awayTeamFrontendId: selectedAwayTeam?.teamFrontendId ?? '',
+          awayTeam: selectedAwayTeam?.teamName ?? '',
+  
           matchStart: result.data.matchStart || '',
           matchType: result.data.matchType || 'Regular90Min',
           homeWinOdds: result.data.homeWinOdds ?? 0,
@@ -129,61 +136,70 @@ export class StageMatchesManagementPage implements OnInit {
           awayWinOdds: result.data.awayWinOdds ?? 0,
           homeQualifies: result.data.homeQualifies ?? null,
           awayQualifies: result.data.awayQualifies ?? null,
-    
+  
           recordStatus: index !== undefined
-            ? (JSON.stringify(existingMatch) !== JSON.stringify(result.data) ? 'Updated' : existingMatch.recordStatus)
+            ? (JSON.stringify(existingMatch) !== JSON.stringify(result.data) ? 'Update' : existingMatch.recordStatus)
             : 'New'
         };
-    
+  
         if (index !== undefined) {
           const matchControl = this.matchesArray.at(index) as FormGroup;
           matchControl.patchValue(updatedMatch);
         } else {
           this.matchesArray.push(buildMatchFormGroup(this.fb, updatedMatch));
         }
-    
+  
         this.emitMatches();
         console.log('Updated Match:', updatedMatch);
       }
-    });    
-
-    await modal.present();
-  }
-
-  // Remove a match from the FormArray
-  async removeMatch(index: number): Promise<void> {
-    const matchToRemove = this.matchesArray.at(index).value;
-  
-    const alert = await this.alertController.create({
-      header: 'Confirm Removal',
-      message: `Are you sure you want to delete the match "${matchToRemove.homeTeam} vs ${matchToRemove.awayTeam}"?`,
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Delete',
-          role: 'destructive',
-          handler: () => {
-            if (matchToRemove.recordStatus === 'New') {
-              // If match is "New", remove it from the array
-              this.matchesArray.removeAt(index);
-            } else {
-              // Otherwise, mark it for deletion
-              const matchGroup = this.matchesArray.at(index) as FormGroup;
-              matchGroup.patchValue({ recordStatus: 'Delete' });
-            }
-  
-            this.emitMatches();
-            console.log('Removed Match:', matchToRemove);
-          },
-        },
-      ],
     });
   
-    await alert.present();
+    await modal.present();
   }  
+
+  // Remove a match from the FormArray
+  async handleRemoveOrUndoMatch(index: number): Promise<void> {
+    const matchControl = this.getMatchControl(index);
+    const matchToRemove = matchControl.value;
+    const currentStatus = matchToRemove.recordStatus;
+
+    if (currentStatus === 'Delete') {
+      matchControl.patchValue({ recordStatus: 'Update' });
+      this.emitMatches();
+      await this.showToast(`Match restored successfully!`, 'success');
+    } else {
+      const alert = await this.alertController.create({
+        header: 'Confirm Removal',
+        message: `Are you sure you want to delete the match "${matchToRemove.homeTeam} vs ${matchToRemove.awayTeam}"?`,
+        buttons: [
+          { text: 'Cancel', role: 'cancel' },
+          {
+            text: 'Delete',
+            role: 'destructive',
+            handler: async () => {
+              if (currentStatus === 'New') {
+                this.matchesArray.removeAt(index);
+              } else {
+                matchControl.patchValue({ recordStatus: 'Delete' });
+              }
+              this.emitMatches();
+              await this.showToast(`Match removed successfully!`, 'success');
+            },
+          },
+        ],
+      });
+
+      await alert.present();
+    }
+  }
+
+  getDeleteButtonText(recordStatus: string | null): string {
+    return recordStatus === 'Delete' ? 'Undo' : 'Delete';
+  }
+
+  getDeleteButtonColor(recordStatus: string | null): string {
+    return recordStatus === 'Delete' ? 'medium' : 'danger';
+  } 
 
   // Emit updated matches to parent
   private emitMatches(): void {
@@ -211,11 +227,31 @@ export class StageMatchesManagementPage implements OnInit {
       homeQualifies: match.homeQualifies,
       awayQualifies: match.awayQualifies,
 
-      recordStatus: match.recordStatus ?? 'Uploaded'
+      recordStatus: match.recordStatus ?? 'Update'
     }));
 
     this.matchesUpdated.emit(updatedMatches);
     console.log('Emitted Updated Matches:', updatedMatches);
+  }
+
+  getRecordStatusClass(recordStatus: string | null): string {
+    switch (recordStatus) {
+      case 'New': return 'match-status-new';
+      case 'Update': return 'match-status-update';
+      case 'Delete': return 'match-status-delete';
+      case 'Uploaded': return 'match-status-uploaded';
+      default: return '';
+    }
+  }
+
+  private async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary'): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color,
+    });
+    await toast.present();
   }
 
   // Generate unique frontendId for new matches

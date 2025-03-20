@@ -67,7 +67,7 @@ export class EditStageModalComponent implements OnInit {
       order: this.stageForm.value.order,
       recordStatus: this.isEditing
         ? (this.stage && (this.stage.stageName !== this.stageForm.value.stageName.trim() || this.stage.order !== this.stageForm.value.order)
-            ? 'Updated'
+            ? 'Update'
             : this.stageForm.value.recordStatus)
         : 'New',
     };

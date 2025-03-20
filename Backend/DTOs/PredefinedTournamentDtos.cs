@@ -31,6 +31,8 @@ namespace Backend.DTOs
 
         [Required, MaxLength(50)]
         public string TeamName { get; set; } = string.Empty;
+        [Required]
+        public string RecordStatus { get; set; }
     }
 
     public class PredefinedStageDto
@@ -40,6 +42,8 @@ namespace Backend.DTOs
 
         [Required, MaxLength(50)]
         public string StageName { get; set; } = string.Empty;
+        [Required]
+        public string RecordStatus { get; set; }
     }
 
     public class PredefinedMatchDto
@@ -66,6 +70,9 @@ namespace Backend.DTOs
         public decimal AwayWinOdds { get; set; }
         public decimal? HomeQualifies { get; set; }
         public decimal? AwayQualifies { get; set; }
+
+        [Required]
+        public string RecordStatus { get; set; }
 
         private DateTime _matchStart;
 
