@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 })
 export class EditUserModalComponent implements OnInit {
   @Input() user: {
-    userId: string | null;
+    assignmentId?: number | null; // Passed from backend, should remain untouched
     userName: string;
     userAdminName: string;
     userEmail: string;
@@ -78,9 +78,12 @@ export class EditUserModalComponent implements OnInit {
   
     // Preserve existing values but update recordStatus
     const finalUser = {
-      ...existingUser, // Preserve existing user fields
-      ...updatedUser,  // Apply new form values
-      status: existingUser?.status ?? 'New', // Ensure status is preserved
+      assignmentId: existingUser?.assignmentId ?? null, // Never modify assignmentId in frontend
+      userName: existingUser?.userName ?? '',
+      userAdminName: updatedUser.userAdminName, // Updated admin name
+      userEmail: updatedUser.userEmail, // Email is the key identifier for changes
+      userRole: updatedUser.userRole,
+      status: existingUser?.status ?? 'New', // Keep backend-provided status
       recordStatus: this.isEditing
         ? (isUpdated ? 'Update' : existingUser?.recordStatus) // Mark "Update" only if changed
         : 'New', // Default for new users

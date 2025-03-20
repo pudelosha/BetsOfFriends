@@ -35,12 +35,13 @@ export class StageUsersManagementPage {
       component: EditUserModalComponent,
       componentProps: {
         user: {
-          userId: null,
+          assignmentId: null, // New users do not get an assignmentId
           userName: '',
           userAdminName: '',
           userEmail: '',
           status: 'New',
           userRole: 'Player',
+          recordStatus: 'New',
         },
         isEditing: false,
         allUserEmails,
@@ -50,18 +51,18 @@ export class StageUsersManagementPage {
     modal.onDidDismiss().then(result => {
       if (result.data) {
         const newUser = {
-          userId: null,
+          assignmentId: null, // New users should not have an assignmentId
           userName: result.data.userName.trim(),
           userAdminName: result.data.userAdminName.trim(),
           userEmail: result.data.userEmail.trim().toLowerCase(),
           status: 'New',
           userRole: result.data.userRole,
-          recordStatus: 'New'
+          recordStatus: 'New',
         };
     
         this.usersArray.push(
           this.fb.group({
-            userId: [newUser.userId],
+            assignmentId: [newUser.assignmentId], // Include assignmentId
             userName: [newUser.userName, Validators.required],
             userAdminName: [newUser.userAdminName, Validators.required],
             userEmail: [newUser.userEmail, [Validators.required, Validators.email]],
@@ -103,12 +104,13 @@ export class StageUsersManagementPage {
                           existingUser.userRole !== updatedUser.userRole;
     
         userGroup.patchValue({
+          assignmentId: existingUser.assignmentId ?? null, // Preserve backend assignmentId
           userName: updatedUser.userName.trim(),
           userAdminName: updatedUser.userAdminName.trim(),
           userEmail: updatedUser.userEmail.trim().toLowerCase(),
-          status: updatedUser.status,
+          status: existingUser.status, // Ensure status remains unchanged
           userRole: updatedUser.userRole,
-          recordStatus: isUpdated ? 'Update' : existingUser.recordStatus
+          recordStatus: isUpdated ? 'Update' : existingUser.recordStatus,
         });
     
         console.log('Updated User:', updatedUser);
@@ -158,13 +160,13 @@ export class StageUsersManagementPage {
   // Emit updated list of users to parent
   private emitUsers(): void {
     const updatedUsers = this.usersArray.value.map((user: any) => ({
-      userId: user.userId,
+      assignmentId: user.assignmentId ?? null, // Preserve assignmentId
       userName: user.userName,
       userAdminName: user.userAdminName,
       userEmail: user.userEmail,
       status: user.status,
       userRole: user.userRole,
-      recordStatus: user.recordStatus ?? 'Uploaded'
+      recordStatus: user.recordStatus ?? 'Uploaded',
     }));
   
     this.usersUpdated.emit(updatedUsers);

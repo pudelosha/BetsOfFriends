@@ -35,6 +35,10 @@ export class StageMatchesManagementPage implements OnInit {
   }
 
   async addMatch(): Promise<void> {
+    // Filter teams and stages excluding those marked as "Delete"
+    const availableTeams = this.teamsArray.filter(t => t.recordStatus !== 'Delete');
+    const availableStages = this.stagesArray.filter(s => s.recordStatus !== 'Delete');
+
     if (!this.teamsArray || this.teamsArray.length === 0) {
       console.warn('No teams available to add a match.');
       return;
@@ -45,8 +49,8 @@ export class StageMatchesManagementPage implements OnInit {
       componentProps: {
         match: null, // Indicate "Add New Match"
         index: undefined, // No existing match to edit
-        teams: this.teamsArray, // Pass full team objects
-        stages: this.stagesArray, // Pass full stage objects
+        teams: availableTeams, // Pass filtered team objects
+        stages: availableStages, // Pass filtered stage objects
       },
     });
   
@@ -96,23 +100,27 @@ export class StageMatchesManagementPage implements OnInit {
   // Open edit modal for a match
   async openEditModal(index?: number) {
     const existingMatch = index !== undefined ? this.getMatchControl(index).value : null;
+
+    // Filter out "Deleted" teams and stages
+    const availableTeams = this.teamsArray.filter(t => t.recordStatus !== 'Delete');
+    const availableStages = this.stagesArray.filter(s => s.recordStatus !== 'Delete');
   
     const modal = await this.modalController.create({
       component: EditMatchModalComponent,
       componentProps: {
         match: existingMatch || {}, // Pass existing match or an empty object
         index,
-        teams: this.teamsArray, // Pass full structured teams
-        stages: this.stagesArray, // Pass full stages
+        teams: availableTeams,
+        stages: availableStages,
       },
     });
   
     modal.onDidDismiss().then((result) => {
       if (result.data) {
-        const selectedHomeTeam = this.teamsArray.find(t => t.teamFrontendId === result.data.homeTeamFrontendId);
-        const selectedAwayTeam = this.teamsArray.find(t => t.teamFrontendId === result.data.awayTeamFrontendId);
-        const selectedStage = this.stagesArray.find(s => s.stageFrontendId === result.data.stageFrontendId);
-  
+        const selectedHomeTeam = availableTeams.find(t => t.teamFrontendId === result.data.homeTeamFrontendId);
+        const selectedAwayTeam = availableTeams.find(t => t.teamFrontendId === result.data.awayTeamFrontendId);
+        const selectedStage = availableStages.find(s => s.stageFrontendId === result.data.stageFrontendId);
+    
         const updatedMatch: Match = {
           matchFrontendId: result.data.matchFrontendId,
           matchId: result.data.matchId ?? null,

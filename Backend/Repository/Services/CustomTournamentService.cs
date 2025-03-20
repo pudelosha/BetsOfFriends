@@ -411,7 +411,7 @@ namespace Backend.Repository.Services
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Step 1: Fetch the tournament from the database
+                // Step 1: Fetch the tournament
                 var tournament = await _context.CustomTournaments
                     .Include(t => t.Teams)
                     .Include(t => t.Matches)
@@ -426,16 +426,15 @@ namespace Backend.Repository.Services
                     return false;
                 }
 
-                // Step 2: Check if the user is an Admin in this tournament
+                // Step 2: Ensure the user is an Admin
                 bool isTournamentAdmin = tournament.Participants.Any(p => p.UserId == userId && p.Role == UserTournamentRole.Admin);
-
                 if (!isTournamentAdmin)
                 {
                     _logger.LogWarning($"User {userId} attempted to update tournament {tournamentDto.TournamentId} without permission.");
-                    return false; // Forbidden
+                    return false;
                 }
 
-                // Step 3: Update tournament details and settings
+                // Step 3: Update Tournament Details & Settings
                 tournament.Name = tournamentDto.TournamentName;
                 tournament.IsActive = tournamentDto.IsActive;
 
@@ -448,13 +447,10 @@ namespace Backend.Repository.Services
                         tournamentDto.Settings.ExactResultBonusCalculation, true, out var exactBonusCalculation)
                         ? exactBonusCalculation : CustomTournament.ExactResultBonusCalculationType.Fixed;
                     tournament.ExactResultBonus = tournamentDto.Settings.ExactResultBonus;
-
                     tournament.AllowWhoQualifiesBets = tournamentDto.Settings.AllowWhoQualifiesBets;
-
                     tournament.AllowBetsWithBooster = tournamentDto.Settings.AllowBetsWithBooster;
                     tournament.MaxBetBooster = tournamentDto.Settings.MaxBetBooster;
                     tournament.TotalBoosterPool = tournamentDto.Settings.TotalBoosterPool;
-
                     tournament.AllowNonSubmittedBetsPenalty = tournamentDto.Settings.AllowNonSubmittedBetsPenalty;
                     tournament.NonSubmittedBetPenalty = tournamentDto.Settings.NonSubmittedBetPenalty;
                 }
@@ -463,224 +459,163 @@ namespace Backend.Repository.Services
 
                 // Step 4: Handle Teams
                 var existingTeams = tournament.Teams.ToDictionary(t => t.TeamId);
-                var updatedTeamsWithIds = tournamentDto.Teams.Where(t => t.TeamId.HasValue).ToDictionary(t => t.TeamId.Value);
-                var newTeams = tournamentDto.Teams.Where(t => !t.TeamId.HasValue).ToList();
+                var teamsToRemove = tournamentDto.Teams.Where(t => t.RecordStatus == "Delete").ToList();
+                var teamsToUpdate = tournamentDto.Teams.Where(t => t.RecordStatus == "Update").ToList();
+                var newTeams = tournamentDto.Teams.Where(t => t.RecordStatus == "New").ToList();
 
-                var teamsToRemove = existingTeams.Values.Where(et => !updatedTeamsWithIds.ContainsKey(et.TeamId)).ToList();
                 foreach (var team in teamsToRemove)
                 {
-                    var relatedMatches = _context.CustomMatches
-                        .Where(m => m.HomeTeamId == team.TeamId || m.AwayTeamId == team.TeamId)
-                        .ToList();
+                    var relatedMatches = _context.CustomMatches.Where(m => m.HomeTeamId == team.TeamId || m.AwayTeamId == team.TeamId).ToList();
                     _context.CustomMatches.RemoveRange(relatedMatches);
+                    _context.CustomTeams.Remove(existingTeams[team.TeamId.Value]);
                 }
-                _context.CustomTeams.RemoveRange(teamsToRemove);
 
-                foreach (var teamDto in updatedTeamsWithIds.Values)
+                foreach (var team in teamsToUpdate)
                 {
-                    if (existingTeams.TryGetValue(teamDto.TeamId.Value, out var team))
+                    if (existingTeams.TryGetValue(team.TeamId.Value, out var existingTeam))
                     {
-                        team.TeamName = teamDto.TeamName;
+                        existingTeam.TeamName = team.TeamName;
                     }
                 }
 
-                foreach (var newTeamDto in newTeams)
+                foreach (var team in newTeams)
                 {
-                    tournament.Teams.Add(new CustomTeam
-                    {
-                        TeamName = newTeamDto.TeamName,
-                        TournamentId = tournament.TournamentId
-                    });
+                    tournament.Teams.Add(new CustomTeam { TeamName = team.TeamName, TournamentId = tournament.TournamentId });
                 }
 
                 await _context.SaveChangesAsync();
 
-                // Step 5: Handle Stages
-                var existingStages = tournament.Stages.ToDictionary(s => s.StageId);
-                var updatedStagesWithIds = tournamentDto.Stages.Where(s => s.StageId.HasValue).ToDictionary(s => s.StageId.Value);
-                var newStages = tournamentDto.Stages.Where(s => !s.StageId.HasValue).ToList();
-
-                // Remove stages not in the updated list
-                var stagesToRemove = existingStages.Values.Where(es => !updatedStagesWithIds.ContainsKey(es.StageId)).ToList();
-
-                foreach (var stage in stagesToRemove)
-                {
-                    // Remove related matches that belong to this stage
-                    var relatedMatches = _context.CustomMatches
-                        .Where(m => m.StageId == stage.StageId)
-                        .ToList();
-                    _context.CustomMatches.RemoveRange(relatedMatches);
-                }
-
-                _context.CustomMatchStages.RemoveRange(stagesToRemove);
-
-                // Update existing stages
-                foreach (var stageDto in updatedStagesWithIds.Values)
-                {
-                    if (existingStages.TryGetValue(stageDto.StageId.Value, out var stage))
-                    {
-                        stage.StageName = stageDto.StageName;
-                        stage.Order = stageDto.Order;
-                    }
-                }
-
-                // Add new stages
-                foreach (var newStageDto in newStages)
-                {
-                    tournament.Stages.Add(new CustomMatchStage
-                    {
-                        StageName = newStageDto.StageName,
-                        TournamentId = tournament.TournamentId,
-                        Order = newStageDto.Order
-                    });
-                }
-
-                await _context.SaveChangesAsync();
-
-                // Step 6: Handle Matches
                 var teamMap = await _context.CustomTeams
                     .Where(t => t.TournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(t => t.TeamName, t => t.TeamId);
+
+                // Step 5: Process Stages
+                var existingStages = tournament.Stages.ToDictionary(s => s.StageId);
+                var stagesToRemove = tournamentDto.Stages.Where(s => s.RecordStatus == "Delete").ToList();
+                var stagesToUpdate = tournamentDto.Stages.Where(s => s.RecordStatus == "Update").ToList();
+                var newStages = tournamentDto.Stages.Where(s => s.RecordStatus == "New").ToList();
+
+                foreach (var stage in stagesToRemove)
+                {
+                    var relatedMatches = _context.CustomMatches.Where(m => m.StageId == stage.StageId).ToList();
+                    _context.CustomMatches.RemoveRange(relatedMatches);
+                    _context.CustomMatchStages.Remove(existingStages[stage.StageId.Value]);
+                }
+
+                foreach (var stage in stagesToUpdate)
+                {
+                    if (existingStages.TryGetValue(stage.StageId.Value, out var existingStage))
+                    {
+                        existingStage.StageName = stage.StageName;
+                        existingStage.Order = stage.Order;
+                    }
+                }
+
+                foreach (var stage in newStages)
+                {
+                    tournament.Stages.Add(new CustomMatchStage { StageName = stage.StageName, TournamentId = tournament.TournamentId, Order = stage.Order });
+                }
+
+                await _context.SaveChangesAsync();
 
                 var stageMap = await _context.CustomMatchStages
                     .Where(s => s.TournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(s => s.StageName, s => s.StageId);
 
+                // Step 6: Process Matches
                 var existingMatches = tournament.Matches.ToDictionary(m => m.MatchId);
-                var updatedMatchesWithIds = tournamentDto.Matches.Where(m => m.MatchId.HasValue).ToDictionary(m => m.MatchId.Value);
-                var newMatches = tournamentDto.Matches.Where(m => !m.MatchId.HasValue).ToList();
+                var matchesToRemove = tournamentDto.Matches.Where(m => m.RecordStatus == "Delete" && m.MatchId.HasValue).ToList();
+                var matchesToUpdate = tournamentDto.Matches.Where(m => m.RecordStatus == "Update" && m.MatchId.HasValue).ToList();
+                var newMatches = tournamentDto.Matches.Where(m => m.RecordStatus == "New").ToList();
 
-                var matchesToRemove = existingMatches.Values.Where(em => !updatedMatchesWithIds.ContainsKey(em.MatchId)).ToList();
-                _context.CustomMatches.RemoveRange(matchesToRemove);
-
-                foreach (var matchDto in updatedMatchesWithIds.Values)
+                // Ensure deleted matches exist before removing them
+                foreach (var match in matchesToRemove)
                 {
-                    if (existingMatches.TryGetValue(matchDto.MatchId.Value, out var match))
+                    if (existingMatches.TryGetValue(match.MatchId.Value, out var existingMatch))
                     {
-                        match.StageId = stageMap.TryGetValue(matchDto.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{matchDto.StageName}' not found.");
-                        match.HomeTeamId = matchDto.HomeTeamId.Value;
-                        match.AwayTeamId = matchDto.AwayTeamId.Value;
-                        match.MatchStart = DateTime.SpecifyKind(matchDto.MatchStart, DateTimeKind.Utc);
-                        match.Type = Enum.Parse<CustomMatch.MatchType>(matchDto.MatchType);
-                        match.HomeWinOdds = matchDto.HomeWinOdds;
-                        match.DrawOdds = matchDto.DrawOdds;
-                        match.AwayWinOdds = matchDto.AwayWinOdds;
-                        match.HomeQualifies = matchDto.HomeQualifies;
-                        match.AwayQualifies = matchDto.AwayQualifies;
+                        _context.CustomMatches.Remove(existingMatch);
                     }
                 }
 
-                foreach (var newMatchDto in newMatches)
+                // Update existing matches
+                foreach (var match in matchesToUpdate)
                 {
-                    var homeTeamId = teamMap.TryGetValue(newMatchDto.HomeTeam, out var homeId)
-                        ? homeId
-                        : throw new Exception($"Home team '{newMatchDto.HomeTeam}' not found.");
-                    var awayTeamId = teamMap.TryGetValue(newMatchDto.AwayTeam, out var awayId)
-                        ? awayId
-                        : throw new Exception($"Away team '{newMatchDto.AwayTeam}' not found.");
-                    var stageId = stageMap.TryGetValue(newMatchDto.StageName, out var stgId)
-                        ? stgId
-                        : throw new Exception($"Stage '{newMatchDto.StageName}' not found.");
+                    if (existingMatches.TryGetValue(match.MatchId.Value, out var existingMatch))
+                    {
+                        existingMatch.StageId = stageMap.TryGetValue(match.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{match.StageName}' not found.");
+                        existingMatch.HomeTeamId = match.HomeTeamId ?? throw new Exception($"Home team ID missing for match {match.MatchId}");
+                        existingMatch.AwayTeamId = match.AwayTeamId ?? throw new Exception($"Away team ID missing for match {match.MatchId}");
+                        existingMatch.MatchStart = DateTime.SpecifyKind(match.MatchStart, DateTimeKind.Utc);
+                        existingMatch.Type = Enum.Parse<CustomMatch.MatchType>(match.MatchType);
+                        existingMatch.HomeWinOdds = match.HomeWinOdds;
+                        existingMatch.DrawOdds = match.DrawOdds;
+                        existingMatch.AwayWinOdds = match.AwayWinOdds;
+                        existingMatch.HomeQualifies = match.HomeQualifies;
+                        existingMatch.AwayQualifies = match.AwayQualifies;
+                    }
+                }
 
-                    var newMatch = new CustomMatch
+                // Add new matches
+                foreach (var newMatch in newMatches)
+                {
+                    var homeTeamId = teamMap.TryGetValue(newMatch.HomeTeam, out var homeId)
+                        ? homeId
+                        : throw new Exception($"Home team '{newMatch.HomeTeam}' not found.");
+                    var awayTeamId = teamMap.TryGetValue(newMatch.AwayTeam, out var awayId)
+                        ? awayId
+                        : throw new Exception($"Away team '{newMatch.AwayTeam}' not found.");
+                    var stageId = stageMap.TryGetValue(newMatch.StageName, out var stgId)
+                        ? stgId
+                        : throw new Exception($"Stage '{newMatch.StageName}' not found.");
+
+                    tournament.Matches.Add(new CustomMatch
                     {
                         TournamentId = tournament.TournamentId,
                         StageId = stageId,
                         HomeTeamId = homeTeamId,
                         AwayTeamId = awayTeamId,
-                        MatchStart = DateTime.SpecifyKind(newMatchDto.MatchStart, DateTimeKind.Utc),
-                        Type = Enum.Parse<CustomMatch.MatchType>(newMatchDto.MatchType),
-                        HomeWinOdds = newMatchDto.HomeWinOdds,
-                        DrawOdds = newMatchDto.DrawOdds,
-                        AwayWinOdds = newMatchDto.AwayWinOdds,
-                        HomeQualifies = newMatchDto.HomeQualifies,
-                        AwayQualifies = newMatchDto.AwayQualifies
-                    };
-
-                    _context.CustomMatches.Add(newMatch);
-                    await _context.SaveChangesAsync();
+                        MatchStart = DateTime.SpecifyKind(newMatch.MatchStart, DateTimeKind.Utc),
+                        Type = Enum.Parse<CustomMatch.MatchType>(newMatch.MatchType),
+                        HomeWinOdds = newMatch.HomeWinOdds,
+                        DrawOdds = newMatch.DrawOdds,
+                        AwayWinOdds = newMatch.AwayWinOdds,
+                        HomeQualifies = newMatch.HomeQualifies,
+                        AwayQualifies = newMatch.AwayQualifies
+                    });
                 }
 
-                // Step 7: Handle User Assignments (Track Changes)
-                var invitedUsers = new List<ApplicationUser>(); // New users needing setup emails
-                var newTournamentAssignments = new List<ApplicationUser>(); // Existing users getting a new tournament invite
-                var updatedAssignments = new List<ApplicationUser>(); // Updated assignments (no email needed)
+                await _context.SaveChangesAsync();
 
-                var existingAssignments = tournament.Participants.ToDictionary(p => p.AssignmentId);
-                var updatedUsers = tournamentDto.Users
-                    .Where(u => u.AssignmentId.HasValue)
-                    .ToDictionary(u => u.AssignmentId!.Value);
-                var newUsers = tournamentDto.Users.Where(u => !u.AssignmentId.HasValue).ToList();
+                // Step 7: Handle Users Based on `recordStatus`
+                var existingAssignments = tournament.Participants.ToDictionary(u => u.AssignmentId);
+                var usersToRemove = tournamentDto.Users.Where(u => u.RecordStatus == "Delete").ToList();
+                var usersToUpdate = tournamentDto.Users.Where(u => u.RecordStatus == "Update").ToList();
+                var newUsers = tournamentDto.Users.Where(u => u.RecordStatus == "New").ToList();
 
-                var removedAssignments = existingAssignments.Values
-                    .Where(ea => !updatedUsers.ContainsKey(ea.AssignmentId))
-                    .ToList();
-
-                // Remove incorrect user assignments, but do not delete users
-                foreach (var assignment in removedAssignments)
+                // Remove tournament assignments for users marked as Delete
+                foreach (var user in usersToRemove)
                 {
-                    if (assignment.Status == AssignmentStatus.New || assignment.Status == AssignmentStatus.Invited)
+                    if (existingAssignments.TryGetValue(user.AssignmentId!.Value, out var assignment))
                     {
                         _context.CustomTournamentUserAssignments.Remove(assignment);
-                        _logger.LogInformation($"Removed incorrect assignment for email: {assignment.User.Email}");
+                        _logger.LogInformation($"Removed tournament assignment for user {assignment.UserAdminName} ({assignment.UserId})");
                     }
                 }
 
-                foreach (var userDto in updatedUsers.Values)
+                // Update existing user assignments (Role Change, Admin Name Change)
+                foreach (var user in usersToUpdate)
                 {
-                    var assignment = existingAssignments[userDto.AssignmentId!.Value];
-
-                    if (assignment.Status == AssignmentStatus.New || assignment.Status == AssignmentStatus.Invited)
+                    if (existingAssignments.TryGetValue(user.AssignmentId!.Value, out var assignment))
                     {
-                        if (!string.Equals(assignment.User.Email, userDto.UserEmail, StringComparison.OrdinalIgnoreCase))
-                        {
-                            var existingUser = await _userService.FindUserByEmailAsync(userDto.UserEmail);
-
-                            if (existingUser == null)
-                            {
-                                var newUser = await _registerService.RegisterInvitedUserAsync(userDto.UserEmail);
-                                if (newUser == null) throw new Exception($"Failed to create user with email: {userDto.UserEmail}");
-
-                                invitedUsers.Add(newUser);
-
-                                _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
-                                {
-                                    UserId = newUser.Id,
-                                    TournamentId = tournament.TournamentId,
-                                    Role = Enum.TryParse(userDto.UserRole, out UserTournamentRole parsedRole) ? parsedRole : UserTournamentRole.Player,
-                                    Status = AssignmentStatus.Invited,
-                                    IsVisible = true,
-                                    UserAdminName = userDto.UserAdminName
-                                });
-                            }
-                            else
-                            {
-                                _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
-                                {
-                                    UserId = existingUser.Id,
-                                    TournamentId = tournament.TournamentId,
-                                    Role = Enum.TryParse(userDto.UserRole, out UserTournamentRole parsedRole) ? parsedRole : UserTournamentRole.Player,
-                                    Status = AssignmentStatus.Invited,
-                                    IsVisible = true,
-                                    UserAdminName = userDto.UserAdminName
-                                });
-
-                                newTournamentAssignments.Add(existingUser);
-                            }
-
-                            _context.CustomTournamentUserAssignments.Remove(assignment);
-                            _logger.LogInformation($"Replaced incorrect email {assignment.User.Email} with {userDto.UserEmail}");
-                        }
-                        else
-                        {
-                            // User assignment updated, but no email needed
-                            assignment.UserAdminName = userDto.UserAdminName;
-                            updatedAssignments.Add(assignment.User);
-                        }
+                        assignment.UserAdminName = user.UserAdminName;
+                        assignment.Role = Enum.Parse<UserTournamentRole>(user.UserRole);
+                        _logger.LogInformation($"Updated tournament assignment for user {assignment.UserAdminName} ({assignment.UserId}): Role = {user.UserRole}");
                     }
                 }
 
-                // Process New Users (Users not previously assigned)
+                // Process New Users (Assign to Tournament OR Register & Assign)
+                var emailTasks = new List<Task>();
+
                 foreach (var newUserDto in newUsers)
                 {
                     var existingUser = await _userService.FindUserByEmailAsync(newUserDto.UserEmail);
@@ -688,18 +623,31 @@ namespace Backend.Repository.Services
 
                     if (existingUser == null)
                     {
+                        // Register a new user who does not exist in the system
                         var newUser = await _registerService.RegisterInvitedUserAsync(newUserDto.UserEmail);
                         if (newUser == null) throw new Exception($"Failed to create user with email: {newUserDto.UserEmail}");
 
-                        invitedUsers.Add(newUser);
                         userToAssign = newUser;
+
+                        // Send Account Setup Email
+                        string setupLink = await GenerateAccountSetupLinkAsync(newUser);
+                        emailTasks.Add(SendAccountSetupEmailAsync(newUser.Email, tournament.Name, setupLink));
+
+                        _logger.LogInformation($"Registered new user {newUser.Email} and assigned to tournament {tournament.TournamentId}");
                     }
                     else
                     {
-                        newTournamentAssignments.Add(existingUser);
+                        // Existing user: Only assign to tournament
                         userToAssign = existingUser;
+
+                        // Send tournament invitation
+                        string inviteLink = GenerateTournamentInviteLink(existingUser.Email, tournament.TournamentId);
+                        emailTasks.Add(SendTournamentInvitationEmailAsync(existingUser.Email, tournament.Name, inviteLink));
+
+                        _logger.LogInformation($"Assigned existing user {existingUser.Email} to tournament {tournament.TournamentId}");
                     }
 
+                    // Assign user to tournament
                     _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
                     {
                         UserId = userToAssign.Id,
@@ -709,33 +657,16 @@ namespace Backend.Repository.Services
                         IsVisible = true,
                         UserAdminName = newUserDto.UserAdminName
                     });
-
-                    _logger.LogInformation($"Added new user {userToAssign.Email} to tournament {tournament.TournamentId}");
                 }
 
-                // Step 8: Commit transaction before sending emails
+                // Save changes before populating bets to ensure latest data is available
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // Step 9:  Populate bets
+                // Populate bets
                 await _betService.CreateBetsForTournamentAsync(tournament.TournamentId);
 
-                // Step 10: Send Emails (Outside Transaction)
-                var emailTasks = new List<Task>();
-
-                foreach (var user in invitedUsers)
-                {
-                    string setupLink = await GenerateAccountSetupLinkAsync(user);
-                    emailTasks.Add(SendAccountSetupEmailAsync(user.Email, tournament.Name, setupLink));
-                }
-
-                foreach (var user in newTournamentAssignments)
-                {
-                    string inviteLink = GenerateTournamentInviteLink(user.Email, tournament.TournamentId);
-                    emailTasks.Add(SendTournamentInvitationEmailAsync(user.Email, tournament.Name, inviteLink));
-                }
-
-                // Wait for all email tasks to complete asynchronously
+                // Send emails in parallel
                 await Task.WhenAll(emailTasks);
 
                 return true;
