@@ -1,33 +1,41 @@
 <div class="page-description">
   <p>
-    Manage tournament users. Click "Add" to add a new one, "Edit" to modify details, or "Delete" to remove. Invitations are sent to users without accounts; they must sign up and accept to join.
+    Manage tournament users. Invitations are sent to users without accounts, they must sign up and accept to join.
   </p>
-  </div>
-  
-  <ion-list class="user-list nav-menu-space">
-    <!-- Show empty row when no users are added -->
-    <ion-item *ngIf="usersArray.controls.length === 0" class="user-item">
-      <div class="user-grid">
-        <div class="user-details">No users added yet.</div>
+</div>
+
+<ion-list class="user-list nav-menu-space">
+  <!-- Show empty row when no users are added -->
+  <ion-item *ngIf="usersArray.controls.length === 0" class="user-item empty-user">
+    <div class="user-grid">
+      <div class="user-details">No users added yet.</div>
+    </div>
+  </ion-item>
+
+  <!-- List of users -->
+  <ion-item *ngFor="let user of usersArray.controls; let i = index" 
+            class="user-item" 
+            [formGroup]="getUserControl(i)"
+            [ngClass]="getUserStatusClass(getUserControl(i).get('recordStatus')?.value)">
+    <div class="user-grid">
+      <!-- User Details -->
+      <div class="user-details">
+        <span class="user-name">{{ getUserControl(i).get('userName')?.value }}</span>
+        <span class="user-email">{{ getUserControl(i).get('userEmail')?.value }}</span>
+        <span class="user-status">{{ getUserControl(i).get('status')?.value }}</span>
       </div>
-    </ion-item>
-  
-    <!-- List of users -->
-    <ion-item *ngFor="let user of usersArray.controls; let i = index" class="user-item" [formGroup]="getUserControl(i)">
-      <div class="user-grid">
-        <!-- User Details -->
-        <div class="user-details">
-          <span class="user-name">{{ getUserControl(i).get('userName')?.value }}</span>
-          <span class="user-email">{{ getUserControl(i).get('userEmail')?.value }}</span>
-          <span class="user-status">{{ getUserControl(i).get('status')?.value }}</span>
-        </div>
-  
-        <!-- Buttons: Edit and Delete -->
-        <div class="user-button-container">
-          <ion-button size="small" fill="outline" color="primary" class="user-button" (click)="editUser(i)">Edit</ion-button>
-          <ion-button size="small" fill="outline" color="danger" class="user-button" (click)="removeUser(i)">Delete</ion-button>
-        </div>
+
+      <!-- Buttons: Edit and Delete/Undo -->
+      <div class="user-button-container">
+        <ion-button size="small" fill="outline" color="primary" class="user-button" (click)="editUser(i)">Edit</ion-button>
+
+        <ion-button size="small" fill="outline"
+                    [color]="getDeleteButtonColor(getUserControl(i).get('recordStatus')?.value)"
+                    class="user-button fixed-button"
+                    (click)="handleRemoveOrUndoUser(i)">
+          {{ getDeleteButtonText(getUserControl(i).get('recordStatus')?.value) }}
+        </ion-button>
       </div>
-    </ion-item>
-  </ion-list>
-  
+    </div>
+  </ion-item>
+</ion-list>

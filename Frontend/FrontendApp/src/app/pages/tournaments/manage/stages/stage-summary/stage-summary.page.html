@@ -44,12 +44,15 @@
 </div>
 
 <!-- Users Section -->
+<!-- Users Section -->
 <div *ngIf="(usersArray?.length ?? 0) > 0">
   <div class="divider"></div>
 
   <div class="section-title">Users</div>
   <div class="summary-grid-users">
-    <div *ngFor="let user of usersArray" class="user-row">
+    <div *ngFor="let user of usersArray" 
+         class="user-row" 
+         [ngClass]="getRecordStatusClass(user.recordStatus)">
       <div class="user-name">{{ user.userName }}</div>
       <div class="user-email">{{ user.userEmail }}</div>
       <div class="user-status">{{ user.status }}</div>
@@ -58,3 +61,4 @@
 </div>
 
 <div class="nav-menu-space"></div>
+

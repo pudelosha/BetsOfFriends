@@ -10,16 +10,25 @@
   display: flex;
   flex-direction: column;
   padding: 0;
+  margin-bottom: 65px;
 }
 
 .form-label {
   font-weight: bold;
+  font-size: 12px;
   text-align: center;
-  margin: 0;
-  padding: 0;
 }
 
 /* Ensure correct alignment in ion-grid */
+.grid-frame {
+  --border-width: 0px;
+  --inner-border-width: 0px;
+  border-radius: 12px;
+  margin: 6px 0;
+  background-color: #f5f5f5;
+  padding: 5px 15px 10px 15px;
+}
+
 .settings-grid {
   width: 100%;
   padding: 0;
@@ -89,3 +98,8 @@ ion-button ion-icon {
   font-size: 24px; /* Adjust size as needed */
 }
 
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: left;
+}

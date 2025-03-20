@@ -82,7 +82,7 @@ export class EditUserModalComponent implements OnInit {
       ...updatedUser,  // Apply new form values
       status: existingUser?.status ?? 'New', // Ensure status is preserved
       recordStatus: this.isEditing
-        ? (isUpdated ? 'Updated' : existingUser?.recordStatus) // Mark "Updated" only if changed
+        ? (isUpdated ? 'Update' : existingUser?.recordStatus) // Mark "Update" only if changed
         : 'New', // Default for new users
     };
   

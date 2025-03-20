@@ -4,12 +4,11 @@
     <p>Configure additional tournament settings, including exact result bonuses, qualification bet rules, and penalties.</p>
   </div>
 
-  <hr class="divider" />
-
     <!-- Tournament Visibility -->
+    <div class="grid-frame">
     <ion-grid class="settings-grid">
       <ion-row class="align-center">
-        <ion-col size="10" class="left-align">
+        <ion-col size="10" class="left-align section-title">
           <ion-label>Tournament Visibility</ion-label>
         </ion-col>
         <ion-col size="2" class="right-align">
@@ -43,12 +42,13 @@
       <ion-input formControlName="publicTournamentName" placeholder="Enter public tournament name"></ion-input>
     </div>
   
-    <hr class="divider" />
+    </div>
   
     <!-- Tournament Update Method -->
+  <div class="grid-frame">
     <ion-grid class="settings-grid">
       <ion-row class="align-center">
-        <ion-col size="10" class="left-align">
+        <ion-col size="10" class="left-align section-title">
           <ion-label>Match Update Method</ion-label>
         </ion-col>
         <ion-col size="2" class="right-align">
@@ -79,13 +79,13 @@
         <ion-label>Auto</ion-label>
       </ion-segment-button>
     </ion-segment>
-  
-    <hr class="divider" />
+  </div>
 
-  <!-- Exact Result Bonus -->
+<!-- Exact Result Bonus -->
+<div class="grid-frame">
   <ion-grid class="settings-grid">
     <ion-row class="align-center">
-      <ion-col size="8" class="left-align">
+      <ion-col size="8" class="left-align section-title">
         <ion-label>Allow Exact Result Bonus</ion-label>
       </ion-col>
       <ion-col size="2" class="right-align">
@@ -115,13 +115,13 @@
     <ion-label class="form-label">Exact Result Bonus Value</ion-label>
     <ion-input type="number" formControlName="exactResultBonus" placeholder="Enter bonus value"></ion-input>
   </div>
+</div>
 
-  <hr class="divider" />
-
-  <!-- Who Qualifies Bets -->
+<!-- Who Qualifies Bets -->
+<div class="grid-frame">
   <ion-grid class="settings-grid">
     <ion-row class="align-center">
-      <ion-col size="8" class="left-align">
+      <ion-col size="8" class="left-align section-title">
         <ion-label>Allow Who Qualifies Bets</ion-label>
       </ion-col>
       <ion-col size="2" class="right-align">
@@ -139,13 +139,13 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-
-  <hr class="divider" />
+</div>
 
   <!-- Bets with Booster -->
+<div class="grid-frame">
   <ion-grid class="settings-grid">
     <ion-row class="align-center">
-      <ion-col size="8" class="left-align">
+      <ion-col size="8" class="left-align section-title">
         <ion-label>Allow Bets with Booster</ion-label>
       </ion-col>
       <ion-col size="2" class="right-align">
@@ -171,13 +171,13 @@
     <ion-label class="form-label">Total Booster Pool</ion-label>
     <ion-input type="number" formControlName="totalBoosterPool" placeholder="Enter booster pool size"></ion-input>
   </div>
-
-  <hr class="divider" />
+</div>
 
   <!-- Non-Submitted Bet Penalty -->
+<div class="grid-frame">
   <ion-grid class="settings-grid">
     <ion-row class="align-center">
-      <ion-col size="8" class="left-align">
+      <ion-col size="8" class="left-align section-title">
         <ion-label>Apply Penalty for No Bet</ion-label>
       </ion-col>
       <ion-col size="2" class="right-align">
@@ -200,5 +200,6 @@
     <ion-label class="form-label">Penalty Points</ion-label>
     <ion-input type="number" formControlName="nonSubmittedBetPenalty" placeholder="Enter penalty value"></ion-input>
   </div>
+</div>
   
 </form>

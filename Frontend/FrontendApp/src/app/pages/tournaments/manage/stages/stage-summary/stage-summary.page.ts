@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Match, Stage, Team } from 'src/app/model/tournament-model';
+import { Match, Stage, Team, User } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-stage-summary',
@@ -15,7 +15,7 @@ export class StageSummaryPage implements OnInit {
   @Input() tournamentName!: string;
   @Input() teamsArray!: Team[];
   @Input() matchesArray!: Match[];
-  @Input() usersArray!: { userId: number; userName: string; userEmail: string; status: string }[];
+  @Input() usersArray!: User[];
 
   constructor() {}
 

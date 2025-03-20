@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, FormControl, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { StageInputTypePage } from '../../stages/stage-input-type/stage-input-type.page';
@@ -10,7 +10,6 @@ import { StageSummaryPage } from '../../stages/stage-summary/stage-summary.page'
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Tournament, Team, Match, Stage } from '../../../../../model/tournament-model';
-import { ModalController } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 
 @Component({
@@ -35,7 +34,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private tournamentService: PredefinedTournamentService,
-    private modalController: ModalController,
     private loadingController: LoadingController
   ) {
     this.tournamentForm = this.fb.group({
@@ -69,6 +67,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
   private resetFormData(): void {
     this.tournamentForm.reset();
     this.teamsArray.clear();
+    this.stagesArray.clear();
     this.matchesArray.clear();
     this.tournamentForm.get('importMethod')?.setValue('upload');
   }
@@ -261,6 +260,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
       awayWinOdds: [match.awayWinOdds ?? 0],
       homeQualifies: [match.homeQualifies ?? null],
       awayQualifies: [match.awayQualifies ?? null],
+
+      recordStatus: [match.recordStatus ?? 'New'],
     });
   }
             
@@ -651,17 +652,20 @@ export class BuildPredefinedTournamentPage implements OnInit {
       isActive: true,
       createdBy: this.tournamentForm.value.createdBy || 'Admin',
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
+
       teams: this.teamsArray.value.map((team: Team) => ({
         teamId: isEditing ? team.teamId || null : null,
         teamName: team.teamName,
         recordStatus: team.recordStatus || 'New'
       })),
+
       stages: this.stagesArray.value.map((stage: Stage) => ({
         stageId: isEditing ? stage.stageId || null : null,
         stageName: stage.stageName,
         order: stage.order,
         recordStatus: stage.recordStatus || 'New'
       })),
+      
       matches: this.matchesArray.value.map((match: any) => ({
         matchId: isEditing ? match.matchId || null : null,
         stageId: isEditing ? match.stageId || null : null,

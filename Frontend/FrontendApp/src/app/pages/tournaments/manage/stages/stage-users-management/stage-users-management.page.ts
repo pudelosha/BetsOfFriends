@@ -97,8 +97,7 @@ export class StageUsersManagementPage {
         const userGroup = this.usersArray.at(index) as FormGroup;
         const existingUser = userGroup.value;
     
-        const isUpdated = existingUser.userName.trim() !== updatedUser.userName.trim() ||
-                          existingUser.userAdminName.trim() !== updatedUser.userAdminName.trim() ||
+        const isUpdated = existingUser.userAdminName.trim() !== updatedUser.userAdminName.trim() ||
                           existingUser.userEmail.trim().toLowerCase() !== updatedUser.userEmail.trim().toLowerCase() ||
                           existingUser.status !== updatedUser.status ||
                           existingUser.userRole !== updatedUser.userRole;
@@ -109,7 +108,7 @@ export class StageUsersManagementPage {
           userEmail: updatedUser.userEmail.trim().toLowerCase(),
           status: updatedUser.status,
           userRole: updatedUser.userRole,
-          recordStatus: isUpdated ? 'Updated' : existingUser.recordStatus
+          recordStatus: isUpdated ? 'Update' : existingUser.recordStatus
         });
     
         console.log('Updated User:', updatedUser);
@@ -172,14 +171,72 @@ export class StageUsersManagementPage {
     console.log('Emitted Updated Users:', updatedUsers);
   }  
 
-  // Show toast messages
-  private async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary'): Promise<void> {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      position: 'bottom',
-      color,
+// Determines Delete vs Undo button text
+getDeleteButtonText(recordStatus: string | null): string {
+  return recordStatus === 'Delete' ? 'Undo' : 'Delete';
+}
+
+// Determines button color based on record status
+getDeleteButtonColor(recordStatus: string | null): string {
+  return recordStatus === 'Delete' ? 'medium' : 'danger';
+}
+
+// Returns the class for status-based background coloring
+getUserStatusClass(recordStatus: string | null): string {
+  switch (recordStatus) {
+    case 'New': return 'user-status-new';
+    case 'Update': return 'user-status-updated';
+    case 'Delete': return 'user-status-delete';
+    case 'Uploaded': return 'user-status-uploaded';
+    default: return '';
+  }
+}
+
+// Handles user removal and undo logic
+async handleRemoveOrUndoUser(index: number): Promise<void> {
+  const userControl = this.getUserControl(index);
+  const userToRemove = userControl.value;
+  const currentStatus = userToRemove.recordStatus;
+
+  if (currentStatus === 'Delete') {
+    userControl.patchValue({ recordStatus: 'Update' });
+    this.emitUsers();
+    await this.showToast(`User restored successfully!`, 'success');
+  } else {
+    const alert = await this.alertController.create({
+      header: 'Confirm Removal',
+      message: `Are you sure you want to delete user "${userToRemove.userName}"?`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          handler: async () => {
+            if (currentStatus === 'New') {
+              this.usersArray.removeAt(index);
+            } else {
+              userControl.patchValue({ recordStatus: 'Delete' });
+            }
+            this.emitUsers();
+            await this.showToast(`User removed successfully!`, 'success');
+          },
+        },
+      ],
     });
-    await toast.present();
+
+    await alert.present();
+  }
+}
+
+
+  // Show toast messages
+private async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary'): Promise<void> {
+  const toast = await this.toastController.create({
+    message,
+    duration: 3000,
+    position: 'bottom',
+    color,
+  });
+  await toast.present();
   }
 }
