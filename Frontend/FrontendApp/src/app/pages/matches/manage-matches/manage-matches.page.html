@@ -1,41 +1,46 @@
 <ion-content class="ion-padding page-with-header">
-  <div class="page-container">
 
     <!-- Sticky Menu for Tabs -->
     <div class="sticky-menu">
-      <ion-segment [(ngModel)]="selectedTab" class="full-width">
-        <ion-segment-button value="upcoming" (click)="changeTab('upcoming')">
-          Upcoming
-        </ion-segment-button>
-        <ion-segment-button value="started" (click)="changeTab('started')">
-          Started
-        </ion-segment-button>
-        <ion-segment-button value="finalised" (click)="changeTab('finalised')">
-          Finalised
-        </ion-segment-button>
-      </ion-segment>
+      <div class="sticky-inner">
+        <ion-segment [(ngModel)]="selectedTab" class="full-width">
+          <ion-segment-button value="upcoming" (click)="changeTab('upcoming')">
+            Upcoming
+          </ion-segment-button>
+          <ion-segment-button value="started" (click)="changeTab('started')">
+            Started
+          </ion-segment-button>
+          <ion-segment-button value="finalised" (click)="changeTab('finalised')">
+            Finalised
+          </ion-segment-button>
+        </ion-segment>
+      </div>
     </div>
 
     <!-- Sticky Stage Navigation -->
     <div class="sticky-stage-menu">
-      <ion-grid class="full-width">
-        <ion-row class="ion-justify-content-center ion-align-items-center">
-          <ion-col size="auto">
-            <ion-button fill="clear" (click)="prevStage()" [disabled]="selectedStageIndex === 0">
-              <ion-icon name="chevron-back-outline"></ion-icon>
-            </ion-button>
-          </ion-col>
-          <ion-col size="auto">
-            <span class="stage-label">{{ availableStages[selectedStageIndex] }}</span>
-          </ion-col>
-          <ion-col size="auto">
-            <ion-button fill="clear" (click)="nextStage()" [disabled]="selectedStageIndex === availableStages.length - 1">
-              <ion-icon name="chevron-forward-outline"></ion-icon>
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
+      <div class="sticky-inner">
+        <ion-grid class="full-width">
+          <ion-row class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="auto">
+              <ion-button fill="clear" (click)="prevStage()" [disabled]="selectedStageIndex === 0">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+            <ion-col size="auto">
+              <span class="stage-label">{{ availableStages[selectedStageIndex] }}</span>
+            </ion-col>
+            <ion-col size="auto">
+              <ion-button fill="clear" (click)="nextStage()" [disabled]="selectedStageIndex === availableStages.length - 1">
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </div>  
+  
+  <div class="page-container">
 
     <!-- Child Components with Stage Prop -->
     <div class="menu-space">

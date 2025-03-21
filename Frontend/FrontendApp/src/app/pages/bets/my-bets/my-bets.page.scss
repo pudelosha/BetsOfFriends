@@ -32,6 +32,13 @@
     text-align: center;
     height: 56px;
   }
+
+  .sticky-inner {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 5px; /* Optional: match your page padding */
+    width: 100%;
+  }
   
   .stage-label {
     font-size: 14px;

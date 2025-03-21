@@ -1,42 +1,49 @@
 .sticky-menu {
-    position: fixed;
-    left: 0;
-    width: 100%;
-    background-color: white;
-    z-index: 10;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 0px 0;
-  }
-  
-  .full-width {
-    width: 100%;
-  }
+  position: fixed;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 0px 0;
+}
 
-  .page-container{
-    padding-bottom: 10px;
-  }
+.full-width {
+  width: 100%;
+}
 
-  .menu-space {
-    padding-top: 100px;
-  }
+.page-container{
+  padding-bottom: 10px;
+}
 
-  .sticky-stage-menu {
-    position: fixed;
-    top: 100px; /* Adjusted to not overlap with the main menu */
-    left: 0;
-    width: 100%;
-    background-color: white;
-    z-index: 1;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 0px 0px;
-    text-align: center;
-    height: 56px;
-  }
-  
-  .stage-label {
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    min-width: 100px;
-    display: inline-block;
-  }
+.menu-space {
+  padding-top: 100px;
+}
+
+.sticky-stage-menu {
+  position: fixed;
+  top: 100px; /* Adjusted to not overlap with the main menu */
+  left: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 0px 0px;
+  text-align: center;
+  height: 56px;
+}
+
+.sticky-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 5px; /* Optional: match your page padding */
+  width: 100%;
+}
+
+.stage-label {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  min-width: 100px;
+  display: inline-block;
+}

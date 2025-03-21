@@ -40,8 +40,10 @@
         [matchesArray]="matchesArray.value">
       </app-stage-summary>
     </div>
+  </div>
 
-    <div class="button-container">
+  <div class="button-container">
+    <div class="button-inner">
       <!-- Previous Button -->
       <div class="button-slot">
         <ion-button
@@ -51,7 +53,7 @@
           Previous
         </ion-button>
       </div>
-
+  
       <!-- Add / Submit Button -->
       <div class="button-slot">
         <ion-button
@@ -60,7 +62,7 @@
           (click)="openAddModal()">
           Add
         </ion-button>
-
+  
         <ion-button
           *ngIf="step === 5"
           class="third-width"
@@ -68,7 +70,7 @@
           Submit
         </ion-button>
       </div>
-
+  
       <!-- Next Button -->
       <div class="button-slot">
         <ion-button
@@ -80,6 +82,7 @@
       </div>
     </div>
   </div>
+
 </ion-content>
 
 <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>

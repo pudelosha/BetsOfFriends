@@ -97,38 +97,68 @@
   width: 100%;
 }
 
-/* Fix for Pages - Remove Left Padding Only from Pages */
-@media screen and (min-width: 768px) {
-  ion-content:not(ion-modal ion-content) {
-    --padding-start: 0 !important; /* Remove left padding from normal pages */
-  }
-}
-
 /* Restore Padding for Modals */
 ion-modal ion-content {
   --padding-start: 16px;
   --padding-end: 16px;
 }
 
+ion-header {
+  background: white;
+}
+
+ion-footer{
+  background: white;
+}
+
 /* Increase Modal Padding on Larger Screens */
 @media screen and (min-width: 768px) {
+  .page-container {
+    max-width: 600px;
+    padding: 0px 15px;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .sticky-inner {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .unauth-container {
+    max-width: 500px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
   ion-modal ion-content {
     --padding-start: 30px;
     --padding-end: 30px;
+  }
+
+  ion-toolbar {
+    max-width: 600px;
+    margin: 0 auto; /* Center it */
+    width: 100%;
   }
 }
 
 @media screen and (min-width: 1024px) {
   .page-container {
     max-width: 600px;
-    margin-left: 0px;
     padding: 0px 15px;
     box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
   }
 
+  .sticky-inner {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
   .unauth-container {
     max-width: 500px;
-    margin: 0 auto;
     padding: 15px;
     text-align: center;
     box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
@@ -137,6 +167,12 @@ ion-modal ion-content {
   ion-modal ion-content {
     --padding-start: 40px;
     --padding-end: 40px;
+  }
+
+  ion-toolbar {
+    max-width: 600px;
+    margin: 0 auto; /* Center it */
+    width: 100%;
   }
 }
 

@@ -1,13 +1,18 @@
-<ion-content class="ion-padding">
-  <div class="welcome-container">
+<ion-content fullscreen class="ion-padding">
+  <div class="parallax-container">
+    <!-- Parallax Background -->
+    <div class="parallax-bg" [ngStyle]="{ 'transform': 'translateY(' + parallaxOffset + 'px)' }"></div>
 
-    <h2>Welcome</h2>
-    <p>Log in to manage tournaments and place bets.</p>
+    <!-- Foreground Content - Main Hero Section -->
+    <div class="content">
+      <h1 class="app-title">Bet with Friends</h1>
+      <p class="app-description">Challenge your friends, create tournaments, and predict match outcomes.</p>
 
-    <div class="button-group">
-      <ion-button color="primary" class="rounded-button" (click)="navigateToLogin()">Login</ion-button>
-      <ion-button color="secondary" class="rounded-button" (click)="navigateToRegister()">Sign Up</ion-button>
+      <div class="button-group">
+        <ion-button color="primary" class="rounded-button" (click)="navigateToLogin()">Login</ion-button>
+        <ion-button color="secondary" class="rounded-button" (click)="navigateToRegister()">Sign Up</ion-button>
+      </div>
     </div>
-
   </div>
+
 </ion-content>
