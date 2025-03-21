@@ -221,4 +221,18 @@ namespace Backend.DTOs
     {
         public string Name { get; set; } = string.Empty;
     }
+
+    public class TournamentSearchRequestDto
+    {
+        public string? SearchTerm { get; set; }
+    }
+
+    public class PublicTournamentDto
+    {
+        public int TournamentId { get; set; }
+        public string TournamentName { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int Participants { get; set; }
+        public bool JoinRequested { get; set; }
+    }
 }

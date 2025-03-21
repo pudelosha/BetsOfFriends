@@ -5,7 +5,6 @@ using Backend.Repository.Interfaces;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 using static Backend.Model.Entities.CustomMatch;
 using static Backend.Model.Entities.CustomTournament;
@@ -22,6 +21,7 @@ namespace Backend.Repository.Services
         private readonly IEmailTemplateService _emailTemplateService;
         private readonly IConfiguration _configuration;
         private readonly IBetService _betService;
+        private readonly ITournamentSelectionService _tournamentSelectionService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public CustomTournamentService(
@@ -32,6 +32,7 @@ namespace Backend.Repository.Services
             IBetService betService,
             IEmailService emailService,
             IEmailTemplateService emailTemplateService,
+            ITournamentSelectionService tournamentSelectionService,
             UserManager<ApplicationUser> userManager,
             IConfiguration configuration)
         {
@@ -42,6 +43,7 @@ namespace Backend.Repository.Services
             _betService = betService;
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
+            _tournamentSelectionService = tournamentSelectionService;
             _configuration = configuration;
             _userManager = userManager;
         }
@@ -211,6 +213,9 @@ namespace Backend.Repository.Services
 
                 // Send all emails in parallel
                 await Task.WhenAll(emailTasks);
+
+                // Set created tournament as default
+                await _tournamentSelectionService.SetSelectedTournamentAsync(creatorUser.Id, tournament.TournamentId);
 
                 return true;
             }
@@ -917,6 +922,8 @@ namespace Backend.Repository.Services
 
                 _logger.LogInformation($"User {userId} successfully accepted invitation for tournament ID {tournamentId} with nickname {nickname}. Tournament set as default.");
 
+                await _tournamentSelectionService.SetSelectedTournamentAsync(userId, tournamentAssignment.TournamentId);
+
                 return new TournamentInvitationResponseDto
                 {
                     Success = true,
@@ -1318,6 +1325,35 @@ namespace Backend.Repository.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error querying database for tournament name: {publicTournamentName}");
+                throw;
+            }
+        }
+
+        public async Task<List<PublicTournamentDto>> GetPublicActiveTournamentsAsync(string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching public active tournaments for user {userId}");
+
+                var tournaments = await _context.CustomTournaments
+                    .AsNoTracking()
+                    .Where(t => t.IsActive && t.Visibility == CustomTournament.TournamentVisibility.Public)
+                    .Select(t => new PublicTournamentDto
+                    {
+                        TournamentId = t.TournamentId,
+                        TournamentName = t.Name,
+                        CreatedAt = t.CreatedAt,
+                        Participants = t.Participants.Count,
+                        JoinRequested = t.Participants.Any(p => p.UserId == userId && p.Status == AssignmentStatus.Invited)
+                    })
+                    .OrderByDescending(t => t.CreatedAt)
+                    .ToListAsync();
+
+                return tournaments;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching public active tournaments.");
                 throw;
             }
         }

@@ -37,7 +37,7 @@ export class TournamentSelectionService {
   }
 
   /** Loads selected tournament from backend when the app starts */
-  private loadSelectedTournamentFromBackend(): void {
+  loadSelectedTournamentFromBackend(): void {
     this.http.get<{ tournamentId: number | null }>(`${this.apiUrl}/get`).subscribe({
       next: (response) => {
         const tournamentId = response.tournamentId;

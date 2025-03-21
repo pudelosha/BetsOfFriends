@@ -130,6 +130,14 @@ export interface UserBettingStats {
   payout: number;
 }
 
+export interface PublicTournament {
+  tournamentId: string;
+  tournamentName: string;
+  createdAt: string;
+  participants: number;
+  joinRequested: boolean;
+}
+
 export type RecordStatus = 'New' | 'Uploaded' | 'Update' | 'Delete';
 
 

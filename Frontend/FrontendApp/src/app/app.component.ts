@@ -134,7 +134,7 @@ export class AppComponent {
     this.router.navigate(['/summary']);
   }
 
-  navigateToTournamentSearch() {
-    this.router.navigate(['/search']);
+  navigateToFindTournament() {
+    this.router.navigate(['/find-tournament']);
   }  
 }

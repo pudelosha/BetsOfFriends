@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Join Tournament</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="description">
+    <p>You are requesting to join <strong>{{ tournamentName }}</strong>.</p>
+    <p>Please enter a nickname and optionally a message for the admin.</p>
+  </div>
+
+  <form [formGroup]="requestForm" class="nickname-form">
+    <div class="form-row">
+      <ion-label class="selector-label">Nickname</ion-label>
+      <ion-input
+        formControlName="nickname"
+        type="text"
+        maxlength="20"
+        placeholder="Enter nickname">
+      </ion-input>
+    </div>
+
+    <div class="form-row">
+      <ion-label class="selector-label">Message for Admin</ion-label>
+      <ion-textarea
+        formControlName="message"
+        placeholder="Optional message"
+        rows="3">
+      </ion-textarea>
+    </div>
+
+    <div class="validation-message">
+      <p class="error" *ngIf="requestForm.controls['nickname'].hasError('required') && requestForm.controls['nickname'].touched">
+        Nickname is required.
+      </p>
+      <p class="error" *ngIf="requestForm.controls['nickname'].hasError('maxlength') && requestForm.controls['nickname'].touched">
+        Nickname cannot exceed 20 characters.
+      </p>
+      <p class="error" *ngIf="nicknameError">
+        {{ nicknameError }}
+      </p>
+    </div>
+
+    <div class="save-button-container">
+      <ion-button expand="full" color="primary" (click)="submitRequest()" [disabled]="requestForm.invalid || isLoading">
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner> Submit Request
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

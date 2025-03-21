@@ -57,7 +57,7 @@ export class AcceptInvitationModalComponent implements OnInit {
   
       // Set selected tournament in frontend
       this.tournamentSelectionService.setSelectedTournament(this.tournamentId);
-  
+        
       this.modalController.dismiss({ accepted: true });
   
     } catch (error: any) {

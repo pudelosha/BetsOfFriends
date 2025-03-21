@@ -516,5 +516,39 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while checking tournament name availability." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("search-public")]
+        public async Task<IActionResult> SearchPublicTournaments([FromBody] TournamentSearchRequestDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                _logger.LogInformation($"User {userId} is searching public tournaments with term: '{request?.SearchTerm}'");
+
+                var tournaments = await _tournamentService.GetPublicActiveTournamentsAsync(userId);
+
+                // Filter by search term (optional)
+                if (!string.IsNullOrWhiteSpace(request?.SearchTerm))
+                {
+                    var searchTerm = request.SearchTerm.Trim().ToLower();
+                    tournaments = tournaments
+                        .Where(t => t.TournamentName.ToLower().Contains(searchTerm))
+                        .ToList();
+                }
+
+                return Ok(tournaments);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while searching public tournaments");
+                return StatusCode(500, new { Message = "An error occurred while fetching tournaments." });
+            }
+        }
     }
 }

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tournament } from '../model/tournament-model';
 import { environment } from '../../environments/environment';
-import { UserActiveTournament, TournamentSummary, TournamentPlayerResult, TournamentInvite, UserBettingStats } from '../model/tournament-model';
+import { UserActiveTournament, TournamentSummary, TournamentPlayerResult, TournamentInvite, UserBettingStats, PublicTournament } from '../model/tournament-model';
 
 @Injectable({
   providedIn: 'root'
@@ -85,4 +85,8 @@ export class CustomTournamentService {
   checkTournamentNameAvailability(name: string): Observable<{ available: boolean }> {
     return this.http.post<{ available: boolean }>(`${this.apiUrl}/check-name`, { name });
   } 
+
+  searchPublicTournaments(searchTerm: string = ''): Observable<PublicTournament[]> {
+    return this.http.post<PublicTournament[]>(`${this.apiUrl}/search-public`, { searchTerm: searchTerm.trim() });
+  }
 }

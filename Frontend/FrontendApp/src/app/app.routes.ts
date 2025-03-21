@@ -78,7 +78,7 @@ export const routes: Routes = [
 
   { path: 'my-tournaments', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'summary', loadComponent: () => import('./pages/tournaments/summary-dashboard/summary-dashboard.page').then(m => m.SummaryDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
-  { path: 'search', loadComponent: () => import('./pages/tournaments/search/search.page').then( m => m.SearchPage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'find-tournament', loadComponent: () => import('./pages/tournaments/find-tournament/find-tournament.page').then( m => m.FindTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
   // Only for guests
   { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage), canActivate: [GuestGuard] },

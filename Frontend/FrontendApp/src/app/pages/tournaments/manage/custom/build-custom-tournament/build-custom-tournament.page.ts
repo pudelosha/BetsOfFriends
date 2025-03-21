@@ -15,6 +15,7 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
 import { ViewChild } from '@angular/core';
 import { Match, Team, User, Stage, RecordStatus } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 
 @Component({
   selector: 'app-build-custom-tournament',
@@ -41,6 +42,7 @@ export class BuildCustomTournamentPage implements OnInit {
     private route: ActivatedRoute,
     private tournamentService: CustomTournamentService,
     private loadingController: LoadingController,
+    private tournamentSelectionService: TournamentSelectionService
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
@@ -822,6 +824,9 @@ export class BuildCustomTournamentPage implements OnInit {
     submitObservable.subscribe({
       next: async (response) => {
         console.log('Server response:', response);
+
+        await this.tournamentSelectionService.loadSelectedTournamentFromBackend();
+
         await this.router.navigate(['/tournaments/custom']);
   
         this.showToast(

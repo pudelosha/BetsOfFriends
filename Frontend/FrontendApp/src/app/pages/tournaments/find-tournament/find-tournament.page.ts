@@ -1,0 +1,52 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule, ToastController, LoadingController, AlertController, ModalController  } from '@ionic/angular';
+import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { PublicTournament } from 'src/app/model/tournament-model';
+
+@Component({
+  selector: 'app-find-tournament',
+  templateUrl: './find-tournament.page.html',
+  styleUrls: ['./find-tournament.page.scss'],
+  standalone: true,
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
+})
+export class FindTournamentPage implements OnInit {
+  searchTerm = '';
+  isLoading = false;
+  filteredTournaments: PublicTournament[] = [];
+
+  constructor(private tournamentService: CustomTournamentService) {}
+
+  ngOnInit() {
+    this.loadTournaments(); // Initial load with all public tournaments
+  }
+
+  onSearchChange() {
+    this.loadTournaments(); // Filter when input changes
+  }
+
+  loadTournaments() {
+    this.isLoading = true;
+
+    const trimmedTerm = this.searchTerm.trim();
+
+    // Always pass a trimmed term (empty string means "no search")
+    this.tournamentService.searchPublicTournaments(trimmedTerm).subscribe({
+      next: (result) => {
+        this.filteredTournaments = result;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load public tournaments', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  requestToJoin(tournament: PublicTournament) {
+    console.log(`Request to join tournament ID: ${tournament.tournamentId}`);
+    // TODO: Call join request logic here
+  }
+}

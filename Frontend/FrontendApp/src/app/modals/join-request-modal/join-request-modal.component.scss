@@ -1,0 +1,39 @@
+ion-content {
+    --padding-top: 0 !important;
+    --padding-bottom: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .description {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 10px;
+  }
+  
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0;
+  }
+  
+  .selector-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
+  .save-button-container {
+    margin: 20px 0;
+  }
+  
+  .validation-message {
+    margin-top: 5px;
+  }
+  
+  .validation-message .error {
+    color: red;
+    font-size: 12px;
+    margin: 2px 0;
+  }
+  
