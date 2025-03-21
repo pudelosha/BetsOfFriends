@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormBuilder, FormGroup } from '@angular/forms';
-
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-notification-settings',
@@ -15,32 +13,33 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class NotificationSettingsPage implements OnInit {
   notificationForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private toastCtrl: ToastController) {
     this.notificationForm = this.fb.group({
-      tournamentResultsEmail: [false],
-      tournamentResultsPush: [false],
-      dailyTournamentUpdatesEmail: [false],
-      dailyTournamentUpdatesPush: [false],
-      tournamentInvitationsEmail: [false],
-      tournamentInvitationsPush: [false],
-      pendingBets1HourEmail: [false],
-      pendingBets1HourPush: [false],
-      pendingBets24HoursEmail: [false],
-      pendingBets24HoursPush: [false],
-      newGamesUpdatesEmail: [false],
-      newGamesUpdatesPush: [false],
-      liveMatchStartEmail: [false],
-      liveMatchStartPush: [false],
-      liveMatchSummaryEmail: [false],
-      liveMatchSummaryPush: [false],
-      specialOffersEmail: [false],
-      specialOffersPush: [false]
+      receiveEmailMatchClosed: [false],
+      receivePushMatchClosed: [false],
+      receiveEmailDailyUpdates: [false],
+      receivePushDailyUpdates: [false],
+      receiveEmailTournamentInvitation: [false],
+      receivePushTournamentInvitation: [false],
+      receiveEmailPendingBets: [false],
+      receivePushPendingBets: [false],
+      receiveEmailNewGames: [false],
+      receivePushNewGames: [false],
+      receiveEmailSpecialOffers: [false],
+      receivePushSpecialOffers: [false]
     });
   }
 
   ngOnInit() {}
 
-  onSubmit() {
-    console.log('Notification Settings:', this.notificationForm.value);
+  async onSubmit() {
+    console.log('Updated Notification Settings:', this.notificationForm.value);
+    const toast = await this.toastCtrl.create({
+      message: 'Notification settings saved.',
+      duration: 3000,
+      color: 'success',
+      position: 'bottom'
+    });
+    await toast.present();
   }
 }
