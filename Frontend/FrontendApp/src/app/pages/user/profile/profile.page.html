@@ -1,53 +1,76 @@
 <ion-content class="ion-padding page-with-header">
-
   <div class="page-container">
     <form [formGroup]="profileForm" (ngSubmit)="onSubmitProfile()">
 
-      <!-- Member Since -->
-      <ion-item>
-        <ion-label position="stacked">Member Since</ion-label>
-        <ion-input [value]="memberSince" readonly></ion-input>
-      </ion-item>
-    
-      <!-- Email -->
-      <ion-item>
-        <ion-label position="stacked">Email</ion-label>
-        <ion-input formControlName="email" readonly></ion-input>
-      </ion-item>
-  
-      <!-- Language -->
-      <ion-item>
-        <ion-label>Language</ion-label>
-        <ion-select formControlName="language">
-          <ion-select-option *ngFor="let lang of languages" [value]="lang.value">{{ lang.label }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-  
-      <!-- Dark Mode -->
-      <ion-item>
-        <ion-label>Dark Mode</ion-label>
-        <ion-toggle formControlName="darkMode"></ion-toggle>
-      </ion-item>
-  
-      <!-- Save Profile Button -->
-      <ion-button expand="full" color="primary" type="submit" [disabled]="profileForm.invalid">Save Profile</ion-button>
-  
-      <!-- Spacing -->
-      <div class="spacer"></div>
-  
-      <!-- Change Email Button -->
-      <ion-button expand="full" color="secondary" (click)="changeEmail()">Change Email</ion-button>
-  
-      <!-- Update Password Button -->
-      <ion-button expand="full" color="secondary" (click)="updatePasswordPopup()">Update Password</ion-button>
-  
-      <!-- Delete Account Button -->
-      <ion-button expand="full" color="danger" (click)="confirmDeleteAccount()">Delete Account</ion-button>
-  
+      <!-- Profile Details Frame -->
+      <div class="profile-frame">
+        <div class="frame-title">Profile details</div>
+
+        <!-- Member Since -->
+        <ion-item>
+          <ion-label position="stacked">Member Since</ion-label>
+          <ion-input [value]="memberSince" readonly></ion-input>
+        </ion-item>
+
+        <!-- Email -->
+        <ion-item>
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input formControlName="email" readonly></ion-input>
+        </ion-item>
+
+        <!-- Nickname -->
+        <ion-item>
+          <ion-label position="stacked">Nickname (optional)</ion-label>
+          <ion-input formControlName="nickname" type="text" placeholder="Enter nickname"></ion-input>
+        </ion-item>
+
+        <!-- Language -->
+        <ion-item>
+          <ion-label>Language</ion-label>
+          <ion-select formControlName="language">
+            <ion-select-option *ngFor="let lang of languages" [value]="lang.value">
+              {{ lang.label }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <!-- Location -->
+        <ion-item>
+          <ion-label>Location (optional)</ion-label>
+          <ion-select formControlName="location">
+            <ion-select-option value="" disabled>Select your location</ion-select-option>
+            <!-- Populate options later -->
+          </ion-select>
+        </ion-item>
+
+        <!-- Dark Mode -->
+        <ion-item>
+          <ion-label>Dark Mode</ion-label>
+          <ion-toggle formControlName="darkMode"></ion-toggle>
+        </ion-item>
+
+        <!-- Save Button -->
+        <ion-button expand="full" color="primary" type="submit" [disabled]="profileForm.invalid">
+          Save Profile
+        </ion-button>
+      </div>
+
+      <!-- Profile Management Frame -->
+      <div class="profile-frame">
+        <div class="frame-title">Profile management</div>
+
+        <!-- Change Email Button -->
+        <ion-button expand="full" color="secondary" (click)="changeEmail()">Change Email</ion-button>
+
+        <!-- Update Password Button -->
+        <ion-button expand="full" color="secondary" (click)="updatePasswordPopup()">Update Password</ion-button>
+
+        <!-- Delete Account Button -->
+        <ion-button expand="full" color="danger" (click)="confirmDeleteAccount()">Delete Account</ion-button>
+      </div>
     </form>
   </div>
 
-  <!-- Spinner when loading user profile -->
-  <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
-
+  <!-- Spinner when loading -->
+  <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
 </ion-content>

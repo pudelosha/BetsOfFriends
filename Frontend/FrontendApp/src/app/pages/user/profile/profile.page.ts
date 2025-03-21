@@ -34,10 +34,12 @@ export class ProfilePage implements OnInit {
     private loadingController: LoadingController
   ) {
     this.profileForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]], 
+      email: ['', [Validators.required, Validators.email]],
+      nickname: [''],
       language: ['en'],
+      location: [''],
       darkMode: [false]
-    });
+    });    
   }
 
   ngOnInit() {
@@ -221,9 +223,11 @@ export class ProfilePage implements OnInit {
   
         this.profileForm.patchValue({
           email: profile.email,
+          nickname: profile.nickname || '',
+          location: profile.location || '',
           language: this.getLanguageValue(profile.language),
           darkMode: profile.darkMode
-        });
+        });        
   
         const dateObj = new Date(profile.memberSince);
         this.memberSince = `${dateObj.getFullYear()}.${(dateObj.getMonth() + 1).toString().padStart(2, '0')}.${dateObj.getDate().toString().padStart(2, '0')}`;
@@ -253,9 +257,11 @@ export class ProfilePage implements OnInit {
     this.isUpdating = true;
   
     const updatedProfile = {
+      nickname: this.f['nickname'].value || null,
+      location: this.f['location'].value || null,
       language: this.f['language'].value,
-      darkMode: this.f['darkMode'].value,
-    };
+      darkMode: this.f['darkMode'].value
+    };    
   
     console.log('Updating profile:', updatedProfile);
   
