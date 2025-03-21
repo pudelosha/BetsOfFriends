@@ -4,6 +4,7 @@ import { IonicModule, ToastController, LoadingController, AlertController, Modal
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PublicTournament } from 'src/app/model/tournament-model';
+import { JoinRequestModalComponent } from 'src/app/modals/join-request-modal/join-request-modal.component';
 
 @Component({
   selector: 'app-find-tournament',
@@ -17,7 +18,10 @@ export class FindTournamentPage implements OnInit {
   isLoading = false;
   filteredTournaments: PublicTournament[] = [];
 
-  constructor(private tournamentService: CustomTournamentService) {}
+  constructor(private tournamentService: CustomTournamentService,
+              private modalController: ModalController,
+              private toastController: ToastController
+  ) {}
 
   ngOnInit() {
     this.loadTournaments(); // Initial load with all public tournaments
@@ -45,8 +49,32 @@ export class FindTournamentPage implements OnInit {
     });
   }
 
-  requestToJoin(tournament: PublicTournament) {
-    console.log(`Request to join tournament ID: ${tournament.tournamentId}`);
-    // TODO: Call join request logic here
+  async requestToJoin(tournament: PublicTournament) {
+    const modal = await this.modalController.create({
+      component: JoinRequestModalComponent,
+      componentProps: {
+        tournamentId: tournament.tournamentId,
+        tournamentName: tournament.tournamentName
+      }
+    });
+  
+    await modal.present();
+  
+    const { data } = await modal.onDidDismiss();
+  
+    if (data?.requested) {
+      await this.showToast('Join request submitted successfully.', 'success');
+      this.loadTournaments(); // Refresh the list to reflect the updated status
+    }
+  }
+
+  async showToast(message: string, color: 'success' | 'danger' | 'warning') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color
+    });
+    await toast.present();
   }
 }

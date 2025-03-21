@@ -65,6 +65,7 @@ export const routes: Routes = [
       { path: 'create-custom', loadComponent: () => import('./pages/tournaments/manage/custom/build-custom-tournament/build-custom-tournament.page').then(m => m.BuildCustomTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
       { path: 'update-custom/:id', loadComponent: () => import('./pages/tournaments/manage/custom/build-custom-tournament/build-custom-tournament.page').then(m => m.BuildCustomTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
       { path: 'custom', loadComponent: () => import('./pages/tournaments/manage/custom/custom-tournaments-list/custom-tournaments-list.page').then(m => m.CustomTournamentsListPage), canActivate: [AuthGuard], data: { role: 'User' } },
+      { path: 'participants', loadComponent: () => import('./pages/tournaments/manage/participants/manage-participants/manage-participants.page').then( m => m.ManageParticipantsPage), canActivate: [AuthGuard], data: { role: 'User' }  },
     ]
   },
 
@@ -109,5 +110,6 @@ export const routes: Routes = [
 
   // Default and wildcard routes
   { path: '**', redirectTo: 'welcome' },
+
 
 ];

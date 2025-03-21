@@ -1333,18 +1333,22 @@ namespace Backend.Repository.Services
         {
             try
             {
-                _logger.LogInformation($"Fetching public active tournaments for user {userId}");
+                _logger.LogInformation($"Fetching public active tournaments (excluding accepted ones) for user {userId}");
 
                 var tournaments = await _context.CustomTournaments
                     .AsNoTracking()
-                    .Where(t => t.IsActive && t.Visibility == CustomTournament.TournamentVisibility.Public)
+                    .Where(t =>
+                        t.IsActive &&
+                        t.Visibility == CustomTournament.TournamentVisibility.Public &&
+                        !t.Participants.Any(p => p.UserId == userId && p.Status == AssignmentStatus.Accepted)
+                    )
                     .Select(t => new PublicTournamentDto
                     {
                         TournamentId = t.TournamentId,
                         TournamentName = t.Name,
                         CreatedAt = t.CreatedAt,
                         Participants = t.Participants.Count,
-                        JoinRequested = t.Participants.Any(p => p.UserId == userId && p.Status == AssignmentStatus.Invited)
+                        JoinRequested = t.Participants.Any(p => p.UserId == userId && p.Status == AssignmentStatus.Invited) // TODO add Reuqested option
                     })
                     .OrderByDescending(t => t.CreatedAt)
                     .ToListAsync();

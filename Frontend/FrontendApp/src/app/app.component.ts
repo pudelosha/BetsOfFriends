@@ -129,6 +129,11 @@ export class AppComponent {
     this.router.navigate(['/matches/custom']);
   }
 
+  navigateToCustomTournamentsParticipants() {
+    console.log('Navigating to custom-tournament-participants...');
+    this.router.navigate(['/tournaments/participants']);
+  }
+
   navigateToHome() {
     console.log('Navigating to home...');
     this.router.navigate(['/home']);

@@ -99,10 +99,6 @@ export class CustomTournamentsListPage implements OnInit {
       setTimeout(() => loading.dismiss(), delay);
     }
   }
-
-  async resendInvites(tournament: any) {
-    //TODO implement later
-  }
   
   async toggleTournamentStatus(tournament: any) {
     const newStatus = !tournament.isActive;
