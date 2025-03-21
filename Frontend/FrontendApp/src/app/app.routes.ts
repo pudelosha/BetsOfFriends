@@ -68,12 +68,28 @@ export const routes: Routes = [
     ]
   },
 
-  // Matches (Requires "User" role)
   {
     path: 'matches',
-    loadComponent: () => import('./pages/matches/manage-matches/manage-matches.page').then(m => m.ManageMatchesPage),
-    canActivate: [AuthGuard],
-    data: { role: 'User' },
+    children: [
+      {
+        path: 'custom',
+        loadComponent: () =>
+          import('./pages/matches/manage-matches/manage-matches.page').then(
+            (m) => m.ManageMatchesPage
+          ),
+        canActivate: [AuthGuard],
+        data: { role: 'User' },
+      },
+      {
+        path: 'predefined',
+        loadComponent: () =>
+          import('./pages/matches/manage-matches/manage-matches.page').then(
+            (m) => m.ManageMatchesPage
+          ),
+        canActivate: [AuthGuard],
+        data: { role: 'SuperAdmin' },
+      },
+    ],
   },
 
   { path: 'my-tournaments', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },

@@ -89,4 +89,14 @@ export class CustomTournamentService {
   searchPublicTournaments(searchTerm: string = ''): Observable<PublicTournament[]> {
     return this.http.post<PublicTournament[]>(`${this.apiUrl}/search-public`, { searchTerm: searchTerm.trim() });
   }
+
+  requestToJoinTournament(tournamentId: number, nickname: string, message: string): Observable<any> {
+    const body = {
+      tournamentId,
+      nickname,
+      message
+    };
+
+    return this.http.post(`${this.apiUrl}/request-join`, body);
+  }
 }

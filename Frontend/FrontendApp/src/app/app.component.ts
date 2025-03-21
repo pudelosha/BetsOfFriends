@@ -104,6 +104,11 @@ export class AppComponent {
     this.router.navigate(['/tournaments/predefined']);
   }
 
+  navigateToPredefinedTournamentsMatches() {
+    console.log('Navigating to predefined-tournament-matches...');
+    this.router.navigate(['/matches/predefined']);
+  }
+
   navigateToMyTournaments() {
     console.log('Navigating to my-tournaments...');
     this.router.navigate(['/my-tournaments']);
@@ -121,7 +126,7 @@ export class AppComponent {
 
   navigateToCustomTournamentsMatches() {
     console.log('Navigating to custom-tournament-matches...');
-    this.router.navigate(['/matches']);
+    this.router.navigate(['/matches/custom']);
   }
 
   navigateToHome() {
