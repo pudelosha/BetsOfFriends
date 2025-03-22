@@ -13,6 +13,13 @@ ion-app {
   overflow-y: auto;
 }
 
+/* Style the footer */
+ion-footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
 /* Stick FAB to footer and position it above */
 .fab-footer {
   position: fixed;  /* Ensures it's always visible */

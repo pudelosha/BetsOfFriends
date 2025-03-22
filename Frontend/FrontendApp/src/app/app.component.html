@@ -21,7 +21,6 @@
           <ion-label>Messages</ion-label>
         </ion-item>
         
-
         <!-- Tournaments Section -->
         <ion-item-divider>
           <ion-label>
@@ -151,6 +150,13 @@
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
         <ion-title>Wager Rager</ion-title>
+
+        <ion-buttons slot="end">
+          <ion-button (click)="openFootballModal()">
+            <ion-icon name="football-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+
       </ion-toolbar>
     </ion-header>
 

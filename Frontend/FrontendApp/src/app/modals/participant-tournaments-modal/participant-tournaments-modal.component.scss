@@ -1,0 +1,58 @@
+.tournament-card {
+    background-color: #f4f4f4;
+    border-radius: 12px;
+    padding: 5px 10px;
+    margin: 15px 0px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .tournament-row {
+    align-items: center;
+  }
+  
+  .tournament-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .tournament-title {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .tournament-meta,
+  .tournament-role,
+  .tournament-status {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .tournament-status.invited {
+    color: orange;
+  }
+  
+  .tournament-status.accepted {
+    color: green;
+  }
+  
+  .button-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .spinner-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .selected-tournament {
+    background-color: #e0f7e9; // Pale green
+  }
+
+  
+  
+  

@@ -1,18 +1,18 @@
 import { Component  } from '@angular/core';
-import { IonApp, IonRouterOutlet, IonItemDivider, IonFab, IonFabButton } from '@ionic/angular/standalone';
+import { IonicModule } from '@ionic/angular';
 import { Router, NavigationEnd  } from '@angular/router';
 import { AuthService } from './services/auth.service';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonButtons, IonMenuButton, IonMenu, IonList, IonItem, IonIcon, IonLabel, IonMenuToggle } from '@ionic/angular/standalone';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
-import { ToastController, MenuController } from '@ionic/angular';
+import { ToastController, MenuController, ModalController } from '@ionic/angular';
+import { ParticipantTournamentsModalComponent } from './modals/participant-tournaments-modal/participant-tournaments-modal.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonFabButton, IonFab, IonItemDivider, IonApp, IonRouterOutlet, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonButtons, IonMenuButton, IonMenu, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonFabButton, CommonModule, FormsModule],
   standalone: true,
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
 export class AppComponent {
   isLoggedIn = false;
@@ -20,7 +20,7 @@ export class AppComponent {
   isAdmin = false;
   showFab: boolean = false; // Control FAB visibility
 
-  constructor(private authService: AuthService, private router: Router, private toastController: ToastController, private menuCtrl: MenuController) {}
+  constructor(private authService: AuthService, private router: Router, private toastController: ToastController, private menuCtrl: MenuController, private modalController: ModalController) {}
 
   ngOnInit() {
     // Subscribe to authentication status changes
@@ -63,6 +63,16 @@ export class AppComponent {
   
     console.log('Navigating to logoff page...');
     this.router.navigate(['/logoff']);
+  }
+
+  async openFootballModal() {
+    const modal = await this.modalController.create({
+      component: ParticipantTournamentsModalComponent,
+      breakpoints: [0, 0.5, 0.8],
+      initialBreakpoint: 0.75,
+      backdropDismiss: true
+    });
+    return await modal.present();
   }
 
   async presentToast(message: string, color: string) {
