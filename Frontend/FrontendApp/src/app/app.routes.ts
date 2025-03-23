@@ -93,6 +93,8 @@ export const routes: Routes = [
     ],
   },
 
+  { path: 'redirect', loadComponent: () => import('./shared/dummy-redirect/dummy-redirect.page').then( m => m.DummyRedirectPage), canActivate: [AuthGuard], data: { role: 'User' } },
+
   { path: 'my-tournaments', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'summary', loadComponent: () => import('./pages/tournaments/summary-dashboard/summary-dashboard.page').then(m => m.SummaryDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'find-tournament', loadComponent: () => import('./pages/tournaments/find-tournament/find-tournament.page').then( m => m.FindTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
@@ -110,6 +112,8 @@ export const routes: Routes = [
 
   // Default and wildcard routes
   { path: '**', redirectTo: 'welcome' },
+
+
 
 
 ];

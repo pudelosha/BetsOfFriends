@@ -13,7 +13,7 @@
       <ion-row class="tournament-row">
 
         <!-- Tournament Info -->
-        <ion-col size="9" class="tournament-info">
+        <ion-col size="8" class="tournament-info">
           <span class="tournament-title">{{ tournament.tournamentName }}</span>
           <span class="tournament-meta">
             Participants: {{ tournament.numberOfParticipants }}
@@ -24,9 +24,8 @@
         </ion-col>
 
         <!-- Select Button -->
-        <ion-col size="3" class="button-col">
+        <ion-col size="4" class="button-col">
           <ion-button
-            expand="block"
             [disabled]="tournament.tournamentId === selectedTournamentId"
             [color]="tournament.tournamentId === selectedTournamentId ? 'medium' : 'primary'"
             fill="outline"

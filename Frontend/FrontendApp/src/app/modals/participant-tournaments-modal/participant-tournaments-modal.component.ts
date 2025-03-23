@@ -7,6 +7,8 @@ import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ToastController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
+
 
 
 @Component({
@@ -26,7 +28,8 @@ export class ParticipantTournamentsModalComponent implements OnInit {
     private tournamentSelectionService: TournamentSelectionService,
     public modalController: ModalController,
     private router: Router,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private navCtrl: NavController
   ) {}
 
   ngOnInit() {
@@ -52,9 +55,12 @@ export class ParticipantTournamentsModalComponent implements OnInit {
   
     await this.showToast(`${tournament.tournamentName} selected!`, 'success');
     await this.modalController.dismiss();
-    await this.router.navigate(['/welcome']);
+    
+    const currentUrl = this.router.url;
+    await this.router.navigateByUrl('/redirect', { skipLocationChange: true });
+    await this.router.navigateByUrl(currentUrl, { skipLocationChange: true });
   }
-  
+    
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastController.create({
       message,
