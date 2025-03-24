@@ -40,7 +40,7 @@ export class ParticipantTournamentsModalComponent implements OnInit {
   loadTournaments() {
     this.tournamentService.getUserActiveTournaments().subscribe({
       next: (tournaments) => {
-        this.tournaments = tournaments;
+        this.tournaments = tournaments.filter(t => t.isVisible);
         this.isLoading = false;
       },
       error: () => {

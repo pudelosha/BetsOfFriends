@@ -144,7 +144,8 @@ namespace Backend.Repository.Services
                     AwayWinOdds = m.AwayWinOdds,
                     HomeQualifies = m.HomeQualifies ?? 0,
                     AwayQualifies = m.AwayQualifies ?? 0,
-                    Status = MatchStatus.Upcoming
+                    Status = MatchStatus.Upcoming,
+                    IsVisible = true
                 }).ToList();
 
                 _context.CustomMatches.AddRange(matches);

@@ -92,6 +92,17 @@
 
     <div class="divider" *ngIf="matchForm.value.matchType === 'ExtendedWithQualification'"></div>
 
+    <!-- Match Visibility -->
+    <div class="section-title">Match Visibility</div>
+    <div class="match-row">
+      <ion-item lines="none" class="visibility-item">
+        <ion-label class="visibility-status">
+          <strong>{{ matchForm.get('isVisible')?.value ? 'Visible' : 'Hidden' }}</strong>
+        </ion-label>
+        <ion-toggle slot="end" formControlName="isVisible"></ion-toggle>
+      </ion-item>
+    </div>
+
     <!-- Save Button with Extra Spacing -->
     <div class="save-button-container">
       <ion-button expand="full" color="success" (click)="saveMatch()">Save</ion-button>

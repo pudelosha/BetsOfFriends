@@ -223,7 +223,9 @@ export class BuildPredefinedTournamentPage implements OnInit {
             awayWinOdds: [match.awayWinOdds],
             homeQualifies: [match.homeQualifies],
             awayQualifies: [match.awayQualifies],
-            recordStatus: ['Uploaded', Validators.required]
+            recordStatus: ['Uploaded', Validators.required],
+
+            isVisible: [match.isVisible ?? true],
           })
         );
       });
@@ -260,6 +262,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
       awayWinOdds: [match.awayWinOdds ?? 0],
       homeQualifies: [match.homeQualifies ?? null],
       awayQualifies: [match.awayQualifies ?? null],
+
+      isVisible: [match.isVisible ?? true],
 
       recordStatus: [match.recordStatus ?? 'New'],
     });
@@ -584,6 +588,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
         awayWinOdds: [match.awayWinOdds ?? 0],
         homeQualifies: [match.homeQualifies ?? null],
         awayQualifies: [match.awayQualifies ?? null],
+        isVisible: [match.isVisible ?? true],
         recordStatus: [isUpdated ? 'Update' : match.recordStatus || 'New']
       }));
     });
@@ -681,6 +686,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
         awayWinOdds: match.awayWinOdds,
         homeQualifies: match.homeQualifies,
         awayQualifies: match.awayQualifies,
+        isVisible: match.isVisible ?? true,
         recordStatus: match.recordStatus || 'New'
       })),
     };

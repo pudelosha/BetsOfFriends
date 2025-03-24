@@ -29,6 +29,8 @@ export interface Match {
   homeQualifies: number | null;
   awayQualifies: number | null;
 
+  isVisible: boolean;
+
   recordStatus: RecordStatus;
 }
 

@@ -263,6 +263,8 @@ export class StageInputTypePage implements OnInit {
           homeQualifies: null,
           awayQualifies: null,
 
+          isVisible: true,
+
           recordStatus: 'New' // Mark imported matches as "New"
         };
   

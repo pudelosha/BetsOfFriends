@@ -48,6 +48,8 @@ export class EditMatchModalComponent implements OnInit {
       homeQualifies: [null],  
       awayQualifies: [null],  
 
+      isVisible: [true],
+
       recordStatus: ['New'], // Default to "New"
     });
 
@@ -65,12 +67,14 @@ export class EditMatchModalComponent implements OnInit {
         homeTeamFrontendId: this.match.homeTeamFrontendId || null,
         awayTeamFrontendId: this.match.awayTeamFrontendId || null,
         stageFrontendId: this.match.stageFrontendId || null,
-        recordStatus: this.match.recordStatus ?? 'Uploaded'
+        recordStatus: this.match.recordStatus ?? 'Uploaded',
+        isVisible: this.match.isVisible ?? true,
       });
     } else {
       this.matchForm.patchValue({
         matchFrontendId: this.generateFrontendId(),
-        recordStatus: 'New'
+        recordStatus: 'New',
+        isVisible: true
       });
     }
   }  
@@ -163,6 +167,8 @@ export class EditMatchModalComponent implements OnInit {
       awayWinOdds: this.matchForm.value.awayWinOdds || null,
       homeQualifies: this.matchForm.value.homeQualifies || null,
       awayQualifies: this.matchForm.value.awayQualifies || null,
+
+      isVisible: this.matchForm.value.isVisible ?? true,
 
       recordStatus: this.index !== undefined
         ? (isUpdated ? 'Update' : this.matchForm.value.recordStatus) 

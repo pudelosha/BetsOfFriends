@@ -115,4 +115,17 @@ ion-select {
   gap: 5px; /* Adds space between label and input */
 }
 
+.visibility-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.visibility-status {
+  width: 80px; /* Fixed width ensures the text doesn't shift */
+  margin-right: 12px; /* Spacing between label and toggle */
+  display: inline-block;
+}
+
+
 

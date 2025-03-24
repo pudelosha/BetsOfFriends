@@ -83,6 +83,8 @@ export class StageMatchesManagementPage implements OnInit {
           awayWinOdds: result.data.awayWinOdds ?? 0,
           homeQualifies: result.data.homeQualifies ?? null,
           awayQualifies: result.data.awayQualifies ?? null,
+
+          isVisible: result.data.isVisible ?? true,
   
           recordStatus: 'New'
         };
@@ -144,6 +146,8 @@ export class StageMatchesManagementPage implements OnInit {
           awayWinOdds: result.data.awayWinOdds ?? 0,
           homeQualifies: result.data.homeQualifies ?? null,
           awayQualifies: result.data.awayQualifies ?? null,
+
+          isVisible: result.data.isVisible ?? true,
   
           recordStatus: index !== undefined
             ? (JSON.stringify(existingMatch) !== JSON.stringify(result.data) ? 'Update' : existingMatch.recordStatus)
@@ -234,6 +238,8 @@ export class StageMatchesManagementPage implements OnInit {
       awayWinOdds: match.awayWinOdds,
       homeQualifies: match.homeQualifies,
       awayQualifies: match.awayQualifies,
+
+      isVisible: match.isVisible ?? true,
 
       recordStatus: match.recordStatus ?? 'Update'
     }));

@@ -3,6 +3,7 @@ using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static Backend.Model.Entities.CustomMatch;
 
 namespace Backend.Repository.Services
 {
@@ -87,7 +88,9 @@ namespace Backend.Repository.Services
                         DrawOdds = m.DrawOdds,
                         AwayWinOdds = m.AwayWinOdds,
                         HomeQualifies = m.HomeQualifies ?? 0,
-                        AwayQualifies = m.AwayQualifies ?? 0
+                        AwayQualifies = m.AwayQualifies ?? 0,
+                        Status = MatchStatus.Upcoming,
+                        IsVisible = m.IsVisible
                     };
                 }).ToList();
 
@@ -252,6 +255,7 @@ namespace Backend.Repository.Services
                         existingMatch.AwayWinOdds = match.AwayWinOdds;
                         existingMatch.HomeQualifies = match.HomeQualifies;
                         existingMatch.AwayQualifies = match.AwayQualifies;
+                        existingMatch.IsVisible = match.IsVisible;
                     }
                 }
 
@@ -280,7 +284,8 @@ namespace Backend.Repository.Services
                         DrawOdds = newMatch.DrawOdds,
                         AwayWinOdds = newMatch.AwayWinOdds,
                         HomeQualifies = newMatch.HomeQualifies,
-                        AwayQualifies = newMatch.AwayQualifies
+                        AwayQualifies = newMatch.AwayQualifies,
+                        IsVisible = newMatch.IsVisible
                     });
                 }
 
@@ -371,7 +376,8 @@ namespace Backend.Repository.Services
                         DrawOdds = match.DrawOdds,
                         AwayWinOdds = match.AwayWinOdds,
                         HomeQualifies = match.HomeQualifies,
-                        AwayQualifies = match.AwayQualifies
+                        AwayQualifies = match.AwayQualifies,
+                        IsVisible = match.IsVisible
                     }).ToList()
                 };
 

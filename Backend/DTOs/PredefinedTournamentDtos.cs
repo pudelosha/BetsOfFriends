@@ -82,6 +82,8 @@ namespace Backend.DTOs
             get => _matchStart;
             set => _matchStart = DateTime.SpecifyKind(value, DateTimeKind.Utc);
         }
+
+        public bool IsVisible { get; set; } = true;
     }
 
     public class PredefinedTournamentListDto

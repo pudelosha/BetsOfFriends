@@ -511,6 +511,9 @@ namespace Backend.Migrations
                     b.Property<decimal?>("AwayQualifies")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("AwayScore")
+                        .HasColumnType("int");
+
                     b.Property<int>("AwayTeamId")
                         .HasColumnType("int");
 
@@ -522,6 +525,9 @@ namespace Backend.Migrations
 
                     b.Property<decimal?>("HomeQualifies")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("HomeScore")
+                        .HasColumnType("int");
 
                     b.Property<int>("HomeTeamId")
                         .HasColumnType("int");
@@ -535,7 +541,13 @@ namespace Backend.Migrations
                     b.Property<DateTime>("MatchStart")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("Qualified")
+                        .HasColumnType("int");
+
                     b.Property<int>("StageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<int>("TournamentId")
