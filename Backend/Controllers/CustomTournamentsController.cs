@@ -589,8 +589,8 @@ namespace Backend.Controllers
                 if (string.IsNullOrEmpty(userId))
                     return Unauthorized(new { Message = "User authentication failed." });
 
-                var success = await _tournamentService.ExcludeParticipantAsync(tournamentId, userId, request.UserEmail);
-                return success ? Ok() : Forbid();
+                var result = await _tournamentService.ExcludeParticipantAsync(tournamentId, userId, request.UserEmail);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -598,6 +598,7 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while excluding the participant." });
             }
         }
+
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPost("participants/{tournamentId}/accept")]
@@ -609,8 +610,8 @@ namespace Backend.Controllers
                 if (string.IsNullOrEmpty(userId))
                     return Unauthorized(new { Message = "User authentication failed." });
 
-                var success = await _tournamentService.AcceptParticipantAsync(tournamentId, userId, request.UserEmail);
-                return success ? Ok() : Forbid();
+                var result = await _tournamentService.AcceptParticipantAsync(tournamentId, userId, request.UserEmail);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -618,6 +619,7 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while accepting the participant." });
             }
         }
+
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPost("participants/{tournamentId}/resend")]
@@ -629,8 +631,8 @@ namespace Backend.Controllers
                 if (string.IsNullOrEmpty(userId))
                     return Unauthorized(new { Message = "User authentication failed." });
 
-                var success = await _tournamentService.ResendInviteAsync(tournamentId, userId, request.UserEmail);
-                return success ? Ok() : Forbid();
+                var result = await _tournamentService.ResendInviteAsync(tournamentId, userId, request.UserEmail);
+                return Ok(result);
             }
             catch (Exception ex)
             {

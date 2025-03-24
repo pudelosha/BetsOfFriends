@@ -7,7 +7,6 @@ import { UpcomingBetsPage } from '../upcoming-bets/upcoming-bets.page';
 import { TournamentSummaryPage } from '../tournament-summary/tournament-summary.page';
 import { TournamentInvitesPage } from '../tournament-invites/tournament-invites.page';
 
-
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -19,8 +18,5 @@ import { TournamentInvitesPage } from '../tournament-invites/tournament-invites.
 export class HomePage {
 
   constructor() {}
-
-
-
 
 }

@@ -9,6 +9,10 @@ namespace Backend.Model.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TeamId { get; set; }
 
+        public int? PredefinedTeamId { get; set; }
+        [ForeignKey("PredefinedTeamId")]
+        public PredefinedTeam? PredefinedSource { get; set; }
+
         [Required]
         [MaxLength(50)]
         public string TeamName { get; set; }

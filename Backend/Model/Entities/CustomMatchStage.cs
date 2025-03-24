@@ -9,6 +9,10 @@ namespace Backend.Model.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int StageId { get; set; }
 
+        public int? PredefinedStageId { get; set; }
+        [ForeignKey("PredefinedStageId")]
+        public PredefinedMatchStage? PredefinedSource { get; set; }
+
         [Required]
         public int Order { get; set; }  // Defines the order of the stages
 

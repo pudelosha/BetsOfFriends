@@ -248,5 +248,4 @@ namespace Backend.DTOs
     {
         public string UserEmail { get; set; }
     }
-
 }

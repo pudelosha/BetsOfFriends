@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent,  } from '@ionic/angular/standalone';
@@ -11,13 +11,11 @@ import { PendingInvitesPage } from '../pending-invites/pending-invites.page';
   templateUrl: './manage-participants.page.html',
   styleUrls: ['./manage-participants.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, FormsModule, UserListPage, PendingRequestsPage, PendingInvitesPage]
+  imports: [IonContent, CommonModule, FormsModule, UserListPage, PendingRequestsPage, PendingInvitesPage],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class ManageParticipantsPage implements OnInit {
+export class ManageParticipantsPage  {
 
   constructor() { }
-
-  ngOnInit() {
-  }
 
 }

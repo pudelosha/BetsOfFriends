@@ -11,9 +11,16 @@ namespace Backend.Model.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TournamentId { get; set; }
+
+        public int? PredefinedTournamentId { get; set; }
+        [ForeignKey("PredefinedTournamentId")]
+        public PredefinedTournament? PredefinedSource { get; set; }
+
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }
+        [MaxLength(100)]
+        public string? PublicName { get; set; }
         [Required]
         public bool IsActive { get; set; } = true;
 

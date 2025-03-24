@@ -11,6 +11,11 @@ namespace Backend.Model.Entities
 
         public int StageId { get; set; }
         [ForeignKey("StageId")]
+
+        public int? PredefinedMatchId { get; set; }
+        [ForeignKey("PredefinedMatchId")]
+        public PredefinedMatch? PredefinedSource { get; set; }
+
         public CustomMatchStage Stage { get; set; }
 
         public int TournamentId { get; set; }

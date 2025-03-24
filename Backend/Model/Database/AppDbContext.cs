@@ -33,11 +33,12 @@ namespace Backend.Model.Database
 
             RenameIdentityTables(builder);
             ConfigurePredefinedTournamentRelationships(builder);
-            ConfigureTournamentRelationships(builder);
+            ConfigureCustomTournamentRelationships(builder);
             ConfigureUserTournamentRelationship(builder);
             ConfigureMatchRelationships(builder);
             ConfigureBetRelationships(builder);
             ConfigureNotificationRelationships(builder);
+            ConfigurePredefinedReferencesInCustomEntities(builder);
             SeedRoles(builder);
         }
 
@@ -90,7 +91,7 @@ namespace Backend.Model.Database
                 .OnDelete(DeleteBehavior.Restrict);
         }
 
-        private void ConfigureTournamentRelationships(ModelBuilder builder)
+        private void ConfigureCustomTournamentRelationships(ModelBuilder builder)
         {
             // Tournament -> CreatedByUser
             builder.Entity<CustomTournament>()
@@ -214,6 +215,33 @@ namespace Backend.Model.Database
             builder.Entity<NotificationRecipient>()
                 .Property(nr => nr.IsRead)
                 .HasDefaultValue(false);
+        }
+
+        private void ConfigurePredefinedReferencesInCustomEntities(ModelBuilder builder)
+        {
+            builder.Entity<CustomTournament>()
+                .HasOne(t => t.PredefinedSource)
+                .WithMany()
+                .HasForeignKey(t => t.PredefinedTournamentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CustomTeam>()
+                .HasOne(t => t.PredefinedSource)
+                .WithMany()
+                .HasForeignKey(t => t.PredefinedTeamId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<CustomMatchStage>()
+                .HasOne(s => s.PredefinedSource)
+                .WithMany()
+                .HasForeignKey(s => s.PredefinedStageId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<CustomMatch>()
+                .HasOne(m => m.PredefinedSource)
+                .WithMany()
+                .HasForeignKey(m => m.PredefinedMatchId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
 
         private void SeedRoles(ModelBuilder builder)

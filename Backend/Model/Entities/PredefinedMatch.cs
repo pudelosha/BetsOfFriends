@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using static Backend.Model.Entities.CustomMatch;
 
 namespace Backend.Model.Entities
 {
@@ -30,6 +31,12 @@ namespace Backend.Model.Entities
         [Required]
         public DateTime MatchStart { get; set; }
 
+       // public int? HomeScore { get; set; }
+       // public int? AwayScore { get; set; }
+       // public TeamQualified? Qualified { get; set; }
+
+        //[Required]
+       // public MatchStatus Status { get; set; } = MatchStatus.Upcoming;
         [Required]
         public CustomMatch.MatchType Type { get; set; } = CustomMatch.MatchType.Regular90Min;
 

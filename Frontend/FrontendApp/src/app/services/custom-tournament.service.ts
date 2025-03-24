@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Tournament } from '../model/tournament-model';
 import { environment } from '../../environments/environment';
 import { UserActiveTournament, TournamentSummary, TournamentPlayerResult, TournamentInvite, UserBettingStats, PublicTournament, TournamentParticipant } from '../model/tournament-model';
+import { ActionResult } from '../model/action-result';
 
 @Injectable({
   providedIn: 'root'
@@ -104,15 +105,15 @@ export class CustomTournamentService {
     return this.http.get<TournamentParticipant[]>(`${this.apiUrl}/participants/${tournamentId}?status=${status}`);
   }
   
-  excludeParticipant(tournamentId: number, userEmail: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/participants/${tournamentId}/exclude`, { userEmail });
+  excludeParticipant(tournamentId: number, userEmail: string): Observable<ActionResult> {
+    return this.http.post<ActionResult>(`${this.apiUrl}/participants/${tournamentId}/exclude`, { userEmail });
   }
-
-  acceptParticipant(tournamentId: number, userEmail: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/participants/${tournamentId}/accept`, { userEmail });
+  
+  acceptParticipant(tournamentId: number, userEmail: string): Observable<ActionResult> {
+    return this.http.post<ActionResult>(`${this.apiUrl}/participants/${tournamentId}/accept`, { userEmail });
   }
-
-  resendParticipantInvite(tournamentId: number, userEmail: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/participants/${tournamentId}/resend`, { userEmail });
-  }  
+  
+  resendParticipantInvite(tournamentId: number, userEmail: string): Observable<ActionResult> {
+    return this.http.post<ActionResult>(`${this.apiUrl}/participants/${tournamentId}/resend`, { userEmail });
+  } 
 }

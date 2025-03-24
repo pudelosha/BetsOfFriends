@@ -23,8 +23,8 @@ namespace Backend.Repository.Interfaces
         Task<bool> TournamentNameExistsAsync(string publicTournamentName);
         Task<List<PublicTournamentDto>> GetPublicActiveTournamentsAsync(string userId);
         Task<List<TournamentParticipantDto>?> GetTournamentParticipantsAsync(int tournamentId, string userId, string status);
-        Task<bool> ExcludeParticipantAsync(int tournamentId, string requesterUserId, string targetUserEmail);
-        Task<bool> AcceptParticipantAsync(int tournamentId, string requesterUserId, string targetUserEmail);
-        Task<bool> ResendInviteAsync(int tournamentId, string requesterUserId, string targetUserEmail);
+        Task<ActionResultDto> ExcludeParticipantAsync(int tournamentId, string requesterUserId, string targetUserEmail);
+        Task<ActionResultDto> AcceptParticipantAsync(int tournamentId, string requesterUserId, string targetUserEmail);
+        Task<ActionResultDto> ResendInviteAsync(int tournamentId, string requesterUserId, string targetUserEmail);
     }
 }

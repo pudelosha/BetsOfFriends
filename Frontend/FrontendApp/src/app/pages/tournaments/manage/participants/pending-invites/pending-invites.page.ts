@@ -104,27 +104,43 @@ export class PendingInvitesPage implements OnInit {
     await alert.present();
   }
   
-  async resendInvite(email: string) {
-    try {
-      await this.tournamentService.resendParticipantInvite(this.tournamentId!, email); // backend call
-      await this.showToast(`Invite resent to ${email}`, 'success');
-    } catch (error) {
-      console.error('Error resending invite:', error);
-      await this.showToast('Failed to resend invite.', 'danger');
-    }
+  resendInvite(email: string) {
+    this.tournamentService.resendParticipantInvite(this.tournamentId!, email).subscribe({
+      next: async (result) => {
+        if (result.success) {
+          await this.showToast(result.message, 'success');
+        } else {
+          await this.showToast(result.message, 'danger');
+        }
+      },
+      error: async (error) => {
+        console.error('Error resending invite:', error);
+        await this.showToast('Failed to resend invite.', 'danger');
+      }
+    });
   }
+    
+  excludeInvite(userEmail: string) {
+    console.log('Confirming exclusion for:', userEmail);
   
-  async excludeInvite(email: string) {
-    try {
-      await this.tournamentService.excludeParticipant(this.tournamentId!, email); // backend call
-      await this.showToast(`${email} has been excluded`, 'success');
-      await this.loadPendingInvites(); // Refresh list
-    } catch (error) {
-      console.error('Error excluding invite:', error);
-      await this.showToast('Failed to exclude participant.', 'danger');
-    }
+    this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+  
+    this.tournamentService.excludeParticipant(this.tournamentId!, userEmail).subscribe({
+      next: async (result) => {
+        if (result.success) {
+          await this.showToast(result.message, 'success');
+          await this.loadPendingInvites(); // Refresh the list
+        } else {
+          await this.showToast(result.message, 'danger');
+        }
+      },
+      error: async (err) => {
+        console.error('Error excluding participant:', err);
+        await this.showToast('Failed to exclude participant.', 'danger');
+      }
+    });
   }
-  
+    
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastController.create({
       message,

@@ -90,16 +90,26 @@ export class UserListPage implements OnInit {
   }
 
   async excludeParticipant(userEmail: string) {
-    try {
-      await this.tournamentService.excludeParticipant(this.tournamentId!, userEmail); // backend call
-      await this.showToast(`${userEmail} has been excluded`, 'success');
-      await this.loadParticipants(); // Refresh list
-    } catch (error) {
-      console.error('Error excluding invite:', error);
-      await this.showToast('Failed to exclude participant.', 'danger');
-    }
-  }
-
+    console.log('Confirming exclusion for:', userEmail);
+  
+    this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+  
+    this.tournamentService.excludeParticipant(this.tournamentId!, userEmail).subscribe({
+      next: async (result) => {
+        if (result.success) {
+          await this.showToast(result.message, 'success');
+          await this.loadParticipants(); // Refresh the list
+        } else {
+          await this.showToast(result.message, 'danger');
+        }
+      },
+      error: async (err) => {
+        console.error('Error excluding participant:', err);
+        await this.showToast('Failed to exclude participant.', 'danger');
+      }
+    });
+  }  
+  
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary') {
     const toast = await this.toastController.create({
       message,
