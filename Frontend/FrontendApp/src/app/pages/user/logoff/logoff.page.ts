@@ -26,7 +26,7 @@ export class LogoffPage {
     // Wait 3 seconds before redirecting
     setTimeout(() => {
       console.log('Navigating to login page...');
-      this.router.navigate(['/login']);
+      this.router.navigate(['/welcome']);
     }, 3000);
   }
 
@@ -41,6 +41,6 @@ export class LogoffPage {
   }
 
   navigateToLogin() {
-    this.router.navigateByUrl('/login');
+    this.router.navigateByUrl('/welcome');
   }
 }

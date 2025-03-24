@@ -1,13 +1,28 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>pending-invites</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="tournament-participants-box">
+  <h2 class="frame-title">Pending Invitations</h2>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">pending-invites</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+  <ion-list class="tournament-participants-list" *ngIf="pendingParticipants.length > 0">
+    <ion-item *ngFor="let participant of pendingParticipants" class="tournament-participants-item">
+      <div class="tournament-participants-grid">
+        <div class="tournament-participants-details">
+          {{ participant.userName }} ({{ participant.role }})<br />
+          <small>{{ participant.userEmail }}</small>
+        </div>
+        <div class="tournament-participants-actions">
+          <ion-button size="small" color="primary" (click)="confirmResendInvite(participant.userEmail)">
+            Resend
+          </ion-button>
+          <ion-button size="small" color="danger" (click)="confirmExcludeInvite(participant.userEmail)">
+            Exclude
+          </ion-button>          
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <p class="no-participants-message" *ngIf="!isLoading && pendingParticipants.length === 0">
+    No pending invitations found.
+  </p>
+
+  <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+</div>

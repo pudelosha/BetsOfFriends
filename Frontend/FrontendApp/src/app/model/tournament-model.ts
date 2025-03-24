@@ -138,6 +138,13 @@ export interface PublicTournament {
   joinRequested: boolean;
 }
 
+export interface TournamentParticipant {
+  assignmentId: number;
+  userName: string;
+  userEmail: string;
+  role: string;
+}
+
 export type RecordStatus = 'New' | 'Uploaded' | 'Update' | 'Delete';
 
 

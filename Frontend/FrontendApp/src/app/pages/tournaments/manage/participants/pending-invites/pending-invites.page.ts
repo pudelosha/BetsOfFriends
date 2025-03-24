@@ -1,20 +1,137 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { TournamentParticipant } from 'src/app/model/tournament-model';
+import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
+import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
+import { firstValueFrom } from 'rxjs';
+import { IonicModule, ToastController, LoadingController, AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-pending-invites',
-  templateUrl: './pending-invites.page.html',
-  styleUrls: ['./pending-invites.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [CommonModule, IonicModule],
+  templateUrl: './pending-invites.page.html',
+  styleUrls: ['./pending-invites.page.scss']
 })
 export class PendingInvitesPage implements OnInit {
+  tournamentId: number | null = null;
+  pendingParticipants: TournamentParticipant[] = [];
+  isLoading = true;
 
-  constructor() { }
+  constructor(
+    private tournamentService: CustomTournamentService,
+    private tournamentSelectionService: TournamentSelectionService,
+    private toastController: ToastController,
+    private loadingController: LoadingController,
+    private alertController: AlertController
+  ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.loadPendingInvites();
   }
 
+  async ionViewWillEnter() {
+    await this.loadPendingInvites();
+  }
+
+  async loadPendingInvites() {
+    this.isLoading = true;
+    this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+
+    if (this.tournamentId === null) {
+      await this.showToast('No tournament selected.', 'warning');
+      this.isLoading = false;
+      return;
+    }
+
+    const loading = await this.loadingController.create({
+      message: 'Loading pending invites...',
+      spinner: 'crescent'
+    });
+    await loading.present();
+
+    try {
+      this.pendingParticipants = await firstValueFrom(
+        this.tournamentService.getTournamentParticipants(this.tournamentId, 'Invited')
+      );
+    } catch (error) {
+      console.error('Error loading invited participants:', error);
+      await this.showToast('Failed to load invites.', 'danger');
+    } finally {
+      this.isLoading = false;
+      loading.dismiss();
+    }
+  }
+
+  async confirmResendInvite(email: string) {
+    const alert = await this.alertController.create({
+      header: 'Resend Invitation',
+      message: `Are you sure you want to resend the invitation to ${email}?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Resend',
+          handler: () => {
+            this.resendInvite(email);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+  
+  async confirmExcludeInvite(email: string) {
+    const alert = await this.alertController.create({
+      header: 'Exclude Participant',
+      message: `Are you sure you want to exclude ${email} from the tournament?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Exclude',
+          role: 'destructive',
+          handler: () => {
+            this.excludeInvite(email);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+  
+  async resendInvite(email: string) {
+    try {
+      await this.tournamentService.resendParticipantInvite(this.tournamentId!, email); // backend call
+      await this.showToast(`Invite resent to ${email}`, 'success');
+    } catch (error) {
+      console.error('Error resending invite:', error);
+      await this.showToast('Failed to resend invite.', 'danger');
+    }
+  }
+  
+  async excludeInvite(email: string) {
+    try {
+      await this.tournamentService.excludeParticipant(this.tournamentId!, email); // backend call
+      await this.showToast(`${email} has been excluded`, 'success');
+      await this.loadPendingInvites(); // Refresh list
+    } catch (error) {
+      console.error('Error excluding invite:', error);
+      await this.showToast('Failed to exclude participant.', 'danger');
+    }
+  }
+  
+  async showToast(message: string, color: 'success' | 'warning' | 'danger') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color
+    });
+    await toast.present();
+  }
 }

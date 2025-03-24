@@ -1,12 +1,16 @@
-<ion-content fullscreen class="ion-padding">
+<ion-content fullscreen (ionScroll)="onScroll($event)" scrollEvents="true">
   <div class="parallax-container">
+    
     <!-- Parallax Background -->
     <div class="parallax-bg" [ngStyle]="{ 'transform': 'translateY(' + parallaxOffset + 'px)' }"></div>
 
-    <!-- Foreground Content - Main Hero Section -->
+    <!-- Foreground Content -->
     <div class="content">
-      <h1 class="app-title">Bet with Friends</h1>
-      <p class="app-description">Challenge your friends, create tournaments, and predict match outcomes.</p>
+      <h1 class="app-title">Wager Rager</h1>
+      <p class="app-slogan">Don't get mad, place a bet</p>
+      <p class="app-description">
+        Bet on football matches with friends just for fun — create tournaments, challenge each other, and climb the leaderboard!
+      </p>
 
       <div class="button-group">
         <ion-button color="primary" class="rounded-button" (click)="navigateToLogin()">Login</ion-button>
@@ -14,5 +18,4 @@
       </div>
     </div>
   </div>
-
 </ion-content>

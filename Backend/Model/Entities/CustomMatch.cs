@@ -42,6 +42,8 @@ namespace Backend.Model.Entities
         public MatchStatus Status { get; set; } = MatchStatus.Upcoming;
         public MatchType Type { get; set; } = MatchType.Regular90Min;
 
+        public bool IsVisible { get; set; } = true;
+
         public ICollection<Bet> Bets { get; set; } = new List<Bet>();
 
         public enum MatchStatus

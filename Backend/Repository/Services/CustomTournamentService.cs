@@ -1348,7 +1348,7 @@ namespace Backend.Repository.Services
                         TournamentName = t.Name,
                         CreatedAt = t.CreatedAt,
                         Participants = t.Participants.Count,
-                        JoinRequested = t.Participants.Any(p => p.UserId == userId && p.Status == AssignmentStatus.Invited) // TODO add Reuqested option
+                        JoinRequested = t.Participants.Any(p => p.UserId == userId && p.Status == AssignmentStatus.Requested)
                     })
                     .OrderByDescending(t => t.CreatedAt)
                     .ToListAsync();
@@ -1359,6 +1359,234 @@ namespace Backend.Repository.Services
             {
                 _logger.LogError(ex, "Error fetching public active tournaments.");
                 throw;
+            }
+        }
+
+        public async Task<List<TournamentParticipantDto>?> GetTournamentParticipantsAsync(int tournamentId, string userId, string status)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching tournament participants for tournament {tournamentId}, status '{status}', requested by user {userId}");
+
+                var isAdmin = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId && a.Role == UserTournamentRole.Admin);
+
+                if (!isAdmin)
+                {
+                    _logger.LogWarning($"User {userId} is not an Admin in tournament {tournamentId} and is not authorized.");
+                    return null;
+                }
+
+                if (!Enum.TryParse<AssignmentStatus>(status, true, out var parsedStatus))
+                {
+                    _logger.LogWarning($"Invalid assignment status value: '{status}'");
+                    return new List<TournamentParticipantDto>(); // Empty if status is invalid
+                }
+
+                var participants = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.TournamentId == tournamentId && a.Status == parsedStatus)
+                    .Include(a => a.User)
+                    .Select(a => new TournamentParticipantDto
+                    {
+                        AssignmentId = a.AssignmentId,
+                        UserName = a.UserName ?? a.UserAdminName,
+                        UserEmail = a.User.Email,
+                        Role = a.Role.ToString()
+                    })
+                    .ToListAsync();
+
+                return participants;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching tournament participants for tournament ID {tournamentId}");
+                throw;
+            }
+        }
+
+        public async Task<bool> ExcludeParticipantAsync(int tournamentId, string requesterUserId, string targetUserEmail)
+        {
+            try
+            {
+                // 1. Fetch the tournament with participants and matches
+                var tournament = await _context.CustomTournaments
+                    .Include(t => t.Participants)
+                    .Include(t => t.Matches)
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Tournament {tournamentId} not found.");
+                    return false;
+                }
+
+                // 2. Verify requester is an admin
+                var requesterAssignment = tournament.Participants.FirstOrDefault(a => a.UserId == requesterUserId);
+                if (requesterAssignment == null || requesterAssignment.Role != UserTournamentRole.Admin)
+                {
+                    _logger.LogWarning($"Requester {requesterUserId} is not an admin in tournament {tournamentId}.");
+                    return false;
+                }
+
+                // 3. Find user to exclude by email
+                var userToExclude = await _userService.FindUserByEmailAsync(targetUserEmail);
+                if (userToExclude == null)
+                {
+                    _logger.LogWarning($"User with email {targetUserEmail} not found.");
+                    return false;
+                }
+
+                // 4. Prevent self-exclusion
+                if (userToExclude.Id == requesterUserId)
+                {
+                    _logger.LogWarning("Admins cannot exclude themselves.");
+                    return false;
+                }
+
+                // 5. Prevent exclusion of the creator
+                if (tournament.CreatedByUserId == userToExclude.Id)
+                {
+                    _logger.LogWarning("Cannot exclude the tournament creator.");
+                    return false;
+                }
+
+                // 6. Find the user’s tournament assignment
+                var assignmentToRemove = tournament.Participants.FirstOrDefault(p => p.UserId == userToExclude.Id);
+                if (assignmentToRemove == null)
+                {
+                    _logger.LogWarning($"User {targetUserEmail} is not a participant in tournament {tournamentId}.");
+                    return false;
+                }
+
+                // 7. Delete all user bets related to this tournament
+                var userBets = await _context.Bets
+                    .Where(b => b.UserId == userToExclude.Id && tournament.Matches.Select(m => m.MatchId).Contains(b.MatchId))
+                    .ToListAsync();
+
+                if (userBets.Any())
+                {
+                    _context.Bets.RemoveRange(userBets);
+                }
+
+                // 8. Remove assignment
+                _context.CustomTournamentUserAssignments.Remove(assignmentToRemove);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"User {targetUserEmail} excluded from tournament {tournamentId} by admin {requesterUserId}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error excluding user {targetUserEmail} from tournament {tournamentId}");
+                return false;
+            }
+        }
+
+        public async Task<bool> AcceptParticipantAsync(int tournamentId, string requesterUserId, string targetUserEmail)
+        {
+            try
+            {
+                _logger.LogInformation($"User {requesterUserId} attempting to accept join request from {targetUserEmail} for tournament {tournamentId}");
+
+                // 1. Fetch tournament with participants
+                var tournament = await _context.CustomTournaments
+                    .Include(t => t.Participants)
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Tournament with ID {tournamentId} not found.");
+                    return false;
+                }
+
+                // 2. Verify requester is an admin
+                var requesterAssignment = tournament.Participants.FirstOrDefault(p => p.UserId == requesterUserId);
+                if (requesterAssignment == null || requesterAssignment.Role != UserTournamentRole.Admin)
+                {
+                    _logger.LogWarning($"Requester {requesterUserId} is not an admin of tournament {tournamentId}.");
+                    return false;
+                }
+
+                // 3. Find the user to accept by email
+                var targetUser = await _userService.FindUserByEmailAsync(targetUserEmail);
+                if (targetUser == null)
+                {
+                    _logger.LogWarning($"User with email {targetUserEmail} not found.");
+                    return false;
+                }
+
+                // 4. Find their assignment and validate it’s a join request
+                var assignment = tournament.Participants.FirstOrDefault(p =>
+                    p.UserId == targetUser.Id && p.Status == AssignmentStatus.Requested);
+
+                if (assignment == null)
+                {
+                    _logger.LogWarning($"No join request found for user {targetUserEmail} in tournament {tournamentId}.");
+                    return false;
+                }
+
+                // 5. Update assignment status to Invited
+                assignment.Status = AssignmentStatus.Accepted;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Join request accepted for {targetUserEmail} in tournament {tournamentId}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error accepting participant {targetUserEmail} in tournament {tournamentId}");
+                return false;
+            }
+        }
+
+        public async Task<bool> ResendInviteAsync(int tournamentId, string requesterUserId, string targetUserEmail)
+        {
+            try
+            {
+                _logger.LogInformation($"User {requesterUserId} is attempting to resend invitation to {targetUserEmail} for tournament {tournamentId}");
+
+                // 1. Load tournament with participants
+                var tournament = await _context.CustomTournaments
+                    .Include(t => t.Participants)
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Tournament ID {tournamentId} not found.");
+                    return false;
+                }
+
+                // 2. Check if requester is admin
+                var isAdmin = tournament.Participants.Any(p => p.UserId == requesterUserId && p.Role == UserTournamentRole.Admin);
+                if (!isAdmin)
+                {
+                    _logger.LogWarning($"User {requesterUserId} is not authorized to resend invites for tournament {tournamentId}.");
+                    return false;
+                }
+
+                // 3. Find the invited user assignment
+                var targetAssignment = tournament.Participants
+                    .FirstOrDefault(p => p.User.Email == targetUserEmail && p.Status == AssignmentStatus.Invited);
+
+                if (targetAssignment == null)
+                {
+                    _logger.LogWarning($"No invite found for {targetUserEmail} in tournament {tournamentId}.");
+                    return false;
+                }
+
+                // 4. Generate invite link
+                string inviteLink = GenerateTournamentInviteLink(targetUserEmail, tournamentId);
+
+                // 5. Send invitation email
+                await SendTournamentInvitationEmailAsync(targetUserEmail, tournament.Name, inviteLink);
+
+                _logger.LogInformation($"Invitation email resent to {targetUserEmail} for tournament {tournamentId}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error resending invite to {targetUserEmail} for tournament {tournamentId}");
+                return false;
             }
         }
     }

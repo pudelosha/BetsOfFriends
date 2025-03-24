@@ -66,7 +66,7 @@ export class AuthService {
     return [];
   }
 
-  async logout(message?: string, redirectPath: string = '/login'): Promise<void> {
+  async logout(message?: string, redirectPath: string = '/welcome'): Promise<void> {
     console.log('Clearing auth tokens...');
     localStorage.removeItem(this.authTokenKey);
     sessionStorage.removeItem(this.authTokenKey);

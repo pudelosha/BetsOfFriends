@@ -550,5 +550,93 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while fetching tournaments." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("participants/{tournamentId}")]
+        public async Task<IActionResult> GetTournamentParticipants(int tournamentId, [FromQuery] string status = "Accepted")
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var participants = await _tournamentService.GetTournamentParticipantsAsync(tournamentId, userId, status);
+
+                if (participants == null)
+                {
+                    return Forbid(); // User is not an admin or not authorized
+                }
+
+                return Ok(participants);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching participants for tournament ID {tournamentId}.");
+                return StatusCode(500, new { Message = "An error occurred while fetching tournament participants." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("participants/{tournamentId}/exclude")]
+        public async Task<IActionResult> ExcludeParticipant(int tournamentId, [FromBody] ParticipantActionRequest request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized(new { Message = "User authentication failed." });
+
+                var success = await _tournamentService.ExcludeParticipantAsync(tournamentId, userId, request.UserEmail);
+                return success ? Ok() : Forbid();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error excluding participant {request.UserEmail} from tournament {tournamentId}.");
+                return StatusCode(500, new { Message = "An error occurred while excluding the participant." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("participants/{tournamentId}/accept")]
+        public async Task<IActionResult> AcceptParticipant(int tournamentId, [FromBody] ParticipantActionRequest request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized(new { Message = "User authentication failed." });
+
+                var success = await _tournamentService.AcceptParticipantAsync(tournamentId, userId, request.UserEmail);
+                return success ? Ok() : Forbid();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error accepting participant {request.UserEmail} for tournament {tournamentId}.");
+                return StatusCode(500, new { Message = "An error occurred while accepting the participant." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("participants/{tournamentId}/resend")]
+        public async Task<IActionResult> ResendParticipantInvite(int tournamentId, [FromBody] ParticipantActionRequest request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized(new { Message = "User authentication failed." });
+
+                var success = await _tournamentService.ResendInviteAsync(tournamentId, userId, request.UserEmail);
+                return success ? Ok() : Forbid();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error resending invite to {request.UserEmail} for tournament {tournamentId}.");
+                return StatusCode(500, new { Message = "An error occurred while resending the invitation." });
+            }
+        }
     }
 }

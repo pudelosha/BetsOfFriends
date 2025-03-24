@@ -1,13 +1,25 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>user-list</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="tournament-participants-box">
+  <h2 class="frame-title">Active Participants</h2>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">user-list</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+  <ion-list class="tournament-participants-list" *ngIf="participants.length > 0">
+    <ion-item *ngFor="let participant of participants" class="tournament-participants-item">
+      <div class="tournament-participants-grid">
+        <div class="tournament-participants-details">
+          {{ participant.userName }} ({{ participant.role }})<br>
+          <small>{{ participant.userEmail }}</small>
+        </div>
+        <div class="tournament-participants-actions">
+          <ion-button size="small" color="danger" (click)="confirmExclude(participant.userEmail)">
+            Exclude
+          </ion-button>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <p class="no-participants-message" *ngIf="!isLoading && participants.length === 0">
+    No participants found.
+  </p>
+
+  <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+</div>

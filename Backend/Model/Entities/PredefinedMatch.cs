@@ -33,6 +33,8 @@ namespace Backend.Model.Entities
         [Required]
         public CustomMatch.MatchType Type { get; set; } = CustomMatch.MatchType.Regular90Min;
 
+        public bool IsVisible { get; set; } = true;
+
         public decimal HomeWinOdds { get; set; }
         public decimal DrawOdds { get; set; }
         public decimal AwayWinOdds { get; set; }

@@ -235,4 +235,18 @@ namespace Backend.DTOs
         public int Participants { get; set; }
         public bool JoinRequested { get; set; }
     }
+
+    public class TournamentParticipantDto
+    {
+        public int AssignmentId { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string UserEmail { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+    }
+
+    public class ParticipantActionRequest
+    {
+        public string UserEmail { get; set; }
+    }
+
 }

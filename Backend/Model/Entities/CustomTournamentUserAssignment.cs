@@ -47,6 +47,7 @@ namespace Backend.Model.Entities
     {
         New,
         Invited,
-        Accepted
+        Accepted,
+        Requested
     }
 }

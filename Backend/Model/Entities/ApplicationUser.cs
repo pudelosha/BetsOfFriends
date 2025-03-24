@@ -9,6 +9,8 @@ namespace Backend.Model.Entities
     public class ApplicationUser : IdentityUser
     {
         public DateTime MemberSince { get; set; } = DateTime.UtcNow;
+        public string Location { get; set; }
+        public string Nickname { get; set; }
         public bool AcceptedRegulations { get; set; }
         public bool AcceptedMarketingConsent { get; set; }
 

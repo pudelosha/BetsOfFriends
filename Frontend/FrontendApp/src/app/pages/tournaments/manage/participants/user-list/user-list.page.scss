@@ -1,0 +1,75 @@
+.tournament-participants-box {
+    background: #f5f5f5 !important;  /* ✅ Light gray background */
+    border-radius: 10px;             /* ✅ Rounded corners */
+    padding: 15px;
+    margin-top: 15px;
+    transition: background 0.2s ease-in-out;
+  }
+    
+  .frame-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 10px 0;
+    text-align: left;
+  }
+  
+  .no-participants-message {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .tournament-participants-list {
+    --background: transparent !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    background: transparent !important;
+  }
+  
+  .tournament-participants-item {
+    --inner-padding-end: 0px !important;
+    --inner-padding-start: 0px !important;
+    --padding-end: 0px !important;
+    --padding-start: 0px !important;
+    --ion-item-background: transparent !important;
+    background: none !important;
+    border-bottom: 1px solid #ddd;
+  
+    height: 60px;
+    --min-height: 60px !important;
+    --max-height: 60px !important;
+    display: flex;
+    align-items: center;
+  }
+  
+  .tournament-participants-grid {
+    display: grid;
+    grid-template-columns: 8fr 2fr;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+  
+  .tournament-participants-details {
+    text-align: left;
+    font-size: 12px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: transparent !important;
+  }
+  
+  .tournament-participants-actions {
+    text-align: right;
+    white-space: nowrap;
+    background: transparent !important;
+  }
+  
+  .loading-spinner {
+    display: block;
+    margin: 20px auto;
+  }
+  
