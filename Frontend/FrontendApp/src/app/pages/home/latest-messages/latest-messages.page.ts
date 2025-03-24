@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
 import { NotificationDto } from 'src/app/model/notification';
@@ -15,6 +15,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./latest-messages.page.scss']
 })
 export class LatestMessagesPage implements OnInit {
+  @Input() refreshTrigger: number = 0;
+
   messages: NotificationDto[] = [];
   isLoading = true;
   errorMessage: string | null = null;

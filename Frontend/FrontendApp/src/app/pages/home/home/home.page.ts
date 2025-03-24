@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -15,8 +15,20 @@ import { TournamentInvitesPage } from '../tournament-invites/tournament-invites.
   imports: [CommonModule, IonicModule, ReactiveFormsModule, LatestMessagesPage, UpcomingBetsPage, TournamentSummaryPage, TournamentInvitesPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class HomePage {
+export class HomePage implements OnInit {
+  refreshCounter = 0;
 
-  constructor() {}
+  triggerRefresh() {
+    this.refreshCounter++;
+  }
+
+  ngOnInit() {
+  }
+
+  ionViewWillEnter(){
+    this.triggerRefresh();
+  }
+
+  constructor() { }
 
 }

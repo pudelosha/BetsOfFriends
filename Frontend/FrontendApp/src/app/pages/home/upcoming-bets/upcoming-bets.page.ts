@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { UpcomingBet } from 'src/app/model/bet';
@@ -16,6 +16,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./upcoming-bets.page.scss']
 })
 export class UpcomingBetsPage implements OnInit {
+  @Input() refreshTrigger: number = 0;
+
   tournamentId: number | null = null;
   upcomingGames: UpcomingBet[] = [];
   isLoading = true;
@@ -33,8 +35,10 @@ export class UpcomingBetsPage implements OnInit {
     await this.loadTournamentAndFetchBets();
   }
 
-  async ionViewWillEnter() {
-    await this.loadTournamentAndFetchBets(); // Ensure upcoming bets refresh when view is re-entered
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
+      this.loadTournamentAndFetchBets();
+    }
   }
 
   private async loadTournamentAndFetchBets() {

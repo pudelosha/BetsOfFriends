@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentInvite } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
@@ -14,6 +14,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./tournament-invites.page.scss']
 })
 export class TournamentInvitesPage implements OnInit {
+  @Input() refreshTrigger: number = 0;
+  
   invites: TournamentInvite[] = [];
   isLoading = true;
   errorMessage: string | null = null;
@@ -27,6 +29,12 @@ export class TournamentInvitesPage implements OnInit {
 
   async ngOnInit() {
     await this.loadTournamentInvites();
+  }
+
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
+      this.loadTournamentInvites();
+    }
   }
 
   private async loadTournamentInvites() {

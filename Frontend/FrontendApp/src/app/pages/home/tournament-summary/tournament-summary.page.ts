@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
@@ -15,6 +15,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./tournament-summary.page.scss']
 })
 export class TournamentSummaryPage implements OnInit {
+  @Input() refreshTrigger: number = 0;
+
   tournamentId: number | null = null;
   players: TournamentPlayerResult[] = [];
   isLoading = true;
@@ -31,8 +33,10 @@ export class TournamentSummaryPage implements OnInit {
     await this.loadTournamentAndFetchSummary();
   }
 
-  async ionViewWillEnter() {
-    await this.loadTournamentAndFetchSummary(); // Ensure summary refresh when view is re-entered
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
+      this.loadTournamentAndFetchSummary();
+    }
   }
 
   private async loadTournamentAndFetchSummary() {

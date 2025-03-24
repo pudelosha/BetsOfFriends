@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentParticipant } from 'src/app/model/tournament-model';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
@@ -14,6 +14,8 @@ import { IonicModule, ToastController, LoadingController, AlertController } from
   styleUrls: ['./pending-invites.page.scss']
 })
 export class PendingInvitesPage implements OnInit {
+  @Input() refreshTrigger: number = 0;
+
   tournamentId: number | null = null;
   pendingParticipants: TournamentParticipant[] = [];
   isLoading = true;
@@ -30,8 +32,10 @@ export class PendingInvitesPage implements OnInit {
     await this.loadPendingInvites();
   }
 
-  async ionViewWillEnter() {
-    await this.loadPendingInvites();
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
+      this.loadPendingInvites();
+    }
   }
 
   async loadPendingInvites() {

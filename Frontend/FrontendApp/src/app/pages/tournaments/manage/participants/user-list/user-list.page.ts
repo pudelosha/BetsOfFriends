@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, LoadingController, AlertController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
@@ -15,6 +15,8 @@ import { Router } from '@angular/router';
   imports: [CommonModule, IonicModule],
 })
 export class UserListPage implements OnInit {
+  @Input() refreshTrigger: number = 0;
+
   tournamentId: number | null = null;
   participants: TournamentParticipant[] = [];
   isLoading = true;
@@ -32,8 +34,10 @@ export class UserListPage implements OnInit {
     await this.loadTournamentAndFetchParticipants();
   }
 
-  async ionViewWillEnter() {
-    await this.loadTournamentAndFetchParticipants();
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
+      this.loadTournamentAndFetchParticipants();
+    }
   }
 
   private async loadTournamentAndFetchParticipants() {

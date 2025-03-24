@@ -1,9 +1,9 @@
 <ion-content class="ion-padding page-with-header">
     <div class="page-container">
-        <app-tournament-invites></app-tournament-invites>
-        <app-latest-messages></app-latest-messages>
-        <app-upcoming-bets></app-upcoming-bets>
-        <app-tournament-summary></app-tournament-summary>
+        <app-tournament-invites [refreshTrigger]="refreshCounter"></app-tournament-invites>
+        <app-latest-messages [refreshTrigger]="refreshCounter"></app-latest-messages>
+        <app-upcoming-bets [refreshTrigger]="refreshCounter"></app-upcoming-bets>
+        <app-tournament-summary [refreshTrigger]="refreshCounter"></app-tournament-summary>
     </div>
 </ion-content>
 
