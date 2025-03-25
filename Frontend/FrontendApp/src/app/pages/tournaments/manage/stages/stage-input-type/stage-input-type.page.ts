@@ -56,13 +56,13 @@ export class StageInputTypePage implements OnInit {
       });
     }
   
-    if (this.isPredefinedTournament) {
+    if (this.isCustomTournamentCreateMode) {
       console.log('Loading predefined tournaments...');
       this.loadPredefinedTournaments();
     }
   }
           
-  private loadPredefinedTournaments(): void {
+  loadPredefinedTournaments(): void {
     this.tournamentService.getActivePredefinedTournaments().subscribe({
       next: (tournaments) => {
         this.predefinedTournaments = tournaments;
@@ -330,11 +330,29 @@ export class StageInputTypePage implements OnInit {
 
   eraseForm(): void {
     this.tournamentForm.reset();
+  
+    // Emit empty lists to parent to clear teams, stages, matches
     this.teamsExtracted.emit([]);
+    this.stagesExtracted.emit([]);
     this.matchesExtracted.emit([]);
+  
+    // Reapply default values based on mode
+    if (this.isCustomTournamentCreateMode) {
+      this.tournamentForm.patchValue({
+        tournamentVisibility: 'Private',
+        updateMethod: 'Manual',
+      });
+    }
+  
+    if (!this.isEditMode && this.isPredefinedTournament) {
+      this.tournamentForm.patchValue({
+        updateMethod: 'Manual',
+      });
+    }
+  
     this.showToast('All form data has been erased.', 'success');
   }
-
+  
   generateFrontendId(): string {
     return 'F-' + Math.random().toString(36).substr(2, 9);
   }

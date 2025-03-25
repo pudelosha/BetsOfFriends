@@ -38,11 +38,6 @@
         <ion-segment-button value="Private"><ion-label>Private</ion-label></ion-segment-button>
         <ion-segment-button value="Public"><ion-label>Public</ion-label></ion-segment-button>
       </ion-segment>
-
-      <div *ngIf="tournamentForm.get('tournamentVisibility')?.value === 'Public'">
-        <ion-label class="form-label">Public Tournament Name</ion-label>
-        <ion-input formControlName="publicTournamentName" placeholder="Enter public tournament name"></ion-input>
-      </div>
     </div>
 
     <ion-label class="form-label label-spaced">Tournament Name</ion-label>

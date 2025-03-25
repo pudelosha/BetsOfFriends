@@ -25,6 +25,7 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
   imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageStagesManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage, StageSettingsPage],
 })
 export class BuildCustomTournamentPage implements OnInit {
+  @ViewChild(StageInputTypePage) stageInputTypePage!: StageInputTypePage;
   @ViewChild(StageTeamsManagementPage) stageTeamsManagement!: StageTeamsManagementPage;
   @ViewChild(StageStagesManagementPage) stageStagesManagement!: StageStagesManagementPage;
   @ViewChild(StageMatchesManagementPage) stageMatchesManagement!: StageMatchesManagementPage;
@@ -35,6 +36,7 @@ export class BuildCustomTournamentPage implements OnInit {
   tournamentId?: number | null = null; // Optional: null for new tournaments, number for existing ones
   isLoading = false;
   settingsConfirmed = false; // Ensure settings are saved before proceeding
+  isPredefinedTournament = false;
 
   constructor(private fb: FormBuilder, 
     private toastController: ToastController,
@@ -84,6 +86,18 @@ export class BuildCustomTournamentPage implements OnInit {
     this.resetFormData();
     this.scrollToTop();
     this.step = 1;
+  
+    if (!this.isEditMode && !this.isPredefinedTournament) {
+      this.tournamentForm.patchValue({
+        tournamentVisibility: 'Private',
+        updateMethod: 'Manual',
+      });
+  
+      // Refresh predefined tournaments in Stage 1 child
+      setTimeout(() => {
+        this.stageInputTypePage?.loadPredefinedTournaments?.();
+      });
+    }
   }
 
   get isEditMode(): boolean {
@@ -810,35 +824,30 @@ export class BuildCustomTournamentPage implements OnInit {
   async canProceed(): Promise<boolean> {
     switch (this.step) {
       case 1:
-        if (!this.tournamentForm.get('tournamentName')?.valid) {
+        const visibility = this.tournamentForm.get('tournamentVisibility')?.value;
+        const name = this.tournamentForm.get('tournamentName')?.value?.trim();
+  
+        if (!name) {
           await this.showToast('Tournament Name is required!', 'danger');
           return false;
         }
-        return true;
   
-        case 2:
-          if (!this.settingsGroup.valid) {
-            await this.showToast('Tournament settings are incomplete or invalid.', 'danger');
+        if (visibility === 'Public') {
+          const response = await firstValueFrom(this.tournamentService.checkTournamentNameAvailability(name));
+          if (!response.available) {
+            await this.showToast('This tournament name is already taken.', 'danger');
             return false;
           }
-    
-          // Check if Tournament is Public and name is provided
-          if (this.settingsGroup.get('tournamentVisibility')?.value === 'Public') {
-            const publicName = this.settingsGroup.get('publicTournamentName')?.value || '';
-    
-            if (!publicName.trim()) {
-              await this.showToast('Public Tournament Name is required!', 'danger');
-              return false;
-            }
-    
-            // Check name availability with backend
-            const isNameAvailable = await firstValueFrom(this.tournamentService.checkTournamentNameAvailability(publicName));
-            if (!isNameAvailable) {
-              await this.showToast('This tournament name is already taken.', 'danger');
-              return false;
-            }
-          }  
-          return true;
+        }
+  
+        return true;
+  
+      case 2:
+        if (!this.settingsGroup.valid) {
+          await this.showToast('Tournament settings are incomplete or invalid.', 'danger');
+          return false;
+        }
+        return true;
   
       case 3:
         if (this.teamsArray.length <= 1) {
@@ -846,7 +855,7 @@ export class BuildCustomTournamentPage implements OnInit {
           return false;
         }
         return true;
-
+  
       case 4:
         if (this.stagesArray.length === 0) {
           await this.showToast('At least one stage is required!', 'danger');
@@ -868,8 +877,9 @@ export class BuildCustomTournamentPage implements OnInit {
         }
         return true;
     }
+  
     return false;
-  }   
+  }    
 
   private generateFrontendId(): string {
     return 'T-' + Math.random().toString(36).substr(2, 9);

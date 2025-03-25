@@ -62,10 +62,8 @@ namespace Backend.Repository.Services
                     CreatedAt = DateTime.UtcNow,
 
                     // Tournament Settings Mapping
-                    Visibility = Enum.TryParse<TournamentVisibility>(tournamentDto.Settings?.TournamentVisibility, true, out var parsedVisibility)
-                        ? parsedVisibility : TournamentVisibility.Private,
-                    Update = Enum.TryParse<TournamentUpdate>(tournamentDto.Settings?.UpdateMethod, true, out var parsedUpdate)
-                        ? parsedUpdate : TournamentUpdate.Manual,
+                    Visibility = Enum.TryParse<TournamentVisibility>(tournamentDto.TournamentVisibility, true, out var parsedVisibility) ? parsedVisibility : TournamentVisibility.Private,
+                    Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var parsedUpdate) ? parsedUpdate : TournamentUpdate.Manual,
                     AllowExactResultBonus = tournamentDto.Settings?.AllowExactResultBonus ?? false,
                     ExactResultBonusCalculation = Enum.TryParse<CustomTournament.ExactResultBonusCalculationType>(
                         tournamentDto.Settings?.ExactResultBonusCalculation, true, out var exactBonusCalculation)
@@ -443,11 +441,15 @@ namespace Backend.Repository.Services
                 // Step 3: Update Tournament Details & Settings
                 tournament.Name = tournamentDto.TournamentName;
                 tournament.IsActive = tournamentDto.IsActive;
+                tournament.Visibility = Enum.TryParse<TournamentVisibility>(tournamentDto.TournamentVisibility, true, out var visibilityEnum)
+                    ? visibilityEnum
+                    : TournamentVisibility.Private;
+                tournament.Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var updateEnum)
+                    ? updateEnum
+                    : TournamentUpdate.Manual;
 
                 if (tournamentDto.Settings != null)
                 {
-                    tournament.Visibility = Enum.TryParse(tournamentDto.Settings.TournamentVisibility, out TournamentVisibility parsedVisibility) ? parsedVisibility : TournamentVisibility.Private;
-                    tournament.Update = Enum.TryParse(tournamentDto.Settings.UpdateMethod, out TournamentUpdate parsedUpdate) ? parsedUpdate : TournamentUpdate.Manual;
                     tournament.AllowExactResultBonus = tournamentDto.Settings.AllowExactResultBonus;
                     tournament.ExactResultBonusCalculation = Enum.TryParse<CustomTournament.ExactResultBonusCalculationType>(
                         tournamentDto.Settings.ExactResultBonusCalculation, true, out var exactBonusCalculation)
@@ -719,6 +721,8 @@ namespace Backend.Repository.Services
                     TournamentName = tournament.Name,
                     CreatedBy = tournament.CreatedByUserId,
                     CreatedAt = tournament.CreatedAt,
+                    TournamentVisibility = tournament.Visibility.ToString(),
+                    UpdateMethod = tournament.Update.ToString(),
                     IsActive = tournament.IsActive,
                     Teams = tournament.Teams.Select(team => new CustomTeamDto
                     {

@@ -27,10 +27,6 @@ export class StageSettingsPage implements OnDestroy {
 
   constructor(private fb: FormBuilder, private toastController: ToastController) {
     this.settingsForm = this.fb.group({
-      tournamentVisibility: ['Private'],  // Default is Private
-      publicTournamentName: [null], // Optional, only required if Public
-      updateMethod: ['Manual'],           // Default is Manual
-
       allowExactResultBonus: [false],
       exactResultBonusCalculation: ['Fixed'],
       exactResultBonus: [5, [Validators.required, Validators.min(1)]],

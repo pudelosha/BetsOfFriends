@@ -185,3 +185,28 @@ ion-footer{
   color: #3880ff; /* Optional: Customize spinner color */
 }
 
+/* Hide Ionic scrollbars globally but preserve scrollability */
+ion-content {
+  --overflow: auto;                /* Ensure scroll works */
+  scrollbar-width: none;           /* Firefox */
+  -ms-overflow-style: none;        /* IE 10+ */
+  scroll-behavior: smooth;
+}
+
+ion-content::-webkit-scrollbar {
+  display: none;                   /* Chrome, Safari, Edge */
+}
+
+/* Hide scrollbars inside ion-content */
+ion-content::part(scroll) {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE 10+ */
+}
+
+ion-content::part(scroll)::-webkit-scrollbar {
+  display: none;                  /* Chrome, Safari, Edge */
+}
+
+
+
+

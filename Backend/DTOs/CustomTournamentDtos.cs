@@ -13,6 +13,12 @@ namespace Backend.DTOs
         public bool IsActive { get; set; }
 
         [Required]
+        public string TournamentVisibility { get; set; } = "Private";
+
+        [Required]
+        public string UpdateMethod { get; set; } = "Manual";
+
+        [Required]
         public string CreatedBy { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
