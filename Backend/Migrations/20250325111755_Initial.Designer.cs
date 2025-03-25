@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250324151604_Initial")]
+    [Migration("20250325111755_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -643,6 +643,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Update")
+                        .HasColumnType("int");
 
                     b.HasKey("TournamentId");
 

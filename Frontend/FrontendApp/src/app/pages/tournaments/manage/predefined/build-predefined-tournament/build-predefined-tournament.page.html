@@ -3,13 +3,14 @@
     <div *ngIf="step === 1">
       <app-stage-input-type
         [tournamentForm]="tournamentForm"
-        [showPredefinedImport]="false"
+        [isEditMode]="isEditMode"
+        [isPredefinedTournament]="true"
         (teamsExtracted)="handleTeamsExtracted($event)"
         (stagesExtracted)="handleStagesExtracted($event)"
         (matchesExtracted)="handleMatchesExtracted($event)">
       </app-stage-input-type> 
     </div>
-
+    
     <div *ngIf="step === 2">
       <app-stage-teams-management
         [teamsArray]="teamsArray"

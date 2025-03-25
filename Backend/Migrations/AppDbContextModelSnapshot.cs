@@ -641,6 +641,9 @@ namespace Backend.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("Update")
+                        .HasColumnType("int");
+
                     b.HasKey("TournamentId");
 
                     b.ToTable("PredefinedTournaments");

@@ -4,6 +4,7 @@ using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using static Backend.Model.Entities.CustomMatch;
+using static Backend.Model.Entities.CustomTournament;
 
 namespace Backend.Repository.Services
 {
@@ -29,7 +30,8 @@ namespace Backend.Repository.Services
                     TournamentName = tournamentDto.TournamentName,
                     IsActive = tournamentDto.IsActive,
                     CreatedBy = tournamentDto.CreatedBy,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var u) ? u : TournamentUpdate.Manual
                 };
 
                 _context.PredefinedTournaments.Add(tournament);
@@ -130,6 +132,7 @@ namespace Backend.Repository.Services
                 tournament.TournamentName = tournamentDto.TournamentName;
                 tournament.IsActive = tournamentDto.IsActive;
                 tournament.CreatedBy = tournamentDto.CreatedBy;
+                tournament.Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var updateEnum) ? updateEnum : TournamentUpdate.Manual;
 
                 // Step 3: Handle Teams
                 var existingTeams = tournament.PredefinedTeams.ToDictionary(t => t.TeamId);
@@ -349,6 +352,7 @@ namespace Backend.Repository.Services
                     TournamentName = tournament.TournamentName,
                     CreatedBy = tournament.CreatedBy,
                     CreatedAt = tournament.CreatedAt,
+                    UpdateMethod = tournament.Update.ToString(),
                     IsActive = tournament.IsActive,
                     Teams = tournament.PredefinedTeams.Select(team => new PredefinedTeamDto
                     {

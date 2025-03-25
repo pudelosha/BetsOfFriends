@@ -17,8 +17,9 @@ import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-sel
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
 export class StageInputTypePage implements OnInit {
-  @Input() showPredefinedImport: boolean = false;
   @Input() tournamentForm!: FormGroup;
+  @Input() isEditMode: boolean = false;
+  @Input() isPredefinedTournament: boolean = false;
   @Output() teamsExtracted = new EventEmitter<Team[]>(); 
   @Output() stagesExtracted = new EventEmitter<Stage[]>();
   @Output() matchesExtracted = new EventEmitter<Match[]>(); 
@@ -26,7 +27,6 @@ export class StageInputTypePage implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   file: File | null = null;
-  importMethod: string = 'upload'; // Default value
   predefinedTournaments: Tournament[] = [];
   selectedTournamentId: number | null = null;
 
@@ -37,19 +37,31 @@ export class StageInputTypePage implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.importMethod = 'upload';
-
-    if (this.showPredefinedImport) {
+    console.log('[StageInputType] ngOnInit');
+    console.log('isEditMode:', this.isEditMode);
+    console.log('isPredefinedTournament:', this.isPredefinedTournament);
+    console.log('isCustomTournamentCreateMode:', this.isCustomTournamentCreateMode);
+    console.log('isCustomTournamentEditMode:', this.isCustomTournamentEditMode);
+  
+    if (this.isCustomTournamentCreateMode) {
+      console.log('Setting defaults for Custom - Create');
+      this.tournamentForm.patchValue({
+        tournamentVisibility: 'Private',
+        updateMethod: 'Manual',
+      });
+    } else if (!this.isEditMode && this.isPredefinedTournament) {
+      console.log('Setting defaults for Predefined - Create');
+      this.tournamentForm.patchValue({
+        updateMethod: 'Manual',
+      });
+    }
+  
+    if (this.isPredefinedTournament) {
+      console.log('Loading predefined tournaments...');
       this.loadPredefinedTournaments();
     }
   }
-
-  onImportMethodChange(event: CustomEvent): void {
-    const method = event.detail.value;
-    this.tournamentForm.get('importMethod')?.setValue(method);
-    console.log('Import Method:', method);
-  }
-  
+          
   private loadPredefinedTournaments(): void {
     this.tournamentService.getActivePredefinedTournaments().subscribe({
       next: (tournaments) => {
@@ -62,6 +74,14 @@ export class StageInputTypePage implements OnInit {
     });
   }
 
+  get isCustomTournamentCreateMode(): boolean {
+    return !this.isEditMode && !this.isPredefinedTournament;
+  }
+  
+  get isCustomTournamentEditMode(): boolean {
+    return this.isEditMode && !this.isPredefinedTournament;
+  }
+  
   async openTournamentSelection(): Promise<void> {
     const modal = await this.modalController.create({
       component: TournamentSelectionModalComponent,

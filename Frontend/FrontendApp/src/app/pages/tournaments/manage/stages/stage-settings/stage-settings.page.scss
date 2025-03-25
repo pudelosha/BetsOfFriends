@@ -103,3 +103,17 @@ ion-button ion-icon {
   font-weight: bold;
   text-align: left;
 }
+
+.left-align {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 0;
+}
+
+.right-align {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0;
+}

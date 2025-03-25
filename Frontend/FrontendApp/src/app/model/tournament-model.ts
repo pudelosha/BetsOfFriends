@@ -57,6 +57,9 @@ export interface Stage{
 export interface Tournament {
   tournamentId?: number | null;
   tournamentName: string;
+  publicTournamentName?: string;
+  tournamentVisibility: 'Private' | 'Public';
+  updateMethod: 'Manual' | 'Semi' | 'Auto';
   isActive: boolean,
   createdBy: string;
   createdAt: string;
@@ -68,10 +71,6 @@ export interface Tournament {
 }
 
 export interface TournamentSettings {
-  tournamentVisibility: 'Private' | 'Public';
-  publicTournamentName?: string;
-  updateMethod: 'Manual' | 'Semi' | 'Auto';
-
   allowExactResultBonus: boolean;
   exactResultBonusCalculation: 'Fixed' | 'Multiplied'; // Stored as string
   exactResultBonus: number | null;

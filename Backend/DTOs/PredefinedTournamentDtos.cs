@@ -9,10 +9,16 @@ namespace Backend.DTOs
         [Required, MaxLength(100)]
         public string TournamentName { get; set; } = string.Empty;
 
+        [MaxLength(100)]
+        public string PublicTournamentName { get; set; } = string.Empty;
+
         [Required]
         public bool IsActive { get; set; }
 
-        [Required]
+        public string? TournamentVisibility { get; set; }
+
+        public string UpdateMethod { get; set; } = "Manual";
+
         public string CreatedBy { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

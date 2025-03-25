@@ -1,57 +1,148 @@
 <form [formGroup]="tournamentForm" class="form-container">
+
+  <!-- Page Description -->
   <div class="page-description">
     <p>
       Manage tournaments by creating new ones or updating existing ones, with options to customize teams, games, and details.
     </p>
     <p>
-      Enter a tournament name and either upload an Excel file or manually add teams and games.
-    </p>    
+      Set basic details, import data from file or templates, and configure match handling.
+    </p>
   </div>
 
-  <!-- Tournament Name -->
-  <ion-label class="form-label centered">Tournament Name</ion-label>
-  <ion-input
-    formControlName="tournamentName"
-    class="full-width centered-input"
-    placeholder="Enter tournament name">
-  </ion-input>
-  <hr class="divider" />
+  <!-- Tournament Visibility & Name -->
+  <div class="grid-frame">
+    <ion-grid class="settings-grid" *ngIf="!isPredefinedTournament">
+      <ion-row class="align-center">
+        <ion-col size="10" class="left-align">
+          <ion-label class="section-header">Tournament Visibility</ion-label>
+        </ion-col>
+        <ion-col size="2" class="right-align">
+          <ion-button fill="clear" size="small" id="visibilityInfo">
+            <ion-icon name="information-circle-outline"></ion-icon>
+          </ion-button>
+          <ion-popover [keepContentsMounted]="true" trigger="visibilityInfo">
+            <ng-template>
+              <ion-content class="ion-padding">
+                <p><strong>Private:</strong> Only admin can invite participants.</p>
+                <p><strong>Public:</strong> Anyone can request to join.</p>
+              </ion-content>
+            </ng-template>
+          </ion-popover>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
 
-  <ion-label class="form-label centered">Import Data</ion-label>
+    <div *ngIf="!isPredefinedTournament">
+      <ion-segment formControlName="tournamentVisibility">
+        <ion-segment-button value="Private"><ion-label>Private</ion-label></ion-segment-button>
+        <ion-segment-button value="Public"><ion-label>Public</ion-label></ion-segment-button>
+      </ion-segment>
 
-  <ion-segment [value]="importMethod" (ionChange)="onImportMethodChange($event)">
-    <ion-segment-button value="upload">
-      <ion-label>Upload</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="append">
-      <ion-label>Append</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+      <div *ngIf="tournamentForm.get('tournamentVisibility')?.value === 'Public'">
+        <ion-label class="form-label">Public Tournament Name</ion-label>
+        <ion-input formControlName="publicTournamentName" placeholder="Enter public tournament name"></ion-input>
+      </div>
+    </div>
 
-   <!-- Import Predefined Tournament --> 
-  <div *ngIf="showPredefinedImport">
-    <ion-button expand="full" (click)="openTournamentSelection()">Select Tournament</ion-button>
+    <ion-label class="form-label label-spaced">Tournament Name</ion-label>
+    <ion-input formControlName="tournamentName" placeholder="Enter tournament name"></ion-input>
   </div>
-    
-  <!-- File Upload Button -->
-  <div class="file-upload-container centered">
+
+  <!-- Match Update Method -->
+  <div class="grid-frame">
+    <ion-grid class="settings-grid">
+      <ion-row class="align-center">
+        <ion-col size="10" class="left-align">
+          <ion-label class="section-header">Match Update Method</ion-label>
+        </ion-col>
+        <ion-col size="2" class="right-align">
+          <ion-button fill="clear" size="small" id="updateMethodInfo">
+            <ion-icon name="information-circle-outline"></ion-icon>
+          </ion-button>
+          <ion-popover [keepContentsMounted]="true" trigger="updateMethodInfo">
+            <ng-template>
+              <ion-content class="ion-padding">
+                <p><strong>Manual:</strong> Admin manually adds or updates matches.</p>
+                <p><strong>Semi:</strong> Admin triggers updates from predefined tournaments.</p>
+                <p><strong>Auto:</strong> Matches update automatically based on predefined tournaments.</p>
+              </ion-content>
+            </ng-template>
+          </ion-popover>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-segment formControlName="updateMethod">
+      <ion-segment-button value="Manual"><ion-label>Manual</ion-label></ion-segment-button>
+      <ion-segment-button value="Semi"><ion-label>Semi</ion-label></ion-segment-button>
+      <ion-segment-button value="Auto"><ion-label>Auto</ion-label></ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Import Data -->
+  <div class="grid-frame">
+    <ion-grid class="settings-grid">
+      <ion-row class="align-center">
+        <ion-col size="10" class="left-align">
+          <ion-label class="section-header">Import Data</ion-label>
+        </ion-col>
+        <ion-col size="2" class="right-align">
+          <ion-button fill="clear" size="small" id="importInfo">
+            <ion-icon name="information-circle-outline"></ion-icon>
+          </ion-button>
+          <ion-popover [keepContentsMounted]="true" trigger="importInfo">
+            <ng-template>
+              <ion-content class="ion-padding">
+                <p>You can:</p>
+                <ul>
+                  <li>Import data from an Excel file</li>
+                  <li>Use a predefined tournament as a template</li>
+                  <li>Clear all form data and start from scratch</li>
+                </ul>
+              </ion-content>
+            </ng-template>
+          </ion-popover>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <!-- Import from file -->
     <ion-button
-      color="primary"
+      *ngIf="isPredefinedTournament || isCustomTournamentCreateMode"
       expand="full"
-      class="upload-button"
       (click)="triggerFileInput()">
-      Select Excel File
+      Import from file
     </ion-button>
     <input
       #fileInput
       type="file"
       class="hidden-file-input"
       (change)="handleFileInput($event)">
-  </div>
-  <hr class="divider" />
 
-  <!-- Erase Form Data Button -->
-  <ion-button color="danger" expand="full" class="erase-button" (click)="confirmEraseForm()">
-    Erase All Form Data
-  </ion-button>
+    <!-- Import tournament -->
+    <ion-button
+      *ngIf="isCustomTournamentCreateMode"
+      expand="full"
+      (click)="openTournamentSelection()">
+      Import tournament
+    </ion-button>
+
+    <!-- Update tournament -->
+    <ion-button
+      *ngIf="isCustomTournamentEditMode"
+      expand="full"
+      (click)="triggerFileInput()">
+      Update tournament
+    </ion-button>
+
+    <!-- Erase form -->
+    <ion-button
+      color="danger"
+      expand="full"
+      (click)="confirmEraseForm()">
+      Erase All Form Data
+    </ion-button>
+  </div>
+
 </form>

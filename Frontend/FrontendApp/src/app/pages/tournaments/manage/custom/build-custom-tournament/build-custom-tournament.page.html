@@ -2,8 +2,9 @@
   <div class="page-container">
     <div *ngIf="step === 1">
       <app-stage-input-type
-        [showPredefinedImport]="true"
         [tournamentForm]="tournamentForm"
+        [isEditMode]="isEditMode"
+        [isPredefinedTournament]="false"
         (teamsExtracted)="handleTeamsExtracted($event)"
         (matchesExtracted)="handleMatchesExtracted($event)"
         (stagesExtracted)="handleStagesExtracted($event)"

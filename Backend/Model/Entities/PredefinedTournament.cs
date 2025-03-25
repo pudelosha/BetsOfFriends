@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Backend.Model.Entities.CustomTournament;
 
 namespace Backend.Model.Entities
 {
@@ -18,6 +19,8 @@ namespace Backend.Model.Entities
         public string CreatedBy { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public TournamentUpdate Update { get; set; } = TournamentUpdate.Manual;
 
         public ICollection<PredefinedTeam> PredefinedTeams { get; set; } = new List<PredefinedTeam>();
         public ICollection<PredefinedMatch> PredefinedMatches { get; set; } = new List<PredefinedMatch>();

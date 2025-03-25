@@ -47,15 +47,14 @@ export class BuildCustomTournamentPage implements OnInit {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
-      importMethod: ['upload'],
+      publicTournamentName: [null],
+      tournamentVisibility: ['Private', Validators.required], // or 'Public' depending on default
+      updateMethod: ['Manual', Validators.required], 
       teams: this.fb.array([], Validators.required),
       stages: this.fb.array([], Validators.required),
       matches: this.fb.array([], Validators.required),
       users: this.fb.array([]),
       settings: this.fb.group({
-        tournamentVisibility: ['Private'],
-        publicTournamentName: [null],
-        updateMethod: ['Manual'],
         allowExactResultBonus: [false],
         exactResultBonusCalculation: ['Fixed'],
         exactResultBonus: [null, Validators.min(1)],
@@ -87,13 +86,16 @@ export class BuildCustomTournamentPage implements OnInit {
     this.step = 1;
   }
 
+  get isEditMode(): boolean {
+    return !!this.tournamentId;
+  }
+  
   private resetFormData(): void {
     this.tournamentForm.reset();
     this.teamsArray.clear();
     this.stagesArray.clear();
     this.matchesArray.clear();
     this.usersArray.clear();
-    this.tournamentForm.get('importMethod')?.setValue('upload');
   }
 
   private scrollToTop(): void {
@@ -174,14 +176,13 @@ export class BuildCustomTournamentPage implements OnInit {
     this.tournamentForm.patchValue({
       tournamentId: tournament.tournamentId,
       tournamentName: tournament.tournamentName,
-      importMethod: 'upload',
+      tournamentVisibility: tournament.tournamentVisibility || 'Private',
+      publicTournamentName: tournament.publicTournamentName || '',
+      updateMethod: tournament.updateMethod || 'Manual',
     });
 
     if (tournament.settings) {
       this.settingsGroup.patchValue({
-        tournamentVisibility: tournament.settings.tournamentVisibility ?? 'Private',
-        publicTournamentName: tournament.settings.publicTournamentName ?? null,
-        updateMethod: tournament.settings.updateMethod ?? 'Manual',
         allowExactResultBonus: tournament.settings.allowExactResultBonus ?? false,
         exactResultBonusCalculation: tournament.settings.exactResultBonusCalculation ?? 'Fixed',
         exactResultBonus: tournament.settings.exactResultBonus ?? null,
@@ -320,122 +321,54 @@ export class BuildCustomTournamentPage implements OnInit {
   }
          
   handleTeamsExtracted(teams: Team[]): void {
-    const importMethod = this.tournamentForm.get('importMethod')?.value;
+    this.teamsArray.clear();
   
-    console.log('Import Method:', importMethod);
-  
-    if (importMethod === 'upload') {
-      // Replace all teams
-      this.teamsArray.clear();
-      teams.forEach((team) => {
-        this.teamsArray.push(
-          this.fb.group({
-            teamFrontendId: [team.teamFrontendId || this.generateFrontendId()], // Ensure frontend ID
-            teamId: [team.teamId], // Backend ID remains unchanged
-            teamName: [team.teamName, Validators.required],
-            recordStatus: ['New']
-          })
-        );
-      });
-    } else if (importMethod === 'append') {
-      // Append new teams, avoiding duplicates
-      teams.forEach((team) => {
-        const existing = this.teamsArray.value.some(
-          (existingTeam: any) => existingTeam.teamFrontendId === team.teamFrontendId
-        );
-  
-        if (!existing) {
-          this.teamsArray.push(
-            this.fb.group({
-              teamFrontendId: [team.teamFrontendId || this.generateFrontendId()], // Ensure frontend ID
-              teamId: [team.teamId], // Backend ID remains unchanged
-              teamName: [team.teamName, Validators.required],
-              recordStatus: ['New']
-            })
-          );
-        }
-      });
-    }
+    teams.forEach((team) => {
+      this.teamsArray.push(
+        this.fb.group({
+          teamFrontendId: [team.teamFrontendId || this.generateFrontendId()],
+          teamId: [team.teamId],
+          teamName: [team.teamName, Validators.required],
+          recordStatus: [team.recordStatus || 'New']
+        })
+      );
+    });
   
     console.log('Updated Teams:', this.teamsArray.value);
   }
-
+  
   handleStagesExtracted(stages: Stage[]): void {
-    const importMethod = this.tournamentForm.get('importMethod')?.value;
+    this.stagesArray.clear();
   
-    console.log('Importing Stages - Method:', importMethod);
-  
-    if (importMethod === 'upload') {
-      this.stagesArray.clear();
-      stages.forEach(stage => {
-        this.stagesArray.push(
-          this.fb.group({
-            stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
-            stageId: [stage.stageId],
-            stageName: [stage.stageName, Validators.required],
-            order: [stage.order, [Validators.required, Validators.min(1)]],
-            recordStatus: ['New']
-          })
-        );
-      });
-    } else if (importMethod === 'append') {
-      stages.forEach(stage => {
-        const exists = this.stagesArray.value.some(
-          (existingStage: any) => existingStage.stageFrontendId === stage.stageFrontendId
-        );
-  
-        if (!exists) {
-          this.stagesArray.push(
-            this.fb.group({
-              stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
-              stageId: [stage.stageId],
-              stageName: [stage.stageName, Validators.required],
-              order: [stage.order, [Validators.required, Validators.min(1)]],
-              recordStatus: ['New']
-            })
-          );
-        }
-      });
-    }
+    stages.forEach(stage => {
+      this.stagesArray.push(
+        this.fb.group({
+          stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
+          stageId: [stage.stageId],
+          stageName: [stage.stageName, Validators.required],
+          order: [stage.order, [Validators.required, Validators.min(1)]],
+          recordStatus: [stage.recordStatus || 'New']
+        })
+      );
+    });
   
     console.log('Updated Stages:', this.stagesArray.value);
-  }  
+  }   
     
   handleMatchesExtracted(matches: Match[]): void {
-    console.log('Matches Received from Child:', matches); // Log what the child emits
+    console.log('Matches Received from Child:', matches);
   
-    const importMethod = this.tournamentForm.get('importMethod')?.value;
+    this.matchesArray.clear();
   
-    if (importMethod === 'upload') {
-      // Replace all matches
-      this.matchesArray.clear();
-      matches.forEach((match) => {
-        this.matchesArray.push(this.buildMatchFormGroup({
-          ...match,
-          recordStatus: 'New'
-        }));
-      });
-    } else if (importMethod === 'append') {
-      matches.forEach((match) => {
-        if (
-          !this.matchesArray.value.some(
-            (existing: any) =>
-              existing.frontendId === match.matchFrontendId || 
-              (existing.homeTeamFrontendId === match.homeTeamFrontendId &&
-                existing.awayTeamFrontendId === match.awayTeamFrontendId &&
-                existing.matchStart === match.matchStart)
-          )
-        ) {
-          this.matchesArray.push(this.buildMatchFormGroup({
-            ...match,
-            recordStatus: 'New'
-          }));
-        }
-      });
-    }
+    matches.forEach((match) => {
+      this.matchesArray.push(this.buildMatchFormGroup({
+        ...match,
+        recordStatus: match.recordStatus || 'New'
+      }));
+    });
   
     console.log('Updated Matches (from FormArray.value):', this.matchesArray.value);
-  } 
+  }
   
   handleUsersUpdated(users: User[]): void {
     console.log("Received updated users from child:", users);
@@ -754,6 +687,9 @@ export class BuildCustomTournamentPage implements OnInit {
     const tournamentData: Tournament = {
       tournamentId: isEditing ? this.tournamentId : null,
       tournamentName: this.tournamentForm.value.tournamentName,
+      publicTournamentName: this.tournamentForm.value.publicTournamentName?.trim() || undefined,
+      tournamentVisibility: this.tournamentForm.value.tournamentVisibility || 'Private',
+      updateMethod: this.tournamentForm.value.updateMethod || 'Manual',
       isActive: true,
       createdBy: this.tournamentForm.value.createdBy || 'Admin',
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
@@ -800,9 +736,6 @@ export class BuildCustomTournamentPage implements OnInit {
       })),
 
       settings: {
-        tournamentVisibility: this.tournamentForm.value.settings.tournamentVisibility,
-        publicTournamentName: this.tournamentForm.value.settings.publicTournamentName,
-        updateMethod: this.tournamentForm.value.settings.updateMethod,
         allowExactResultBonus: this.tournamentForm.value.settings.allowExactResultBonus,
         exactResultBonusCalculation: this.tournamentForm.value.settings.exactResultBonusCalculation,
         exactResultBonus: this.tournamentForm.value.settings.exactResultBonus || null,
