@@ -37,10 +37,6 @@ export class AppComponent {
       // Refresh authentication state
       this.isLoggedIn = this.authService.isLoggedIn();
       this.updateUserRoles();
-
-      // Show FAB only on `/my-bets/to-place`
-      this.showFab = event.urlAfterRedirects === '/my-bets/to-place';
-      console.log("FAB Visibility:", this.showFab);
     });
   }
 
@@ -117,6 +113,11 @@ export class AppComponent {
   navigateToPredefinedTournamentsMatches() {
     console.log('Navigating to predefined-tournament-matches...');
     this.router.navigate(['/matches/predefined']);
+  }
+
+  navigateToManageUsers(){
+    console.log('Navigating to manage-users...');
+    this.router.navigate(['/users']);
   }
 
   navigateToMyTournaments() {

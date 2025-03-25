@@ -16,5 +16,9 @@ namespace Backend.Repository.Interfaces
         Task<bool> ChangeUserEmailAsync(string userId, string newEmail, string password);
         Task<bool> UpdateUserPasswordAsync(string userId, string currentPassword, string newPassword);
         Task<bool> DeleteUserAccountAsync(string userId, string password);
+        Task<List<ApplicationUserDto>> GetAllUsersAsync();
+        Task<ActionResultDto> SuspendUserAsync(string targetUserId, string performedByUserId);
+        Task<ActionResultDto> UnsuspendUserAsync(string targetUserId, string adminUserId);
+        Task<ActionResultDto> DeleteUserAsync(string targetUserId, string performedByUserId);
     }
 }

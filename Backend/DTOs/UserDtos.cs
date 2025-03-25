@@ -54,4 +54,23 @@ namespace Backend.DTOs
     {
         public string Password { get; set; }
     }
+
+    public class ApplicationUserDto
+    {
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public string UserEmail { get; set; }
+        public string UserRole { get; set; }
+        public string UserStatus { get; set; }
+
+        public int TournamentAdminCount { get; set; }
+        public int TournamentParticipantCount { get; set; }
+
+        public DateTime MemberSince { get; set; }
+    }
+
+    public class UserActionRequestDto
+    {
+        public string UserId { get; set; }
+    }
 }

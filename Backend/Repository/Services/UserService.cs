@@ -1,4 +1,5 @@
 ﻿using Backend.DTOs;
+using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -15,14 +16,16 @@ namespace Backend.Repository.Services
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserService> _logger;
         private readonly IEmailTemplateService _emailTemplateService;
+        private readonly AppDbContext _dbContext;
 
-        public UserService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<UserService> logger, IEmailTemplateService emailTemplateService)
+        public UserService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<UserService> logger, IEmailTemplateService emailTemplateService, AppDbContext dbContext)
         {
             _userManager = userManager;
             _emailService = emailService;
             _configuration = configuration;
             _logger = logger;
             _emailTemplateService = emailTemplateService;
+            _dbContext = dbContext;
         }
 
         public string GetUserIdFromClaims(ClaimsPrincipal user)
@@ -218,5 +221,90 @@ namespace Backend.Repository.Services
             _logger.LogInformation($"User {userId} successfully deleted.");
             return true;
         }
+
+        public async Task<List<ApplicationUserDto>> GetAllUsersAsync()
+        {
+            var users = _userManager.Users.ToList();
+
+            var result = new List<ApplicationUserDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault() ?? "Player";
+
+                var dto = new ApplicationUserDto
+                {
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    UserEmail = user.Email,
+                    UserRole = role,
+                    UserStatus = GetUserStatus(user),
+                    TournamentAdminCount = await _dbContext.CustomTournaments.CountAsync(t => t.CreatedByUserId == user.Id),
+                    TournamentParticipantCount = await _dbContext.CustomTournamentUserAssignments.CountAsync(p => p.UserId == user.Id),
+                    MemberSince = user.MemberSince // Or user.CreatedAt / user.RegisteredAt
+                };
+
+                result.Add(dto);
+            }
+
+            return result;
+        }
+
+        public async Task<ActionResultDto> SuspendUserAsync(string targetUserId, string adminUserId)
+        {
+            var user = await _userManager.FindByIdAsync(targetUserId);
+            if (user == null)
+                return ActionResultDto.ErrorResult("User not found.");
+
+            user.LockoutEnabled = true;
+            user.LockoutEnd = DateTimeOffset.MaxValue;
+
+            var result = await _userManager.UpdateAsync(user);
+            return result.Succeeded
+                ? ActionResultDto.SuccessResult("User suspended successfully.")
+                : ActionResultDto.ErrorResult("Failed to suspend user.");
+        }
+
+        public async Task<ActionResultDto> UnsuspendUserAsync(string targetUserId, string adminUserId)
+        {
+            var user = await _userManager.FindByIdAsync(targetUserId);
+            if (user == null)
+                return ActionResultDto.ErrorResult("User not found.");
+
+            user.LockoutEnd = null;
+            user.LockoutEnabled = false;
+
+            var result = await _userManager.UpdateAsync(user);
+            return result.Succeeded
+                ? ActionResultDto.SuccessResult("User unsuspended successfully.")
+                : ActionResultDto.ErrorResult("Failed to unsuspend user.");
+        }
+
+        public async Task<ActionResultDto> DeleteUserAsync(string targetUserId, string adminUserId)
+        {
+            var user = await _userManager.FindByIdAsync(targetUserId);
+            if (user == null)
+                return ActionResultDto.ErrorResult("User not found.");
+
+            // Prevent deletion of Super Admins
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("SuperAdmin"))
+                return ActionResultDto.ErrorResult("You cannot delete a Super Admin.");
+
+            var result = await _userManager.DeleteAsync(user);
+            return result.Succeeded
+                ? ActionResultDto.SuccessResult("User deleted successfully.")
+                : ActionResultDto.ErrorResult("Failed to delete user.");
+        }
+
+        private string GetUserStatus(ApplicationUser user)
+        {
+            if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)
+                return "Suspended";
+
+            return "Active";
+        }
+
     }
 }

@@ -1,7 +1,9 @@
 .sticky-menu {
   position: fixed;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
+  max-width: 600px; /* same as .page-container */
   background-color: white;
   z-index: 10;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -23,8 +25,10 @@
 .sticky-stage-menu {
   position: fixed;
   top: 100px; /* Adjusted to not overlap with the main menu */
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
+  max-width: 600px; /* same as .page-container */
   background-color: white;
   z-index: 1;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -36,7 +40,7 @@
 .sticky-inner {
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 5px; /* Optional: match your page padding */
+  padding: 0px 0px; /* Optional: match your page padding */
   width: 100%;
 }
 

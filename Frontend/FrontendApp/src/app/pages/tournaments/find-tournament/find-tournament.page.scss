@@ -1,4 +1,4 @@
-/* 📦 Frame container around each tournament */
+/* Frame container around each tournament */
 .tournament-box {
     background: #f5f5f5 !important;
     border-radius: 10px;
@@ -9,12 +9,12 @@
     width: 100%;
   }
   
-  /* 🖱️ Hover effect */
+  /* Hover effect */
   .tournament-box:hover {
     background: #ebebeb !important;
   }
   
-  /*  Remove default list styles */
+  /* Remove default list styles */
   ion-list.tournament-list {
     --background: transparent !important;
     background: transparent !important;

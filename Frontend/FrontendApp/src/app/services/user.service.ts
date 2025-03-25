@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { UserProfile } from '../model/user-profile';
+import { UserProfile, ApplicationUser } from '../model/user-profile';
+import { ActionResult } from '../model/action-result';
 
 @Injectable({
   providedIn: 'root',
@@ -42,5 +43,21 @@ export class UserService {
       `${this.apiUrl}/reset-password`,
       { userId, token, newPassword }
     );
+  }
+
+  getAllUsers(): Observable<ApplicationUser[]> {
+    return this.http.get<ApplicationUser[]>(`${this.apiUrl}/all`);
+  }
+
+  suspendUser(userId: string): Observable<ActionResult> {
+    return this.http.post<ActionResult>('/api/users/suspend', { userId });
+  }
+  
+  unsuspendUser(userId: string): Observable<ActionResult> {
+    return this.http.post<ActionResult>('/api/users/unsuspend', { userId });
+  }
+
+  deleteUser(userId: string): Observable<ActionResult> {
+    return this.http.post<ActionResult>(`${this.apiUrl}/delete`, { userId });
   }
 }

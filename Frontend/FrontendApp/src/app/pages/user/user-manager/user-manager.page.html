@@ -1,0 +1,66 @@
+<ion-content class="ion-padding page-with-header">
+  <div class="page-container find-tournament-container">
+
+    <!-- Page Description -->
+    <div class="page-description">
+      <p>Browse all users in the system. Use the search bar to find users, or take action to suspend or delete accounts.</p>
+    </div>
+
+    <!-- Search Bar -->
+    <ion-searchbar
+      class="custom-searchbar"
+      [(ngModel)]="searchTerm"
+      (ionInput)="filterUsers()"
+      placeholder="Search users..."
+      showClearButton="focus"
+      debounce="200"
+      animated>
+    </ion-searchbar>
+
+    <!-- No Results -->
+    <div *ngIf="filteredUsers.length === 0 && !isLoading" class="no-tournaments">
+      No users found.
+    </div>
+
+    <!-- User List -->
+    <ion-list class="tournament-list" *ngIf="filteredUsers.length > 0">
+      <ion-item
+        *ngFor="let user of filteredUsers"
+        class="user-item"
+        [class.user-suspended]="user.userStatus === 'Suspended'"
+        lines="none">
+        <div class="tournament-box">
+          <ion-grid class="user-grid">
+            <ion-row>
+              <!-- User Details (9 columns) -->
+              <ion-col size="9" class="user-details">
+                <strong>{{ user.userEmail }}</strong>
+                <span class="tournament-date">Since: {{ user.memberSince | date: 'yyyy.MM.dd' }}</span>
+                <span>Status: {{ user.userStatus }}</span>
+                <span>Role: {{ user.userRole }}</span>
+                <span>Admin of {{ user.tournamentAdminCount }}, Participant in {{ user.tournamentParticipantCount }}</span>
+              </ion-col>
+
+              <!-- Buttons (2 columns) -->
+              <ion-col size="3" class="user-actions">
+                <ion-button
+                  expand="block"
+                  [color]="user.userStatus === 'Suspended' ? 'medium' : 'warning'"
+                  size="small"
+                  (click)="toggleUserSuspension(user)">
+                  {{ user.userStatus === 'Suspended' ? 'Unsuspend' : 'Suspend' }}
+                </ion-button>             
+                <ion-button expand="block" color="danger" size="small" (click)="deleteUser(user)">
+                  Delete
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-item>
+    </ion-list>
+
+    <!-- Loading -->
+    <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+  </div>
+</ion-content>

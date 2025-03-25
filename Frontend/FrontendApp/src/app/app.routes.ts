@@ -99,6 +99,12 @@ export const routes: Routes = [
   { path: 'summary', loadComponent: () => import('./pages/tournaments/summary-dashboard/summary-dashboard.page').then(m => m.SummaryDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'find-tournament', loadComponent: () => import('./pages/tournaments/find-tournament/find-tournament.page').then( m => m.FindTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
+  {
+    path: 'users',
+    loadComponent: () => import('./pages/user/user-manager/user-manager.page').then( m => m.UserManagerPage),
+    canActivate: [AuthGuard], data: { role: 'SuperAdmin' } 
+  },
+
   // Only for guests
   { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage), canActivate: [GuestGuard] },
   { path: 'login', loadComponent: () => import('./pages/user/login/login.page').then(m => m.LoginPage), canActivate: [GuestGuard] },
@@ -112,10 +118,6 @@ export const routes: Routes = [
 
   // Default and wildcard routes
   { path: '**', redirectTo: 'welcome' },
-
-
-
-
 
 
 ];

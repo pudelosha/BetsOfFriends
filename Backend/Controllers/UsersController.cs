@@ -186,5 +186,81 @@ namespace Backend.Controllers
                 return StatusCode(500, new { message = "Internal Server Error" });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                var users = await _userService.GetAllUsersAsync();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching user list");
+                return StatusCode(500, new { message = "Internal Server Error" });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpPost("suspend")]
+        public async Task<IActionResult> SuspendUser([FromBody] UserActionRequestDto request)
+        {
+            try
+            {
+                var adminUserId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(adminUserId))
+                    return Unauthorized(ActionResultDto.ErrorResult("Unauthorized access."));
+
+                var result = await _userService.SuspendUserAsync(request.UserId, adminUserId);
+                return result.Success ? Ok(result) : BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error suspending user");
+                return StatusCode(500, ActionResultDto.ErrorResult("Internal server error"));
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpPost("unsuspend")]
+        public async Task<IActionResult> UnsuspendUser([FromBody] UserActionRequestDto request)
+        {
+            try
+            {
+                var adminUserId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(adminUserId))
+                    return Unauthorized(ActionResultDto.ErrorResult("Unauthorized access."));
+
+                var result = await _userService.UnsuspendUserAsync(request.UserId, adminUserId);
+                return result.Success ? Ok(result) : BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error unsuspending user");
+                return StatusCode(500, ActionResultDto.ErrorResult("Internal server error"));
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpPost("delete")]
+        public async Task<IActionResult> DeleteUser([FromBody] UserActionRequestDto request)
+        {
+            try
+            {
+                var adminUserId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(adminUserId))
+                    return Unauthorized(ActionResultDto.ErrorResult("Unauthorized access."));
+
+                var result = await _userService.DeleteUserAsync(request.UserId, adminUserId);
+                return result.Success ? Ok(result) : BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting user");
+                return StatusCode(500, ActionResultDto.ErrorResult("Internal server error"));
+            }
+        }
     }
 }

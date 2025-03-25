@@ -129,6 +129,11 @@
               <ion-icon name="football-outline" slot="start"></ion-icon>
               <ion-label>Manage Predefined Matches</ion-label>
             </ion-item>
+
+            <ion-item (click)="navigateToManageUsers()">
+              <ion-icon name="people-outline" slot="start"></ion-icon>
+              <ion-label>Manage Users</ion-label>
+            </ion-item>
           </ng-container>
 
           <!-- Logout -->
@@ -166,12 +171,5 @@
         ©2025 by Pudel
       </ion-title>
     </ion-toolbar>
-
-    <!-- Floating FAB Button (Only on `/my-bets/to-place`) -->
-    <ion-fab *ngIf="showFab" class="fab-footer">
-      <ion-fab-button (click)="openFilters()">
-        <ion-icon name="filter-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
   </ion-footer>
 </ion-app>
