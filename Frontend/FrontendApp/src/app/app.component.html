@@ -9,133 +9,133 @@
 
     <ion-content>
       <ion-list>
-
         <ion-menu-toggle auto-hide="true">
-        <!-- Home -->
-        <ion-item (click)="navigateToHome()">
-          <ion-icon name="home-outline" slot="start"></ion-icon>
-          <ion-label>Home</ion-label>
-        </ion-item>
-        <ion-item (click)="navigateToMessages()">
-          <ion-icon name="chatbubbles-outline" slot="start"></ion-icon>
-          <ion-label>Messages</ion-label>
-        </ion-item>
-        
-        <!-- Tournaments Section -->
-        <ion-item-divider>
-          <ion-label>
-            <ion-icon name="trophy-outline" slot="start"></ion-icon>
-            Tournaments
-          </ion-label>
-        </ion-item-divider>
 
-        <ion-item (click)="navigateToMyTournaments()">
-          <ion-icon name="list-outline" slot="start"></ion-icon>
-          <ion-label>My Tournaments</ion-label>
-        </ion-item>
+          <!-- Home -->
+          <ion-item (click)="navigateToHome()">
+            <ion-icon name="home-outline" slot="start"></ion-icon>
+            <ion-label>Home</ion-label>
+          </ion-item>
 
-        <ion-item (click)="navigateToTournamentSummary()">
-          <ion-icon name="podium-outline" slot="start"></ion-icon>
-          <ion-label>Summary</ion-label>
-        </ion-item>
+          <ion-item (click)="navigateToMessages()">
+            <ion-icon name="chatbubbles-outline" slot="start"></ion-icon>
+            <ion-label>Messages</ion-label>
+          </ion-item>
 
-        <ion-item (click)="navigateToFindTournament()">
-          <ion-icon name="search-outline" slot="start"></ion-icon>
-          <ion-label>Find Tournament</ion-label>
-        </ion-item>      
-
-        <!-- Betting Section -->
-        <ion-item-divider>
-          <ion-label>
-            <ion-icon name="football-outline" slot="start"></ion-icon>
-            Betting
-          </ion-label>
-        </ion-item-divider>
-
-        <ion-item (click)="navigateToMyBets()">
-          <ion-icon name="create-outline" slot="start"></ion-icon>
-          <ion-label>My Bets</ion-label>
-        </ion-item>
-
-        <!-- Settings Section -->
-        <ion-item-divider>
-          <ion-label>
-            <ion-icon name="settings-outline" slot="start"></ion-icon>
-            Settings
-          </ion-label>
-        </ion-item-divider>
-
-        <ion-item (click)="navigateToProfile()">
-          <ion-icon name="person-outline" slot="start"></ion-icon>
-          <ion-label>Profile</ion-label>
-        </ion-item>
-
-        <ion-item (click)="navigateToNotificationSettings()">
-          <ion-icon name="notifications-outline" slot="start"></ion-icon>
-          <ion-label>Notifications</ion-label>
-        </ion-item>
-
-        <!-- Admin Section (Visible only to Admins) -->
-        <ng-container>
+          <!-- Tournaments -->
           <ion-item-divider>
             <ion-label>
-              <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
-              Admin
+              <ion-icon name="trophy-outline" slot="start"></ion-icon>
+              Tournaments
             </ion-label>
           </ion-item-divider>
 
-          <ion-item (click)="navigateToCreateCustomTournament()">
-            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-            <ion-label>Create Tournament</ion-label>
+          <ion-item (click)="navigateToMyTournaments()">
+            <ion-icon name="list-outline" slot="start"></ion-icon>
+            <ion-label>My Tournaments</ion-label>
           </ion-item>
 
-          <ion-item (click)="navigateToCustomTournamentsList()">
-            <ion-icon name="hammer-outline" slot="start"></ion-icon>
-            <ion-label>Manage Tournaments</ion-label>
+          <ion-item (click)="navigateToTournamentSummary()">
+            <ion-icon name="podium-outline" slot="start"></ion-icon>
+            <ion-label>Summary</ion-label>
           </ion-item>
 
-          <ion-item (click)="navigateToCustomTournamentsMatches()">
-            <ion-icon name="football-outline" slot="start"></ion-icon>
-            <ion-label>Manage Matches</ion-label>
+          <ion-item (click)="navigateToFindTournament()">
+            <ion-icon name="search-outline" slot="start"></ion-icon>
+            <ion-label>Find Tournament</ion-label>
           </ion-item>
 
-          <ion-item (click)="navigateToCustomTournamentsParticipants()">
-            <ion-icon name="people-outline" slot="start"></ion-icon>
-            <ion-label>Manage Participants</ion-label>
-          </ion-item>
-        </ng-container>
-
-        <!-- Super Admin Section (Visible only to SuperAdmins) -->
-        <ng-container *ngIf="isSuperAdmin">
+          <!-- Betting -->
           <ion-item-divider>
             <ion-label>
-              <ion-icon name="star-outline" slot="start"></ion-icon>
-              Super Admin
+              <ion-icon name="football-outline" slot="start"></ion-icon>
+              Betting
             </ion-label>
           </ion-item-divider>
 
-          <ion-item (click)="navigateToCreatePredefinedTournament()">
-            <ion-icon name="document-text-outline" slot="start"></ion-icon>
-            <ion-label>Create Predefined Tournament</ion-label>
+          <ion-item (click)="navigateToMyBets()">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            <ion-label>My Bets</ion-label>
           </ion-item>
 
-          <ion-item (click)="navigateToPredefinedTournamentsList()">
-            <ion-icon name="build-outline" slot="start"></ion-icon>
-            <ion-label>Manage Predefined Tournaments</ion-label>
+          <!-- Settings -->
+          <ion-item-divider>
+            <ion-label>
+              <ion-icon name="settings-outline" slot="start"></ion-icon>
+              Settings
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-item (click)="navigateToProfile()">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-label>Profile</ion-label>
           </ion-item>
 
-          <ion-item (click)="navigateToPredefinedTournamentsMatches()">
-            <ion-icon name="football-outline" slot="start"></ion-icon>
-            <ion-label>Manage Predefined Matches</ion-label>
+          <ion-item (click)="navigateToNotificationSettings()">
+            <ion-icon name="notifications-outline" slot="start"></ion-icon>
+            <ion-label>Notifications</ion-label>
           </ion-item>
 
-        </ng-container>
+          <!-- Admin -->
+          <ng-container>
+            <ion-item-divider>
+              <ion-label>
+                <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+                Admin
+              </ion-label>
+            </ion-item-divider>
 
-        <!-- Logout -->
-        <ion-item (click)="logout()">
-          <ion-icon name="log-out-outline" slot="start"></ion-icon>
-          <ion-label>Logout</ion-label>
-        </ion-item>
+            <ion-item (click)="navigateToCreateCustomTournament()">
+              <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+              <ion-label>Create Tournament</ion-label>
+            </ion-item>
+
+            <ion-item (click)="navigateToCustomTournamentsList()">
+              <ion-icon name="hammer-outline" slot="start"></ion-icon>
+              <ion-label>Manage Tournaments</ion-label>
+            </ion-item>
+
+            <ion-item (click)="navigateToCustomTournamentsMatches()">
+              <ion-icon name="football-outline" slot="start"></ion-icon>
+              <ion-label>Manage Matches</ion-label>
+            </ion-item>
+
+            <ion-item (click)="navigateToCustomTournamentsParticipants()">
+              <ion-icon name="people-outline" slot="start"></ion-icon>
+              <ion-label>Manage Participants</ion-label>
+            </ion-item>
+          </ng-container>
+
+          <!-- Super Admin -->
+          <ng-container *ngIf="isSuperAdmin">
+            <ion-item-divider>
+              <ion-label>
+                <ion-icon name="star-outline" slot="start"></ion-icon>
+                Super Admin
+              </ion-label>
+            </ion-item-divider>
+
+            <ion-item (click)="navigateToCreatePredefinedTournament()">
+              <ion-icon name="document-text-outline" slot="start"></ion-icon>
+              <ion-label>Create Predefined Tournament</ion-label>
+            </ion-item>
+
+            <ion-item (click)="navigateToPredefinedTournamentsList()">
+              <ion-icon name="build-outline" slot="start"></ion-icon>
+              <ion-label>Manage Predefined Tournaments</ion-label>
+            </ion-item>
+
+            <ion-item (click)="navigateToPredefinedTournamentsMatches()">
+              <ion-icon name="football-outline" slot="start"></ion-icon>
+              <ion-label>Manage Predefined Matches</ion-label>
+            </ion-item>
+          </ng-container>
+
+          <!-- Logout -->
+          <ion-item (click)="logout()">
+            <ion-icon name="log-out-outline" slot="start"></ion-icon>
+            <ion-label>Logout</ion-label>
+          </ion-item>
 
         </ion-menu-toggle>
       </ion-list>
@@ -143,28 +143,24 @@
   </ion-menu>
 
   <!-- Main Content -->
-  <div id="main-content">
-    <ion-header *ngIf="isLoggedIn">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-menu-button></ion-menu-button>
-        </ion-buttons>
-        <ion-title>Wager Rager</ion-title>
+  <ion-header *ngIf="isLoggedIn">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title>Wager Rager</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="openFootballModal()">
+          <ion-icon name="football-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
 
-        <ion-buttons slot="end">
-          <ion-button (click)="openFootballModal()">
-            <ion-icon name="football-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-router-outlet></ion-router-outlet>
-  </div>
+  <ion-router-outlet id="main-content"></ion-router-outlet>
 
   <!-- Footer -->
-  <ion-footer class="custom-footer">
+  <ion-footer class="custom-footer" *ngIf="isLoggedIn">
     <ion-toolbar>
       <ion-title class="footer-text">
         ©2025 by Pudel
