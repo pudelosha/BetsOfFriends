@@ -1,0 +1,61 @@
+<ion-content class="ion-padding page-with-header">
+
+    <!-- Sticky Menu for Tabs -->
+    <div class="sticky-menu">
+      <div class="sticky-inner">
+        <ion-segment [(ngModel)]="selectedTab" class="full-width">
+          <ion-segment-button value="upcoming" (click)="changeTab('upcoming')">
+            Upcoming
+          </ion-segment-button>
+          <ion-segment-button value="started" (click)="changeTab('started')">
+            Started
+          </ion-segment-button>
+          <ion-segment-button value="finalised" (click)="changeTab('finalised')">
+            Finalised
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+    </div>
+
+    <!-- Sticky Stage Navigation -->
+    <div class="sticky-stage-menu">
+      <div class="sticky-inner">
+        <ion-grid class="full-width">
+          <ion-row class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="auto">
+              <ion-button fill="clear" (click)="prevStage()" [disabled]="selectedStageIndex === 0">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+            <ion-col size="auto">
+              <span class="stage-label">{{ availableStages[selectedStageIndex] }}</span>
+            </ion-col>
+            <ion-col size="auto">
+              <ion-button fill="clear" (click)="nextStage()" [disabled]="selectedStageIndex === availableStages.length - 1">
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </div>  
+  
+  <div class="page-container">
+
+    <!-- Child Components with Stage Prop -->
+    <div class="menu-space">
+      <ng-container *ngIf="selectedTab === 'upcoming'">
+        <app-manage-predefined-upcoming [stage]="selectedStage"></app-manage-predefined-upcoming>
+      </ng-container>
+      
+      <ng-container *ngIf="selectedTab === 'started'">
+        <app-manage-predefined-started [stage]="selectedStage"></app-manage-predefined-started>
+      </ng-container>
+      
+      <ng-container *ngIf="selectedTab === 'finalised'">
+        <app-manage-predefined-finalised [stage]="selectedStage"></app-manage-predefined-finalised>
+      </ng-container>
+    </div>
+
+  </div>
+</ion-content>

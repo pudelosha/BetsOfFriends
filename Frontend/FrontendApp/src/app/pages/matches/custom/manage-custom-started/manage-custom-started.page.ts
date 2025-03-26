@@ -6,34 +6,34 @@ import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
-import { MatchService } from 'src/app/services/match.service';
+import { CustomMatchService } from 'src/app/services/match.service';
 import { Match } from 'src/app/model/match';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-manage-finalised',
-  templateUrl: './manage-finalised.page.html',
-  styleUrls: ['./manage-finalised.page.scss'],
+  selector: 'app-manage-custom-started',
+  templateUrl: './manage-custom-started.page.html',
+  styleUrls: ['./manage-custom-started.page.scss'],
   standalone: true,
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
-export class ManageFinalisedPage implements OnInit, OnChanges {
+export class ManageCustomStartedPage implements OnInit, OnChanges {
   @Input() stage!: string; // Receive stage from parent
-
+  
   matches: Match[] = [];
   isLoading = true;
   errorMessage: string = '';
 
   constructor(
     private modalCtrl: ModalController,
-    private matchService: MatchService,
+    private matchService: CustomMatchService,
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
     private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
-    console.log('Loading finalised matches page...');
+    console.log('Loading started matches page...');
     this.loadMatches(); 
   }
 
@@ -45,7 +45,7 @@ export class ManageFinalisedPage implements OnInit, OnChanges {
   }  
   
   ionViewWillEnter() {
-    console.log('Reloading finalised matches...');
+    console.log('Reloading started matches...');
     this.loadMatches(); 
   }
   
@@ -74,7 +74,7 @@ export class ManageFinalisedPage implements OnInit, OnChanges {
   
     try {
       this.matches = await firstValueFrom(
-        this.matchService.getMatchesByTournamentStage(tournamentId, 'Finalised', this.stage)
+        this.matchService.getMatchesByTournamentStage(tournamentId, 'InProgress', this.stage)
       );
   
       if (!this.matches.length) {
@@ -90,7 +90,7 @@ export class ManageFinalisedPage implements OnInit, OnChanges {
       }
     } finally {
       const elapsedTime = Date.now() - startTime;
-      const delay = Math.max(0, 500 - elapsedTime);
+      const delay = Math.max(0, 200 - elapsedTime);
   
       setTimeout(async () => {
         this.isLoading = false;

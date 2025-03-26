@@ -6,18 +6,18 @@ import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
-import { MatchService } from 'src/app/services/match.service';
+import { CustomMatchService } from 'src/app/services/match.service';
 import { Match } from 'src/app/model/match';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-manage-upcoming',
-  templateUrl: './manage-upcoming.page.html',
-  styleUrls: ['./manage-upcoming.page.scss'],
+  selector: 'app-manage-custom-finalised',
+  templateUrl: './manage-custom-finalised.page.html',
+  styleUrls: ['./manage-custom-finalised.page.scss'],
   standalone: true,
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
-export class ManageUpcomingPage implements OnInit, OnChanges  {
+export class ManageCustomFinalisedPage implements OnInit, OnChanges {
   @Input() stage!: string; // Receive stage from parent
 
   matches: Match[] = [];
@@ -26,14 +26,14 @@ export class ManageUpcomingPage implements OnInit, OnChanges  {
 
   constructor(
     private modalCtrl: ModalController,
-    private matchService: MatchService,
+    private matchService: CustomMatchService,
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
     private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
-    console.log('Loading upcoming matches page...');
+    console.log('Loading finalised matches page...');
     this.loadMatches(); 
   }
 
@@ -42,13 +42,13 @@ export class ManageUpcomingPage implements OnInit, OnChanges  {
       console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadMatches();
     }
-  }
-
+  }  
+  
   ionViewWillEnter() {
-    console.log('Reloading upcoming matches...');
+    console.log('Reloading finalised matches...');
     this.loadMatches(); 
   }
-
+  
   async loadMatches() {
     this.isLoading = true;
     this.matches = [];
@@ -74,7 +74,7 @@ export class ManageUpcomingPage implements OnInit, OnChanges  {
   
     try {
       this.matches = await firstValueFrom(
-        this.matchService.getMatchesByTournamentStage(tournamentId, 'Upcoming', this.stage)
+        this.matchService.getMatchesByTournamentStage(tournamentId, 'Finalised', this.stage)
       );
   
       if (!this.matches.length) {
@@ -90,7 +90,7 @@ export class ManageUpcomingPage implements OnInit, OnChanges  {
       }
     } finally {
       const elapsedTime = Date.now() - startTime;
-      const delay = Math.max(0, 200 - elapsedTime);
+      const delay = Math.max(0, 500 - elapsedTime);
   
       setTimeout(async () => {
         this.isLoading = false;
@@ -98,7 +98,7 @@ export class ManageUpcomingPage implements OnInit, OnChanges  {
       }, delay);
     }
   }
-  
+   
   async editMatchResult(match: Match, event: Event) {
     event.stopPropagation();
     console.log("Opening Edit Match Result Modal:", match);
@@ -129,7 +129,7 @@ export class ManageUpcomingPage implements OnInit, OnChanges  {
       }
     }
   }
-  
+      
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastController.create({
       message,

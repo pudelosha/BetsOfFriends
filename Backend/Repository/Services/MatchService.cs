@@ -243,5 +243,69 @@ namespace Backend.Repository.Services
                 throw;
             }
         }
+
+        public async Task<List<MatchDto>> GetStartedMatchesAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching matches for tournament {tournamentId}, requested by user {userId}");
+
+                // Step 1: Check tournament assignment and admin rights
+                var assignment = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.TournamentId == tournamentId && a.UserId == userId)
+                    .Select(a => new { a.Role })
+                    .FirstOrDefaultAsync();
+
+                if (assignment == null)
+                {
+                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}");
+                    return new List<MatchDto>();
+                }
+
+                bool isAdmin = assignment.Role == UserTournamentRole.Admin;
+                if (!isAdmin)
+                {
+                    _logger.LogWarning($"User {userId} is not a tournament admin for tournament {tournamentId}");
+                    return new List<MatchDto>();
+                }
+
+                // Step 2: Fetch matches with Status = InProgress and Type = Custom
+                var matches = await _context.CustomMatches
+                    .Include(m => m.Stage)
+                    .Include(m => m.HomeTeam)
+                    .Include(m => m.AwayTeam)
+                    .Where(m => m.TournamentId == tournamentId &&
+                                m.Status == MatchStatus.InProgress)
+                    .OrderBy(m => m.MatchStart)
+                    .ToListAsync();
+
+                if (!matches.Any())
+                {
+                    _logger.LogWarning($"No started custom matches found for tournament {tournamentId}");
+                    return new List<MatchDto>();
+                }
+
+                // Step 3: Map to DTO
+                return matches.Select(m => new MatchDto
+                {
+                    MatchId = m.MatchId,
+                    Stage = m.Stage.StageName,
+                    HomeTeam = m.HomeTeam.TeamName,
+                    AwayTeam = m.AwayTeam.TeamName,
+                    MatchStart = m.MatchStart,
+                    HomeScore = m.HomeScore,
+                    AwayScore = m.AwayScore,
+                    QualifiedTeam = m.Qualified.HasValue ? m.Qualified.ToString() : null,
+                    Status = m.Status.ToString(),
+                    MatchType = m.Type.ToString(),
+                    IsFinished = m.Status == MatchStatus.Finalised
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching started custom matches for tournament {tournamentId}");
+                throw;
+            }
+        }
     }
 }

@@ -85,5 +85,33 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while updating the match." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("started/{tournamentId}")]
+        public async Task<IActionResult> GetStartedCustomMatches(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var matches = await _matchService.GetStartedMatchesAsync(tournamentId, userId);
+
+                if (matches == null || !matches.Any())
+                {
+                    return NotFound(new { Message = "No started custom matches found." });
+                }
+
+                return Ok(matches);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching started custom matches for tournament {tournamentId}.");
+                return StatusCode(500, new { Message = "An error occurred while fetching matches." });
+            }
+        }
     }
 }

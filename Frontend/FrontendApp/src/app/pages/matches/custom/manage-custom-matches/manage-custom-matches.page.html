@@ -45,15 +45,15 @@
     <!-- Child Components with Stage Prop -->
     <div class="menu-space">
       <ng-container *ngIf="selectedTab === 'upcoming'">
-        <app-manage-upcoming [stage]="selectedStage"></app-manage-upcoming>
+        <app-manage-custom-upcoming [stage]="selectedStage"></app-manage-custom-upcoming>
       </ng-container>
       
       <ng-container *ngIf="selectedTab === 'started'">
-        <app-manage-started [stage]="selectedStage"></app-manage-started>
+        <app-manage-custom-started [stage]="selectedStage"></app-manage-custom-started>
       </ng-container>
       
       <ng-container *ngIf="selectedTab === 'finalised'">
-        <app-manage-finalised [stage]="selectedStage"></app-manage-finalised>
+        <app-manage-custom-finalised [stage]="selectedStage"></app-manage-custom-finalised>
       </ng-container>
     </div>
 

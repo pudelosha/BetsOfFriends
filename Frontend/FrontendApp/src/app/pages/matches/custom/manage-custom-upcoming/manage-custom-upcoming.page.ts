@@ -6,34 +6,34 @@ import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
-import { MatchService } from 'src/app/services/match.service';
+import { CustomMatchService } from 'src/app/services/match.service';
 import { Match } from 'src/app/model/match';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-manage-started',
-  templateUrl: './manage-started.page.html',
-  styleUrls: ['./manage-started.page.scss'],
+  selector: 'app-manage-custom-upcoming',
+  templateUrl: './manage-custom-upcoming.page.html',
+  styleUrls: ['./manage-custom-upcoming.page.scss'],
   standalone: true,
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
-export class ManageStartedPage implements OnInit, OnChanges {
+export class ManageCustomUpcomingPage implements OnInit, OnChanges  {
   @Input() stage!: string; // Receive stage from parent
-  
+
   matches: Match[] = [];
   isLoading = true;
   errorMessage: string = '';
 
   constructor(
     private modalCtrl: ModalController,
-    private matchService: MatchService,
+    private matchService: CustomMatchService,
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
     private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
-    console.log('Loading started matches page...');
+    console.log('Loading upcoming matches page...');
     this.loadMatches(); 
   }
 
@@ -42,13 +42,13 @@ export class ManageStartedPage implements OnInit, OnChanges {
       console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadMatches();
     }
-  }  
-  
+  }
+
   ionViewWillEnter() {
-    console.log('Reloading started matches...');
+    console.log('Reloading upcoming matches...');
     this.loadMatches(); 
   }
-  
+
   async loadMatches() {
     this.isLoading = true;
     this.matches = [];
@@ -74,7 +74,7 @@ export class ManageStartedPage implements OnInit, OnChanges {
   
     try {
       this.matches = await firstValueFrom(
-        this.matchService.getMatchesByTournamentStage(tournamentId, 'InProgress', this.stage)
+        this.matchService.getMatchesByTournamentStage(tournamentId, 'Upcoming', this.stage)
       );
   
       if (!this.matches.length) {
@@ -98,7 +98,7 @@ export class ManageStartedPage implements OnInit, OnChanges {
       }, delay);
     }
   }
-   
+  
   async editMatchResult(match: Match, event: Event) {
     event.stopPropagation();
     console.log("Opening Edit Match Result Modal:", match);
@@ -129,7 +129,7 @@ export class ManageStartedPage implements OnInit, OnChanges {
       }
     }
   }
-      
+  
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastController.create({
       message,

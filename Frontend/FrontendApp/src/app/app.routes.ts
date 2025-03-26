@@ -75,8 +75,8 @@ export const routes: Routes = [
       {
         path: 'custom',
         loadComponent: () =>
-          import('./pages/matches/manage-matches/manage-matches.page').then(
-            (m) => m.ManageMatchesPage
+          import('./pages/matches/custom/manage-custom-matches/manage-custom-matches.page').then(
+            (m) => m.ManageCustomMatchesPage
           ),
         canActivate: [AuthGuard],
         data: { role: 'User' },
@@ -84,8 +84,8 @@ export const routes: Routes = [
       {
         path: 'predefined',
         loadComponent: () =>
-          import('./pages/matches/manage-matches/manage-matches.page').then(
-            (m) => m.ManageMatchesPage
+          import('./pages/matches/predefined/manage-predefined-matches/manage-predefined-matches.page').then(
+            (m) => m.ManagePredefinedMatchesPage
           ),
         canActivate: [AuthGuard],
         data: { role: 'SuperAdmin' },
@@ -120,6 +120,16 @@ export const routes: Routes = [
   { path: 'terms', loadComponent: () => import('./pages/guest/terms/terms.page').then( m => m.TermsPage) },
 
   // Default and wildcard routes
-  { path: '**', redirectTo: 'welcome' },
+  { path: '**', redirectTo: 'welcome' },  {
+    path: 'started-custom-matches',
+    loadComponent: () => import('./pages/home/started-custom-matches/started-custom-matches.page').then( m => m.StartedCustomMatchesPage)
+  },
+  {
+    path: 'started-predefined-matches',
+    loadComponent: () => import('./pages/home/started-predefined-matches/started-predefined-matches.page').then( m => m.StartedPredefinedMatchesPage)
+  },
+
+
+
 
 ];

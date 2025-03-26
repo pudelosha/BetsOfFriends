@@ -2,23 +2,23 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit, OnInit, ViewChild } f
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, IonContent } from '@ionic/angular';
-import { ManageFinalisedPage } from '../manage-finalised/manage-finalised.page';
-import { ManageStartedPage } from '../manage-started/manage-started.page';
-import { ManageUpcomingPage } from '../manage-upcoming/manage-upcoming.page';
+import { ManagePredefinedFinalisedPage } from '../manage-predefined-finalised/manage-predefined-finalised.page';
+import { ManagePredefinedStartedPage } from '../manage-predefined-started/manage-predefined-started.page';
+import { ManagePredefinedUpcomingPage } from '../manage-predefined-upcoming/manage-predefined-upcomingpage';
 import { FormsModule } from '@angular/forms';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 
 @Component({
-  selector: 'app-manage-matches',
-  templateUrl: './manage-matches.page.html',
-  styleUrls: ['./manage-matches.page.scss'],
+  selector: 'app-manage-predefined-matches',
+  templateUrl: './manage-predefined-matches.page.html',
+  styleUrls: ['./manage-predefined-matches.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, ManageFinalisedPage, ManageStartedPage, ManageUpcomingPage],
+  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, ManagePredefinedFinalisedPage, ManagePredefinedStartedPage, ManagePredefinedUpcomingPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class ManageMatchesPage implements OnInit, AfterViewInit {
+export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
   selectedTab: string = 'upcoming'; // Default tab
   availableStages: string[] = [];
   selectedStageIndex = 0;
