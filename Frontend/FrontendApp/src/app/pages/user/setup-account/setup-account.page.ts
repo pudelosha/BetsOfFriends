@@ -18,6 +18,7 @@ export class SetupAccountPage {
   userId: string = '';
   token: string = '';
   message = '';
+  parallaxOffset = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,6 +41,24 @@ export class SetupAccountPage {
     return this.setupForm.controls;
   }
 
+  onScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
+  }
+
+  toggleConsent(event: Event): void {
+    if ((event.target as HTMLElement).tagName.toLowerCase() === 'a') return;
+    const control = this.setupForm.get('consent');
+    if (control) {
+      control.setValue(!control.value);
+    }
+  }
+  
+  openTerms(event: Event): void {
+    event.stopPropagation();
+    this.router.navigate(['/terms']);
+  }
+  
   passwordsMatch(group: FormGroup): { [key: string]: boolean } | null {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;

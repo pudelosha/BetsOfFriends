@@ -1,0 +1,74 @@
+  .input-form h4 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .input-form h5 {
+    font-size: 20px;
+    color: #34495e;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-weight: 500;
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 5px;
+    text-align: center; /* <-- Add this line */
+  }  
+
+  .input-form ol {
+    counter-reset: item;
+    padding-left: 20px;
+    margin-bottom: 20px;
+  }
+
+  .input-form ol > li {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: #2f3640;
+    font-size: 15.5px;
+  }
+
+  .input-form ol > li::marker {
+    font-weight: bold;
+    color: #2980b9;
+  }
+
+  .input-form ol ol {
+    padding-left: 20px;
+    margin-top: 10px;
+  }
+
+  .input-form ol ol > li {
+    list-style-type: lower-alpha;
+    margin-bottom: 8px;
+  }
+
+  .input-form ol ol > li::marker {
+    color: #16a085;
+    font-weight: bold;
+  }
+
+  b {
+    color: #273c75;
+  }
+
+  u {
+    text-decoration: underline dotted #2980b9;
+  }
+
+  @media (max-width: 600px) {
+    .container {
+      margin: 20px;
+      padding: 20px;
+    }
+
+    .input-form h4 {
+      font-size: 22px;
+    }
+
+    .input-form h5 {
+      font-size: 18px;
+    }
+  }

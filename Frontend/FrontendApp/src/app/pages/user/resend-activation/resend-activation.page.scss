@@ -1,25 +1,96 @@
-/* Form field styling */
-ion-item {
-  --background: #ffffff;
-  --border-radius: 10px;
-  margin: 10px 0;
-}
-
-/* Back to login link */
-.back-link {
+.parallax-container {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  font-size: 14px;
-  margin-top: 15px;
+  overflow: hidden;
+  padding: 20px;
 }
 
-.back-link a {
-  color: #264aa5;
-  text-decoration: none;
-  font-weight: bold;
+.parallax-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 150%;
+  background: url('/assets/images/background5.jpg') center/cover no-repeat;
+  z-index: -1;
+  transition: transform 0.1s ease-out;
+  filter: brightness(0.6);
 }
 
-/* Ensure consistent alignment */
-.resend-text {
-  font-size: 16px;
-  margin-bottom: 10px;
+.unauth-container {
+  background: rgba(245, 245, 245, 0.95);
+  border-radius: 20px;
+  padding: 30px 24px;
+  max-width: 500px;
+  width: 100%;
+  z-index: 2;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  color: #222;
+  text-align: center;
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .resend-text {
+    margin-bottom: 16px;
+    color: #444;
+    font-size: 0.95rem;
+  }
+}
+
+ion-item {
+  --background: transparent;
+  --ion-item-background: transparent;
+  background: transparent;
+  --highlight-background: transparent;
+  --inner-padding-end: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+  ion-label,
+  ion-input {
+    color: #222;
+  }
+}
+
+.validation-message {
+  margin: 4px 0 12px 0;
+  font-size: 0.8rem;
+  color: #e74c3c;
+  text-align: center;
+}
+
+.button-group {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+
+  ion-button {
+    padding: 0px 10px;
+  }
+}
+
+.rounded-button {
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 1rem;
+}
+
+.back-link {
+  margin-top: 16px;
+  font-size: 0.85rem;
+
+  a {
+    color: var(--ion-color-primary);
+    text-decoration: none;
+    cursor: pointer;
+  }
 }

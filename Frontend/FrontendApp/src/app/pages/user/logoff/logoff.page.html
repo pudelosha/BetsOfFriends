@@ -1,12 +1,20 @@
-<ion-content class="ion-padding">
-  <div class="unauth-container">
-    <h2>Goodbye!</h2>
-    <p>You have been logged out. Redirecting to login...</p>
-  
-    <div class="button-group">
-      <ion-button expand="full" color="primary" class="rounded-button" (click)="navigateToLogin()">
-        Go to Login
-      </ion-button>
+<ion-content fullscreen (ionScroll)="onScroll($event)" scrollEvents="true">
+  <div class="parallax-container">
+
+    <!-- Parallax Background -->
+    <div class="parallax-bg" [ngStyle]="{ 'transform': 'translateY(' + parallaxOffset + 'px)' }"></div>
+
+    <!-- Foreground Content -->
+    <div class="unauth-container">
+      <h2>Goodbye!</h2>
+      <p>You have been logged out.</p>
+
+      <div class="button-group">
+        <ion-button expand="full" color="medium" class="rounded-button" (click)="navigateToLogin()">
+          Go to Login
+        </ion-button>
+      </div>
     </div>
+
   </div>
 </ion-content>

@@ -1,47 +1,56 @@
-<ion-content class="ion-padding">
-  <div class="unauth-container">
-    <h2>Setup Your Account</h2>
-    <p>Create a password to complete your account setup.</p>
+<ion-content fullscreen (ionScroll)="onScroll($event)" scrollEvents="true">
+  <div class="parallax-container">
 
-    <form [formGroup]="setupForm" (ngSubmit)="submit()">
-      <!-- Password Field -->
-      <ion-item>
-        <ion-label position="floating">New Password</ion-label>
-        <ion-input formControlName="password" type="password"></ion-input>
-      </ion-item>
-      <div class="validation-message">
-        <p class="error" *ngIf="f['password'].invalid && f['password'].touched">
-          Password must be at least 8 characters long.
-        </p>
-      </div>
+    <!-- Parallax Background -->
+    <div class="parallax-bg" [ngStyle]="{ 'transform': 'translateY(' + parallaxOffset + 'px)' }"></div>
 
-      <!-- Confirm Password Field -->
-      <ion-item>
-        <ion-label position="floating">Confirm Password</ion-label>
-        <ion-input formControlName="confirmPassword" type="password"></ion-input>
-      </ion-item>
-      <div class="validation-message">
-        <p class="error" *ngIf="setupForm.errors?.['passwordsMismatch']">
-          Passwords do not match.
-        </p>
-      </div>
+    <!-- Foreground Content -->
+    <div class="unauth-container">
+      <h2>Setup Your Account</h2>
+      <p>Create a password to complete your account setup.</p>
 
-      <!-- Terms and Conditions -->
-      <ion-item lines="none" class="terms-item">
-        <ion-checkbox formControlName="consent" slot="start"></ion-checkbox>
-        <ion-label>I agree to the Terms & Conditions</ion-label>
-      </ion-item>
-      <div class="validation-message">
-        <p class="error" *ngIf="!f['consent'].value && f['consent'].touched">
-          You must accept the terms to continue.
-        </p>
-      </div>
+      <form [formGroup]="setupForm" (ngSubmit)="submit()">
+        <!-- Password -->
+        <ion-item>
+          <ion-label position="floating">New Password</ion-label>
+          <ion-input formControlName="password" type="password"></ion-input>
+        </ion-item>
+        <div class="validation-message">
+          <p class="error" *ngIf="f['password'].invalid && f['password'].touched">
+            Password must be at least 8 characters long.
+          </p>
+        </div>
 
-      <div class="button-group">
-        <ion-button expand="full" color="primary" class="rounded-button" type="submit" [disabled]="setupForm.invalid">
-          Complete Setup
-        </ion-button>
-      </div>
-    </form>
+        <!-- Confirm Password -->
+        <ion-item>
+          <ion-label position="floating">Confirm Password</ion-label>
+          <ion-input formControlName="confirmPassword" type="password"></ion-input>
+        </ion-item>
+        <div class="validation-message">
+          <p class="error" *ngIf="setupForm.errors?.['passwordsMismatch']">
+            Passwords do not match.
+          </p>
+        </div>
+
+        <!-- Terms and Conditions -->
+        <ion-item lines="none" class="terms-item">
+          <ion-checkbox formControlName="consent" slot="start"></ion-checkbox>
+          <ion-label class="terms-label" (click)="toggleConsent($event)">
+            I agree to the <a (click)="openTerms($event)">Terms & Conditions</a>
+          </ion-label>
+        </ion-item>
+        <div class="validation-message">
+          <p class="error" *ngIf="!f['consent'].value && f['consent'].touched">
+            You must accept the terms to continue.
+          </p>
+        </div>
+
+        <div class="button-group">
+          <ion-button expand="full" color="medium" class="rounded-button" type="submit" [disabled]="setupForm.invalid">
+            Complete Setup
+          </ion-button>
+        </div>
+      </form>
+    </div>
   </div>
 </ion-content>

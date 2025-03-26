@@ -1,60 +1,121 @@
-  /* Form field styling */
-  ion-item {
-    --background: #ffffff;
-    --border-radius: 10px;
-    margin: 10px 0;
-  }
-    
-  /* "Already have an account?" link */
-  .already-have-account {
-    margin-top: 15px;
-    font-size: 14px;
-  }
-  
-  .already-have-account a {
-    color: #264aa5;
-    text-decoration: none;
+.parallax-container {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.parallax-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 150%;
+  background: url('/assets/images/background3.jpg') center/cover no-repeat;
+  z-index: -1;
+  transition: transform 0.1s ease-out;
+  filter: brightness(0.6);
+}
+
+.unauth-container {
+  background: rgba(245, 245, 245, 0.95);
+  border-radius: 20px;
+  padding: 30px 24px;
+  max-width: 500px;
+  width: 100%;
+  z-index: 2;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  color: #222;
+  text-align: center;
+
+  h2 {
+    font-size: 1.8rem;
     font-weight: bold;
+    margin-bottom: 8px;
   }
-  
-/* Fix checkbox & label spacing */
-.terms-item {
-    display: flex;
+
+  p {
+    margin-bottom: 12px;
+    color: #444;
+  }
+}
+
+ion-item {
+  --background: transparent;
+  --ion-item-background: transparent;
+  background: transparent;
+  --highlight-background: transparent;
+  --inner-padding-end: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+  ion-label,
+  ion-input,
+  ion-checkbox,
+  ion-textarea {
+    color: #222; // Use white if in dark mode
+  }
+
+  ion-label {
+    font-size: 0.95rem;
+  }
+
+  &.terms-item {
     align-items: center;
-    gap: 8px; /* ✅ Reduce space between checkbox and text */
-  }
-  
-  /* Adjust checkbox size */
-  ion-checkbox {
-    transform: scale(1.2); /* ✅ Slightly enlarge checkbox for better visibility */
-  }
-  
-  /* Terms and Conditions styling */
-  .terms {
-    font-size: 14px;
     text-align: left;
-    margin-top: 10px;
-  }
-  
-  .terms a {
-    color: #264aa5;
-    text-decoration: none;
-    font-weight: bold;
-  }
 
-/* Switch between Login/Register */
+    ion-label {
+      margin-left: 8px;
+    }
+  }
+}
+
+.validation-message {
+  margin: 4px 0 12px 0;
+  font-size: 0.8rem;
+  color: #e74c3c;
+  text-align: center;
+}
+
+.forgot-password,
 .switch-auth {
-  margin-top: 15px;
-  font-size: 14px;
-  margin-bottom: 50px;
+  font-size: 0.85rem;
+  margin-top: 16px;
+  color: #555;
+  text-align: center;
+
+  a {
+    color: var(--ion-color-primary);
+    text-decoration: none;
+  }
 }
 
-.switch-auth a {
-  color: #264aa5;
-  text-decoration: none;
-  font-weight: bold;
+.button-group {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
 }
-  
 
-  
-  
+.rounded-button {
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 1rem;
+}
+
+ion-item.terms-item {
+  border-bottom: none !important;
+  --border-width: 0 !important;
+  --inner-border-width: 0 !important;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  background: transparent;
+}
+

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { RegisterService } from '../../../services/register.service';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
@@ -17,6 +17,27 @@ import { IonContent } from '@ionic/angular';
 export class RegisterPage {
   @ViewChild(IonContent) content!: IonContent;
 
+  parallaxOffset = 0;
+  registerForm: FormGroup;
+  errorMessage: string = '';
+  isLoading: boolean = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private registerService: RegisterService,
+    private router: Router,
+    private toastController: ToastController,
+    private loadingController: LoadingController
+  ) {
+    this.registerForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required],
+      consent: [false, Validators.requiredTrue],
+    }, { validator: this.passwordsMatch });
+  }
+
+
   ionViewWillEnter() {
     this.scrollToTop();
     this.registerForm.reset();
@@ -28,23 +49,26 @@ export class RegisterPage {
     }
   }
 
-  registerForm: FormGroup;
-  errorMessage: string = '';
-
-  constructor(
-    private fb: FormBuilder,
-    private registerService: RegisterService,
-    private router: Router,
-    private toastController: ToastController
-  ) {
-    this.registerForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', Validators.required],
-      consent: [false, Validators.requiredTrue],
-    }, { validator: this.passwordsMatch });
+  onScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
   }
 
+  toggleConsent(event: Event): void {
+    // Prevent toggling if clicking the actual <a> link
+    if ((event.target as HTMLElement).tagName.toLowerCase() === 'a') return;
+  
+    const control = this.registerForm.get('consent');
+    if (control) {
+      control.setValue(!control.value);
+    }
+  }
+  
+  openTerms(event: Event): void {
+    event.stopPropagation(); // prevent it from bubbling to ion-label
+    this.router.navigate(['/terms']);
+  }
+  
   get f(): { [key: string]: AbstractControl } {
     return this.registerForm.controls;
   }
@@ -56,26 +80,52 @@ export class RegisterPage {
   }
 
   async register() {
-    if (this.registerForm.valid) {
-      const { email, password, consent } = this.registerForm.value;
+    if (!this.registerForm.valid) return;
   
-      this.registerService.register({ email, password, consent }).subscribe({
-        next: async (response) => {
+    const { email, password, consent } = this.registerForm.value;
+  
+    // Show loading spinner
+    this.isLoading = true;
+    const loading = await this.loadingController.create({
+      message: 'Creating your account...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    const startTime = Date.now();
+  
+    this.registerService.register({ email, password, consent }).subscribe({
+      next: async (response) => {
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 800 - elapsed);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.isLoading = false;
+  
           if (response.success) {
             this.showToast(response.message, 'success');
             this.router.navigate(['/login']);
           } else {
             this.showToast(response.message || 'Registration failed.', 'danger');
           }
-        },
-        error: (error) => {
+        }, delay);
+      },
+      error: async (error) => {
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 800 - elapsed);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.isLoading = false;
+  
           console.error('Registration error:', error);
           const errorMsg = error?.error?.message || 'An error occurred. Please try again.';
           this.showToast(errorMsg, 'danger');
-        }
-      });
-    }
-  }  
+        }, delay);
+      }
+    });
+  }   
 
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({

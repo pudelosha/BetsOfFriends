@@ -13,6 +13,8 @@ import { ToastController } from '@ionic/angular';
   imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
 export class LogoffPage {
+  parallaxOffset = 0;
+
   constructor(private router: Router, private toastController: ToastController) {}
 
   async ionViewWillEnter() {
@@ -28,6 +30,11 @@ export class LogoffPage {
       console.log('Navigating to login page...');
       this.router.navigate(['/welcome']);
     }, 3000);
+  }
+
+  onScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
   }
 
   async presentToast(message: string, color: string) {

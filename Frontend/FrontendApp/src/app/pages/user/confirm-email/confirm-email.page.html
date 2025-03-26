@@ -1,15 +1,23 @@
-<ion-content class="ion-padding">
-  <div class="unauth-container">
-    <h2 *ngIf="confirmationSuccess">Account Activated!</h2>
-    <h2 *ngIf="!confirmationSuccess">Email Confirmation Failed ❌</h2>
+<ion-content fullscreen (ionScroll)="onScroll($event)" scrollEvents="true">
+  <div class="parallax-container">
 
-    <p *ngIf="isLoading">Processing your request...</p>
-    <p *ngIf="!isLoading">{{ message }}</p>
+    <!-- Parallax Background -->
+    <div class="parallax-bg" [ngStyle]="{ 'transform': 'translateY(' + parallaxOffset + 'px)' }"></div>
 
-    <div class="button-group">
-      <ion-button *ngIf="confirmationSuccess" expand="full" color="primary" class="rounded-button" (click)="navigateToLogin()">
-        Go to Login
-      </ion-button>
+    <!-- Foreground Content -->
+    <div class="unauth-container">
+      <h2 *ngIf="confirmationSuccess">Account Activated!</h2>
+      <h2 *ngIf="!confirmationSuccess">Email Confirmation Failed ❌</h2>
+
+      <p *ngIf="isLoading">Processing your request...</p>
+      <p *ngIf="!isLoading">{{ message }}</p>
+
+      <div class="button-group">
+        <ion-button *ngIf="confirmationSuccess" expand="full" color="medium" class="rounded-button" (click)="navigateToLogin()">
+          Go to Login
+        </ion-button>
+      </div>
     </div>
+
   </div>
 </ion-content>

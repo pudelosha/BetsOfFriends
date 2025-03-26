@@ -16,19 +16,10 @@ import { IonContent } from '@ionic/angular';
 export class ConfirmEmailPage {
   @ViewChild(IonContent) content!: IonContent;
 
-  ionViewWillEnter() {
-    this.scrollToTop();
-  }
-
-  scrollToTop() {
-    if (this.content) {
-      this.content.scrollToTop(300);
-    }
-  }
-
   isLoading = true;
   confirmationSuccess = false;
   message = '';
+  parallaxOffset = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,6 +54,21 @@ export class ConfirmEmailPage {
         }
       });
     });
+  }
+
+  ionViewWillEnter() {
+    this.scrollToTop();
+  }
+
+  scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(300);
+    }
+  }
+  
+  onScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
   }
 
   async showToast(message: string, color: 'success' | 'danger') {

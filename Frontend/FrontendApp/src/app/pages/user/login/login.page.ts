@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { AuthService } from '../../../services/auth.service';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
@@ -17,25 +17,17 @@ import { IonContent } from '@ionic/angular';
 export class LoginPage {
   @ViewChild(IonContent) content!: IonContent;
 
-  ionViewWillEnter() {
-    this.scrollToTop();
-    this.loginForm.reset();
-  }
-
-  scrollToTop() {
-    if (this.content) {
-      this.content.scrollToTop(300);
-    }
-  }
-
+  parallaxOffset = 0;
   loginForm: FormGroup;
   errorMessage: string = '';
+  isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private loadingController: LoadingController
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -47,29 +39,72 @@ export class LoginPage {
     return this.loginForm.controls;
   }
 
-  login() {
-    if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
+  ionViewWillEnter() {
+    this.scrollToTop();
+    this.loginForm.reset();
+  }
+
+  scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(300);
+    }
+  }
+
+  onScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
+  }
+
+  async login() {
+    if (!this.loginForm.valid) return;
   
-      this.authService.login(email, password).subscribe({
-        next: (response) => {
+    const { email, password } = this.loginForm.value;
+  
+    // Show loading spinner
+    this.isLoading = true;
+    const loading = await this.loadingController.create({
+      message: 'Logging in...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    const startTime = Date.now();
+  
+    this.authService.login(email, password).subscribe({
+      next: async (response) => {
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 800 - elapsed);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.isLoading = false;
+  
           console.log('Login response:', response);
   
           if (response.success) {
             this.showToast(response.message, 'success');
             this.router.navigate(['/home']);
           } else {
-            this.showToast(response.message, 'danger');
+            this.showToast(response.message || 'Login failed.', 'danger');
           }
-        },
-        error: (error) => {
+        }, delay);
+      },
+      error: async (error) => {
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 800 - elapsed);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.isLoading = false;
+  
           console.error('Login error:', error);
-          this.showToast(error.message, 'danger');
-        },
-      });
-    }
+          const errorMsg = error?.error?.message || 'An error occurred during login.';
+          this.showToast(errorMsg, 'danger');
+        }, delay);
+      }
+    });
   }
-
+  
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
       message,

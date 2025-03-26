@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { RegisterService } from 'src/app/services/register.service';
 import { Router } from '@angular/router';
 import { ViewChild } from '@angular/core';
@@ -17,6 +17,26 @@ import { IonContent } from '@ionic/angular';
 export class ResendActivationPage {
   @ViewChild(IonContent) content!: IonContent;
 
+  parallaxOffset = 0;
+  resendActivationForm: FormGroup;
+  isLoading: boolean = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private registerService: RegisterService,
+    private toastController: ToastController,
+    private router: Router,
+    private loadingController: LoadingController
+  ) {
+    this.resendActivationForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+    });
+  }
+
+  get f(): { [key: string]: AbstractControl } {
+    return this.resendActivationForm.controls;
+  }
+
   ionViewWillEnter() {
     this.scrollToTop();
     this.resendActivationForm.reset();
@@ -28,21 +48,9 @@ export class ResendActivationPage {
     }
   }
 
-  resendActivationForm: FormGroup;
-
-  constructor(
-    private fb: FormBuilder,
-    private registerService: RegisterService,
-    private toastController: ToastController,
-    private router: Router
-  ) {
-    this.resendActivationForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-    });
-  }
-
-  get f(): { [key: string]: AbstractControl } {
-    return this.resendActivationForm.controls;
+  onScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
   }
 
   async showToast(message: string, color: 'success' | 'danger') {
@@ -55,22 +63,48 @@ export class ResendActivationPage {
     await toast.present();
   }
 
-  resendActivation() {
-    if (this.resendActivationForm.valid) {
-      const { email } = this.resendActivationForm.value;
-
-      this.registerService.resendActivationEmail(email).subscribe({
-        next: (response) => {
+  async resendActivation() {
+    if (!this.resendActivationForm.valid) return;
+  
+    const { email } = this.resendActivationForm.value;
+  
+    this.isLoading = true;
+  
+    const loading = await this.loadingController.create({
+      message: 'Resending activation email...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    const startTime = Date.now();
+  
+    this.registerService.resendActivationEmail(email).subscribe({
+      next: async (response) => {
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 800 - elapsed);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.isLoading = false;
+  
           this.showToast(response.message, response.success ? 'success' : 'danger');
-        },
-        error: (error) => {
-          this.showToast("An unexpected error occurred.", 'danger');
-          console.error("Resend Activation Error:", error);
-        },
-      });
-    }
+        }, delay);
+      },
+      error: async (error) => {
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 800 - elapsed);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.isLoading = false;
+  
+          this.showToast('An unexpected error occurred.', 'danger');
+          console.error('Resend Activation Error:', error);
+        }, delay);
+      }
+    });
   }
-
+  
   navigateToLogin() {
     this.router.navigate(['/login']);
   }

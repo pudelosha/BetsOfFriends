@@ -1,62 +1,74 @@
-<ion-content class="ion-padding">
-  <div class="unauth-container">
-    <h2>Register</h2>
-    <p>Create an account to join tournaments and place bets.</p>
+<ion-content fullscreen (ionScroll)="onScroll($event)" scrollEvents="true">
+  <div class="parallax-container">
 
-    <form [formGroup]="registerForm" (ngSubmit)="register()">
-      <!-- Email Field -->
-      <ion-item>
-        <ion-label position="floating">Email</ion-label>
-        <ion-input formControlName="email" type="email"></ion-input>
-      </ion-item>
-      <div class="validation-message">
-        <p class="error" *ngIf="f['email'].invalid && f['email'].touched">
-          Please enter a valid email.
-        </p>
-      </div>
+    <!-- Parallax Background -->
+    <div class="parallax-bg" [ngStyle]="{ 'transform': 'translateY(' + parallaxOffset + 'px)' }"></div>
 
-      <!-- Password Field -->
-      <ion-item>
-        <ion-label position="floating">Password</ion-label>
-        <ion-input formControlName="password" type="password"></ion-input>
-      </ion-item>
-      <div class="validation-message">
-        <p class="error" *ngIf="f['password'].invalid && f['password'].touched">
-          Password is required (min 8 characters).
-        </p>
-      </div>
+    <!-- Foreground Content -->
+    <div class="unauth-container">
+      <h2>Register</h2>
+      <p>Create an account to join tournaments and place bets.</p>
 
-      <!-- Confirm Password Field -->
-      <ion-item>
-        <ion-label position="floating">Confirm Password</ion-label>
-        <ion-input formControlName="confirmPassword" type="password"></ion-input>
-      </ion-item>
-      <div class="validation-message">
-        <p class="error" *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched">
-          Passwords must match.
-        </p>
-      </div>
+      <form [formGroup]="registerForm" (ngSubmit)="register()">
+        <!-- Email Field -->
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input formControlName="email" type="email"></ion-input>
+        </ion-item>
+        <div class="validation-message">
+          <p class="error" *ngIf="f['email'].invalid && f['email'].touched">
+            Please enter a valid email.
+          </p>
+        </div>
 
-      <!-- Terms and Conditions -->
-      <ion-item lines="none" class="terms-item">
-        <ion-checkbox formControlName="consent" slot="start"></ion-checkbox>
-        <ion-label>I agree to the Terms & Conditions</ion-label>
-      </ion-item>
-      <div class="validation-message">
-        <p class="error" *ngIf="!f['consent'].value && f['consent'].touched">
-          You must accept the terms to register.
-        </p>
-      </div>
+        <!-- Password Field -->
+        <ion-item>
+          <ion-label position="floating">Password</ion-label>
+          <ion-input formControlName="password" type="password"></ion-input>
+        </ion-item>
+        <div class="validation-message">
+          <p class="error" *ngIf="f['password'].invalid && f['password'].touched">
+            Password is required (min 8 characters).
+          </p>
+        </div>
 
-      <div class="button-group">
-        <ion-button expand="full" color="primary" class="rounded-button" type="submit" [disabled]="registerForm.invalid">
-          Register
-        </ion-button>
-      </div>
-    </form>
+        <!-- Confirm Password Field -->
+        <ion-item>
+          <ion-label position="floating">Confirm Password</ion-label>
+          <ion-input formControlName="confirmPassword" type="password"></ion-input>
+        </ion-item>
+        <div class="validation-message">
+          <p class="error" *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched">
+            Passwords must match.
+          </p>
+        </div>
 
-    <p class="switch-auth">
-      Already have an account? <a (click)="navigateToLogin()">Login</a>
-    </p>
+        <!-- Terms and Conditions -->
+        <ion-item lines="none" class="terms-item">
+          <ion-checkbox formControlName="consent" slot="start"></ion-checkbox>
+          <ion-label class="terms-label" (click)="toggleConsent($event)">
+            I agree to the 
+            <a (click)="openTerms($event)">Terms & Conditions</a>
+          </ion-label>
+        </ion-item>
+        
+        <div class="validation-message">
+          <p class="error" *ngIf="!f['consent'].value && f['consent'].touched">
+            You must accept the terms to register.
+          </p>
+        </div>
+
+        <div class="button-group">
+          <ion-button expand="full" color="medium" class="rounded-button" type="submit" [disabled]="registerForm.invalid">
+            Register
+          </ion-button>
+        </div>
+      </form>
+
+      <p class="switch-auth">
+        Already have an account? <a (click)="navigateToLogin()">Login</a>
+      </p>
+    </div>
+
   </div>
 </ion-content>

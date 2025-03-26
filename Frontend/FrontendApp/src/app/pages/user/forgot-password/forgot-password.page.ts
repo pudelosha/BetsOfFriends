@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '..//..//../services//user.service';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ViewChild } from '@angular/core';
@@ -17,6 +17,26 @@ import { IonContent } from '@ionic/angular';
 export class ForgotPasswordPage {
   @ViewChild(IonContent) content!: IonContent;
 
+  parallaxOffset = 0;
+  forgotPasswordForm: FormGroup;
+  isLoading = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private toastController: ToastController,
+    private router: Router,
+    private loadingController: LoadingController
+  ) {
+    this.forgotPasswordForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]]
+    });
+  }
+
+  get f(): { [key: string]: AbstractControl } {
+    return this.forgotPasswordForm.controls;
+  }
+
   ionViewWillEnter() {
     this.scrollToTop();
     this.forgotPasswordForm.reset();
@@ -28,42 +48,51 @@ export class ForgotPasswordPage {
     }
   }
 
-  forgotPasswordForm: FormGroup;
-  isLoading = false;
-
-  constructor(
-    private fb: FormBuilder,
-    private userService: UserService,
-    private toastController: ToastController,
-    private router: Router
-  ) {
-    this.forgotPasswordForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
-    });
+  onScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
   }
 
-  get f(): { [key: string]: AbstractControl } {
-    return this.forgotPasswordForm.controls;
-  }
-
-  submitRequest() {
+  async submitRequest() {
     if (this.forgotPasswordForm.invalid) return;
-
+  
     this.isLoading = true;
     const email = this.forgotPasswordForm.value.email;
-
+  
+    const loading = await this.loadingController.create({
+      message: 'Sending reset link...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    const startTime = Date.now();
+  
     this.userService.forgotPassword(email).subscribe({
-      next: (response) => {
-        this.showToast(response.message || "Password reset link sent!", "success");
-        this.isLoading = false;
+      next: async (response) => {
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 800 - elapsed);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.isLoading = false;
+  
+          this.showToast(response.message || 'Password reset link sent!', 'success');
+        }, delay);
       },
-      error: () => {
-        this.showToast("Something went wrong. Please try again.", "danger");
-        this.isLoading = false;
+      error: async () => {
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 800 - elapsed);
+  
+        setTimeout(async () => {
+          await loading.dismiss();
+          this.isLoading = false;
+  
+          this.showToast('Something went wrong. Please try again.', 'danger');
+        }, delay);
       },
     });
   }
-
+  
   async showToast(message: string, color: 'success' | 'danger') {
     const toast = await this.toastController.create({
       message,
