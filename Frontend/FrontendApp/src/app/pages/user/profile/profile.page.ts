@@ -6,6 +6,9 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { UserService } from 'src/app/services/user.service';
 import { UserProfile } from 'src/app/model/user-profile';
 import { AuthService } from 'src/app/services/auth.service';
+import { Country } from 'src/app/model/location';
+import { LocationService } from 'src/app/services/location.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -19,6 +22,7 @@ export class ProfilePage implements OnInit {
   memberSince = '';
   isLoading = true;
   isUpdating = false;
+  availableCountries: Country[] = [];
 
   languages = [
     { value: 'en', label: 'English' },
@@ -31,6 +35,7 @@ export class ProfilePage implements OnInit {
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private userService: UserService,
+    private locationService: LocationService,
     private loadingController: LoadingController
   ) {
     this.profileForm = this.fb.group({
@@ -43,10 +48,12 @@ export class ProfilePage implements OnInit {
   }
 
   ngOnInit() {
+    this.loadCountries();
     this.loadUserProfile();
   }
 
   ionViewWillEnter() {
+    this.loadCountries();
     this.loadUserProfile();
   }
 
@@ -65,6 +72,15 @@ export class ProfilePage implements OnInit {
     await toast.present();
   }
 
+  async loadCountries() {
+    try {
+      this.availableCountries = await firstValueFrom(this.locationService.getAvailableCountries());
+    } catch (error) {
+      console.error('Failed to load countries:', error);
+      this.presentToast('Could not load countries list.', 'danger');
+    }
+  }
+  
   async changeEmail() {
     const alert = await this.alertCtrl.create({
       header: 'Change Email',
@@ -224,7 +240,7 @@ export class ProfilePage implements OnInit {
         this.profileForm.patchValue({
           email: profile.email,
           nickname: profile.nickname || '',
-          location: profile.location || '',
+          location: profile.location?.countryId || '',
           language: this.getLanguageValue(profile.language),
           darkMode: profile.darkMode
         });        
@@ -258,7 +274,7 @@ export class ProfilePage implements OnInit {
   
     const updatedProfile = {
       nickname: this.f['nickname'].value || null,
-      location: this.f['location'].value || null,
+      location: this.f['location'].value || null, // This should be the countryId
       language: this.f['language'].value,
       darkMode: this.f['darkMode'].value
     };    

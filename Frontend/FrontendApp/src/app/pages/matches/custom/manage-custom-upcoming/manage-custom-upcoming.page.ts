@@ -106,8 +106,8 @@ export class ManageCustomUpcomingPage implements OnInit, OnChanges  {
     const modal = await this.modalCtrl.create({
       component: EditMatchResultModalComponent,
       componentProps: { match },
-      breakpoints: [0, 0.5, 0.75, 1],
-      initialBreakpoint: 1,
+      breakpoints: [0, 0.3, 0.5, 0.75, 1],
+      initialBreakpoint: 1, // Less than full screen
     });
   
     await modal.present();

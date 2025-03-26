@@ -39,9 +39,12 @@
           <ion-label>Location (optional)</ion-label>
           <ion-select formControlName="location">
             <ion-select-option value="" disabled>Select your location</ion-select-option>
-            <!-- Populate options later -->
+            <ion-select-option *ngFor="let country of availableCountries" [value]="country.countryId">
+              {{ country.name }}
+            </ion-select-option>
           </ion-select>
         </ion-item>
+        
 
         <!-- Dark Mode -->
         <ion-item>

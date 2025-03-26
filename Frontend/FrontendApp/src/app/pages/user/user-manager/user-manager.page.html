@@ -33,7 +33,7 @@
           <ion-grid class="user-grid">
             <ion-row>
               <!-- User Details (9 columns) -->
-              <ion-col size="9" class="user-details">
+              <ion-col size="8" class="user-details">
                 <strong>{{ user.userEmail }}</strong>
                 <span class="tournament-date">Since: {{ user.memberSince | date: 'yyyy.MM.dd' }}</span>
                 <span>Status: {{ user.userStatus }}</span>
@@ -42,7 +42,7 @@
               </ion-col>
 
               <!-- Buttons (2 columns) -->
-              <ion-col size="3" class="user-actions">
+              <ion-col size="4" class="user-actions">
                 <ion-button
                   expand="block"
                   [color]="user.userStatus === 'Suspended' ? 'medium' : 'warning'"

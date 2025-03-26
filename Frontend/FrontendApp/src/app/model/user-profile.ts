@@ -2,7 +2,10 @@ export interface UserProfile {
   id: string;
   email: string;
   nickname?: string;
-  location?: string;
+  location?: {
+    countryId: number;
+    name: string;
+  } | null;
   memberSince: string;
   language: string;
   darkMode: boolean;
