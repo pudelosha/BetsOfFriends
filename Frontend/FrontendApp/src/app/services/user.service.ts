@@ -50,11 +50,11 @@ export class UserService {
   }
 
   suspendUser(userId: string): Observable<ActionResult> {
-    return this.http.post<ActionResult>('/api/users/suspend', { userId });
+    return this.http.post<ActionResult>(`${this.apiUrl}/suspend`, { userId });
   }
   
   unsuspendUser(userId: string): Observable<ActionResult> {
-    return this.http.post<ActionResult>('/api/users/unsuspend', { userId });
+    return this.http.post<ActionResult>(`${this.apiUrl}/unsuspend`, { userId });
   }
 
   deleteUser(userId: string): Observable<ActionResult> {

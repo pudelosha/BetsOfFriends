@@ -297,14 +297,15 @@ namespace Backend.Repository.Services
                 ? ActionResultDto.SuccessResult("User deleted successfully.")
                 : ActionResultDto.ErrorResult("Failed to delete user.");
         }
-
         private string GetUserStatus(ApplicationUser user)
         {
             if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)
                 return "Suspended";
 
+            if (!user.EmailConfirmed)
+                return "Inactive";
+
             return "Active";
         }
-
     }
 }
