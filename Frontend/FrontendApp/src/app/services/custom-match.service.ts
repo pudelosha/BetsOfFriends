@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class CustomMatchService {
-  private apiUrl = `${environment.apiBaseUrl}/matches`;
+  private apiUrl = `${environment.apiBaseUrl}/custom-matches`;
 
   constructor(private http: HttpClient) {}
 

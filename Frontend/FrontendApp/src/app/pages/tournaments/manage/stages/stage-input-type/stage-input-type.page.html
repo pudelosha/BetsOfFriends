@@ -106,6 +106,7 @@
     <ion-button
       *ngIf="isPredefinedTournament || isCustomTournamentCreateMode"
       expand="full"
+      color="medium"
       (click)="triggerFileInput()">
       Import from file
     </ion-button>
@@ -119,6 +120,7 @@
     <ion-button
       *ngIf="isCustomTournamentCreateMode"
       expand="full"
+      color="medium"
       (click)="openTournamentSelection()">
       Import tournament
     </ion-button>
@@ -127,6 +129,7 @@
     <ion-button
       *ngIf="isCustomTournamentEditMode"
       expand="full"
+      color="medium"
       (click)="triggerFileInput()">
       Update tournament
     </ion-button>

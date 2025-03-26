@@ -66,6 +66,7 @@
       <div class="button-slot">
         <ion-button
           *ngIf="step !== 1"
+          color="medium"
           class="third-width"
           (click)="prevStep()">
           Previous
@@ -77,6 +78,7 @@
         <ion-button
           *ngIf="step === 3 || step === 4 || step === 5 || step === 6"
           class="third-width"
+          color="medium"
           (click)="openAddModal()">
           Add
         </ion-button>
@@ -84,6 +86,7 @@
         <ion-button
           *ngIf="step === 7"
           class="third-width"
+          color="dark"
           (click)="submitTournament()">
           Submit
         </ion-button>
@@ -93,6 +96,7 @@
       <div class="button-slot">
         <ion-button
           *ngIf="step !== 7"
+          color="medium"
           class="third-width"
           (click)="nextStep()">
           Next

@@ -21,18 +21,21 @@
     
               <!-- Action Buttons -->
               <ion-col size="6" class="button-col">
-                <ion-button fill="outline" color="primary" (click)="editTournament(tournament)">
+                <ion-button fill="outline" color="primary" (click)="editTournament(tournament)" title="Edit Tournament">
                   <ion-icon name="create-outline"></ion-icon>
                 </ion-button>
-                <ion-button fill="outline" color="success" (click)="recalculateBets(tournament)">
+                
+                <ion-button fill="outline" color="success" (click)="recalculateBets(tournament)" title="Recalculate Bets">
                   <ion-icon name="cog-outline"></ion-icon>
-                </ion-button>                 
-                <ion-button fill="outline" color="warning" (click)="toggleTournamentStatus(tournament)">
+                </ion-button>
+                
+                <ion-button fill="outline" color="warning" (click)="toggleTournamentStatus(tournament)" title="Change Tournament Visibility">
                   <ion-icon name="pause-outline"></ion-icon>
                 </ion-button>
-                <ion-button fill="outline" color="danger" (click)="deleteTournament(tournament)">
+                
+                <ion-button fill="outline" color="danger" (click)="deleteTournament(tournament)" title="Delete Tournament">
                   <ion-icon name="trash-outline"></ion-icon>
-                </ion-button>
+                </ion-button>                
               </ion-col>
             </ion-row>
           </ion-grid>

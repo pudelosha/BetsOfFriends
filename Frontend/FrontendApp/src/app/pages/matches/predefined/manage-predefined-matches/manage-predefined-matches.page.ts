@@ -6,9 +6,9 @@ import { ManagePredefinedFinalisedPage } from '../manage-predefined-finalised/ma
 import { ManagePredefinedStartedPage } from '../manage-predefined-started/manage-predefined-started.page';
 import { ManagePredefinedUpcomingPage } from '../manage-predefined-upcoming/manage-predefined-upcomingpage';
 import { FormsModule } from '@angular/forms';
-import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
-import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
+import { ActivatedRoute } from '@angular/router';
+import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 
 @Component({
   selector: 'app-manage-predefined-matches',
@@ -19,21 +19,29 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
-  selectedTab: string = 'upcoming'; // Default tab
+  selectedTab: string = 'upcoming';
   availableStages: string[] = [];
   selectedStageIndex = 0;
   selectedStage: string = '';
+  tournamentId!: number;
 
   @ViewChild(IonContent, { static: false }) content!: IonContent;
 
   constructor(
-    private tournamentService: CustomTournamentService,
-    private tournamentSelectionService: TournamentSelectionService
+    private route: ActivatedRoute,
+    private tournamentService: PredefinedTournamentService,
   ) {}
 
   async ngOnInit() {
     this.selectedTab = 'upcoming';
-    await this.loadStages(); // Load tournament stages
+
+    this.tournamentId = Number(this.route.snapshot.paramMap.get('tournamentId'));
+    if (!this.tournamentId) {
+      console.warn('No tournament ID in route.');
+      return;
+    }
+
+    await this.loadStages();
   }
 
   ngAfterViewInit() {
@@ -44,21 +52,14 @@ export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
   }
 
   async loadStages() {
-    const tournamentId = this.tournamentSelectionService.getSelectedTournament();
-    
-    if (!tournamentId) {
-      console.warn("No tournament selected.");
-      return;
-    }
-
     try {
-      this.availableStages = await firstValueFrom(this.tournamentService.getTournamentStages(tournamentId));
+      this.availableStages = await firstValueFrom(this.tournamentService.getTournamentStages(this.tournamentId));
       if (this.availableStages.length > 0) {
         this.selectedStageIndex = 0;
-        this.selectedStage = this.availableStages[0]; // Set the first stage as default
+        this.selectedStage = this.availableStages[0];
       }
     } catch (error) {
-      console.error("Error fetching tournament stages:", error);
+      console.error("Error fetching stages:", error);
     }
   }
 

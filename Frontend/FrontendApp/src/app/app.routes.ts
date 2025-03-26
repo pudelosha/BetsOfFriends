@@ -82,7 +82,7 @@ export const routes: Routes = [
         data: { role: 'User' },
       },
       {
-        path: 'predefined',
+        path: 'predefined/:tournamentId',
         loadComponent: () =>
           import('./pages/matches/predefined/manage-predefined-matches/manage-predefined-matches.page').then(
             (m) => m.ManagePredefinedMatchesPage
@@ -120,7 +120,8 @@ export const routes: Routes = [
   { path: 'terms', loadComponent: () => import('./pages/guest/terms/terms.page').then( m => m.TermsPage) },
 
   // Default and wildcard routes
-  { path: '**', redirectTo: 'welcome' },  {
+  { path: '**', redirectTo: 'welcome' },
+  {
     path: 'started-custom-matches',
     loadComponent: () => import('./pages/home/started-custom-matches/started-custom-matches.page').then( m => m.StartedCustomMatchesPage)
   },

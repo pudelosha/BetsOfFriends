@@ -1,5 +1,6 @@
 ﻿using Backend.DTOs;
 using Backend.Repository.Interfaces;
+using Backend.Repository.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -162,6 +163,27 @@ namespace Backend.Controllers
             {
                 _logger.LogError($"Unexpected error: {ex.Message}", ex);
                 return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpGet("stages/{tournamentId}")]
+        public async Task<IActionResult> GetTournamentStages(int tournamentId)
+        {
+            try
+            {
+                var stages = await _tournamentService.GetTournamentStagesAsync(tournamentId);
+                if (stages == null)
+                {
+                    return NotFound(new { Message = "Tournament not found or user not a participant." });
+                }
+
+                return Ok(stages);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching stages for tournament ID {tournamentId}.");
+                return StatusCode(500, new { Message = "An error occurred while fetching tournament stages." });
             }
         }
     }

@@ -4,7 +4,7 @@ using static Backend.Model.Entities.CustomMatch;
 
 namespace Backend.Repository.Interfaces
 {
-    public interface IMatchService
+    public interface ICustomMatchService
     {
         Task<bool> UpdateMatchResultAsync(MatchResultUpdateDto matchUpdateDto, string userId);
         Task AutoUpdateMatchStatusAsync();

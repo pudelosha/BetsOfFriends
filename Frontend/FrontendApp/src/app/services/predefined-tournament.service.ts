@@ -40,4 +40,8 @@ export class PredefinedTournamentService {
   deletePredefinedTournament(tournamentId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${tournamentId}`);
   }
+
+  getTournamentStages(tournamentId: number): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/stages/${tournamentId}`);
+  } 
 }

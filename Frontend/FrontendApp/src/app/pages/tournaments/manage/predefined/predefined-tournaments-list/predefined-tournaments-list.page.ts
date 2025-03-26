@@ -79,6 +79,15 @@ export class PredefinedTournamentsListPage implements OnInit {
       this.showToast('Failed to navigate to the tournament editor.', 'danger');
     });
   }
+
+  editMatches(tournamentId: number | null | undefined): void {
+    if (tournamentId == null) {
+      console.warn('Invalid tournament ID');
+      return;
+    }
+  
+    this.router.navigate(['/matches/predefined', tournamentId]);
+  }  
   
   async toggleTournamentStatus(tournament: any) {
     const newStatus = !tournament.isActive;

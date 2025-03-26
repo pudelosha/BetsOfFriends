@@ -6,7 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
-import { CustomMatchService } from 'src/app/services/match.service';
+import { CustomMatchService } from 'src/app/services/custom-match.service';
 import { Match } from 'src/app/model/match';
 import { HttpErrorResponse } from '@angular/common/http';
 

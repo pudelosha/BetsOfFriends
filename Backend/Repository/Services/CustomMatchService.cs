@@ -8,14 +8,14 @@ using static Backend.Model.Entities.CustomMatch;
 
 namespace Backend.Repository.Services
 {
-    public class MatchService : IMatchService
+    public class CustomMatchService : ICustomMatchService
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<MatchService> _logger;
+        private readonly ILogger<CustomMatchService> _logger;
         private readonly IBetService _betService;
         private readonly INotificationService _notificationService;
 
-        public MatchService(AppDbContext context, IBetService betService, ILogger<MatchService> logger, INotificationService notificationService)
+        public CustomMatchService(AppDbContext context, IBetService betService, ILogger<CustomMatchService> logger, INotificationService notificationService)
         {
             _context = context;
             _logger = logger;
@@ -269,7 +269,7 @@ namespace Backend.Repository.Services
                     return new List<MatchDto>();
                 }
 
-                // Step 2: Fetch matches with Status = InProgress and Type = Custom
+                // Step 2: Fetch matches with Status = InProgress
                 var matches = await _context.CustomMatches
                     .Include(m => m.Stage)
                     .Include(m => m.HomeTeam)

@@ -1,29 +1,26 @@
 ﻿using Backend.DTOs.Backend.DTOs;
-using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using static Backend.Model.Entities.CustomMatch;
 
 namespace Backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/predefined-matches")]
     [ApiController]
-    public class MatchesController : ControllerBase
+    public class PredefinedMatchesController : ControllerBase
     {
-        private readonly IMatchService _matchService;
+        private readonly IPredefinedMatchService _matchService;
         private readonly IUserService _userService;
-        private readonly ILogger<MatchesController> _logger;
+        private readonly ILogger<PredefinedMatchesController> _logger;
 
-        public MatchesController(IMatchService matchService, IUserService userService, ILogger<MatchesController> logger)
+        public PredefinedMatchesController(IPredefinedMatchService matchService, IUserService userService, ILogger<PredefinedMatchesController> logger)
         {
             _matchService = matchService;
             _userService = userService;
             _logger = logger;
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpGet("{tournamentId}/{status}/{stage}")]
         public async Task<IActionResult> GetTournamentMatches(int tournamentId, string status, string stage)
         {
@@ -32,10 +29,11 @@ namespace Backend.Controllers
                 var userId = _userService.GetUserIdFromClaims(User);
                 if (string.IsNullOrEmpty(userId))
                 {
+                    _logger.LogWarning("Unauthorized request - user not found.");
                     return Unauthorized(new { Message = "User authentication failed." });
                 }
 
-                var matches = await _matchService.GetMatchesByStatusAndStageAsync(tournamentId, userId, status, stage);
+                var matches = await _matchService.GetMatchesByStatusAndStageAsync(tournamentId, status, stage);
 
                 if (matches == null || !matches.Any())
                 {
@@ -51,7 +49,7 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPatch("update/{matchId}")]
         public async Task<IActionResult> UpdateMatchResult(int matchId, [FromBody] MatchResultUpdateDto matchUpdateDto)
         {
@@ -70,7 +68,7 @@ namespace Backend.Controllers
                     return Unauthorized(new { Message = "User authentication failed." });
                 }
 
-                var updated = await _matchService.UpdateMatchResultAsync(matchUpdateDto, userId);
+                var updated = await _matchService.UpdateMatchResultAsync(matchUpdateDto);
 
                 if (!updated)
                 {
@@ -86,9 +84,9 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpGet("started/{tournamentId}")]
-        public async Task<IActionResult> GetStartedCustomMatches(int tournamentId)
+        public async Task<IActionResult> GetStartedPredefinedMatches(int tournamentId)
         {
             try
             {
@@ -98,7 +96,7 @@ namespace Backend.Controllers
                     return Unauthorized(new { Message = "User authentication failed." });
                 }
 
-                var matches = await _matchService.GetStartedMatchesAsync(tournamentId, userId);
+                var matches = await _matchService.GetStartedMatchesAsync(tournamentId);
 
                 if (matches == null || !matches.Any())
                 {

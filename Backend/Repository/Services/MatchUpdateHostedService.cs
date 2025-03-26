@@ -18,7 +18,7 @@ public class MatchUpdateHostedService : BackgroundService
             {
                 using (var scope = _serviceProvider.CreateScope()) // Create a scoped instance
                 {
-                    var matchService = scope.ServiceProvider.GetRequiredService<IMatchService>();
+                    var matchService = scope.ServiceProvider.GetRequiredService<ICustomMatchService>();
                     await matchService.AutoUpdateMatchStatusAsync(); // Call the method
                 }
             }

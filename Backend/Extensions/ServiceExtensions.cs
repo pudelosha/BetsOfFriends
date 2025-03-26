@@ -18,10 +18,11 @@ namespace Backend.Extensions
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IBetService, BetService>();
-            services.AddScoped<IMatchService, MatchService>();
+            services.AddScoped<ICustomMatchService, CustomMatchService>();
             services.AddScoped<ICustomTournamentService, CustomTournamentService>();
             services.AddScoped<ITournamentSelectionService, TournamentSelectionService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPredefinedMatchService, PredefinedMatchService>();
             services.AddScoped<IPredefinedTournamentService, PredefinedTournamentService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IPushNotificationService, PushNotificationService>();

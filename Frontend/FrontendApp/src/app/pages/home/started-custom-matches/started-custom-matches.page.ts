@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
-import { CustomMatchService } from 'src/app/services/match.service';
+import { CustomMatchService } from 'src/app/services/custom-match.service';
 import { firstValueFrom } from 'rxjs';
 import { Match } from 'src/app/model/match'; // or your custom match model
 

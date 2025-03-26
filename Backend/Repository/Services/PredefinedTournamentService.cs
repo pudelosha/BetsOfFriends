@@ -492,5 +492,40 @@ namespace Backend.Repository.Services
                 throw new ApplicationException("An error occurred while fetching predefined tournaments.", ex);
             }
         }
+
+        public async Task<List<string>> GetTournamentStagesAsync(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching tournament stages for tournament ID {tournamentId}");
+
+                // Check if the tournament exists
+                var tournamentExists = await _context.PredefinedTournaments.AnyAsync(t => t.TournamentId == tournamentId);
+                if (!tournamentExists)
+                {
+                    _logger.LogWarning($"Tournament {tournamentId} not found.");
+                    return null;
+                }
+
+                // Fetch tournament stages ordered by 'Order'
+                var stages = await _context.PredefinedMatchStages
+                    .Where(s => s.TournamentId == tournamentId)
+                    .OrderBy(s => s.Order)
+                    .Select(s => s.StageName)
+                    .ToListAsync();
+
+                if (!stages.Any())
+                {
+                    _logger.LogWarning($"No stages found for tournament ID {tournamentId}.");
+                }
+
+                return stages;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching tournament stages for tournament ID {tournamentId}");
+                throw;
+            }
+        }
     }
 }

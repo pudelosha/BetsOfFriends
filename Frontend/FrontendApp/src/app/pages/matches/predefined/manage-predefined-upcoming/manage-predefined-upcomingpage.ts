@@ -6,7 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
-import { CustomMatchService } from 'src/app/services/match.service';
+import { PredefinedMatchService } from 'src/app/services/predefined-match.service';
 import { Match } from 'src/app/model/match';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -26,7 +26,7 @@ export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
 
   constructor(
     private modalCtrl: ModalController,
-    private matchService: CustomMatchService,
+    private matchService: PredefinedMatchService,
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
     private loadingController: LoadingController
