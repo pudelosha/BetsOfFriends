@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
 import { NotificationDto } from 'src/app/model/notification';
 import { firstValueFrom } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,6 +16,8 @@ import { Router } from '@angular/router';
 })
 export class LatestMessagesPage implements OnInit {
   @Input() refreshTrigger: number = 0;
+  @Output() loadingStart = new EventEmitter<void>();
+  @Output() loadingEnd = new EventEmitter<void>();
 
   messages: NotificationDto[] = [];
   isLoading = true;
@@ -24,8 +26,7 @@ export class LatestMessagesPage implements OnInit {
   constructor(
     private notificationService: NotificationService,
     private toastController: ToastController,
-    private router: Router,
-    private loadingController: LoadingController
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -37,11 +38,7 @@ export class LatestMessagesPage implements OnInit {
   }
 
   async loadMessages() {
-    const loading = await this.loadingController.create({
-      message: 'Loading messages...',
-      spinner: 'crescent',
-    });
-    await loading.present();
+    this.loadingStart.emit();
 
     try {
       this.messages = await firstValueFrom(this.notificationService.getLatestNotifications()) as NotificationDto[];
@@ -50,11 +47,11 @@ export class LatestMessagesPage implements OnInit {
       this.errorMessage = 'Failed to load messages.';
     } finally {
       this.isLoading = false;
-      loading.dismiss();
+      this.loadingEnd.emit();
     }
   }
 
-  goToMessages(){
+  goToMessages() {
     this.router.navigate(['/messages']);
   }
 

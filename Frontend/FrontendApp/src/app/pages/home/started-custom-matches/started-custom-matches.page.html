@@ -1,24 +1,23 @@
-<div class="started-matches-box"
-     [ngClass]="{ 'has-started-matches': startedMatches.length > 0 }"
-     (click)="navigateToCustomMatches()">
-  <h2 class="started-matches-title">Started Custom Matches</h2>
+<ng-container *ngIf="startedMatches.length > 0 || isLoading">
+  <div class="started-matches-box"
+       [ngClass]="{ 'has-started-matches': startedMatches.length > 0 }"
+       (click)="navigateToCustomMatches()">
+       
+    <h2 class="started-matches-title">Started Custom Matches</h2>
 
-  <ion-list class="started-match-list" *ngIf="startedMatches.length > 0">
-    <ion-item class="started-match-item" *ngFor="let match of startedMatches">
-      <div class="started-match-grid">
-        <div class="started-match-details">
-          <span class="teams">{{ match.homeTeam }} - {{ match.awayTeam }}</span>
+    <ion-spinner *ngIf="isLoading" class="started-matches-spinner" name="crescent"></ion-spinner>
+
+    <ion-list class="started-match-list" *ngIf="!isLoading && startedMatches.length > 0">
+      <ion-item class="started-match-item" *ngFor="let match of startedMatches">
+        <div class="started-match-grid">
+          <div class="started-match-details">
+            <span class="teams">{{ match.homeTeam }} - {{ match.awayTeam }}</span>
+          </div>
+          <div class="started-match-date">
+            <span class="date-time">{{ match.matchStart | date: 'yyyy.MM.dd HH:mm' }}</span>
+          </div>
         </div>
-        <div class="started-match-date">
-          <span class="date-time">{{ match.matchStart | date: 'yyyy.MM.dd HH:mm' }}</span>
-        </div>
-      </div>
-    </ion-item>
-  </ion-list>
-
-  <p class="started-matches-empty" *ngIf="!isLoading && startedMatches.length === 0">
-    No started custom matches found.
-  </p>
-
-  <ion-spinner *ngIf="isLoading" class="started-matches-spinner" name="crescent"></ion-spinner>
-</div>
+      </ion-item>
+    </ion-list>
+  </div>
+</ng-container>

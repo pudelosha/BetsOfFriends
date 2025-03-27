@@ -85,8 +85,8 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin")]
-        [HttpGet("started/{tournamentId}")]
-        public async Task<IActionResult> GetStartedPredefinedMatches(int tournamentId)
+        [HttpGet("started")]
+        public async Task<IActionResult> GetStartedPredefinedMatches()
         {
             try
             {
@@ -96,18 +96,18 @@ namespace Backend.Controllers
                     return Unauthorized(new { Message = "User authentication failed." });
                 }
 
-                var matches = await _matchService.GetStartedMatchesAsync(tournamentId);
+                var matches = await _matchService.GetStartedMatchesAsync();
 
                 if (matches == null || !matches.Any())
                 {
-                    return NotFound(new { Message = "No started custom matches found." });
+                    return NotFound(new { Message = "No started predefined matches found." });
                 }
 
                 return Ok(matches);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching started custom matches for tournament {tournamentId}.");
+                _logger.LogError(ex, $"Error fetching started predefined matches.");
                 return StatusCode(500, new { Message = "An error occurred while fetching matches." });
             }
         }

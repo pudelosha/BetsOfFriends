@@ -60,6 +60,7 @@ namespace Backend.Repository.Services
                     IsActive = tournamentDto.IsActive,
                     CreatedByUserId = tournamentDto.CreatedBy,
                     CreatedAt = DateTime.UtcNow,
+                    PredefinedTournamentId = tournamentDto.PredefinedTournamentId,
 
                     // Tournament Settings Mapping
                     Visibility = Enum.TryParse<TournamentVisibility>(tournamentDto.TournamentVisibility, true, out var parsedVisibility) ? parsedVisibility : TournamentVisibility.Private,
@@ -103,7 +104,8 @@ namespace Backend.Repository.Services
                 var teams = tournamentDto.Teams.Select(t => new CustomTeam
                 {
                     TeamName = t.TeamName,
-                    TournamentId = tournament.TournamentId
+                    TournamentId = tournament.TournamentId,
+                    PredefinedTeamId = t.PredefinedTeamId
                 }).ToList();
 
                 _context.CustomTeams.AddRange(teams);
@@ -118,6 +120,7 @@ namespace Backend.Repository.Services
                 {
                     StageName = t.StageName,
                     TournamentId = tournament.TournamentId,
+                    PredefinedStageId = t.PredefinedStageId,
                     Order = t.Order
                 }).ToList();
 
@@ -143,7 +146,8 @@ namespace Backend.Repository.Services
                     HomeQualifies = m.HomeQualifies ?? 0,
                     AwayQualifies = m.AwayQualifies ?? 0,
                     Status = MatchStatus.Upcoming,
-                    IsVisible = true
+                    IsVisible = true,
+                    PredefinedMatchId = m.PredefinedMatchId
                 }).ToList();
 
                 _context.CustomMatches.AddRange(matches);
@@ -727,17 +731,20 @@ namespace Backend.Repository.Services
                     Teams = tournament.Teams.Select(team => new CustomTeamDto
                     {
                         TeamId = team.TeamId,
-                        TeamName = team.TeamName
+                        TeamName = team.TeamName,
+                        PredefinedTeamId = team.PredefinedTeamId
                     }).ToList(),
                     Stages = tournament.Stages.Select(stage => new CustomStageDto
                     {
                         StageId = stage.StageId,
                         StageName = stage.StageName,
+                        PredefinedStageId = stage.PredefinedStageId,
                         Order = stage.Order
                     }).ToList(),
                     Matches = tournament.Matches.Select(match => new CustomMatchDto
                     {
                         MatchId = match.MatchId,
+                        PredefinedMatchId = match.PredefinedMatchId,
                         StageId = match.StageId,
                         StageName = match.Stage.StageName,
                         HomeTeamId = match.HomeTeamId,

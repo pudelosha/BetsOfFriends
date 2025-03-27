@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentPlayerResult } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
-import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,6 +16,8 @@ import { Router } from '@angular/router';
 })
 export class TournamentSummaryPage implements OnInit {
   @Input() refreshTrigger: number = 0;
+  @Output() loadingStart = new EventEmitter<void>();
+  @Output() loadingEnd = new EventEmitter<void>();
 
   tournamentId: number | null = null;
   players: TournamentPlayerResult[] = [];
@@ -25,8 +27,7 @@ export class TournamentSummaryPage implements OnInit {
     private tournamentService: CustomTournamentService,
     private tournamentSelectionService: TournamentSelectionService,
     private router: Router,
-    private toastController: ToastController,
-    private loadingController: LoadingController
+    private toastController: ToastController
   ) {}
 
   async ngOnInit() {
@@ -40,15 +41,18 @@ export class TournamentSummaryPage implements OnInit {
   }
 
   private async loadTournamentAndFetchSummary() {
+    this.loadingStart.emit();
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
 
     if (this.tournamentId === null) {
       await this.showToast('No tournament selected', 'warning');
       this.isLoading = false;
+      this.loadingEnd.emit();
       return;
     }
 
     await this.loadTournamentSummary();
+    this.loadingEnd.emit();
   }
 
   async loadTournamentSummary() {
@@ -57,12 +61,6 @@ export class TournamentSummaryPage implements OnInit {
       return;
     }
 
-    const loading = await this.loadingController.create({
-      message: 'Loading summary...',
-      spinner: 'crescent',
-    });
-    await loading.present();
-
     try {
       this.players = await firstValueFrom(this.tournamentService.getTournamentPlayerResult(this.tournamentId));
     } catch (error) {
@@ -70,7 +68,6 @@ export class TournamentSummaryPage implements OnInit {
       await this.showToast('Failed to load tournament summary', 'danger');
     } finally {
       this.isLoading = false;
-      loading.dismiss();
     }
   }
 

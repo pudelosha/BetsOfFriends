@@ -1,14 +1,17 @@
-﻿using Backend.Repository.Interfaces;
-using Backend.Services.Interfaces;
+﻿using Backend.Model.Database;
+using Backend.Model.Entities;
+using Microsoft.EntityFrameworkCore;
 
 public class BetUpdateHostedService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<BetUpdateHostedService> _logger;
     private readonly TimeSpan _interval = TimeSpan.FromMinutes(1);
 
-    public BetUpdateHostedService(IServiceProvider serviceProvider)
+    public BetUpdateHostedService(IServiceProvider serviceProvider, ILogger<BetUpdateHostedService> logger)
     {
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -17,18 +20,64 @@ public class BetUpdateHostedService : BackgroundService
         {
             try
             {
-                using (var scope = _serviceProvider.CreateScope()) // Create a scoped instance
-                {
-                    var matchService = scope.ServiceProvider.GetRequiredService<IBetService>();
-                    await matchService.AutoUpdateBetStatusAsync(); // Call the method
-                }
+                using var scope = _serviceProvider.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                await AutoUpdateBetStatusAsync(dbContext, stoppingToken);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in MatchUpdateHostedService: {ex.Message}");
+                _logger.LogError(ex, "Error in BetUpdateHostedService.");
             }
 
-            await Task.Delay(_interval, stoppingToken); // Wait before next execution
+            await Task.Delay(_interval, stoppingToken);
+        }
+    }
+
+    private async Task AutoUpdateBetStatusAsync(AppDbContext dbContext, CancellationToken cancellationToken)
+    {
+        try
+        {
+            _logger.LogInformation("Starting automatic update of bet statuses...");
+
+            // Step 1: Get all matches that are in the past AND are not Upcoming
+            var finalisedMatchIds = await dbContext.CustomMatches
+                .Where(m => m.Status == CustomMatch.MatchStatus.Finalised ||
+                            (m.MatchStart < DateTime.UtcNow && m.Status != CustomMatch.MatchStatus.Upcoming))
+                .Select(m => m.MatchId)
+                .ToListAsync(cancellationToken);
+
+            if (!finalisedMatchIds.Any())
+            {
+                _logger.LogInformation("No finalised matches found in the past. No bets updated.");
+                return;
+            }
+
+            // Step 2: Get all bets related to those matches that are NOT already Finalised
+            var betsToUpdate = await dbContext.Bets
+                .Where(b => finalisedMatchIds.Contains(b.MatchId) && b.Status != Bet.BetStatus.Finalised)
+                .ToListAsync(cancellationToken);
+
+            if (!betsToUpdate.Any())
+            {
+                _logger.LogInformation("No bets found that need status updates.");
+                return;
+            }
+
+            // Step 3: Update the status of those bets to Finalised
+            foreach (var bet in betsToUpdate)
+            {
+                bet.Status = Bet.BetStatus.Finalised;
+            }
+
+            // Step 4: Save changes
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation($"Successfully updated {betsToUpdate.Count} bets to Finalised.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while updating bet statuses.");
         }
     }
 }

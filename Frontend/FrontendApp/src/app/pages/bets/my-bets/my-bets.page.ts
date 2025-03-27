@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { firstValueFrom } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-my-bets',
@@ -28,25 +29,25 @@ export class MyBetsPage implements OnInit, AfterViewInit {
 
   constructor(
     private tournamentService: CustomTournamentService,
-    private tournamentSelectionService: TournamentSelectionService
+    private tournamentSelectionService: TournamentSelectionService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.selectedTab = 'to-place'; // Ensure the default tab
-    this.loadStages(); // Load tournament stages
+
   }
 
   ngAfterViewInit() {
-    console.log('ngAfterViewInit - Parent Page');
 
-    setTimeout(() => {
-      this.triggerRefresh();
-    }, 300); // Ensures children are ready
   }
 
   ionViewDidEnter() {
-    console.log('ionViewDidEnter - Parent Page, forcing tab reload');
-    if (this.selectedTab.length == 0) this.selectedTab = 'to-place'; 
+    const urlTab = this.route.snapshot.queryParamMap.get('tab');
+    if (urlTab === 'to-place' || urlTab === 'placed' || urlTab === 'finalised') {
+      this.selectedTab = urlTab;
+    } else {
+      this.selectedTab = 'to-place'; 
+    }
     this.forceTabReload();
   }
 

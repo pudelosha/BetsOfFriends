@@ -209,41 +209,6 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task AutoUpdateMatchStatusAsync()
-        {
-            try
-            {
-                _logger.LogInformation("Checking for matches that need status updates...");
-
-                // Find matches that have started but are still marked as Upcoming
-                var matchesToUpdate = await _context.CustomMatches
-                    .Where(m => m.MatchStart <= DateTime.UtcNow && m.Status == MatchStatus.Upcoming)
-                    .ToListAsync();
-
-                if (!matchesToUpdate.Any())
-                {
-                    _logger.LogInformation("No matches require status updates.");
-                    return;
-                }
-
-                // Update the status of the matches
-                foreach (var match in matchesToUpdate)
-                {
-                    match.Status = MatchStatus.InProgress;
-                    _logger.LogInformation($"Match {match.MatchId} status updated to InProgress.");
-                }
-
-                // Save changes
-                await _context.SaveChangesAsync();
-                _logger.LogInformation($"{matchesToUpdate.Count} matches were updated to InProgress.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while updating match statuses.");
-                throw;
-            }
-        }
-
         public async Task<List<MatchDto>> GetStartedMatchesAsync(int tournamentId, string userId)
         {
             try

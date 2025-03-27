@@ -1,74 +1,50 @@
-  .input-form h4 {
-    font-size: 14px;
-    font-weight: 600;
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 10px;
-  }
+.page-container {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 14px; /* Reduced font size */
+  color: #2f3640;
+  line-height: 1.6;
+}
 
-  .input-form h5 {
-    font-size: 10px;
-    color: #34495e;
-    margin-top: 30px;
-    margin-bottom: 15px;
-    font-weight: 500;
-    border-bottom: 1px solid #ecf0f1;
-    padding-bottom: 5px;
-    text-align: center; /* <-- Add this line */
-  }  
+.page-container h5 {
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
 
-  .input-form ol {
-    counter-reset: item;
-    padding-left: 20px;
-    margin-bottom: 20px;
-  }
+.page-container h4 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
 
-  .input-form ol > li {
-    margin-bottom: 15px;
-    line-height: 1.6;
-    color: #2f3640;
-    font-size: 10px;
-  }
+.page-container ol {
+  padding-left: 20px;
+  counter-reset: list-counter;
+}
 
-  .input-form ol > li::marker {
-    font-weight: bold;
-    color: #2980b9;
-  }
+.page-container ol > li {
+  text-align: justify;
+  margin-bottom: 12px;
+}
 
-  .input-form ol ol {
-    padding-left: 20px;
-    margin-top: 10px;
-  }
+.page-container ol ol {
+  margin-top: 8px;
+  padding-left: 20px;
+}
 
-  .input-form ol ol > li {
-    list-style-type: lower-alpha;
-    margin-bottom: 8px;
-  }
+.page-container ol ol > li {
+  list-style-type: lower-alpha;
+  text-align: justify;
+}
 
-  .input-form ol ol > li::marker {
-    color: #16a085;
-    font-weight: bold;
-  }
+.page-container div[style*="margin-left"] {
+  text-align: justify;
+}
 
-  b {
-    color: #273c75;
-  }
-
-  u {
-    text-decoration: underline dotted #2980b9;
-  }
-
-  @media (max-width: 600px) {
-    .container {
-      margin: 20px;
-      padding: 20px;
-    }
-
-    .input-form h4 {
-      font-size: 12px;
-    }
-
-    .input-form h5 {
-      font-size: 10px;
-    }
-  }
+.page-container b {
+  font-weight: bold;
+  color: #273c75;
+}

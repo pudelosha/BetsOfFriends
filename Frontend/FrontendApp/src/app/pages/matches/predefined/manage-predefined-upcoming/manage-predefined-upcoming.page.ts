@@ -4,7 +4,6 @@ import { EditMatchResultModalComponent } from 'src/app/modals/edit-match-result-
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
 import { PredefinedMatchService } from 'src/app/services/predefined-match.service';
 import { Match } from 'src/app/model/match';
@@ -18,7 +17,8 @@ import { HttpErrorResponse } from '@angular/common/http';
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
 export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
-  @Input() stage!: string; // Receive stage from parent
+  @Input() stage!: string;
+  @Input() tournamentId!: number;
 
   matches: Match[] = [];
   isLoading = true;
@@ -27,7 +27,6 @@ export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
   constructor(
     private modalCtrl: ModalController,
     private matchService: PredefinedMatchService,
-    private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
     private loadingController: LoadingController
   ) {}
@@ -60,21 +59,19 @@ export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
     });
     await loading.present();
   
-    const startTime = Date.now(); // Start timer
+    const startTime = Date.now();
   
-    const tournamentId = this.tournamentSelectionService.getSelectedTournament();
-  
-    if (!tournamentId) {
-      console.warn("No tournament selected.");
+    if (!this.tournamentId) {
+      console.warn("No tournamentId received.");
       this.isLoading = false;
-      this.errorMessage = "No tournament selected.";
+      this.errorMessage = "No tournament ID provided.";
       await loading.dismiss();
       return;
     }
   
     try {
       this.matches = await firstValueFrom(
-        this.matchService.getMatchesByTournamentStage(tournamentId, 'Upcoming', this.stage)
+        this.matchService.getMatchesByTournamentStage(this.tournamentId, 'Upcoming', this.stage)
       );
   
       if (!this.matches.length) {
@@ -82,23 +79,23 @@ export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
       }
     } catch (error: unknown) {
       console.error("API error:", error);
-  
       if (error instanceof HttpErrorResponse) {
-        this.errorMessage = error.status === 404 ? "No matches found for the given criteria" : `An error occurred: ${error.message}`;
+        this.errorMessage = error.status === 404
+          ? "No matches found for the given criteria"
+          : `An error occurred: ${error.message}`;
       } else {
         this.errorMessage = "An unexpected error occurred";
       }
     } finally {
       const elapsedTime = Date.now() - startTime;
       const delay = Math.max(0, 200 - elapsedTime);
-  
       setTimeout(async () => {
         this.isLoading = false;
         await loading.dismiss();
       }, delay);
     }
   }
-  
+    
   async editMatchResult(match: Match, event: Event) {
     event.stopPropagation();
     console.log("Opening Edit Match Result Modal:", match);

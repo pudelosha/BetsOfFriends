@@ -1,20 +1,70 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { Match } from 'src/app/model/match';
+import { PredefinedMatchService } from 'src/app/services/predefined-match.service';
 
 @Component({
   selector: 'app-started-predefined-matches',
-  templateUrl: './started-predefined-matches.page.html',
-  styleUrls: ['./started-predefined-matches.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [CommonModule, IonicModule],
+  templateUrl: './started-predefined-matches.page.html',
+  styleUrls: ['./started-predefined-matches.page.scss']
 })
 export class StartedPredefinedMatchesPage implements OnInit {
+  @Input() refreshTrigger: number = 0;
+  @Output() loadingStart = new EventEmitter<void>();
+  @Output() loadingEnd = new EventEmitter<void>();
 
-  constructor() { }
+  startedMatches: Match[] = [];
+  isLoading = true;
+  errorMessage: string | null = null;
 
-  ngOnInit() {
+  constructor(
+    private matchService: PredefinedMatchService,
+    private toastController: ToastController,
+    private router: Router
+  ) {}
+
+  async ngOnInit() {
+    await this.loadStartedMatches();
   }
 
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
+      this.loadStartedMatches();
+    }
+  }
+
+  async loadStartedMatches() {
+    this.loadingStart.emit();
+
+    try {
+      this.startedMatches = await firstValueFrom(
+        this.matchService.getStartedMatches()
+      );
+    } catch (error) {
+      console.error('Error loading started predefined matches:', error);
+      this.errorMessage = 'Failed to load matches.';
+    } finally {
+      this.isLoading = false;
+      this.loadingEnd.emit();
+    }
+  }
+
+  navigateToPredefinedMatches() {
+    this.router.navigate(['/tournaments/predefined']);
+  }
+
+  async showToast(message: string, color: 'success' | 'warning' | 'danger') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color,
+    });
+    await toast.present();
+  }
 }

@@ -19,4 +19,8 @@ export class PredefinedMatchService {
   updateMatchResult(matchId: number, matchData: Partial<Match>): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/update/${matchId}`, matchData);
   }
+
+  getStartedMatches(): Observable<Match[]> {
+    return this.http.get<Match[]>(`${this.apiUrl}/started`);
+  }  
 }

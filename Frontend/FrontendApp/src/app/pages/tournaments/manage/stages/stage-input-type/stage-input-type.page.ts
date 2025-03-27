@@ -100,10 +100,28 @@ export class StageInputTypePage implements OnInit {
         next: (tournament) => {
           console.log('Fetched Tournament:', tournament);
 
+          // set tournamentId as predefinedTournamentId
+          tournament.predefinedTournamentId = tournament?.tournamentId ?? null;
+
           // Ensure all entities are marked as "Uploaded"
-          tournament.teams = tournament.teams.map(team => ({ ...team, recordStatus: 'Uploaded' }));
-          tournament.stages = tournament.stages.map(stage => ({ ...stage, recordStatus: 'Uploaded' }));
-          tournament.matches = tournament.matches.map(match => ({ ...match, recordStatus: 'Uploaded' }));
+          tournament.teams = tournament.teams.map(team => ({
+            ...team,
+            recordStatus: 'Uploaded',
+            predefinedTeamId: team.teamId,
+          }));
+          
+          tournament.stages = tournament.stages.map(stage => ({
+            ...stage,
+            recordStatus: 'Uploaded',
+            predefinedStageId: stage.stageId,
+          }));
+          
+          tournament.matches = tournament.matches.map(match => ({
+            ...match,
+            recordStatus: 'Uploaded',
+            predefinedMatchId: match.matchId,
+          }));
+          
           tournament.users = tournament.users
             ? tournament.users.map(user => ({ ...user, recordStatus: 'Uploaded' }))
             : []; // Default to an empty array if null
@@ -181,6 +199,7 @@ export class StageInputTypePage implements OnInit {
           teams.push({
             teamFrontendId: this.generateFrontendId(), 
             teamId: null,
+            predefinedTeamId: null,
             teamName: teamName.trim(),
             recordStatus: 'New' // Mark imported teams as "New"
           });
@@ -209,6 +228,7 @@ export class StageInputTypePage implements OnInit {
           stages.push({
             stageFrontendId: this.generateFrontendId(),
             stageId: null,
+            predefinedStageId: null,
             stageName: stageName,
             order: index + 1, // Assigns order based on position in the list
             recordStatus: 'New' // Mark imported stages as "New"
@@ -260,6 +280,7 @@ export class StageInputTypePage implements OnInit {
         const match: Match = {
           matchFrontendId: this.generateFrontendId(),
           matchId: null,
+          predefinedMatchId: null,
   
           stageFrontendId: selectedStage?.stageFrontendId ?? this.generateFrontendId(), // Ensure non-null string
           stageId: selectedStage?.stageId ?? null,

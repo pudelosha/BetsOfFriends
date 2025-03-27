@@ -13,11 +13,13 @@ namespace Backend.Repository.Services
         private readonly AppDbContext _context;
         private readonly ILogger<PredefinedMatchService> _logger;
         private readonly INotificationService _notificationService;
+        private readonly IBetService _betService;
 
-        public PredefinedMatchService(AppDbContext context, ILogger<PredefinedMatchService> logger, INotificationService notificationService)
+        public PredefinedMatchService(AppDbContext context, ILogger<PredefinedMatchService> logger, INotificationService notificationService, IBetService betService)
         {
             _context = context;
             _logger = logger;
+            _betService = betService;
             _notificationService = notificationService;
         }
 
@@ -97,53 +99,40 @@ namespace Backend.Repository.Services
                     return false;
                 }
 
-                // Update match start time if different
+                var isFinalised = matchUpdateDto.IsFinished;
+
+                // Update start time
                 if (match.MatchStart != matchUpdateDto.MatchStart)
                 {
                     _logger.LogInformation($"Updating match start time for Match ID {match.MatchId}");
                     match.MatchStart = matchUpdateDto.MatchStart;
                 }
 
-                bool matchWasFinalised = false;
-
-                // If the match is finished
-                if (matchUpdateDto.IsFinished)
+                if (isFinalised)
                 {
-                    _logger.LogInformation($"Finalizing match ID {match.MatchId}");
+                    _logger.LogInformation($"Finalizing predefined match ID {match.MatchId}");
 
-                    // Update scores
                     match.HomeScore = matchUpdateDto.HomeScore;
                     match.AwayScore = matchUpdateDto.AwayScore;
 
-                    // If match type is ExtendedWithQualification, update qualified team
                     if (match.Type == CustomMatch.MatchType.ExtendedWithQualification)
                     {
-                        if (!string.IsNullOrEmpty(matchUpdateDto.QualifiedTeam))
+                        if (!string.IsNullOrEmpty(matchUpdateDto.QualifiedTeam) &&
+                            Enum.TryParse(matchUpdateDto.QualifiedTeam, out CustomMatch.TeamQualified qualifiedTeam))
                         {
-                            if (Enum.TryParse(matchUpdateDto.QualifiedTeam, out CustomMatch.TeamQualified qualifiedTeam))
-                            {
-                                match.Qualified = qualifiedTeam;
-                            }
-                            else
-                            {
-                                _logger.LogWarning($"Invalid QualifiedTeam value: {matchUpdateDto.QualifiedTeam}");
-                                return false;
-                            }
+                            match.Qualified = qualifiedTeam;
                         }
                         else
                         {
-                            match.Qualified = null; // Reset if no selection
+                            match.Qualified = null;
                         }
                     }
 
-                    // Set match as Finalised
                     match.Status = MatchStatus.Finalised;
-                    matchWasFinalised = true;
                 }
                 else
                 {
-                    // Reset match details if it's not finished
-                    _logger.LogInformation($"Resetting match ID {match.MatchId} to Upcoming");
+                    _logger.LogInformation($"Resetting predefined match ID {match.MatchId} to Upcoming");
 
                     match.HomeScore = null;
                     match.AwayScore = null;
@@ -152,43 +141,102 @@ namespace Backend.Repository.Services
                 }
 
                 await _context.SaveChangesAsync();
-                _logger.LogInformation($"Match ID {matchUpdateDto.MatchId} updated successfully.");
+                _logger.LogInformation($"Predefined Match ID {matchUpdateDto.MatchId} updated successfully.");
 
-                if (matchWasFinalised)
+                var predefinedTournamentId = match.PredefinedTournament?.TournamentId;
+                if (predefinedTournamentId == null) return true;
+
+                var relatedCustomTournaments = await _context.CustomTournaments
+                    .Where(t => t.PredefinedTournamentId == predefinedTournamentId)
+                    .ToListAsync();
+
+                foreach (var customTournament in relatedCustomTournaments)
                 {
-                    //TODO
-                    // Trigger Custom Match updates if the tournament settings allow that
-                    // Send notifications via NotificationService
+                    if (customTournament.Update == CustomTournament.TournamentUpdate.Manual)
+                    {
+                        _logger.LogInformation($"Tournament {customTournament.TournamentId} is Manual. Skipping update.");
+                        continue;
+                    }
+
+                    if (customTournament.Update == CustomTournament.TournamentUpdate.Semi)
+                    {
+                        _logger.LogInformation($"Tournament {customTournament.TournamentId} is Semi. Notify admin.");
+                        // await _notificationService.NotifyAdminsOfSemiUpdate(customTournament); // To be implemented
+                        continue;
+                    }
+
+                    var customMatch = await _context.CustomMatches
+                        .Include(cm => cm.HomeTeam)
+                        .Include(cm => cm.AwayTeam)
+                        .FirstOrDefaultAsync(cm =>
+                            cm.PredefinedMatchId == match.MatchId &&
+                            cm.TournamentId == customTournament.TournamentId);
+
+                    if (customMatch == null)
+                    {
+                        _logger.LogWarning($"No corresponding CustomMatch found in Tournament {customTournament.TournamentId} for PredefinedMatch {match.MatchId}");
+                        continue;
+                    }
+
+                    _logger.LogInformation($"Updating CustomMatch {customMatch.MatchId} (Auto) in Tournament {customTournament.TournamentId}");
+
+                    // Always sync MatchStart
+                    customMatch.MatchStart = match.MatchStart;
+
+                    if (isFinalised)
+                    {
+                        customMatch.HomeScore = match.HomeScore;
+                        customMatch.AwayScore = match.AwayScore;
+                        customMatch.Status = MatchStatus.Finalised;
+
+                        if (customMatch.Type == CustomMatch.MatchType.ExtendedWithQualification)
+                        {
+                            customMatch.Qualified = match.Qualified;
+                        }
+
+                        await _context.SaveChangesAsync();
+                        await _betService.RecalculateBetsForMatchAsync(customMatch.MatchId);
+                        await _notificationService.NotifyMatchClosureAsync(customMatch);
+                    }
+                    else
+                    {
+                        // Reset the match
+                        customMatch.HomeScore = null;
+                        customMatch.AwayScore = null;
+                        customMatch.Qualified = null;
+                        customMatch.Status = MatchStatus.Upcoming;
+
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error updating match ID {matchUpdateDto.MatchId}");
+                _logger.LogError(ex, $"Error updating predefined match ID {matchUpdateDto.MatchId}");
                 return false;
             }
         }
 
-        public async Task<List<MatchDto>> GetStartedMatchesAsync(int tournamentId)
+        public async Task<List<MatchDto>> GetStartedMatchesAsync()
         {
             try
             {
-                _logger.LogInformation($"Fetching matches for tournament {tournamentId}.");
+                _logger.LogInformation($"Fetching predefined matches.");
 
                 // Step 1: Fetch matches with Status = InProgress
                 var matches = await _context.PredefinedMatches
                     .Include(m => m.PredefinedStage)
                     .Include(m => m.HomeTeam)
                     .Include(m => m.AwayTeam)
-                    .Where(m => m.TournamentId == tournamentId &&
-                                m.Status == MatchStatus.InProgress)
+                    .Where(m => m.Status == MatchStatus.InProgress)
                     .OrderBy(m => m.MatchStart)
                     .ToListAsync();
 
                 if (!matches.Any())
                 {
-                    _logger.LogWarning($"No started predefined matches found for tournament {tournamentId}");
+                    _logger.LogWarning($"No started predefined matches found.");
                     return new List<MatchDto>();
                 }
 
@@ -210,7 +258,7 @@ namespace Backend.Repository.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching started predefined matches for tournament {tournamentId}");
+                _logger.LogError(ex, $"Error fetching started predefined matches.");
                 throw;
             }
         }

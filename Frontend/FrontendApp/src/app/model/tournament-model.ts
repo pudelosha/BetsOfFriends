@@ -1,6 +1,7 @@
 export interface Team {
   teamFrontendId: string;  // Unique identifier for frontend tracking
   teamId: number | null;
+  predefinedTeamId?: number | null;
   teamName: string;
   recordStatus: RecordStatus;
 }
@@ -8,6 +9,7 @@ export interface Team {
 export interface Match {
   matchFrontendId: string; // Unique frontend match identifier
   matchId: number | null; // Backend match identifier (null for new matches)
+  predefinedMatchId?: number | null;
 
   stageId: number | null; // Backend ID (if available)
   stageFrontendId: string; // Always set for tracking in frontend
@@ -48,6 +50,8 @@ export interface User {
 export interface Stage{
   stageFrontendId: string;  // Unique identifier for frontend tracking
   stageId: number | null;
+  predefinedStageId?: number | null;
+  
   order: number;
   stageName: string;
 
@@ -56,6 +60,7 @@ export interface Stage{
 
 export interface Tournament {
   tournamentId?: number | null;
+  predefinedTournamentId?: number | null;
   tournamentName: string;
   publicTournamentName?: string;
   tournamentVisibility: 'Private' | 'Public';

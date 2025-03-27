@@ -1,8 +1,8 @@
-import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentInvite } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
-import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { Router } from '@angular/router';
 
@@ -15,6 +15,8 @@ import { Router } from '@angular/router';
 })
 export class TournamentInvitesPage implements OnInit {
   @Input() refreshTrigger: number = 0;
+  @Output() loadingStart = new EventEmitter<void>();
+  @Output() loadingEnd = new EventEmitter<void>();
   
   invites: TournamentInvite[] = [];
   isLoading = true;
@@ -23,8 +25,7 @@ export class TournamentInvitesPage implements OnInit {
   constructor(
     private tournamentService: CustomTournamentService,
     private toastController: ToastController,
-    private router: Router,
-    private loadingController: LoadingController
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -38,11 +39,7 @@ export class TournamentInvitesPage implements OnInit {
   }
 
   private async loadTournamentInvites() {
-    const loading = await this.loadingController.create({
-      message: 'Loading tournament invites...',
-      spinner: 'crescent',
-    });
-    await loading.present();
+    this.loadingStart.emit();
 
     try {
       this.invites = await firstValueFrom(this.tournamentService.getPendingTournamentInvites());
@@ -56,7 +53,7 @@ export class TournamentInvitesPage implements OnInit {
       this.errorMessage = 'Failed to load tournament invites.';
     } finally {
       this.isLoading = false;
-      loading.dismiss();
+      this.loadingEnd.emit();
     }
   }
 

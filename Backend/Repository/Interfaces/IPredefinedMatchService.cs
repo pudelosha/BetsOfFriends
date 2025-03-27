@@ -6,6 +6,6 @@ namespace Backend.Repository.Interfaces
     {
         Task<List<MatchDto>> GetMatchesByStatusAndStageAsync(int tournamentId, string status, string stage);
         Task<bool> UpdateMatchResultAsync(MatchResultUpdateDto matchUpdateDto);
-        Task<List<MatchDto>> GetStartedMatchesAsync(int tournamentId);
+        Task<List<MatchDto>> GetStartedMatchesAsync();
     }
 }

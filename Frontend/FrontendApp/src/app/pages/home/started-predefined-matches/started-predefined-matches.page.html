@@ -1,13 +1,24 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>started-predefined-matches</ion-title>
-  </ion-toolbar>
-</ion-header>
+<!-- Only display the box if there are any matches OR if loading (but only if matches might appear) -->
+<ng-container *ngIf="startedMatches.length > 0 || isLoading">
+  <div class="started-matches-box"
+       [ngClass]="{ 'has-started-matches': startedMatches.length > 0 }"
+       (click)="navigateToPredefinedMatches()">
+    
+    <h2 class="started-matches-title">Started Predefined Matches</h2>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">started-predefined-matches</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+    <ion-spinner *ngIf="isLoading" class="started-matches-spinner" name="crescent"></ion-spinner>
+
+    <ion-list class="started-match-list" *ngIf="!isLoading && startedMatches.length > 0">
+      <ion-item class="started-match-item" *ngFor="let match of startedMatches">
+        <div class="started-match-grid">
+          <div class="started-match-details">
+            <span class="teams">{{ match.homeTeam }} - {{ match.awayTeam }}</span>
+          </div>
+          <div class="started-match-date">
+            <span class="date-time">{{ match.matchStart | date: 'yyyy.MM.dd HH:mm' }}</span>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+  </div>
+</ng-container>

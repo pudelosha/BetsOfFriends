@@ -9,6 +9,8 @@ import { FormsModule } from '@angular/forms';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
+import { ActivatedRoute } from '@angular/router';
+
 
 @Component({
   selector: 'app-manage-custom-matches',
@@ -28,18 +30,35 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
 
   constructor(
     private tournamentService: CustomTournamentService,
-    private tournamentSelectionService: TournamentSelectionService
+    private tournamentSelectionService: TournamentSelectionService,
+    private route: ActivatedRoute
   ) {}
 
   async ngOnInit() {
-    this.selectedTab = 'upcoming';
-    await this.loadStages(); // Load tournament stages
+
+  }
+
+  ionViewDidEnter() {
+    const urlTab = this.route.snapshot.queryParamMap.get('tab');
+    if (urlTab === 'upcoming' || urlTab === 'started' || urlTab === 'finalised') {
+      this.selectedTab = urlTab;
+    } else {
+      this.selectedTab = 'upcoming';
+    }
+
+    this.forceTabReload();
   }
 
   ngAfterViewInit() {
-    this.selectedTab = 'upcoming';
+
+  }
+
+  forceTabReload() {
+    console.log(`Force reloading tab: ${this.selectedTab}`);
+    const currentTab = this.selectedTab;
+    this.selectedTab = ''; // Force reset
     setTimeout(() => {
-      this.scrollToTop();
+      this.selectedTab = currentTab; // Restore tab
     }, 100);
   }
 

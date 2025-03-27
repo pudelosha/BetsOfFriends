@@ -65,7 +65,7 @@ export class AppComponent {
     const modal = await this.modalController.create({
       component: ParticipantTournamentsModalComponent,
       breakpoints: [0, 0.5, 0.8],
-      initialBreakpoint: 0.75,
+      initialBreakpoint: 1,
       backdropDismiss: true
     });
     return await modal.present();

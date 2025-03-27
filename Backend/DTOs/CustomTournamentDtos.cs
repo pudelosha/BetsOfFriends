@@ -6,6 +6,8 @@ namespace Backend.DTOs
     {
         public int? TournamentId { get; set; } // Nullable for new tournaments
 
+        public int? PredefinedTournamentId { get; set; } // Nullable as not mandatory
+
         [Required, MaxLength(100)]
         public string TournamentName { get; set; } = string.Empty;
 
@@ -77,7 +79,7 @@ namespace Backend.DTOs
     public class CustomTeamDto
     {
         public int? TeamId { get; set; }
-
+        public int? PredefinedTeamId { get; set; }
         [Required, MaxLength(50)]
         public string TeamName { get; set; } = string.Empty;
         [Required]
@@ -87,8 +89,8 @@ namespace Backend.DTOs
     public class CustomStageDto
     {
         public int? StageId { get; set; }
+        public int? PredefinedStageId { get; set; }
         public int Order { get; set; }
-
         [Required, MaxLength(50)]
         public string StageName { get; set; } = string.Empty;
         [Required]
@@ -98,22 +100,18 @@ namespace Backend.DTOs
     public class CustomMatchDto
     {
         public int? MatchId { get; set; } // Nullable for new matches
-
+        public int? PredefinedMatchId { get; set; } // Nullable as not mandatory
         public int? StageId { get; set; } // Nullable for new matches
         [Required]
         public string StageName { get; set; }
-
         public int? HomeTeamId { get; set; } // Nullable for new matches
         [Required]
         public string HomeTeam { get; set; } = string.Empty;
-
         public int? AwayTeamId { get; set; } // Nullable for new matches
         [Required]
         public string AwayTeam { get; set; } = string.Empty;
-
         [Required]
         public string MatchType { get; set; } = "Regular90Min"; // Default value if missing
-
         public decimal HomeWinOdds { get; set; }
         public decimal DrawOdds { get; set; }
         public decimal AwayWinOdds { get; set; }

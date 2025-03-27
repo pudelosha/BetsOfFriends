@@ -1,12 +1,11 @@
-import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { UpcomingBet } from 'src/app/model/bet';
 import { firstValueFrom } from 'rxjs';
-import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { BetService } from 'src/app/services/bet.service';
 import { Router } from '@angular/router';
-
 
 @Component({
   selector: 'app-upcoming-bets',
@@ -17,6 +16,8 @@ import { Router } from '@angular/router';
 })
 export class UpcomingBetsPage implements OnInit {
   @Input() refreshTrigger: number = 0;
+  @Output() loadingStart = new EventEmitter<void>();
+  @Output() loadingEnd = new EventEmitter<void>();
 
   tournamentId: number | null = null;
   upcomingGames: UpcomingBet[] = [];
@@ -27,8 +28,7 @@ export class UpcomingBetsPage implements OnInit {
     private betService: BetService,
     private router: Router,
     private tournamentSelectionService: TournamentSelectionService,
-    private toastController: ToastController,
-    private loadingController: LoadingController
+    private toastController: ToastController
   ) {}
 
   async ngOnInit() {
@@ -42,15 +42,18 @@ export class UpcomingBetsPage implements OnInit {
   }
 
   private async loadTournamentAndFetchBets() {
+    this.loadingStart.emit();
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
 
     if (this.tournamentId === null) {
       await this.showToast('No tournament selected', 'warning');
       this.isLoading = false;
+      this.loadingEnd.emit();
       return;
     }
 
     await this.loadUpcomingBets();
+    this.loadingEnd.emit();
   }
 
   async loadUpcomingBets() {
@@ -59,13 +62,6 @@ export class UpcomingBetsPage implements OnInit {
       return;
     }
 
-    const loading = await this.loadingController.create({
-      message: 'Loading upcoming bets...',
-      spinner: 'crescent',
-      cssClass: 'custom-loading-spinner'
-    });
-    await loading.present();
-
     try {
       this.upcomingGames = await firstValueFrom(this.betService.getUpcomingBets(this.tournamentId));
     } catch (error) {
@@ -73,12 +69,13 @@ export class UpcomingBetsPage implements OnInit {
       this.errorMessage = 'Failed to load upcoming bets.';
     } finally {
       this.isLoading = false;
-      loading.dismiss();
     }
   }
 
-  goToMyBets(){
-    this.router.navigate(['/my-bets']);
+  goToMyBets() {
+    this.router.navigate(['/my-bets'], {
+      queryParams: { tab: 'to-place' }
+    });
   }
 
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary') {

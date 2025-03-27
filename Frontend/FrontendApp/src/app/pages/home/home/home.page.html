@@ -1,13 +1,40 @@
 <ion-content class="ion-padding page-with-header">
     <div class="page-container">
-        <app-tournament-invites [refreshTrigger]="refreshCounter"></app-tournament-invites>
-        <app-latest-messages [refreshTrigger]="refreshCounter"></app-latest-messages>
-        <app-started-custom-matches [refreshTrigger]="refreshCounter"></app-started-custom-matches>
-        <app-upcoming-bets [refreshTrigger]="refreshCounter"></app-upcoming-bets>
-        <app-tournament-summary [refreshTrigger]="refreshCounter"></app-tournament-summary>
+      <app-tournament-invites
+        [refreshTrigger]="refreshCounter"
+        (loadingStart)="showGlobalSpinner()"
+        (loadingEnd)="hideGlobalSpinner()"
+      ></app-tournament-invites>
+  
+      <app-latest-messages
+        [refreshTrigger]="refreshCounter"
+        (loadingStart)="showGlobalSpinner()"
+        (loadingEnd)="hideGlobalSpinner()"
+      ></app-latest-messages>
+  
+      <app-started-custom-matches
+        [refreshTrigger]="refreshCounter"
+        (loadingStart)="showGlobalSpinner()"
+        (loadingEnd)="hideGlobalSpinner()"
+      ></app-started-custom-matches>
+  
+      <app-started-predefined-matches
+        [refreshTrigger]="refreshCounter"
+        (loadingStart)="showGlobalSpinner()"
+        (loadingEnd)="hideGlobalSpinner()"
+      ></app-started-predefined-matches>
+  
+      <app-upcoming-bets
+        [refreshTrigger]="refreshCounter"
+        (loadingStart)="showGlobalSpinner()"
+        (loadingEnd)="hideGlobalSpinner()"
+      ></app-upcoming-bets>
+  
+      <app-tournament-summary
+        [refreshTrigger]="refreshCounter"
+        (loadingStart)="showGlobalSpinner()"
+        (loadingEnd)="hideGlobalSpinner()"
+      ></app-tournament-summary>
     </div>
-</ion-content>
-
-
-
+  </ion-content>
   

@@ -411,53 +411,6 @@ namespace Backend.Repository.Services
             return true;
         }
 
-        public async Task AutoUpdateBetStatusAsync()
-        {
-            try
-            {
-                _logger.LogInformation("Starting automatic update of bet statuses...");
-
-                // Step 1: Get all matches that are in the past AND are not Onhoing
-                var finalisedMatches = await _context.CustomMatches
-                    .Where(m => m.Status == CustomMatch.MatchStatus.Finalised ||
-                                (m.MatchStart < DateTime.UtcNow && m.Status != CustomMatch.MatchStatus.Upcoming))
-                    .Select(m => m.MatchId)
-                    .ToListAsync();
-
-                if (!finalisedMatches.Any())
-                {
-                    _logger.LogInformation("No finalised matches found in the past. No bets updated.");
-                    return;
-                }
-
-                // Step 2: Get all bets related to those matches that are NOT already Finalised
-                var betsToUpdate = await _context.Bets
-                    .Where(b => finalisedMatches.Contains(b.MatchId) && b.Status != Bet.BetStatus.Finalised)
-                    .ToListAsync();
-
-                if (!betsToUpdate.Any())
-                {
-                    _logger.LogInformation("No bets found that need status updates.");
-                    return;
-                }
-
-                // Step 3: Update the status of those bets to Finalised
-                foreach (var bet in betsToUpdate)
-                {
-                    bet.Status = Bet.BetStatus.Finalised;
-                }
-
-                // Step 4: Save changes
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation($"Successfully updated {betsToUpdate.Count} bets to Finalised.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while updating bet statuses.");
-            }
-        }
-
         public async Task GenerateBetsForNewMatchAsync(int matchId, int tournamentId)
         {
             try

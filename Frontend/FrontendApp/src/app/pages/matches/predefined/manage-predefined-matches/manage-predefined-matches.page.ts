@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, IonContent } from '@ionic/angular';
 import { ManagePredefinedFinalisedPage } from '../manage-predefined-finalised/manage-predefined-finalised.page';
 import { ManagePredefinedStartedPage } from '../manage-predefined-started/manage-predefined-started.page';
-import { ManagePredefinedUpcomingPage } from '../manage-predefined-upcoming/manage-predefined-upcomingpage';
+import { ManagePredefinedUpcomingPage } from '../manage-predefined-upcoming/manage-predefined-upcoming.page';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';

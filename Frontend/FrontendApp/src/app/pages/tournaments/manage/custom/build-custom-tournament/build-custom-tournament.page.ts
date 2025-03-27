@@ -48,6 +48,7 @@ export class BuildCustomTournamentPage implements OnInit {
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
+      predefinedTournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       publicTournamentName: [null],
       tournamentVisibility: ['Private', Validators.required], // or 'Public' depending on default
@@ -189,6 +190,7 @@ export class BuildCustomTournamentPage implements OnInit {
   populateForm(tournament: Tournament): void {  
     this.tournamentForm.patchValue({
       tournamentId: tournament.tournamentId,
+      predefinedTournamentId: tournament.predefinedTournamentId || null,
       tournamentName: tournament.tournamentName,
       tournamentVisibility: tournament.tournamentVisibility || 'Private',
       publicTournamentName: tournament.publicTournamentName || '',
@@ -224,6 +226,7 @@ export class BuildCustomTournamentPage implements OnInit {
         this.fb.group({
           teamFrontendId: [team.teamFrontendId], // Ensure we store frontendId
           teamId: [team.teamId], // Backend ID
+          predefinedTeamId: [team.predefinedTeamId || null],
           teamName: [team.teamName, Validators.required],
           recordStatus: ['Uploaded', Validators.required]
         })
@@ -245,6 +248,7 @@ export class BuildCustomTournamentPage implements OnInit {
         this.fb.group({
           stageFrontendId: [stage.stageFrontendId],
           stageId: [stage.stageId],
+          predefinedStageId: [stage.predefinedStageId || null],
           stageName: [stage.stageName, Validators.required],
           order: [stage.order, [Validators.required, Validators.min(1)]],
           recordStatus: ['Uploaded', Validators.required]
@@ -267,6 +271,7 @@ export class BuildCustomTournamentPage implements OnInit {
         this.fb.group({
           matchFrontendId: [match.matchFrontendId || this.generateFrontendId()], // Ensure unique frontendId
           matchId: [match.matchId],
+          predefinedMatchId: [match.predefinedMatchId || null],
 
           stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
           stageId: [stage.stageId],
@@ -314,6 +319,7 @@ export class BuildCustomTournamentPage implements OnInit {
     return this.fb.group({
       matchFrontendId: [match.matchFrontendId],
       matchId: [match.matchId],
+      predefinedMatchId: [match.predefinedMatchId || null],
       stageFrontendId: [match.stageFrontendId],
       stageId: [match.stageId],
       stageName: [match.stageName],
@@ -700,6 +706,7 @@ export class BuildCustomTournamentPage implements OnInit {
   
     const tournamentData: Tournament = {
       tournamentId: isEditing ? this.tournamentId : null,
+      predefinedTournamentId: this.tournamentForm.value.predefinedTournamentId || null,
       tournamentName: this.tournamentForm.value.tournamentName,
       publicTournamentName: this.tournamentForm.value.publicTournamentName?.trim() || undefined,
       tournamentVisibility: this.tournamentForm.value.tournamentVisibility || 'Private',
@@ -710,12 +717,14 @@ export class BuildCustomTournamentPage implements OnInit {
 
       teams: this.teamsArray.value.map((team: Team) => ({
         teamId: isEditing ? team.teamId || null : null, // Use `null` for new teams
+        predefinedTeamId: team.predefinedTeamId || null,
         teamName: team.teamName,
         recordStatus: team.recordStatus || 'New'
       })),
 
       stages: this.stagesArray.value.map((stage: Stage) => ({
         stageId: isEditing ? stage.stageId || null : null,
+        predefinedStageId: stage.predefinedStageId || null,
         stageName: stage.stageName,
         order: stage.order,
         recordStatus: stage.recordStatus || 'New'
@@ -723,6 +732,7 @@ export class BuildCustomTournamentPage implements OnInit {
 
       matches: this.matchesArray.value.map((match: any) => ({
         matchId: isEditing ? match.matchId || null : null,
+        predefinedMatchId: match.predefinedMatchId || null,
         stageId: isEditing ? match.stageId || null : null,
         stageName: match.stageName,
         homeTeamId: isEditing ? match.homeTeamId || null : null,
