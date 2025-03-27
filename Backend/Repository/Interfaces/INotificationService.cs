@@ -6,6 +6,7 @@ namespace Backend.Repository.Interfaces
     public interface INotificationService
     {
         Task NotifyMatchClosureAsync(CustomMatch match);
+        Task NotifyUserAcceptedTournamentInviteAsync(CustomTournamentUserAssignment assignment);
         Task ProcessNotificationsAsync(
             List<ApplicationUser> recipients,
             string title,

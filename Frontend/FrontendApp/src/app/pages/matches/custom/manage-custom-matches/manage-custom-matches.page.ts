@@ -35,7 +35,7 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
   ) {}
 
   async ngOnInit() {
-
+    this.loadStages(); // Load tournament stages
   }
 
   ionViewDidEnter() {

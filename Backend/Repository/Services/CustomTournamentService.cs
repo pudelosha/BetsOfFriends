@@ -22,6 +22,7 @@ namespace Backend.Repository.Services
         private readonly IConfiguration _configuration;
         private readonly IBetService _betService;
         private readonly ITournamentSelectionService _tournamentSelectionService;
+        private readonly INotificationService _notificationService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public CustomTournamentService(
@@ -32,6 +33,7 @@ namespace Backend.Repository.Services
             IBetService betService,
             IEmailService emailService,
             IEmailTemplateService emailTemplateService,
+            INotificationService notificationService,
             ITournamentSelectionService tournamentSelectionService,
             UserManager<ApplicationUser> userManager,
             IConfiguration configuration)
@@ -44,6 +46,7 @@ namespace Backend.Repository.Services
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
             _tournamentSelectionService = tournamentSelectionService;
+            _notificationService = notificationService;
             _configuration = configuration;
             _userManager = userManager;
         }
@@ -935,6 +938,9 @@ namespace Backend.Repository.Services
                 _logger.LogInformation($"User {userId} successfully accepted invitation for tournament ID {tournamentId} with nickname {nickname}. Tournament set as default.");
 
                 await _tournamentSelectionService.SetSelectedTournamentAsync(userId, tournamentAssignment.TournamentId);
+
+                // Notify admins
+                await _notificationService.NotifyUserAcceptedTournamentInviteAsync(tournamentAssignment);
 
                 return new TournamentInvitationResponseDto
                 {

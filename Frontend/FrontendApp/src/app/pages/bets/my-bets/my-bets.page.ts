@@ -34,7 +34,7 @@ export class MyBetsPage implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-
+    this.loadStages(); // Load tournament stages
   }
 
   ngAfterViewInit() {

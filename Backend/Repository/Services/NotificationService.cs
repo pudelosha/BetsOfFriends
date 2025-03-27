@@ -53,6 +53,45 @@ public class NotificationService : INotificationService
         );
     }
 
+    public async Task NotifyUserAcceptedTournamentInviteAsync(CustomTournamentUserAssignment assignment)
+    {
+        var tournamentId = assignment.TournamentId;
+
+        // Load full user details for the accepted user (to get email)
+        var acceptedUser = await _dbContext.Users
+            .Where(u => u.Id == assignment.UserId)
+            .FirstOrDefaultAsync();
+
+        if (acceptedUser == null)
+        {
+            _logger.LogWarning($"Accepted user with ID {assignment.UserId} not found. Cannot send notifications.");
+            return;
+        }
+
+        // Get all tournament admins
+        var admins = await _dbContext.CustomTournamentUserAssignments
+            .Where(a => a.TournamentId == tournamentId && a.Role == UserTournamentRole.Admin)
+            .Select(a => a.User)
+            .ToListAsync();
+
+        if (!admins.Any())
+        {
+            _logger.LogWarning($"No admins found for Tournament ID {tournamentId}. Skipping invite acceptance notifications.");
+            return;
+        }
+
+        var displayName = $"{assignment.UserName} ({acceptedUser.Email})";
+
+        _logger.LogInformation($"Sending tournament invite acceptance notifications to {admins.Count} admin(s) for Tournament ID {tournamentId}. Accepted by: {displayName}");
+
+        await ProcessNotificationsAsync(
+            admins,
+            $"User Joined: {displayName}",
+            $"{displayName} has accepted the tournament invite and joined your tournament.",
+            user => (user.ReceiveEmailTournamentInvitation, user.ReceivePushTournamentInvitation)
+        );
+    }
+
     public async Task<List<NotificationDto>> GetUserNotificationsAsync(string userId, int? limit = null)
     {
         try
