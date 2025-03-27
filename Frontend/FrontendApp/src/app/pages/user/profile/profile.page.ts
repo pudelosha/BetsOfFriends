@@ -239,11 +239,11 @@ export class ProfilePage implements OnInit {
   
         this.profileForm.patchValue({
           email: profile.email,
-          nickname: profile.nickname || '',
-          location: profile.location?.countryId || '',
+          nickname: profile.nickname ?? '',
+          location: profile.location?.countryId ?? '',
           language: this.getLanguageValue(profile.language),
           darkMode: profile.darkMode
-        });        
+        });      
   
         const dateObj = new Date(profile.memberSince);
         this.memberSince = `${dateObj.getFullYear()}.${(dateObj.getMonth() + 1).toString().padStart(2, '0')}.${dateObj.getDate().toString().padStart(2, '0')}`;
@@ -272,13 +272,19 @@ export class ProfilePage implements OnInit {
   
     this.isUpdating = true;
   
+    const selectedCountry = this.availableCountries.find(
+      c => c.countryId === Number(this.f['location'].value)
+    );
+    
     const updatedProfile = {
-      nickname: this.f['nickname'].value || null,
-      location: this.f['location'].value || null, // This should be the countryId
+      nickname: this.f['nickname'].value?.trim() || null,
+      location: selectedCountry
+        ? { countryId: selectedCountry.countryId, name: selectedCountry.name }
+        : null,
       language: this.f['language'].value,
       darkMode: this.f['darkMode'].value
-    };    
-  
+    };
+       
     console.log('Updating profile:', updatedProfile);
   
     const loading = await this.loadingController.create({

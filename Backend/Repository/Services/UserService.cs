@@ -16,13 +16,15 @@ namespace Backend.Repository.Services
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserService> _logger;
         private readonly IEmailTemplateService _emailTemplateService;
+        private readonly ILocationService _locationService;
         private readonly AppDbContext _dbContext;
 
-        public UserService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<UserService> logger, IEmailTemplateService emailTemplateService, AppDbContext dbContext)
+        public UserService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<UserService> logger, IEmailTemplateService emailTemplateService, ILocationService locationService, AppDbContext dbContext)
         {
             _userManager = userManager;
             _emailService = emailService;
             _configuration = configuration;
+            _locationService = locationService;
             _logger = logger;
             _emailTemplateService = emailTemplateService;
             _dbContext = dbContext;
@@ -44,7 +46,7 @@ namespace Backend.Repository.Services
 
         }
 
-        public async Task<UserProfileDto> GetUserProfileAsync(string userId)
+        public async Task<UserProfileDto?> GetUserProfileAsync(string userId)
         {
             _logger.LogInformation($"Fetching profile for UserId: {userId}");
 
@@ -55,12 +57,22 @@ namespace Backend.Repository.Services
                 return null;
             }
 
+            var location = await _locationService.GetLocationByIdAsync(user.LocationId);
+
             return new UserProfileDto
             {
                 Email = user.Email,
                 MemberSince = user.MemberSince,
-                Language = "English", //TODO user.Language,
-                DarkMode = false //     user.DarkMode
+                Nickname = user.Nickname,
+                Language = "English",       //TODO fixed
+                DarkMode = false,           //TODO fixed
+                Location = location != null
+                    ? new LocationDto
+                    {
+                        CountryId = location.CountryId,
+                        Name = location.Name
+                    }
+                    : null
             };
         }
 
@@ -75,8 +87,10 @@ namespace Backend.Repository.Services
                 return false;
             }
 
-            //TODO user.Language = profile.Language;
+            user.Nickname = profile.Nickname;
+            //user.Language = profile.Language;
             //user.DarkMode = profile.DarkMode;
+            user.LocationId = profile.Location?.CountryId;
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
@@ -88,6 +102,7 @@ namespace Backend.Repository.Services
             _logger.LogInformation($"User profile updated successfully for UserId: {userId}");
             return true;
         }
+
 
         public async Task<bool> SendPasswordResetEmailAsync(string email)
         {

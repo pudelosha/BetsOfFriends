@@ -22,6 +22,7 @@ namespace Backend.Extensions
             services.AddScoped<ICustomTournamentService, CustomTournamentService>();
             services.AddScoped<ITournamentSelectionService, TournamentSelectionService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IPredefinedMatchService, PredefinedMatchService>();
             services.AddScoped<IPredefinedTournamentService, PredefinedTournamentService>();
             services.AddScoped<INotificationService, NotificationService>();

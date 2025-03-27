@@ -2,10 +2,10 @@
 
 namespace Backend.Model.Entities
 {
-    public class Country
+    public class Location
     {
         [Key]
-        public int CountryId { get; set; }
+        public int LocationId { get; set; }
 
         [Required]
         [MaxLength(100)]

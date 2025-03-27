@@ -33,8 +33,10 @@ namespace Backend.DTOs
     public class UserProfileDto
     {
         public string? Email { get; set; }
+        public string? Nickname { get; set; }
+        public LocationDto? Location { get; set; }
         public DateTime? MemberSince { get; set; }
-        public string Language { get; set; }
+        public string Language { get; set; } = "English";
         public bool DarkMode { get; set; }
     }
 

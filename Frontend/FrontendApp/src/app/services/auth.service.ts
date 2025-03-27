@@ -14,6 +14,7 @@ import { jwtDecode } from 'jwt-decode';
 export class AuthService {
   private apiUrl = `${environment.apiBaseUrl}/authentication`;
   private authTokenKey = 'authToken';
+  private storageKey = 'selectedTournamentId';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
 
   constructor(private http: HttpClient, private toastCtrl: ToastController, private router: Router) {}
@@ -69,6 +70,7 @@ export class AuthService {
   async logout(message?: string, redirectPath: string = '/welcome'): Promise<void> {
     console.log('Clearing auth tokens...');
     localStorage.removeItem(this.authTokenKey);
+    localStorage.removeItem(this.storageKey);
     sessionStorage.removeItem(this.authTokenKey);
     console.log('Updating authentication state...');
     this.isAuthenticatedSubject.next(false);
