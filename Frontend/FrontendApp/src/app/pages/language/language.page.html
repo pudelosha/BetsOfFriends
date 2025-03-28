@@ -1,0 +1,39 @@
+<ion-content fullscreen (ionScroll)="onScroll($event)" scrollEvents="true">
+  <div class="parallax-container">
+
+    <!-- Parallax Background -->
+    <div class="parallax-bg" [ngStyle]="{ transform: 'translateY(' + parallaxOffset + 'px)' }"></div>
+
+    <!-- Foreground Content -->
+    <div class="unauth-container">
+      <h2>{{ headingLabel }}</h2>
+
+      <!-- Native Declarative Picker -->
+      <ion-picker>
+        <ion-picker-column [value]="selectedLang" (ionChange)="onLangChange($event)">
+          <ion-picker-column-option value="en">English</ion-picker-column-option>
+          <ion-picker-column-option value="fr">Français</ion-picker-column-option>
+          <ion-picker-column-option value="de">Deutsch</ion-picker-column-option>
+          <ion-picker-column-option value="es">Español</ion-picker-column-option>
+          <ion-picker-column-option value="it">Italiano</ion-picker-column-option>
+          <ion-picker-column-option value="pt">Português</ion-picker-column-option>
+          <ion-picker-column-option value="pl">Polski</ion-picker-column-option>
+          <ion-picker-column-option value="ru">Русский</ion-picker-column-option>
+          <ion-picker-column-option value="uk">Українська</ion-picker-column-option>
+          <ion-picker-column-option value="tr">Türkçe</ion-picker-column-option>
+          <ion-picker-column-option value="ar">العربية</ion-picker-column-option>
+          <ion-picker-column-option value="zh">中文</ion-picker-column-option>
+          <ion-picker-column-option value="hi">हिन्दी</ion-picker-column-option>
+        </ion-picker-column>
+      </ion-picker>
+
+      <!-- Continue Button -->
+      <div class="button-group" style="margin-top: 20px;">
+        <ion-button expand="full" color="medium" class="rounded-button" (click)="onContinue()">
+          {{ continueLabel }}
+        </ion-button>
+      </div>      
+
+    </div>
+  </div>
+</ion-content>

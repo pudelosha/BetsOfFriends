@@ -15,7 +15,7 @@
     left: 0;
     width: 100%;
     height: 150%;
-    background: url('/assets/images/background6.jpg') center/cover no-repeat;
+    background: url('/assets/images/background2.jpg') center/cover no-repeat;
     z-index: -1;
     transition: transform 0.1s ease-out;
     filter: brightness(0.6);
@@ -35,7 +35,7 @@
     h2 {
       font-size: 1.8rem;
       font-weight: bold;
-      margin-bottom: 8px;
+      margin-bottom: 16px;
     }
   
     p {
@@ -48,6 +48,7 @@
   .button-group {
     display: flex;
     justify-content: center;
+    margin-bottom: 16px;
   
     ion-button {
       width: 100%;
@@ -61,4 +62,42 @@
     padding: 10px 24px;
     font-size: 1rem;
   }
+
+  ion-picker {
+    --highlight-background: rgba(0, 0, 0, 0.1);
+    --highlight-border-radius: 8px;
+    --fade-background-rgb: 245, 245, 245;
+
+    --ion-color-step-100: transparent;
+    --ion-color-step-50: transparent;
   
+    box-shadow: none;
+    border-radius: 0;
+  
+    ::ng-deep .picker-columns {
+      height: 165px !important;   /* 5 items * 33px */
+      max-height: 165px !important;
+      overflow: hidden;
+    }
+  }
+  
+  ion-picker-column-option {
+    height: 33px;                 /* Fixed item height */
+    line-height: 33px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+  }
+  
+  
+  ion-picker-column {
+
+  }
+
+  
+  
+
+  
+
+
+

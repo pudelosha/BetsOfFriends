@@ -1,8 +1,7 @@
-import { Component, Input, AfterViewInit } from '@angular/core';
+import { Component, Input, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { WheelerNumberPickerComponent } from 'src/app/shared/wheeler-number-picker/wheeler-number-picker.component';
 import { Match } from 'src/app/model/match';
 
 @Component({
@@ -10,11 +9,10 @@ import { Match } from 'src/app/model/match';
   templateUrl: './edit-match-result-modal.component.html',
   styleUrls: ['./edit-match-result-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, WheelerNumberPickerComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
 })
 export class EditMatchResultModalComponent implements AfterViewInit {
-  private _match!: Match;
-
   @Input() set match(value: Match) {
     if (!value) {
       console.error("Received undefined or null match!");
@@ -35,6 +33,7 @@ export class EditMatchResultModalComponent implements AfterViewInit {
     return this._match;
   }
 
+  private _match!: Match;
   matchId!: number;
   homeScore: number = 0;
   awayScore: number = 0;
@@ -42,10 +41,19 @@ export class EditMatchResultModalComponent implements AfterViewInit {
   matchType: 'Regular90Min' | 'ExtendedWithQualification' = 'Regular90Min';
   isFinished: boolean = false;
   qualifySelection: string = 'neutral';
+  goalOptions = Array.from({ length: 11 }, (_, i) => i); // 0 to 10
 
   constructor(private modalCtrl: ModalController, private toastController: ToastController) {}
 
   ngAfterViewInit() {}
+
+  onHomeScoreChange(event: CustomEvent) {
+    this.homeScore = event.detail.value;
+  }
+  
+  onAwayScoreChange(event: CustomEvent) {
+    this.awayScore = event.detail.value;
+  }
 
   saveMatchResult() {
     if (!this._match) {

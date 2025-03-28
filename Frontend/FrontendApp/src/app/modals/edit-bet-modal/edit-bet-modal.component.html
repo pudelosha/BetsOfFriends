@@ -48,19 +48,25 @@
   <ion-grid class="center-grid">
     <ion-row class="prediction-row">
       <ion-col class="center-align">
-        <app-wheeler-number-picker 
-          [selectedNumber]="homeGoals" 
-          (numberChanged)="homeGoals = $event">
-        </app-wheeler-number-picker>
+        <ion-picker>
+          <ion-picker-column [value]="homeGoals" (ionChange)="onHomeGoalsChange($event)">
+            <ion-picker-column-option *ngFor="let num of goalOptions" [value]="num">
+              {{ num }}
+            </ion-picker-column-option>
+          </ion-picker-column>
+        </ion-picker>       
       </ion-col>
 
-      <ion-col class="center-align"> </ion-col>
+      <ion-col style="display: flex; justify-content: center; align-items: center; color: #1a65eb; font-weight: bold;">-</ion-col>
 
       <ion-col class="center-align">
-        <app-wheeler-number-picker 
-          [selectedNumber]="awayGoals" 
-          (numberChanged)="awayGoals = $event">
-        </app-wheeler-number-picker>
+        <ion-picker>
+          <ion-picker-column [value]="awayGoals" (ionChange)="onAwayGoalsChange($event)">
+            <ion-picker-column-option *ngFor="let num of goalOptions" [value]="num">
+              {{ num }}
+            </ion-picker-column-option>
+          </ion-picker-column>
+        </ion-picker>
       </ion-col>
     </ion-row>
   </ion-grid>

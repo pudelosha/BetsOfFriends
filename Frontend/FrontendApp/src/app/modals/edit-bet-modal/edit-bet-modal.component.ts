@@ -1,21 +1,19 @@
-import { Component, Input, AfterViewInit } from '@angular/core';
+import { Component, Input, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Bet } from '../../model/bet';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ModalController, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { WheelerNumberPickerComponent } from 'src/app/shared/wheeler-number-picker/wheeler-number-picker.component';
 
 @Component({
   selector: 'app-edit-bet-modal',
   templateUrl: './edit-bet-modal.component.html',
   styleUrls: ['./edit-bet-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, WheelerNumberPickerComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [CommonModule, IonicModule, FormsModule],
 })
 export class EditBetModalComponent implements AfterViewInit {
-  private _bet!: Bet; 
-
   @Input() set bet(value: Bet) {
     if (!value) {
       console.error("Received undefined or null bet!");
@@ -31,6 +29,8 @@ export class EditBetModalComponent implements AfterViewInit {
     return this._bet;
   }
 
+  private _bet!: Bet; 
+  goalOptions = Array.from({ length: 11 }, (_, i) => i); // 0 to 10
   homeGoals: number = 0;
   awayGoals: number = 0;
   actualQualifiedTeam: 'Home' | 'Away' | null = null;
@@ -39,6 +39,14 @@ export class EditBetModalComponent implements AfterViewInit {
   constructor(private modalCtrl: ModalController, private toastController: ToastController) {}
 
   ngAfterViewInit() {}
+
+  onHomeGoalsChange(event: CustomEvent) {
+    this.homeGoals = event.detail.value;
+  }
+  
+  onAwayGoalsChange(event: CustomEvent) {
+    this.awayGoals = event.detail.value;
+  }
 
   saveBet() {
     if (!this._bet) {
