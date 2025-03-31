@@ -35,6 +35,10 @@ export class UpcomingBetsPage implements OnInit {
     await this.loadTournamentAndFetchBets();
   }
 
+  async ionViewWillEnter() {
+    await this.loadTournamentAndFetchBets(); // Refresh messages on page enter
+  }
+
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
       this.loadTournamentAndFetchBets();

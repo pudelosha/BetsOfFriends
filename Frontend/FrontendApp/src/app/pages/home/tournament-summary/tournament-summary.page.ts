@@ -34,6 +34,10 @@ export class TournamentSummaryPage implements OnInit {
     await this.loadTournamentAndFetchSummary();
   }
 
+  async ionViewWillEnter() {
+    await this.loadTournamentAndFetchSummary(); // Refresh messages on page enter
+  }
+
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
       this.loadTournamentAndFetchSummary();

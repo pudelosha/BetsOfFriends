@@ -32,6 +32,10 @@ export class TournamentInvitesPage implements OnInit {
     await this.loadTournamentInvites();
   }
 
+  async ionViewWillEnter() {
+    await this.loadTournamentInvites(); // Refresh messages on page enter
+  }
+
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
       this.loadTournamentInvites();

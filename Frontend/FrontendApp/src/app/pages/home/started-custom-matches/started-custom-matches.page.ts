@@ -35,6 +35,10 @@ export class StartedCustomMatchesPage implements OnInit {
     await this.loadTournamentAndFetchMatches();
   }
 
+  async ionViewWillEnter() {
+    await this.loadTournamentAndFetchMatches(); // Refresh messages on page enter
+  }
+
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
       this.loadTournamentAndFetchMatches();

@@ -26,7 +26,9 @@ export class HomePage implements OnInit {
 
   constructor(private loadingController: LoadingController) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.triggerRefresh();
+  }
 
   ionViewWillEnter() {
     this.triggerRefresh();
