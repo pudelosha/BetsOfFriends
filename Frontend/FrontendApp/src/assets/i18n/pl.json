@@ -1,12 +1,76 @@
 {
-    "APP": {
+    "WELCOME": {
       "TITLE": "Bets of Friends",
-      "SLOGAN": "Obstawiaj z najlepszymi kumplami!",
-      "DESCRIPTION": "Typuj wyniki meczów piłkarskich ze znajomymi — tylko dla zabawy! Twórz turnieje, przewiduj wyniki i wspinaj się w rankingu."
+      "SLOGAN": "Typuj razem z przyjaciółmi!",
+      "DESCRIPTION": "Obstawiaj mecze piłkarskie dla zabawy! Twórz turnieje, przewiduj wyniki i wspinaj się w rankingu.",
+      "LOGIN": "Zaloguj",
+      "REGISTER": "Rejestracja"
     },
-    "AUTH": {
-      "LOGIN": "Zaloguj się",
-      "REGISTER": "Zarejestruj się"
+    "LOGIN": {
+      "TITLE": "Logowanie",
+      "DESCRIPTION": "Wprowadź dane, aby uzyskać dostęp do konta.",
+      "EMAIL": "Email",
+      "PASSWORD": "Hasło",
+      "EMAIL_ERROR": "Wprowadź poprawny adres email.",
+      "PASSWORD_ERROR": "Hasło jest wymagane.",
+      "FORGOT_PASSWORD": "Nie pamiętasz hasła?",
+      "RESEND_ACTIVATION": "Nie otrzymałeś maila aktywacyjnego?",
+      "SUBMIT": "Zaloguj",
+      "NO_ACCOUNT": "Nie masz konta?",
+      "SIGN_UP": "Zarejestruj"
+    },
+    "REGISTER": {
+      "TITLE": "Rejestracja",
+      "DESCRIPTION": "Załóż konto, aby dołączyć do turniejów i typować wyniki.",
+      "EMAIL": "Email",
+      "EMAIL_ERROR": "Wprowadź poprawny adres email.",
+      "PASSWORD": "Hasło",
+      "PASSWORD_ERROR": "Hasło musi mieć co najmniej 8 znaków.",
+      "CONFIRM_PASSWORD": "Powtórz hasło",
+      "CONFIRM_PASSWORD_ERROR": "Hasła muszą być takie same.",
+      "CONSENT_TEXT": "Akceptuję",
+      "TERMS_LINK": "regulamin",
+      "CONSENT_ERROR": "Musisz zaakceptować regulamin, aby się zarejestrować.",
+      "SUBMIT": "Zarejestruj",
+      "ALREADY_ACCOUNT": "Masz już konto?",
+      "LOGIN_LINK": "Zaloguj"
+    },
+    "FORGOT": {
+      "TITLE": "Resetuj hasło",
+      "DESCRIPTION": "Podaj swój adres email, a wyślemy link do zresetowania hasła.",
+      "EMAIL": "Email",
+      "EMAIL_ERROR": "Wprowadź poprawny adres email.",
+      "SUBMIT": "Wyślij link",
+      "BACK": "Powrót"
+    },
+    "CONFIRM": {
+      "SUCCESS_TITLE": "Konto aktywowane!",
+      "FAILURE_TITLE": "Błąd aktywacji ❌",
+      "PROCESSING": "Przetwarzanie...",
+      "GO_TO_LOGIN": "Zaloguj"
+    },
+    "LOGOUT": {
+      "TITLE": "Do zobaczenia!",
+      "MESSAGE": "Zostałeś wylogowany.",
+      "GO_TO_LOGIN": "Zaloguj"
+    },
+    "RESEND": {
+      "TITLE": "Wyślij ponownie link aktywacyjny",
+      "DESCRIPTION": "Podaj swój email, a wyślemy nowy link aktywacyjny.",
+      "EMAIL": "Email",
+      "EMAIL_ERROR": "Wprowadź poprawny adres email.",
+      "BUTTON": "Wyślij",
+      "BACK": "Powrót"
+    },
+    "RESET": {
+      "TITLE": "Nowe hasło",
+      "DESCRIPTION": "Wprowadź nowe hasło poniżej.",
+      "NEW_PASSWORD": "Nowe hasło",
+      "CONFIRM_PASSWORD": "Powtórz hasło",
+      "PASSWORD_ERROR": "Hasło musi mieć co najmniej 8 znaków.",
+      "CONFIRM_ERROR": "Hasła muszą być takie same.",
+      "BUTTON": "Zmień hasło",
+      "BACK": "Powrót"
     }
   }
   

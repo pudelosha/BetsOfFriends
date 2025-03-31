@@ -7,13 +7,15 @@ import { RegisterService } from '../../../services/register.service';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent, TranslateModule],
 })
 export class RegisterPage {
   @ViewChild(IonContent) content!: IonContent;

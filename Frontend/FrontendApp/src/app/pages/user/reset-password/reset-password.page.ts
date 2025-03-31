@@ -7,12 +7,14 @@ import { IonicModule, ToastController, LoadingController } from '@ionic/angular'
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.page.html',
   styleUrls: ['./reset-password.page.scss'],
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent, TranslateModule],
   standalone: true,
 })
 export class ResetPasswordPage implements OnInit {

@@ -4,13 +4,15 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-logoff',
   templateUrl: './logoff.page.html',
   styleUrls: ['./logoff.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class LogoffPage {
   parallaxOffset = 0;

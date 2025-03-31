@@ -7,13 +7,14 @@ import { Router } from '@angular/router';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @Component({
   selector: 'app-resend-activation',
   templateUrl: './resend-activation.page.html',
   styleUrls: ['./resend-activation.page.scss'],
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent, TranslateModule],
   standalone: true,
 })
 export class ResendActivationPage {

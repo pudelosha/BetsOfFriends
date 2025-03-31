@@ -6,40 +6,40 @@
 
     <!-- Foreground Content -->
     <div class="unauth-container">
-      <h2>Register</h2>
-      <p>Create an account to join tournaments and place bets.</p>
+      <h2>{{ 'REGISTER.TITLE' | translate }}</h2>
+      <p>{{ 'REGISTER.DESCRIPTION' | translate }}</p>
 
       <form [formGroup]="registerForm" (ngSubmit)="register()">
         <!-- Email Field -->
         <ion-item>
-          <ion-label position="floating">Email</ion-label>
+          <ion-label position="floating">{{ 'REGISTER.EMAIL' | translate }}</ion-label>
           <ion-input formControlName="email" type="email"></ion-input>
         </ion-item>
         <div class="validation-message">
           <p class="error" *ngIf="f['email'].invalid && f['email'].touched">
-            Please enter a valid email.
+            {{ 'REGISTER.EMAIL_ERROR' | translate }}
           </p>
         </div>
 
         <!-- Password Field -->
         <ion-item>
-          <ion-label position="floating">Password</ion-label>
+          <ion-label position="floating">{{ 'REGISTER.PASSWORD' | translate }}</ion-label>
           <ion-input formControlName="password" type="password"></ion-input>
         </ion-item>
         <div class="validation-message">
           <p class="error" *ngIf="f['password'].invalid && f['password'].touched">
-            Password is required (min 8 characters).
+            {{ 'REGISTER.PASSWORD_ERROR' | translate }}
           </p>
         </div>
 
         <!-- Confirm Password Field -->
         <ion-item>
-          <ion-label position="floating">Confirm Password</ion-label>
+          <ion-label position="floating">{{ 'REGISTER.CONFIRM_PASSWORD' | translate }}</ion-label>
           <ion-input formControlName="confirmPassword" type="password"></ion-input>
         </ion-item>
         <div class="validation-message">
           <p class="error" *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched">
-            Passwords must match.
+            {{ 'REGISTER.CONFIRM_PASSWORD_ERROR' | translate }}
           </p>
         </div>
 
@@ -47,26 +47,26 @@
         <ion-item lines="none" class="terms-item">
           <ion-checkbox formControlName="consent" slot="start"></ion-checkbox>
           <ion-label class="terms-label" (click)="toggleConsent($event)">
-            I agree to the 
-            <a (click)="openTerms($event)">Terms & Conditions</a>
+            {{ 'REGISTER.CONSENT_TEXT' | translate }}
+            <a (click)="openTerms($event)">{{ 'REGISTER.TERMS_LINK' | translate }}</a>
           </ion-label>
         </ion-item>
         
         <div class="validation-message">
           <p class="error" *ngIf="!f['consent'].value && f['consent'].touched">
-            You must accept the terms to register.
+            {{ 'REGISTER.CONSENT_ERROR' | translate }}
           </p>
         </div>
 
         <div class="button-group">
           <ion-button expand="full" color="medium" class="rounded-button" type="submit" [disabled]="registerForm.invalid">
-            Register
+            {{ 'REGISTER.SUBMIT' | translate }}
           </ion-button>
         </div>
       </form>
 
       <p class="switch-auth">
-        Already have an account? <a (click)="navigateToLogin()">Login</a>
+        {{ 'REGISTER.ALREADY_ACCOUNT' | translate }} <a (click)="navigateToLogin()">{{ 'REGISTER.LOGIN_LINK' | translate }}</a>
       </p>
     </div>
 
@@ -74,4 +74,3 @@
 </ion-content>
 
 <app-language-fab></app-language-fab>
-

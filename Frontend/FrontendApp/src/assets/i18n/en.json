@@ -1,12 +1,81 @@
 {
-    "APP": {
-      "TITLE": "Bets of Friends",
-      "SLOGAN": "Place bets with your best of friends!",
-      "DESCRIPTION": "Bet on football matches with friends — just for fun! Create tournaments, predict results, and climb the leaderboard."
-    },
-    "AUTH": {
-      "LOGIN": "Login",
-      "REGISTER": "Sign Up"
-    }
+  "WELCOME": {
+    "TITLE": "Bets of Friends",
+    "SLOGAN": "Place bets with your best of friends!",
+    "DESCRIPTION": "Bet on football matches with friends — just for fun! Create tournaments, predict results, and climb the leaderboard.",
+    "LOGIN": "Login",
+    "REGISTER": "Sign Up"
+  },
+  "LOGIN": {
+    "TITLE": "Login",
+    "DESCRIPTION": "Enter your credentials to access your account.",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "EMAIL_ERROR": "Please enter a valid email.",
+    "PASSWORD_ERROR": "Password is required.",
+    "FORGOT_PASSWORD": "Forgot Password?",
+    "RESEND_ACTIVATION": "Didn't receive an activation email?",
+    "SUBMIT": "Login",
+    "NO_ACCOUNT": "Don't have an account?",
+    "SIGN_UP": "Sign Up"
+  },
+  "REGISTER": {
+    "TITLE": "Register",
+    "DESCRIPTION": "Create an account to join tournaments and place bets.",
+    "EMAIL": "Email",
+    "EMAIL_ERROR": "Please enter a valid email.",
+    "PASSWORD": "Password",
+    "PASSWORD_ERROR": "Password is required (min 8 characters).",
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "CONFIRM_PASSWORD_ERROR": "Passwords must match.",
+    "CONSENT_TEXT": "I agree to the",
+    "TERMS_LINK": "Terms & Conditions",
+    "CONSENT_ERROR": "You must accept the terms to register.",
+    "SUBMIT": "Register",
+    "ALREADY_ACCOUNT": "Already have an account?",
+    "LOGIN_LINK": "Login"
+  },
+  "FORGOT": {
+    "TITLE": "Forgot Password",
+    "DESCRIPTION": "Enter your email address and we'll send you a link to reset your password.",
+    "EMAIL": "Email",
+    "EMAIL_ERROR": "Please enter a valid email.",
+    "SUBMIT": "Send Reset Link",
+    "BACK": "Back to Login"
+  },
+  "CONFIRM": {
+    "SUCCESS_TITLE": "Account Activated!",
+    "FAILURE_TITLE": "Email Confirmation Failed ❌",
+    "PROCESSING": "Processing your request...",
+    "GO_TO_LOGIN": "Go to Login"
+  },
+  "LOGOUT": {
+    "TITLE": "Goodbye!",
+    "MESSAGE": "You have been logged out.",
+    "GO_TO_LOGIN": "Go to Login"
+  },
+  "RESEND": {
+    "TITLE": "Resend Activation Email",
+    "DESCRIPTION": "Enter your email address and we'll send a new activation link.",
+    "EMAIL": "Email",
+    "EMAIL_ERROR": "Please enter a valid email.",
+    "BUTTON": "Send Email",
+    "BACK": "Back to Login"
+  },
+  "RESET": {
+    "TITLE": "Reset Password",
+    "DESCRIPTION": "Enter your new password below.",
+    "NEW_PASSWORD": "New Password",
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "PASSWORD_ERROR": "Password must be at least 8 characters.",
+    "CONFIRM_ERROR": "Passwords must match.",
+    "BUTTON": "Reset Password",
+    "BACK": "Back to Login"
   }
-  
+
+
+
+
+
+
+}

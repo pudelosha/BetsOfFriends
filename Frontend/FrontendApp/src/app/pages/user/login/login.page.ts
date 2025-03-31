@@ -7,13 +7,15 @@ import { AuthService } from '../../../services/auth.service';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent, TranslateModule],
 })
 export class LoginPage {
   @ViewChild(IonContent) content!: IonContent;

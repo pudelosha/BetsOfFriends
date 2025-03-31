@@ -6,13 +6,15 @@ import { RegisterService } from 'src/app/services/register.service';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-confirm-email',
   templateUrl: './confirm-email.page.html',
   styleUrls: ['./confirm-email.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, LanguageFabComponent],
+  imports: [CommonModule, IonicModule, LanguageFabComponent, TranslateModule],
 })
 export class ConfirmEmailPage {
   @ViewChild(IonContent) content!: IonContent;

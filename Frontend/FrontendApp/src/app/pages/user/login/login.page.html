@@ -6,47 +6,47 @@
 
     <!-- Foreground Content -->
     <div class="unauth-container">
-      <h2>Login</h2>
-      <p>Enter your credentials to access your account.</p>
+      <h2>{{ 'LOGIN.TITLE' | translate }}</h2>
+      <p>{{ 'LOGIN.DESCRIPTION' | translate }}</p>
 
       <form [formGroup]="loginForm" (ngSubmit)="login()">
         <!-- Email Field -->
         <ion-item>
-          <ion-label position="floating">Email</ion-label>
+          <ion-label position="floating">{{ 'LOGIN.EMAIL' | translate }}</ion-label>
           <ion-input formControlName="email" type="email"></ion-input>
         </ion-item>
         <div class="validation-message">
           <p class="error" *ngIf="f['email'].invalid && f['email'].touched">
-            Please enter a valid email.
+            {{ 'LOGIN.EMAIL_ERROR' | translate }}
           </p>
         </div>
 
         <!-- Password Field -->
         <ion-item>
-          <ion-label position="floating">Password</ion-label>
+          <ion-label position="floating">{{ 'LOGIN.PASSWORD' | translate }}</ion-label>
           <ion-input formControlName="password" type="password"></ion-input>
         </ion-item>
         <div class="validation-message">
           <p class="error" *ngIf="f['password'].invalid && f['password'].touched">
-            Password is required.
+            {{ 'LOGIN.PASSWORD_ERROR' | translate }}
           </p>
         </div>
 
         <!-- Action Links -->
         <p class="forgot-password">
-          <a (click)="navigateToForgotPassword()">Forgot Password?</a> | 
-          <a (click)="navigateToResendActivation()">Didn't receive an activation email?</a>
+          <a (click)="navigateToForgotPassword()">{{ 'LOGIN.FORGOT_PASSWORD' | translate }}</a> | 
+          <a (click)="navigateToResendActivation()">{{ 'LOGIN.RESEND_ACTIVATION' | translate }}</a>
         </p>
 
         <div class="button-group">
           <ion-button expand="full" color="medium" class="rounded-button" type="submit" [disabled]="loginForm.invalid">
-            Login
+            {{ 'LOGIN.SUBMIT' | translate }}
           </ion-button>
         </div>
       </form>
 
       <p class="switch-auth">
-        Don't have an account? <a (click)="navigateToRegister()">Sign Up</a>
+        {{ 'LOGIN.NO_ACCOUNT' | translate }} <a (click)="navigateToRegister()">{{ 'LOGIN.SIGN_UP' | translate }}</a>
       </p>
     </div>
     
@@ -54,4 +54,3 @@
 </ion-content>
 
 <app-language-fab></app-language-fab>
-

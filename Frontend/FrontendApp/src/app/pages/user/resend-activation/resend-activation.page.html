@@ -6,31 +6,31 @@
 
     <!-- Foreground Content -->
     <div class="unauth-container">
-      <h2>Resend Activation Email</h2>
+      <h2>{{ 'RESEND.TITLE' | translate }}</h2>
       <p class="resend-text">
-        Enter your email address and we’ll send a new activation link.
+        {{ 'RESEND.DESCRIPTION' | translate }}
       </p>
 
       <form [formGroup]="resendActivationForm" (ngSubmit)="resendActivation()">
         <ion-item>
-          <ion-label position="floating">Email</ion-label>
+          <ion-label position="floating">{{ 'RESEND.EMAIL' | translate }}</ion-label>
           <ion-input formControlName="email" type="email"></ion-input>
         </ion-item>
         <div class="validation-message">
           <p class="error" *ngIf="f['email'].invalid && f['email'].touched">
-            Please enter a valid email.
+            {{ 'RESEND.EMAIL_ERROR' | translate }}
           </p>
         </div>
 
         <div class="button-group">
           <ion-button expand="full" color="medium" class="rounded-button" type="submit" [disabled]="resendActivationForm.invalid">
-            Send Email
+            {{ 'RESEND.BUTTON' | translate }}
           </ion-button>
         </div>
       </form>
 
       <p class="back-link">
-        <a (click)="navigateToLogin()">Back to Login</a>
+        <a (click)="navigateToLogin()">{{ 'RESEND.BACK' | translate }}</a>
       </p>
     </div>
 
@@ -38,4 +38,3 @@
 </ion-content>
 
 <app-language-fab></app-language-fab>
-

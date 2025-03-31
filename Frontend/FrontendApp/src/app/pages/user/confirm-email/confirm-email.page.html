@@ -6,15 +6,15 @@
 
     <!-- Foreground Content -->
     <div class="unauth-container">
-      <h2 *ngIf="confirmationSuccess">Account Activated!</h2>
-      <h2 *ngIf="!confirmationSuccess">Email Confirmation Failed ❌</h2>
+      <h2 *ngIf="confirmationSuccess">{{ 'CONFIRM.SUCCESS_TITLE' | translate }}</h2>
+      <h2 *ngIf="!confirmationSuccess">{{ 'CONFIRM.FAILURE_TITLE' | translate }}</h2>
 
-      <p *ngIf="isLoading">Processing your request...</p>
+      <p *ngIf="isLoading">{{ 'CONFIRM.PROCESSING' | translate }}</p>
       <p *ngIf="!isLoading">{{ message }}</p>
 
       <div class="button-group">
         <ion-button *ngIf="confirmationSuccess" expand="full" color="medium" class="rounded-button" (click)="navigateToLogin()">
-          Go to Login
+          {{ 'CONFIRM.GO_TO_LOGIN' | translate }}
         </ion-button>
       </div>
     </div>
@@ -23,4 +23,3 @@
 </ion-content>
 
 <app-language-fab></app-language-fab>
-
