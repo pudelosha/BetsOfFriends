@@ -1,0 +1,12 @@
+{
+    "APP": {
+      "TITLE": "Bets of Friends",
+      "SLOGAN": "Obstawiaj z najlepszymi kumplami!",
+      "DESCRIPTION": "Typuj wyniki meczów piłkarskich ze znajomymi — tylko dla zabawy! Twórz turnieje, przewiduj wyniki i wspinaj się w rankingu."
+    },
+    "AUTH": {
+      "LOGIN": "Zaloguj się",
+      "REGISTER": "Zarejestruj się"
+    }
+  }
+  

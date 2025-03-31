@@ -6,12 +6,13 @@ import { UserService } from '../../../services/user.service';
 import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
+import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
 
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.page.html',
   styleUrls: ['./reset-password.page.scss'],
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent],
   standalone: true,
 })
 export class ResetPasswordPage implements OnInit {

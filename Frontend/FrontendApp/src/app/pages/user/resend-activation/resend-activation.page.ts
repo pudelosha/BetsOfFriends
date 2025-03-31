@@ -6,12 +6,14 @@ import { RegisterService } from 'src/app/services/register.service';
 import { Router } from '@angular/router';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
+import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
+
 
 @Component({
   selector: 'app-resend-activation',
   templateUrl: './resend-activation.page.html',
   styleUrls: ['./resend-activation.page.scss'],
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent],
   standalone: true,
 })
 export class ResendActivationPage {

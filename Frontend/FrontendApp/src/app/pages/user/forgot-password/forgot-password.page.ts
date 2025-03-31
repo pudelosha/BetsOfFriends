@@ -6,13 +6,14 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
+import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.page.html',
   styleUrls: ['./forgot-password.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent],
 })
 export class ForgotPasswordPage {
   @ViewChild(IonContent) content!: IonContent;

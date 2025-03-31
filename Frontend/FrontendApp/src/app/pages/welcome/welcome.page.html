@@ -1,21 +1,28 @@
 <ion-content fullscreen (ionScroll)="onScroll($event)" scrollEvents="true">
   <div class="parallax-container">
-    
+
     <!-- Parallax Background -->
-    <div class="parallax-bg" [ngStyle]="{ 'transform': 'translateY(' + parallaxOffset + 'px)' }"></div>
+    <div class="parallax-bg" [ngStyle]="{ transform: 'translateY(' + parallaxOffset + 'px)' }"></div>
 
     <!-- Foreground Content -->
     <div class="content">
-      <h1 class="app-title">Bets of Friends</h1>
-      <h5 class="app-slogan">Place bets with your best of friends!</h5>
+      <h1 class="app-title">{{ 'APP.TITLE' | translate }}</h1>
+      <h5 class="app-slogan">{{ 'APP.SLOGAN' | translate }}</h5>
       <p class="app-description">
-        Bet on football matches with friends — just for fun! Create tournaments, predict results, and climb the leaderboard.
-      </p>      
+        {{ 'APP.DESCRIPTION' | translate }}
+      </p>
 
       <div class="button-group">
-        <ion-button color="medium" class="rounded-button" (click)="navigateToLogin()">Login</ion-button>
-        <ion-button color="dark" class="rounded-button" (click)="navigateToRegister()">Sign Up</ion-button>
+        <ion-button color="medium" class="rounded-button" (click)="navigateToLogin()">
+          {{ 'AUTH.LOGIN' | translate }}
+        </ion-button>
+        <ion-button color="dark" class="rounded-button" (click)="navigateToRegister()">
+          {{ 'AUTH.REGISTER' | translate }}
+        </ion-button>
       </div>
     </div>
   </div>
 </ion-content>
+
+<app-language-fab></app-language-fab>
+

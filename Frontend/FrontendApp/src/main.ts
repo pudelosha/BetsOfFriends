@@ -5,6 +5,7 @@ import { provideHttpClient, withInterceptorsFromDi  } from '@angular/common/http
 import { importProvidersFrom } from '@angular/core';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './app/interceptors/auth.interceptor';
+import { provideTranslation } from './app/config/translation.config';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
@@ -16,6 +17,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
+    provideTranslation(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(withInterceptorsFromDi()),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

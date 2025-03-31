@@ -5,13 +5,14 @@ import { CommonModule } from '@angular/common';
 import { RegisterService } from 'src/app/services/register.service';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
+import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
 
 @Component({
   selector: 'app-confirm-email',
   templateUrl: './confirm-email.page.html',
   styleUrls: ['./confirm-email.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, LanguageFabComponent],
 })
 export class ConfirmEmailPage {
   @ViewChild(IonContent) content!: IonContent;

@@ -1,0 +1,12 @@
+{
+    "APP": {
+      "TITLE": "Bets of Friends",
+      "SLOGAN": "Place bets with your best of friends!",
+      "DESCRIPTION": "Bet on football matches with friends — just for fun! Create tournaments, predict results, and climb the leaderboard."
+    },
+    "AUTH": {
+      "LOGIN": "Login",
+      "REGISTER": "Sign Up"
+    }
+  }
+  

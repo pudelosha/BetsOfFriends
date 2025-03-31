@@ -3,6 +3,9 @@ import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { LanguageService } from 'src/app/services/language.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageFabComponent } from '../language/language-fab/language-fab.component';
 
 
 @Component({
@@ -10,12 +13,14 @@ import { Router } from '@angular/router';
   templateUrl: './welcome.page.html',
   styleUrls: ['./welcome.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule, LanguageFabComponent],
 })
 export class WelcomePage {
   parallaxOffset = 0;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private languageService: LanguageService) {
+    this.languageService.initLanguage();
+  }
 
   onScroll(event: any) {
     const scrollTop = event.detail.scrollTop;

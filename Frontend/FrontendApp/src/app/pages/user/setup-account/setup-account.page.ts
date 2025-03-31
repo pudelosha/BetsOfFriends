@@ -4,13 +4,14 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModul
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { RegisterService } from '../../../services/register.service';
+import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
 
 @Component({
   selector: 'app-setup-account',
   templateUrl: './setup-account.page.html',
   styleUrls: ['./setup-account.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent],
 })
 export class SetupAccountPage {
   setupForm: FormGroup;

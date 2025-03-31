@@ -6,13 +6,14 @@ import { IonicModule, ToastController, LoadingController } from '@ionic/angular'
 import { AuthService } from '../../../services/auth.service';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
+import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent],
 })
 export class LoginPage {
   @ViewChild(IonContent) content!: IonContent;
