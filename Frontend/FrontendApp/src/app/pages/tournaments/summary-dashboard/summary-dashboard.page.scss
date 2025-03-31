@@ -1,8 +1,23 @@
-/* Summary Grid Styling */
-.summary-grid {
-  width: 100%;
-  padding: 0px;
+/* Remove built-in padding from ion-content */
+ion-content {
+  --padding-start: 0 !important;
+  --padding-end: 0 !important;
 }
+
+/* Remove side padding from container */
+.no-side-padding {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Optional: remove any padding on grid */
+.summary-grid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0;
+  width: 100%;
+}
+
 
 /* Table Header */
 .summary-header {
@@ -55,4 +70,6 @@ ion-row:not(.summary-header) {
   color: #666;
   font-size: 1rem;
   line-height: 1.5;
+  padding-left: 16px;
+  padding-right: 16px;
 }

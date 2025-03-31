@@ -1120,58 +1120,77 @@ namespace Backend.Repository.Services
             {
                 _logger.LogInformation($"Fetching betting stats for user {statsUserId} in tournament {tournamentId}, requested by {userId}");
 
-                // Step 1: Validate that the requesting user is assigned to the tournament
                 bool isParticipant = await _context.CustomTournamentUserAssignments
                     .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
 
                 if (!isParticipant)
                 {
                     _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}.");
-                    return new List<UserBettingStatsDto>(); // Unauthorized access
+                    return new List<UserBettingStatsDto>();
                 }
 
-                // Step 2: Validate that statsUserId is also part of the tournament
                 bool isStatsUserParticipant = await _context.CustomTournamentUserAssignments
                     .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == statsUserId);
 
                 if (!isStatsUserParticipant)
                 {
                     _logger.LogWarning($"Stats user {statsUserId} is not assigned to tournament {tournamentId}.");
-                    return new List<UserBettingStatsDto>(); // Invalid stats target
+                    return new List<UserBettingStatsDto>();
                 }
 
-                // Step 3: Fetch all matches (Finalised & Non-Finalised)
                 var tournamentMatches = await _context.CustomMatches
                     .Where(m => m.TournamentId == tournamentId)
                     .Include(m => m.HomeTeam)
                     .Include(m => m.AwayTeam)
-                    .Include(m => m.Bets.Where(b => b.UserId == statsUserId)) // Fetch only bets for the stats user
+                    .Include(m => m.Bets.Where(b => b.UserId == statsUserId))
                     .ToListAsync();
 
-                // Step 4: Build Stats DTO List
                 var bettingStats = tournamentMatches.Select(match =>
                 {
-                    bool isFinalised = match.Status == CustomMatch.MatchStatus.Finalised;
-                    var userBet = isFinalised ? match.Bets.FirstOrDefault() : null; // Only show bets for finalised matches
+                    var isFinalised = match.Status == CustomMatch.MatchStatus.Finalised;
+                    var userBet = match.Bets.FirstOrDefault();
+
+                    string? matchResult = isFinalised && match.HomeScore.HasValue && match.AwayScore.HasValue
+                        ? $"{match.HomeScore}:{match.AwayScore}"
+                        : null;
+
+                    string? betPlaced = userBet?.HomeGoals.HasValue == true && userBet?.AwayGoals.HasValue == true
+                        ? $"{userBet.HomeGoals}:{userBet.AwayGoals}"
+                        : userBet != null ? "-" : null;
 
                     return new UserBettingStatsDto
                     {
                         MatchId = match.MatchId,
+                        MatchStatus = match.Status.ToString(),
                         HomeTeam = match.HomeTeam.TeamName,
                         AwayTeam = match.AwayTeam.TeamName,
-                        BetPlaced = userBet != null
-                            ? $"{userBet.HomeGoals?.ToString() ?? "-"}:{userBet.AwayGoals?.ToString() ?? "-"}"
-                            : isFinalised ? "No Bet" : "N/A",
-                        BetOutcome = userBet != null
-                            ? (userBet.Result == Bet.BetResult.Won ? "Won" : "Lost")
-                            : isFinalised ? "N/A" : "Not Finalised",
-                        WhoQualifiedBet = isFinalised ? (userBet?.Qualified?.ToString() ?? "N/A") : "N/A",
-                        WhoQualifiedResult = isFinalised && match.Type == CustomMatch.MatchType.ExtendedWithQualification
-                            ? match.Qualified.ToString()
-                            : "N/A",
-                        Payout = isFinalised
-                            ? ((userBet?.BasePayout ?? 0) + (userBet?.QualificationPayout ?? 0) + (userBet?.ExactScorePayout ?? 0))
-                            : 0
+
+                        BetPlaced = betPlaced,
+                        WhoQualifiedBet = userBet?.Qualified?.ToString(),
+
+                        MatchResult = matchResult,
+                        WhoQualifiedResult = match.Type == CustomMatch.MatchType.ExtendedWithQualification
+                            ? match.Qualified?.ToString()
+                            : null,
+
+                        OutcomeRegular = isFinalised && userBet != null
+                            ? (userBet.BasePayout > 0 ? "V" : "X")
+                            : null,
+
+                        OutcomeExactResult = isFinalised && userBet != null
+                            ? (userBet.ExactScorePayout > 0 ? "V" : "X")
+                            : null,
+
+                        OutcomeQualification = isFinalised && userBet != null
+                            ? (userBet.QualificationPayout > 0 ? "V" : "X")
+                            : null,
+
+                        PayoutRegular = isFinalised ? userBet?.BasePayout : null,
+                        PayoutExactResult = isFinalised ? userBet?.ExactScorePayout : null,
+                        PayoutQualification = isFinalised ? userBet?.QualificationPayout : null,
+                        TotalPayout = isFinalised
+                            ? ((userBet?.BasePayout ?? 0) + (userBet?.ExactScorePayout ?? 0) + (userBet?.QualificationPayout ?? 0))
+                            : null
                     };
                 }).ToList();
 

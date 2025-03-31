@@ -17,6 +17,7 @@ export class PlayerStatsModalComponent implements OnInit {
 
   isLoading = true;
   stats: UserBettingStats[] = [];
+  expandedMatchId: number | null = null;
 
   constructor(
     private modalController: ModalController,
@@ -27,6 +28,12 @@ export class PlayerStatsModalComponent implements OnInit {
     this.fetchUserStats();
   }
 
+  onAccordionChange(event: Event) {
+    const customEvent = event as CustomEvent;
+    const expandedMatchId = customEvent.detail?.value;  
+    this.expandedMatchId = expandedMatchId !== undefined ? Number(expandedMatchId) : null;
+  }
+      
   fetchUserStats() {
     this.tournamentService.getUserBettingStats(this.tournamentId, this.userId).subscribe({
       next: (data) => {
@@ -43,4 +50,12 @@ export class PlayerStatsModalComponent implements OnInit {
   closeModal() {
     this.modalController.dismiss();
   }
+
+  getStatusIcon(value?: string): string {
+    return value === 'V' ? '✔' : value === 'X' ? '✘' : '-';
+  }
+  
+  getStatusClass(value?: string): string {
+    return value === 'V' ? 'v-status' : value === 'X' ? 'x-status' : '';
+  }  
 }

@@ -8,6 +8,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+
   <!-- Loading Spinner -->
   <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
 
@@ -16,46 +17,57 @@
     <p>No stats available.</p>
   </div>
 
-  <!-- Stats List -->
-  <ion-list *ngIf="!isLoading && stats.length > 0" class="stats-list">
-    <ion-item *ngFor="let stat of stats" class="stats-item">
-      <div class="stats-grid">
-        
-        <!-- Match Details -->
-        <div class="match-details">
-          <span class="team">{{ stat.homeTeam }}</span>
-          <span class="team">{{ stat.awayTeam }}</span>
+  <!-- Stats Accordion -->
+  <ion-accordion-group *ngIf="!isLoading && stats.length > 0" (ionChange)="onAccordionChange($event)">
+    <ion-accordion   *ngFor="let stat of stats" [value]="stat.matchId" [disabled]="stat.matchStatus !== 'Finalised'">
+      
+      <!-- Accordion Header -->
+      <ion-item slot="header" class="accordion-header" [class.expanded-header]="expandedMatchId === stat.matchId">
+        <ion-label>
+          <div class="header-content">
+            <span>{{ stat.homeTeam }} {{ stat.matchResult ?? '?-?' }} {{ stat.awayTeam }}</span>
+          </div>
+        </ion-label>
+        <div slot="end" class="payout-summary">
+          {{ stat.totalPayout?.toFixed(2) ?? '-' }}
         </div>
+      </ion-item>
 
-        <!-- Prediction & Outcome -->
-        <div class="stats-column">
-          <span class="stat-label">Prediction:</span>
-          <span class="stat-value">{{ stat.betPlaced }}</span>
-        </div>
+      <!-- Accordion Content -->
+      <div class="accordion-content" slot="content">
+        <ion-grid class="stats-table">
+          <ion-row class="header-row">
+            <ion-col>Bet</ion-col>
+            <ion-col></ion-col>
+            <ion-col></ion-col>
+            <ion-col>Exact</ion-col>
+            <ion-col></ion-col>
+            <ion-col>Qualify</ion-col>
+            <ion-col></ion-col>
+            <ion-col></ion-col>
+          </ion-row>
 
-        <div class="stats-column">
-          <span class="stat-label">Outcome:</span>
-          <span class="stat-value">{{ stat.betOutcome }}</span>
-        </div>
+          <ion-row class="data-row">
+            <ion-col>{{ stat.betPlaced ?? '-' }}</ion-col>
+            <ion-col [ngClass]="getStatusClass(stat.outcomeRegular)">
+              {{ getStatusIcon(stat.outcomeRegular) }}
+            </ion-col>
+            <ion-col>{{ stat.payoutRegular?.toFixed(2) ?? '0' }}</ion-col>
 
-        <!-- Qualification & Result -->
-        <div class="stats-column">
-          <span class="stat-label">Qualified Bet:</span>
-          <span class="stat-value">{{ stat.whoQualifiedBet }}</span>
-        </div>
+            <ion-col [ngClass]="getStatusClass(stat.outcomeExactResult)">
+              {{ getStatusIcon(stat.outcomeExactResult) }}
+            </ion-col>
+            <ion-col>{{ stat.payoutExactResult?.toFixed(2) ?? '0' }}</ion-col>
 
-        <div class="stats-column">
-          <span class="stat-label">Qualified Result:</span>
-          <span class="stat-value">{{ stat.whoQualifiedResult }}</span>
-        </div>
-
-        <!-- Payout -->
-        <div class="stats-column">
-          <span class="stat-label">Payout:</span>
-          <span class="stat-value">{{ stat.payout }}</span>
-        </div>
-
+            <ion-col>{{ stat.whoQualifiedBet ?? '-' }}</ion-col>
+            <ion-col [ngClass]="getStatusClass(stat.outcomeQualification)">
+              {{ getStatusIcon(stat.outcomeQualification) }}
+            </ion-col>
+            <ion-col>{{ stat.payoutQualification?.toFixed(2) ?? '0' }}</ion-col>
+          </ion-row>
+        </ion-grid>
       </div>
-    </ion-item>
-  </ion-list>
+
+    </ion-accordion>
+  </ion-accordion-group>
 </ion-content>

@@ -127,13 +127,29 @@ export interface TournamentInvite {
 
 export interface UserBettingStats {
   matchId: number;
+  matchStatus: string;
   homeTeam: string;
   awayTeam: string;
-  betPlaced: string | null;
-  betOutcome: string;
-  whoQualifiedBet: string | null;
-  whoQualifiedResult: string | null;
-  payout: number;
+
+  // User's bet
+  betPlaced?: string | null;              // e.g., "2:1" or null if not placed
+  whoQualifiedBet?: string | null;        // e.g., "Home", "Away", or null
+
+  // Actual match result
+  matchResult: string | null;            // e.g., "2:1" or null if not finalised
+  whoQualifiedResult: string | null;     // e.g., "Home", "Away", or null
+
+  // Outcome statuses
+  outcomeRegular?: string;
+  outcomeQualification?: string;
+  outcomeExactResult?: string;
+
+  // Payouts
+  payoutRegular?: number;
+  payoutQualification?: number;
+  payoutExactResult?: number;
+
+  totalPayout?: number;
 }
 
 export interface PublicTournament {
