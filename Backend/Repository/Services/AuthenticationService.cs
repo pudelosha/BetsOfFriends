@@ -2,6 +2,7 @@
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -26,7 +27,10 @@ namespace Backend.Repository.Services
         {
             _logger.LogInformation($"Login attempt for email: {request.Email}");
 
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var user = await _userManager.Users
+                .Include(u => u.Language)
+                .FirstOrDefaultAsync(u => u.Email == request.Email);
+
             if (user == null)
             {
                 _logger.LogWarning($"Login failed: User not found for email {request.Email}");
@@ -71,13 +75,15 @@ namespace Backend.Repository.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            var language = user.Language?.ShortName ?? "en";
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("preferred_language", language)
             };
 
-            // Corrected: Use await instead of Result to prevent deadlocks
             var userRoles = await _userManager.GetRolesAsync(user);
             claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
@@ -85,7 +91,7 @@ namespace Backend.Repository.Services
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddHours(24),
+                expires: DateTime.UtcNow.AddYears(1),
                 signingCredentials: credentials
             );
 

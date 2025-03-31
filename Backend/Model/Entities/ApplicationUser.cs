@@ -11,7 +11,10 @@ namespace Backend.Model.Entities
         public DateTime MemberSince { get; set; } = DateTime.UtcNow;
         public int? LocationId { get; set; }
         public Location? Location { get; set; }
+        public int? LanguageId { get; set; }
+        public Language? Language { get; set; }
         public string? Nickname { get; set; }
+
         public bool AcceptedRegulations { get; set; }
         public bool AcceptedMarketingConsent { get; set; }
 

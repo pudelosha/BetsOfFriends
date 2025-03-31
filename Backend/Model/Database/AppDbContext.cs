@@ -30,6 +30,7 @@ namespace Backend.Model.Database
 
         // Other
         public DbSet<Location> Locations { get; set; }
+        public DbSet<Language> Languages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -46,6 +47,7 @@ namespace Backend.Model.Database
             ConfigureUserRelationship(builder);
             SeedRoles(builder);
             SeedCountries(builder);
+            SeedLanguages(builder);
         }
 
         private void RenameIdentityTables(ModelBuilder builder)
@@ -257,6 +259,12 @@ namespace Backend.Model.Database
                 .WithMany(c => c.Users)
                 .HasForeignKey(u => u.LocationId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ApplicationUser>()
+                .HasOne(u => u.Language)
+                .WithMany(l => l.Users)
+                .HasForeignKey(u => u.LanguageId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         private void SeedRoles(ModelBuilder builder)
@@ -265,6 +273,25 @@ namespace Backend.Model.Database
                 new IdentityRole { Id = "1", Name = "User", NormalizedName = "USER" },
                 new IdentityRole { Id = "2", Name = "Admin", NormalizedName = "ADMIN" },
                 new IdentityRole { Id = "3", Name = "SuperAdmin", NormalizedName = "SUPERADMIN" }
+            );
+        }
+
+        private void SeedLanguages(ModelBuilder builder)
+        {
+            builder.Entity<Language>().HasData(
+                new Language { LanguageId = 1, ShortName = "en", LongName = "English" },
+                new Language { LanguageId = 2, ShortName = "fr", LongName = "Français" },
+                new Language { LanguageId = 3, ShortName = "de", LongName = "Deutsch" },
+                new Language { LanguageId = 4, ShortName = "es", LongName = "Español" },
+                new Language { LanguageId = 5, ShortName = "it", LongName = "Italiano" },
+                new Language { LanguageId = 6, ShortName = "pt", LongName = "Português" },
+                new Language { LanguageId = 7, ShortName = "pl", LongName = "Polski" },
+                new Language { LanguageId = 8, ShortName = "ru", LongName = "Русский" },
+                new Language { LanguageId = 9, ShortName = "uk", LongName = "Українська" },
+                new Language { LanguageId = 10, ShortName = "tr", LongName = "Türkçe" },
+                new Language { LanguageId = 11, ShortName = "ar", LongName = "العربية" },
+                new Language { LanguageId = 12, ShortName = "zh", LongName = "中文" },
+                new Language { LanguageId = 13, ShortName = "hi", LongName = "हिन्दी" }
             );
         }
 

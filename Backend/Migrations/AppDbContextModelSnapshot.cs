@@ -47,6 +47,9 @@ namespace Backend.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("LanguageId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
@@ -127,6 +130,8 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LanguageId");
+
                     b.HasIndex("LocationId");
 
                     b.HasIndex("NormalizedEmail")
@@ -154,7 +159,13 @@ namespace Backend.Migrations
                     b.Property<decimal>("BaseAmount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal?>("BasePayout")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal?>("BonusAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("ExactScorePayout")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("HomeGoals")
@@ -163,7 +174,7 @@ namespace Backend.Migrations
                     b.Property<int>("MatchId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Payout")
+                    b.Property<decimal?>("QualificationPayout")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("Qualified")
@@ -441,6 +452,109 @@ namespace Backend.Migrations
                         .IsUnique();
 
                     b.ToTable("CustomTournamentUserAssignments");
+                });
+
+            modelBuilder.Entity("Backend.Model.Entities.Language", b =>
+                {
+                    b.Property<int>("LanguageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LanguageId"));
+
+                    b.Property<string>("LongName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("LanguageId");
+
+                    b.ToTable("Languages");
+
+                    b.HasData(
+                        new
+                        {
+                            LanguageId = 1,
+                            LongName = "English",
+                            ShortName = "en"
+                        },
+                        new
+                        {
+                            LanguageId = 2,
+                            LongName = "Français",
+                            ShortName = "fr"
+                        },
+                        new
+                        {
+                            LanguageId = 3,
+                            LongName = "Deutsch",
+                            ShortName = "de"
+                        },
+                        new
+                        {
+                            LanguageId = 4,
+                            LongName = "Español",
+                            ShortName = "es"
+                        },
+                        new
+                        {
+                            LanguageId = 5,
+                            LongName = "Italiano",
+                            ShortName = "it"
+                        },
+                        new
+                        {
+                            LanguageId = 6,
+                            LongName = "Português",
+                            ShortName = "pt"
+                        },
+                        new
+                        {
+                            LanguageId = 7,
+                            LongName = "Polski",
+                            ShortName = "pl"
+                        },
+                        new
+                        {
+                            LanguageId = 8,
+                            LongName = "Русский",
+                            ShortName = "ru"
+                        },
+                        new
+                        {
+                            LanguageId = 9,
+                            LongName = "Українська",
+                            ShortName = "uk"
+                        },
+                        new
+                        {
+                            LanguageId = 10,
+                            LongName = "Türkçe",
+                            ShortName = "tr"
+                        },
+                        new
+                        {
+                            LanguageId = 11,
+                            LongName = "العربية",
+                            ShortName = "ar"
+                        },
+                        new
+                        {
+                            LanguageId = 12,
+                            LongName = "中文",
+                            ShortName = "zh"
+                        },
+                        new
+                        {
+                            LanguageId = 13,
+                            LongName = "हिन्दी",
+                            ShortName = "hi"
+                        });
                 });
 
             modelBuilder.Entity("Backend.Model.Entities.Location", b =>
@@ -2076,6 +2190,9 @@ namespace Backend.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
+                    b.Property<int?>("matchUpdateId")
+                        .HasColumnType("int");
+
                     b.HasKey("MatchId");
 
                     b.HasIndex("AwayTeamId");
@@ -2324,10 +2441,17 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Model.Entities.ApplicationUser", b =>
                 {
+                    b.HasOne("Backend.Model.Entities.Language", "Language")
+                        .WithMany("Users")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Model.Entities.Location", "Location")
                         .WithMany("Users")
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Language");
 
                     b.Navigation("Location");
                 });
@@ -2612,6 +2736,11 @@ namespace Backend.Migrations
                     b.Navigation("Stages");
 
                     b.Navigation("Teams");
+                });
+
+            modelBuilder.Entity("Backend.Model.Entities.Language", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Backend.Model.Entities.Location", b =>

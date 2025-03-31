@@ -17,9 +17,10 @@ namespace Backend.Repository.Services
         private readonly ILogger<UserService> _logger;
         private readonly IEmailTemplateService _emailTemplateService;
         private readonly ILocationService _locationService;
+        private readonly ILanguageService _languageService;
         private readonly AppDbContext _dbContext;
 
-        public UserService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<UserService> logger, IEmailTemplateService emailTemplateService, ILocationService locationService, AppDbContext dbContext)
+        public UserService(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration configuration, ILogger<UserService> logger, IEmailTemplateService emailTemplateService, ILocationService locationService, ILanguageService languageService, AppDbContext dbContext)
         {
             _userManager = userManager;
             _emailService = emailService;
@@ -27,6 +28,7 @@ namespace Backend.Repository.Services
             _locationService = locationService;
             _logger = logger;
             _emailTemplateService = emailTemplateService;
+            _languageService = languageService;
             _dbContext = dbContext;
         }
 
@@ -50,7 +52,10 @@ namespace Backend.Repository.Services
         {
             _logger.LogInformation($"Fetching profile for UserId: {userId}");
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.Users
+                .Include(u => u.Language)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
             if (user == null)
             {
                 _logger.LogWarning($"User not found: {userId}");
@@ -64,8 +69,8 @@ namespace Backend.Repository.Services
                 Email = user.Email,
                 MemberSince = user.MemberSince,
                 Nickname = user.Nickname,
-                Language = "English",       //TODO fixed
-                DarkMode = false,           //TODO fixed
+                Language = user.Language?.ShortName ?? "en",
+                DarkMode = false, // TODO default false for now
                 Location = location != null
                     ? new LocationDto
                     {
@@ -75,6 +80,7 @@ namespace Backend.Repository.Services
                     : null
             };
         }
+
 
         public async Task<bool> UpdateUserProfileAsync(string userId, UserProfileDto profile)
         {
@@ -88,9 +94,21 @@ namespace Backend.Repository.Services
             }
 
             user.Nickname = profile.Nickname;
-            //user.Language = profile.Language;
             //user.DarkMode = profile.DarkMode;
             user.LocationId = profile.Location?.CountryId;
+
+            // Use language service to resolve the Language entity from shortName
+            var language = await _languageService.GetByShortNameAsync(profile.Language);
+            if (language == null)
+            {
+                _logger.LogWarning($"Language not found for shortName: {profile.Language}. Defaulting to English.");
+                var fallback = await _languageService.GetByShortNameAsync("en");
+                user.LanguageId = fallback?.LanguageId ?? 1; // Use 1 if fallback not found
+            }
+            else
+            {
+                user.LanguageId = language.LanguageId;
+            }
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)

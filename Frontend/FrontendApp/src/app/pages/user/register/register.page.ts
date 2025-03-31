@@ -84,6 +84,7 @@ export class RegisterPage {
     if (!this.registerForm.valid) return;
   
     const { email, password, consent } = this.registerForm.value;
+    const language = localStorage.getItem('lang') || 'en';
   
     // Show loading spinner
     this.isLoading = true;
@@ -95,7 +96,7 @@ export class RegisterPage {
   
     const startTime = Date.now();
   
-    this.registerService.register({ email, password, consent }).subscribe({
+    this.registerService.register({ email, password, consent, language }).subscribe({
       next: async (response) => {
         const elapsed = Date.now() - startTime;
         const delay = Math.max(0, 800 - elapsed);

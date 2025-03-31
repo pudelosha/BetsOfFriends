@@ -3,6 +3,7 @@ import { IonContent, IonPicker, IonButton } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LanguageService } from 'src/app/services/language.service';
+import { Language } from 'src/app/model/language';
 
 @Component({
   selector: 'app-language',
@@ -16,8 +17,16 @@ export class LanguagePage {
   parallaxOffset = 0;
   showPicker = false;
   selectedLang = 'en';
+  availableLanguages: Language[] = [];
+
 
   constructor(private router: Router, private languageService: LanguageService) {}
+
+  ngOnInit(): void {
+    this.languageService.getAvailableLanguages().subscribe((languages) => {
+      this.availableLanguages = languages;
+    });
+  }
 
   onScroll(event: any) {
     this.parallaxOffset = event.detail.scrollTop * 0.5;
@@ -73,21 +82,7 @@ export class LanguagePage {
   }
 
   getSelectedLanguageLabel(): string {
-    const labels: Record<string, string> = {
-      en: 'English',
-      fr: 'Français',
-      de: 'Deutsch',
-      es: 'Español',
-      it: 'Italiano',
-      pt: 'Português',
-      pl: 'Polski',
-      ru: 'Русский',
-      uk: 'Українська',
-      tr: 'Türkçe',
-      ar: 'العربية',
-      zh: '中文',
-      hi: 'हिन्दी'
-    };
-    return labels[this.selectedLang] || 'Select Language';
+    const found = this.availableLanguages.find(l => l.shortName === this.selectedLang);
+    return found?.longName || 'Select Language';
   }
 }

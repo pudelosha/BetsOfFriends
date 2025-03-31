@@ -28,8 +28,8 @@
         <ion-item>
           <ion-label>Language</ion-label>
           <ion-select formControlName="language">
-            <ion-select-option *ngFor="let lang of languages" [value]="lang.value">
-              {{ lang.label }}
+            <ion-select-option *ngFor="let lang of availableLanguages" [value]="lang.shortName">
+              {{ lang.longName }}
             </ion-select-option>
           </ion-select>
         </ion-item>

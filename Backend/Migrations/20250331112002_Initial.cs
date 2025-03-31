@@ -14,6 +14,20 @@ namespace Backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Languages",
+                columns: table => new
+                {
+                    LanguageId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ShortName = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    LongName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Languages", x => x.LanguageId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Locations",
                 columns: table => new
                 {
@@ -80,6 +94,7 @@ namespace Backend.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MemberSince = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LocationId = table.Column<int>(type: "int", nullable: true),
+                    LanguageId = table.Column<int>(type: "int", nullable: true),
                     Nickname = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AcceptedRegulations = table.Column<bool>(type: "bit", nullable: false),
                     AcceptedMarketingConsent = table.Column<bool>(type: "bit", nullable: false),
@@ -113,6 +128,12 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Languages_LanguageId",
+                        column: x => x.LanguageId,
+                        principalTable: "Languages",
+                        principalColumn: "LanguageId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Users_Locations_LocationId",
                         column: x => x.LocationId,
@@ -346,6 +367,7 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StageId = table.Column<int>(type: "int", nullable: false),
                     TournamentId = table.Column<int>(type: "int", nullable: false),
+                    matchUpdateId = table.Column<int>(type: "int", nullable: true),
                     HomeTeamId = table.Column<int>(type: "int", nullable: false),
                     AwayTeamId = table.Column<int>(type: "int", nullable: false),
                     MatchStart = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -552,7 +574,9 @@ namespace Backend.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     Result = table.Column<int>(type: "int", nullable: false),
                     Submitted = table.Column<bool>(type: "bit", nullable: false),
-                    Payout = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                    BasePayout = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    QualificationPayout = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    ExactScorePayout = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -569,6 +593,26 @@ namespace Backend.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Languages",
+                columns: new[] { "LanguageId", "LongName", "ShortName" },
+                values: new object[,]
+                {
+                    { 1, "English", "en" },
+                    { 2, "Français", "fr" },
+                    { 3, "Deutsch", "de" },
+                    { 4, "Español", "es" },
+                    { 5, "Italiano", "it" },
+                    { 6, "Português", "pt" },
+                    { 7, "Polski", "pl" },
+                    { 8, "Русский", "ru" },
+                    { 9, "Українська", "uk" },
+                    { 10, "Türkçe", "tr" },
+                    { 11, "العربية", "ar" },
+                    { 12, "中文", "zh" },
+                    { 13, "हिन्दी", "hi" }
                 });
 
             migrationBuilder.InsertData(
@@ -987,6 +1031,11 @@ namespace Backend.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_LanguageId",
+                table: "Users",
+                column: "LanguageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_LocationId",
                 table: "Users",
                 column: "LocationId");
@@ -1058,6 +1107,9 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "PredefinedTournaments");
+
+            migrationBuilder.DropTable(
+                name: "Languages");
 
             migrationBuilder.DropTable(
                 name: "Locations");

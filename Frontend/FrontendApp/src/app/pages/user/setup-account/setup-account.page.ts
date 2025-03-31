@@ -83,8 +83,9 @@ export class SetupAccountPage {
   async submit() {
     if (this.setupForm.valid) {
       const { password, consent } = this.setupForm.value;
+      const language = localStorage.getItem('lang') || 'en';
       
-      this.registerService.setupAccount(this.userId, this.token, password).subscribe({
+      this.registerService.setupAccount(this.userId, this.token, password, language).subscribe({
         next: async (response) => {
           if (response.success) {
             this.showToast('Your account has been set up successfully!', 'success');

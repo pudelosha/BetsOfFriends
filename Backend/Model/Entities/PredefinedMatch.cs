@@ -18,6 +18,8 @@ namespace Backend.Model.Entities
         [ForeignKey("TournamentId")]
         public PredefinedTournament PredefinedTournament { get; set; }
 
+        public int? matchUpdateId { get; set; } // TODO future development - to monitor match results via external API
+
         [Required]
         public int HomeTeamId { get; set; }
         [ForeignKey("HomeTeamId")]

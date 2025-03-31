@@ -36,9 +36,12 @@ namespace Backend.Controllers
                 if (!request.Consent)
                     return BadRequest(new RegisterResultDto { Success = false, Message = "You must accept terms and conditions." });
 
+                if (string.IsNullOrWhiteSpace(request.Language))
+                    return BadRequest(new RegisterResultDto { Success = false, Message = "Language is required." });
+
                 _logger.LogInformation($"Registering user: {request.Email}");
 
-                var result = await _registerService.RegisterUserAsync(request.Email, request.Password);
+                var result = await _registerService.RegisterUserAsync(request.Email, request.Password, request.Language);
 
                 if (!result.Success)
                 {
@@ -120,7 +123,7 @@ namespace Backend.Controllers
 
                 _logger.LogInformation($"Processing account setup for user: {request.UserId}");
 
-                var result = await _registerService.SetupAccountAsync(request.UserId, request.Token, request.Password);
+                var result = await _registerService.SetupAccountAsync(request.UserId, request.Token, request.Password, request.Language);
 
                 if (!result.Success)
                 {

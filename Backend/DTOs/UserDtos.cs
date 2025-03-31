@@ -36,7 +36,7 @@ namespace Backend.DTOs
         public string? Nickname { get; set; }
         public LocationDto? Location { get; set; }
         public DateTime? MemberSince { get; set; }
-        public string Language { get; set; } = "English";
+        public string Language { get; set; } = "en";
         public bool DarkMode { get; set; }
     }
 

@@ -77,7 +77,9 @@ namespace Backend.Repository.Services
                                 Status = Bet.BetStatus.ToPlace, // New Status: Bet must be placed
                                 Result = Bet.BetResult.Pending, // Bet starts as "Pending"
                                 Submitted = false, // Bet is unsubmitted initially
-                                Payout = null // No payout calculated yet
+                                BasePayout = null, // No payout calculated yet
+                                QualificationPayout = null,
+                                ExactScorePayout = null
                             });
                         }
                     }
@@ -304,85 +306,77 @@ namespace Backend.Repository.Services
 
             foreach (var bet in match.Bets)
             {
-                decimal payout = 0;
-                bool won = false;
+                bet.BasePayout = 0;
+                bet.QualificationPayout = 0;
+                bet.ExactScorePayout = 0;
 
-                // Ensure the bet has valid numbers before checking conditions
+                bool won = false;
                 bool isBetValid = bet.HomeGoals.HasValue && bet.AwayGoals.HasValue;
 
-                // Process 1X2 Bet Outcome only if valid goals are provided
+                // 1X2 Outcome
                 if (isBetValid)
                 {
-                    if (homeWin && bet.HomeGoals.Value > bet.AwayGoals.Value)
+                    if (homeWin && bet.HomeGoals > bet.AwayGoals)
                     {
-                        payout += bet.BaseAmount * homeWinOdds;
+                        bet.BasePayout = bet.BaseAmount * homeWinOdds;
                         won = true;
                     }
-                    else if (isDraw && bet.HomeGoals.Value == bet.AwayGoals.Value)
+                    else if (isDraw && bet.HomeGoals == bet.AwayGoals)
                     {
-                        payout += bet.BaseAmount * drawOdds;
+                        bet.BasePayout = bet.BaseAmount * drawOdds;
                         won = true;
                     }
-                    else if (awayWin && bet.AwayGoals.Value > bet.HomeGoals.Value)
+                    else if (awayWin && bet.AwayGoals > bet.HomeGoals)
                     {
-                        payout += bet.BaseAmount * awayWinOdds;
+                        bet.BasePayout = bet.BaseAmount * awayWinOdds;
                         won = true;
                     }
                 }
 
-                // Process Qualification Bet
+                // Qualification Bet
                 if (hasQualification && bet.Qualified.HasValue)
                 {
                     if (bet.Qualified == CustomMatch.TeamQualified.Home && homeQualified && homeQualifiesOdds.HasValue)
                     {
-                        payout += bet.BaseAmount * homeQualifiesOdds.Value;
+                        bet.QualificationPayout = bet.BaseAmount * homeQualifiesOdds.Value;
                         won = true;
                     }
                     else if (bet.Qualified == CustomMatch.TeamQualified.Away && awayQualified && awayQualifiesOdds.HasValue)
                     {
-                        payout += bet.BaseAmount * awayQualifiesOdds.Value;
+                        bet.QualificationPayout = bet.BaseAmount * awayQualifiesOdds.Value;
                         won = true;
                     }
                 }
 
-                // Process Exact Result Bonus only if the bet is valid
+                // Exact Score
                 if (tournamentSettings.AllowExactResultBonus && isBetValid &&
-                    bet.HomeGoals.Value == homeScore && bet.AwayGoals.Value == awayScore)
+                    bet.HomeGoals == homeScore && bet.AwayGoals == awayScore)
                 {
-                    decimal winningOdd = 0;
-
-                    // Determine the correct winning odd
-                    if (homeScore > awayScore)
-                        winningOdd = homeWinOdds;
-                    else if (homeScore < awayScore)
-                        winningOdd = awayWinOdds;
-                    else
-                        winningOdd = drawOdds;
+                    decimal winningOdd = homeWin ? homeWinOdds : awayWin ? awayWinOdds : drawOdds;
 
                     if (tournamentSettings.ExactResultBonus.HasValue)
                     {
-                        if (tournamentSettings.ExactResultBonusCalculation == ExactResultBonusCalculationType.Fixed)
+                        bet.ExactScorePayout = tournamentSettings.ExactResultBonusCalculation switch
                         {
-                            payout += tournamentSettings.ExactResultBonus.Value;
-                        }
-                        else if (tournamentSettings.ExactResultBonusCalculation == ExactResultBonusCalculationType.Multiplied)
-                        {
-                            payout += winningOdd * tournamentSettings.ExactResultBonus.Value;
-                        }
+                            ExactResultBonusCalculationType.Fixed => tournamentSettings.ExactResultBonus.Value,
+                            ExactResultBonusCalculationType.Multiplied => winningOdd * tournamentSettings.ExactResultBonus.Value,
+                            _ => 0
+                        };
+                        won = true;
                     }
                 }
 
-                // Apply Non-Submitted Bet Penalty
-                if (tournamentSettings.AllowNonSubmittedBetsPenalty && !bet.Submitted &&
-                    tournamentSettings.NonSubmittedBetPenalty.HasValue)
+                // Penalty for not submitting
+                if (tournamentSettings.AllowNonSubmittedBetsPenalty &&
+                    !bet.Submitted && tournamentSettings.NonSubmittedBetPenalty.HasValue)
                 {
-                    payout -= tournamentSettings.NonSubmittedBetPenalty.Value;
+                    var penalty = tournamentSettings.NonSubmittedBetPenalty.Value;
+                    bet.BasePayout -= penalty;
                 }
 
                 // Finalize Bet Status
                 bet.Status = Bet.BetStatus.Finalised;
                 bet.Result = won ? Bet.BetResult.Won : Bet.BetResult.Lost;
-                bet.Payout = payout;
             }
 
             await _context.SaveChangesAsync();

@@ -5,10 +5,10 @@ namespace Backend.Repository.Interfaces
 {
     public interface IRegisterService
     {
-        Task<RegisterResultDto> RegisterUserAsync(string email, string password);
+        Task<RegisterResultDto> RegisterUserAsync(string email, string password, string language);
         Task<ApplicationUser?> RegisterInvitedUserAsync(string email);
         Task<RegisterResultDto> ConfirmEmailAsync(string userId, string token);
         Task<RegisterResultDto> ResendConfirmationEmailAsync(string email);
-        Task<RegisterResultDto> SetupAccountAsync(string userId, string token, string password);
+        Task<RegisterResultDto> SetupAccountAsync(string userId, string token, string password, string language);
     }
 }

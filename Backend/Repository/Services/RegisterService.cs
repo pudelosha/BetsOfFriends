@@ -15,6 +15,7 @@ namespace Backend.Repository.Services
         private readonly ILogger<RegisterService> _logger;
         private readonly IEmailTemplateService _emailTemplateService;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILanguageService _languageService;
 
         public RegisterService(
             UserManager<ApplicationUser> userManager,
@@ -22,7 +23,8 @@ namespace Backend.Repository.Services
             IEmailService emailService,
             IConfiguration configuration,
             ILogger<RegisterService> logger,
-            IEmailTemplateService emailTemplateService)
+            IEmailTemplateService emailTemplateService,
+            ILanguageService languageService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -30,9 +32,10 @@ namespace Backend.Repository.Services
             _configuration = configuration;
             _logger = logger;
             _emailTemplateService = emailTemplateService;
+            _languageService = languageService;
         }
 
-        public async Task<RegisterResultDto> RegisterUserAsync(string email, string password)
+        public async Task<RegisterResultDto> RegisterUserAsync(string email, string password, string language)
         {
             _logger.LogInformation($"Attempting to register user with email: {email}");
 
@@ -48,7 +51,24 @@ namespace Backend.Repository.Services
                 };
             }
 
-            var user = new ApplicationUser { UserName = email, Email = email };
+            var languageEntity = await _languageService.GetByShortNameAsync(language);
+            if (languageEntity == null)
+            {
+                _logger.LogWarning($"Invalid language code provided: {language}");
+                return new RegisterResultDto
+                {
+                    Success = false,
+                    Message = "Invalid language selection.",
+                    Errors = new List<IdentityError> { new IdentityError { Description = "Invalid language code." } }
+                };
+            }
+
+            var user = new ApplicationUser
+            {
+                UserName = email,
+                Email = email,
+                LanguageId = languageEntity.LanguageId
+            };
             var result = await _userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)
@@ -229,7 +249,7 @@ namespace Backend.Repository.Services
             return confirmationLink;
         }
 
-        public async Task<RegisterResultDto> SetupAccountAsync(string userId, string token, string password)
+        public async Task<RegisterResultDto> SetupAccountAsync(string userId, string token, string password, string language)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -250,7 +270,20 @@ namespace Backend.Repository.Services
                 };
             }
 
+            var languageEntity = await _languageService.GetByShortNameAsync(language);
+            if (languageEntity == null)
+            {
+                return new RegisterResultDto
+                {
+                    Success = false,
+                    Message = "Invalid language code.",
+                    Errors = new List<IdentityError> { new IdentityError { Description = "Invalid language." } }
+                };
+            }
+
             user.EmailConfirmed = true;
+            user.LanguageId = languageEntity.LanguageId;
+
             await _userManager.UpdateAsync(user);
 
             return new RegisterResultDto { Success = true, Message = "Account setup completed successfully!" };

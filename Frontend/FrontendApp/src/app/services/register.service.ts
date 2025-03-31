@@ -63,8 +63,8 @@ export class RegisterService {
     );
   }
   
-  setupAccount(userId: string, token: string, password: string): Observable<{ success: boolean; message: string; errors?: string[] }> {
-    const requestBody = { userId, token, password };
+  setupAccount(userId: string, token: string, password: string, language: string): Observable<{ success: boolean; message: string; errors?: string[] }> {
+    const requestBody = { userId, token, password, language };
   
     return this.http.post<RegisterResult>(`${this.apiUrl}/setup-account`, requestBody).pipe(
       tap((response) => console.log('Backend response:', response)),

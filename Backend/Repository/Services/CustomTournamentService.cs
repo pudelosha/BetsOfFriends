@@ -1079,7 +1079,10 @@ namespace Backend.Repository.Services
                             b.Status == Bet.BetStatus.Finalised &&
                             b.HomeGoals == b.Match.HomeScore &&
                             b.AwayGoals == b.Match.AwayScore);
-                        var totalPayout = bets.Where(b => b.Status == Bet.BetStatus.Finalised).Sum(b => b.Payout ?? 0);
+                        var totalPayout = bets
+                            .Where(b => b.Status == Bet.BetStatus.Finalised)
+                            .Sum(b => (b.BasePayout ?? 0) + (b.QualificationPayout ?? 0) + (b.ExactScorePayout ?? 0));
+
 
                         return new TournamentSummaryDto
                         {
@@ -1166,7 +1169,9 @@ namespace Backend.Repository.Services
                         WhoQualifiedResult = isFinalised && match.Type == CustomMatch.MatchType.ExtendedWithQualification
                             ? match.Qualified.ToString()
                             : "N/A",
-                        Payout = isFinalised ? (userBet?.Payout ?? 0) : 0 // Show 0 payout for non-finalised matches
+                        Payout = isFinalised
+                            ? ((userBet?.BasePayout ?? 0) + (userBet?.QualificationPayout ?? 0) + (userBet?.ExactScorePayout ?? 0))
+                            : 0
                     };
                 }).ToList();
 
@@ -1217,7 +1222,8 @@ namespace Backend.Repository.Services
                         var user = group.Key;
                         var totalPayout = group
                             .Where(b => b.Status == Bet.BetStatus.Finalised)
-                            .Sum(b => b.Payout ?? 0);
+                            .Sum(b => (b.BasePayout ?? 0) + (b.QualificationPayout ?? 0) + (b.ExactScorePayout ?? 0));
+
 
                         return new TournamentPlayerResultDto
                         {

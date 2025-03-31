@@ -7,6 +7,7 @@ import { ToastController } from '@ionic/angular';
 import { LoginResponse } from '..//model/login-response'
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import { LanguageService } from './language.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,7 @@ export class AuthService {
   private storageKey = 'selectedTournamentId';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
 
-  constructor(private http: HttpClient, private toastCtrl: ToastController, private router: Router) {}
+  constructor(private http: HttpClient, private toastCtrl: ToastController, private router: Router, private languageService: LanguageService) {}
 
   login(email: string, password: string): Observable<{ success: boolean; message: string }> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
@@ -25,6 +26,17 @@ export class AuthService {
         console.log('Backend response:', response);
         if (response.success && response.token) {
           localStorage.setItem(this.authTokenKey, response.token);
+  
+          try {
+            const decodedToken: any = jwtDecode(response.token);
+            console.log('language' + decodedToken['preferred_language']);
+            const language = decodedToken['preferred_language'] || 'en';
+            localStorage.setItem('lang', language); // store for persistence
+            this.languageService.useLanguage(language);
+          } catch (error) {
+            console.warn('Failed to decode token or apply language:', error);
+          }
+  
           this.isAuthenticatedSubject.next(true);
           return { success: true, message: 'Login successful!' };
         }
@@ -36,7 +48,7 @@ export class AuthService {
       })
     );
   }
-
+  
   getToken(): string | null {
     return localStorage.getItem(this.authTokenKey);
   }

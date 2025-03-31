@@ -9,6 +9,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { Country } from 'src/app/model/location';
 import { LocationService } from 'src/app/services/location.service';
 import { firstValueFrom } from 'rxjs';
+import { LanguageService } from 'src/app/services/language.service';
+import { Language } from 'src/app/model/language';
 
 @Component({
   selector: 'app-profile',
@@ -23,11 +25,7 @@ export class ProfilePage implements OnInit {
   isLoading = true;
   isUpdating = false;
   availableCountries: Country[] = [];
-
-  languages = [
-    { value: 'en', label: 'English' },
-    { value: 'pl', label: 'Polski' }
-  ];
+  availableLanguages: Language[] = [];
 
   constructor(
     private authService: AuthService,
@@ -36,7 +34,8 @@ export class ProfilePage implements OnInit {
     private alertCtrl: AlertController,
     private userService: UserService,
     private locationService: LocationService,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private languageService: LanguageService
   ) {
     this.profileForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -49,11 +48,13 @@ export class ProfilePage implements OnInit {
 
   ngOnInit() {
     this.loadCountries();
+    this.loadLanguages();
     this.loadUserProfile();
   }
 
   ionViewWillEnter() {
     this.loadCountries();
+    this.loadLanguages();
     this.loadUserProfile();
   }
 
@@ -78,6 +79,15 @@ export class ProfilePage implements OnInit {
     } catch (error) {
       console.error('Failed to load countries:', error);
       this.presentToast('Could not load countries list.', 'danger');
+    }
+  }
+
+  async loadLanguages() {
+    try {
+      this.availableLanguages = await firstValueFrom(this.languageService.getAvailableLanguages());
+    } catch (error) {
+      console.error('Failed to load languages:', error);
+      this.presentToast('Could not load languages list.', 'danger');
     }
   }
   
@@ -241,7 +251,7 @@ export class ProfilePage implements OnInit {
           email: profile.email,
           nickname: profile.nickname ?? '',
           location: profile.location?.countryId ?? '',
-          language: this.getLanguageValue(profile.language),
+          language: profile.language ?? '',
           darkMode: profile.darkMode
         });      
   
@@ -275,16 +285,22 @@ export class ProfilePage implements OnInit {
     const selectedCountry = this.availableCountries.find(
       c => c.countryId === Number(this.f['location'].value)
     );
-    
+  
+    const selectedLanguage = this.availableLanguages.find(
+      l => l.shortName === this.f['language'].value
+    );
+  
+    const langCode = selectedLanguage?.shortName ?? 'en';
+  
     const updatedProfile = {
       nickname: this.f['nickname'].value?.trim() || null,
       location: selectedCountry
         ? { countryId: selectedCountry.countryId, name: selectedCountry.name }
         : null,
-      language: this.f['language'].value,
+      language: langCode,
       darkMode: this.f['darkMode'].value
     };
-       
+  
     console.log('Updating profile:', updatedProfile);
   
     const loading = await this.loadingController.create({
@@ -297,6 +313,7 @@ export class ProfilePage implements OnInit {
   
     this.userService.updateUserProfile(updatedProfile).subscribe({
       next: async () => {
+        this.languageService.useLanguage(langCode);
         await this.presentToast('Profile updated successfully!', 'success');
       },
       error: async (error) => {
@@ -314,11 +331,11 @@ export class ProfilePage implements OnInit {
       }
     });
   }
-  
+    
   getLanguageValue(apiValue: string): string {
-    const found = this.languages.find(lang => lang.label === apiValue || lang.value === apiValue);
-    return found ? found.value : 'en';
-  }  
+    const found = this.availableLanguages.find(lang => lang.shortName === apiValue);
+    return found ? found.shortName : 'en';
+  }
 
   private isValidEmail(email: string): boolean {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

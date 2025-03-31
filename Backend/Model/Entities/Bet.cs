@@ -27,7 +27,10 @@ namespace Backend.Model.Entities
         public BetStatus Status { get; set; }
         public BetResult Result { get; set; }
         public bool Submitted { get; set; } = false;
-        public decimal? Payout { get; set; }
+
+        public decimal? BasePayout { get; set; }            // 1x2 outcome
+        public decimal? QualificationPayout { get; set; }   // Correct qualifier
+        public decimal? ExactScorePayout { get; set; }      // Exact result
 
         public enum BetStatus
         {

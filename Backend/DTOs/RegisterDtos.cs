@@ -12,6 +12,7 @@ namespace Backend.DTOs
         [MinLength(8)]
         public string Password { get; set; }
         public bool Consent { get; set; }
+        public string Language { get; set; }
     }
 
     public class RegisterResultDto
@@ -33,5 +34,6 @@ namespace Backend.DTOs
         public string UserId { get; set; } = string.Empty;
         public string Token { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string Language { get; set; }
     }
 }
