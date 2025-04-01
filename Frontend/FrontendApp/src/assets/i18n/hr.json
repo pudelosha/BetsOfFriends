@@ -1,0 +1,528 @@
+{
+    "WELCOME": {
+      "TITLE": "Oklade s prijateljima",
+      "SLOGAN": "Kladite se s najboljim prijateljima!",
+      "DESCRIPTION": "Kladite se na nogometne utakmice s prijateljima — samo za zabavu! Stvarajte turnire, predviđajte rezultate i penjte se na ljestvici.",
+      "LOGIN": "Prijavite se",
+      "REGISTER": "Registrirajte se"
+    },
+    "LOGIN": {
+      "TITLE": "Prijava",
+      "DESCRIPTION": "Unesite svoje prijavne podatke za pristup svom računu.",
+      "EMAIL": "E-mail",
+      "PASSWORD": "Lozinka",
+      "EMAIL_ERROR": "Unesite valjanu e-mail adresu.",
+      "PASSWORD_ERROR": "Lozinka je obavezna.",
+      "FORGOT_PASSWORD": "Zaboravili ste lozinku?",
+      "RESEND_ACTIVATION": "Niste primili aktivacijski e-mail?",
+      "SUBMIT": "Prijavite se",
+      "NO_ACCOUNT": "Nemate račun?",
+      "SIGN_UP": "Registrirajte se"
+    },
+    "REGISTER": {
+      "TITLE": "Registracija",
+      "DESCRIPTION": "Stvorite račun za sudjelovanje u turnirima i klađenje.",
+      "EMAIL": "E-mail",
+      "EMAIL_ERROR": "Unesite valjanu e-mail adresu.",
+      "PASSWORD": "Lozinka",
+      "PASSWORD_ERROR": "Lozinka je obavezna (min. 8 znakova).",
+      "CONFIRM_PASSWORD": "Potvrdite lozinku",
+      "CONFIRM_PASSWORD_ERROR": "Lozinke se moraju podudarati.",
+      "CONSENT_TEXT": "Slažem se s",
+      "TERMS_LINK": "Uvjeti i odredbe",
+      "CONSENT_ERROR": "Morate prihvatiti uvjete da biste se registrirali.",
+      "SUBMIT": "Registrirajte se",
+      "ALREADY_ACCOUNT": "Već imate račun?",
+      "LOGIN_LINK": "Prijavite se"
+    },
+    "FORGOT": {
+      "TITLE": "Zaboravljena lozinka",
+      "DESCRIPTION": "Unesite svoju e-mail adresu i poslat ćemo vam link za resetiranje lozinke.",
+      "EMAIL": "E-mail",
+      "EMAIL_ERROR": "Unesite valjanu e-mail adresu.",
+      "SUBMIT": "Pošaljite link za resetiranje",
+      "BACK": "Povratak na prijavu"
+    },
+    "CONFIRM": {
+      "SUCCESS_TITLE": "Račun aktiviran!",
+      "FAILURE_TITLE": "Potvrda e-maila nije uspjela ❌",
+      "PROCESSING": "Obrađujemo vaš zahtjev...",
+      "GO_TO_LOGIN": "Idite na prijavu"
+    },
+    "LOGOUT": {
+      "TITLE": "Doviđenja!",
+      "MESSAGE": "Odjavili ste se.",
+      "GO_TO_LOGIN": "Idite na prijavu"
+    },
+    "RESEND": {
+      "TITLE": "Ponovno pošaljite aktivacijski e-mail",
+      "DESCRIPTION": "Unesite svoju e-mail adresu i poslat ćemo vam novi aktivacijski link.",
+      "EMAIL": "E-mail",
+      "EMAIL_ERROR": "Unesite valjanu e-mail adresu.",
+      "BUTTON": "Pošaljite e-mail",
+      "BACK": "Povratak na prijavu"
+    },
+    "RESET": {
+      "TITLE": "Resetiranje lozinke",
+      "DESCRIPTION": "Unesite svoju novu lozinku u nastavku.",
+      "NEW_PASSWORD": "Nova lozinka",
+      "CONFIRM_PASSWORD": "Potvrdite lozinku",
+      "PASSWORD_ERROR": "Lozinka mora imati najmanje 8 znakova.",
+      "CONFIRM_ERROR": "Lozinke se moraju podudarati.",
+      "BUTTON": "Resetirajte lozinku",
+      "BACK": "Povratak na prijavu"
+    },
+    "APP": {
+      "MENU": "Izbornik",
+      "TITLE": "Oklade s prijateljima",
+      "HOME": "Početna",
+      "MESSAGES": "Poruke",
+      "TOURNAMENTS": "Turniri",
+      "MY_TOURNAMENTS": "Moji turniri",
+      "SUMMARY": "Sažetak",
+      "FIND_TOURNAMENT": "Pronađite turnir",
+      "BETTING": "Klađenje",
+      "MY_BETS": "Moje oklade",
+      "SETTINGS": "Postavke",
+      "PROFILE": "Profil",
+      "NOTIFICATIONS": "Obavijesti",
+      "ADMIN": "Admin",
+      "CREATE_TOURNAMENT": "Kreirajte turnir",
+      "MANAGE_TOURNAMENTS": "Upravljajte turnirima",
+      "MANAGE_MATCHES": "Upravljajte utakmicama",
+      "MANAGE_PARTICIPANTS": "Upravljajte sudionicima",
+      "SUPER_ADMIN": "Super Admin",
+      "CREATE_PREDEFINED": "Kreirajte unaprijed definirani turnir",
+      "MANAGE_PREDEFINED": "Upravljajte unaprijed definiranim turnirima",
+      "MANAGE_USERS": "Upravljajte korisnicima",
+      "LOGOUT": "Odjava"
+    },
+    "PROFILE": {
+      "TITLE": "Podaci profila",
+      "MANAGEMENT": "Upravljanje profilom",
+      "MEMBER_SINCE": "Član od",
+      "EMAIL": "E-mail",
+      "NICKNAME": "Nadimak (neobavezno)",
+      "NICKNAME_PLACEHOLDER": "Unesite nadimak",
+      "LANGUAGE": "Jezik",
+      "LOCATION": "Lokacija (neobavezno)",
+      "SELECT_LOCATION": "Odaberite svoju lokaciju",
+      "DARK_MODE": "Tamni način",
+      "SAVE": "Spremi profil",
+      "CHANGE_EMAIL": "Promijeni e-mail",
+      "UPDATE_PASSWORD": "Ažuriraj lozinku",
+      "DELETE_ACCOUNT": "Izbriši račun"
+    },
+    "NOTIFICATIONS": {
+      "TOURNAMENT_UPDATES": "Ažuriranja turnira",
+      "MATCH_CLOSED": "Rezultati turnira ponovno izračunati",
+      "DAILY_UPDATES": "Dnevna ažuriranja turnira",
+      "TOURNAMENT_INVITES": "Pozivnice za turnire",
+      "BETTING_REMINDERS": "Podsjetnici za klađenje",
+      "PENDING_BETS": "Podsjetnik na neobrađena klađenja",
+      "NEW_GAMES": "Nove igre za klađenje",
+      "PROMOTIONS": "Promocije",
+      "SPECIAL_OFFERS": "Posebne ponude",
+      "SAVE": "Spremi postavke"
+    },
+    "SETUP": {
+      "TITLE": "Postavite svoj račun",
+      "DESCRIPTION": "Stvorite lozinku za završetak postavljanja vašeg računa.",
+      "NEW_PASSWORD": "Nova lozinka",
+      "CONFIRM_PASSWORD": "Potvrdite lozinku",
+      "PASSWORD_ERROR": "Lozinka mora imati najmanje 8 znakova.",
+      "CONFIRM_ERROR": "Lozinke se moraju podudarati.",
+      "CONSENT_TEXT": "Slažem se s",
+      "TERMS_LINK": "Uvjetima korištenja",
+      "CONSENT_ERROR": "Morate prihvatiti uvjete da biste nastavili.",
+      "SUBMIT": "Završi postavljanje"
+    },
+    "USER_MANAGER": {
+      "DESCRIPTION": "Pregledajte sve korisnike u sustavu. Upotrijebite traku za pretraživanje kako biste pronašli korisnike ili poduzmite radnje za suspenziju ili brisanje računa.",
+      "SEARCH_PLACEHOLDER": "Pretraži korisnike...",
+      "NO_RESULTS": "Nema korisnika.",
+      "SINCE": "Od",
+      "STATUS": "Status",
+      "ROLE": "Uloga",
+      "ADMIN_OF": "Admin za",
+      "PARTICIPANT_IN": "Sudionik u",
+      "SUSPEND": "Suspendiraj",
+      "UNSUSPEND": "Ponovno aktiviraj",
+      "DELETE": "Izbriši"
+    },
+        "INVITE": {
+          "TITLE": "Prihvati pozivnicu",
+          "CLOSE": "Zatvori",
+          "MESSAGE": "Pozvani ste da se pridružite <strong>{{ name }}</strong>.",
+          "NICKNAME_PROMPT": "Unesite nadimak kako biste sudjelovali.",
+          "NICKNAME_LABEL": "Nadimak",
+          "NICKNAME_PLACEHOLDER": "Unesite nadimak",
+          "ERROR_REQUIRED": "Nadimak je obavezan.",
+          "ERROR_MAXLENGTH": "Nadimak ne smije biti duži od 20 znakova.",
+          "ACCEPT": "Prihvati"
+        },
+        "BETS_OVERVIEW": {
+          "TITLE": "Pregled oklada",
+          "HOME_WIN": "Pobjeda domaćina",
+          "DRAW": "Neriješeno",
+          "AWAY_WIN": "Pobjeda gosta",
+          "HOME_QUALIFIES": "Domaćin se kvalificira",
+          "AWAY_QUALIFIES": "Gost se kvalificira",
+          "USER_BETS": "Oklade korisnika",
+          "PLAYER": "Igrač",
+          "BET": "Oklada",
+          "HW": "HW",
+          "D": "D",
+          "AW": "AW",
+          "HQ": "HQ",
+          "AQ": "AQ",
+          "RESULT": "Rezultat"
+        },
+        "BET_MODAL": {
+          "EDIT_TITLE": "Uredi okladu",
+          "PLACE_TITLE": "Postavi okladu",
+          "CLOSE": "Zatvori",
+          "MATCH_ODDS": "90 minuta oklada na utakmicu",
+          "HOME_WIN": "Pobjeda domaćina",
+          "DRAW": "Neriješeno",
+          "AWAY_WIN": "Pobjeda gosta",
+          "PREDICT_SCORE": "Predvidite rezultat nakon 90 minuta",
+          "QUALIFY_ODDS": "Tko se kvalificira? Koeficijenti",
+          "QUALIFY_PREDICTION": "Vaša predikcija za kvalifikaciju",
+          "SAVE": "Spremi"
+        },
+        "MATCH_MODAL": {
+          "ADD_TITLE": "Dodaj utakmicu",
+          "EDIT_TITLE": "Uredi utakmicu",
+          "CLOSE": "Zatvori",
+          "STAGE": "Faza",
+          "HOME_TEAM": "Domaćin",
+          "AWAY_TEAM": "Gost",
+          "TYPE": "Vrsta utakmice",
+          "TYPE_REGULAR": "Redovnih 90 minuta",
+          "TYPE_EXTENDED": "90 minuta s kvalifikacijom",
+          "DATETIME": "Datum i vrijeme utakmice",
+          "ODDS_1X2": "1X2 oklada",
+          "HOME_WIN": "Pobjeda domaćina",
+          "DRAW": "Neriješeno",
+          "AWAY_WIN": "Pobjeda gosta",
+          "ODDS_QUALIFICATION": "Koeficijenti za kvalifikaciju",
+          "HOME_QUAL": "Domaćin se kvalificira",
+          "AWAY_QUAL": "Gost se kvalificira",
+          "VISIBILITY": "Vidljivost utakmice",
+          "VISIBLE": "Vidljivo",
+          "HIDDEN": "Skriveno",
+          "SAVE": "Spremi"
+        },
+        "MATCH_RESULT_MODAL": {
+          "TITLE": "Uredi rezultat utakmice",
+          "CLOSE": "Zatvori",
+          "DATETIME": "Datum i vrijeme utakmice",
+          "FINISHED_LABEL": "Je li utakmica završena?",
+          "FINAL_SCORE": "Konačan rezultat",
+          "QUALIFY_LABEL": "Odaberite kvalificirani tim",
+          "SAVE": "Spremi"
+        },
+        "STAGE_MODAL": {
+          "ADD_TITLE": "Dodaj novu fazu",
+          "EDIT_TITLE": "Uredi fazu",
+          "CLOSE": "Zatvori",
+          "STAGE_NAME_LABEL": "Naziv faze",
+          "STAGE_NAME_PLACEHOLDER": "Unesite naziv faze",
+          "STAGE_NAME_REQUIRED": "Naziv faze je obavezan.",
+          "STAGE_NAME_MAXLENGTH": "Naziv faze ne smije biti duži od 50 znakova.",
+          "STAGE_ORDER_LABEL": "Redoslijed faze",
+          "STAGE_ORDER_PLACEHOLDER": "Unesite redoslijed faze",
+          "STAGE_ORDER_REQUIRED": "Redoslijed je obavezan.",
+          "STAGE_ORDER_MIN": "Redoslijed mora biti 1 ili veći.",
+          "SAVE": "Spremi"
+        },
+        "TEAM_MODAL": {
+          "ADD_TITLE": "Dodaj novo tim",
+          "EDIT_TITLE": "Uredi tim",
+          "CLOSE": "Zatvori",
+          "TEAM_NAME_LABEL": "Naziv tima",
+          "TEAM_NAME_PLACEHOLDER": "Unesite naziv tima",
+          "TEAM_NAME_REQUIRED": "Naziv tima je obavezan.",
+          "TEAM_NAME_MAXLENGTH": "Naziv tima ne smije biti duži od 50 znakova.",
+          "SAVE": "Spremi"
+        },
+        "USER_MODAL": {
+          "ADD_TITLE": "Dodaj novog korisnika",
+          "EDIT_TITLE": "Uredi korisnika",
+          "CLOSE": "Zatvori",
+          "USER_NAME": "Korisničko ime",
+          "ADMIN_NAME": "Administratorsko ime",
+          "ADMIN_NAME_PLACEHOLDER": "Unesite administratorsko ime",
+          "ADMIN_NAME_REQUIRED": "Administratorsko ime je obavezno.",
+          "EMAIL": "Korisnička e-mail adresa",
+          "EMAIL_PLACEHOLDER": "Unesite korisničku e-mail adresu",
+          "EMAIL_REQUIRED": "Korisnička e-mail adresa je obavezna.",
+          "EMAIL_INVALID": "Unesite valjanu e-mail adresu.",
+          "ROLE": "Korisnička uloga",
+          "ROLE_PLAYER": "Igrač",
+          "ROLE_ADMIN": "Administrator",
+          "STATUS": "Status",
+          "SAVE": "Spremi"
+        },
+        "JOIN_MODAL": {
+          "TITLE": "Pridruži se turniru",
+          "CLOSE": "Zatvori",
+          "DESCRIPTION_1": "Tražite sudjelovanje u",
+          "DESCRIPTION_2": "Unesite nadimak i opcionalnu poruku za administratora.",
+          "NICKNAME_LABEL": "Nadimak",
+          "NICKNAME_PLACEHOLDER": "Unesite nadimak",
+          "MESSAGE_LABEL": "Poruka administratoru",
+          "MESSAGE_PLACEHOLDER": "Opcionalna poruka",
+          "NICKNAME_REQUIRED": "Nadimak je obavezan.",
+          "NICKNAME_MAXLENGTH": "Nadimak ne smije biti duži od 20 znakova.",
+          "SUBMIT": "Pošaljite zahtjev"
+        },
+        "SELECT_MODAL": {
+          "TITLE": "Odaberite turnir",
+          "CLOSE": "Zatvori",
+          "PARTICIPANTS": "Sudionici",
+          "ROLE": "Uloga",
+          "SELECT": "Odaberite",
+          "SELECTED": "Odabrano"
+        },
+        "PLAYER_STATS": {
+          "TITLE": "Statistike igrača",
+          "CLOSE": "Zatvori",
+          "NO_STATS": "Nema dostupnih statistika.",
+          "BET": "Oklada",
+          "EXACT": "Točno",
+          "QUALIFY": "Kvalifikacija"
+        },
+        "TOURNAMENT_SELECTION": {
+          "TITLE": "Odaberite turnir",
+          "CANCEL": "Otkazati"
+        },
+            "MY_BETS": {
+              "TO_PLACE": "Za postaviti",
+              "PLACED": "Postavljeno",
+              "FINALISED": "Završeno"
+            },
+            "MY_BETS_FINALISED": {
+              "NO_MATCHES": "Nema završenih utakmica."
+            },
+            "MY_BETS_PLACED": {
+              "NO_MATCHES": "Nema postavljenih oklada.",
+              "EDIT_BUTTON": "Uredi okladu"
+            },
+            "MY_BETS_TO_PLACE": {
+              "NO_MATCHES": "Nema nadolazećih utakmica za klađenje.",
+              "PLACE_BUTTON": "Postavi okladu"
+            },
+            "MESSAGES": {
+              "NO_NOTIFICATIONS": "Nema obavijesti."
+            },
+            "LATEST_MESSAGES": {
+              "TITLE": "Najnovije poruke",
+              "NO_MESSAGES": "Nema poruka."
+            },
+            "STARTED_MATCHES": {
+              "TITLE": "Počele prilagođene utakmice"
+            },
+            "STARTED_MATCHES_PREDEFINED": {
+              "TITLE": "Počele unaprijed definirane utakmice"
+            },
+            "TOURNAMENT_INVITES": {
+              "TITLE": "Pozivnice za turnir",
+              "PARTICIPANTS": "djelatnici"
+            },
+            "TOURNAMENT_SUMMARY": {
+              "TITLE": "Sažetak turnira",
+              "YOU": "vi",
+              "NO_DATA": "Nema podataka o turniru."
+            },
+            "UPCOMING_BETS": {
+              "TITLE": "Nadolazeće oklade",
+              "NO_BETS": "Nema nadolazećih oklada."
+            },
+            "MANAGE_CUSTOM_FINALISED": {
+              "NO_MATCHES": "Nema utakmica.",
+              "EDIT_BUTTON": "Uredi"
+            },
+            "MANAGE_CUSTOM_MATCHES": {
+              "TAB_UPCOMING": "Nadolazeće",
+              "TAB_STARTED": "Počele",
+              "TAB_FINALISED": "Završeno",
+              "EDIT_BUTTON": "Uredi",
+              "NO_MATCHES": "Nema utakmica.",
+              "DATE": "Datum",
+              "TIME": "Vrijeme"
+            },
+            "MANAGE_CUSTOM_STARTED": {
+              "NO_MATCHES": "Nema utakmica.",
+              "EDIT_BUTTON": "Uredi"
+            },
+            "MANAGE_CUSTOM_UPCOMING": {
+              "NO_MATCHES": "Nema utakmica.",
+              "EDIT_BUTTON": "Uredi"
+            },
+            "MANAGE_PREDEFINED_FINALISED": {
+              "NO_MATCHES": "Nema utakmica.",
+              "EDIT_BUTTON": "Uredi"
+            },
+            "MANAGE_PREDEFINED_MATCHES": {
+              "TAB_UPCOMING": "Nadolazeće",
+              "TAB_STARTED": "Počele",
+              "TAB_FINALISED": "Završeno"
+            },
+            "MANAGE_PREDEFINED_STARTED": {
+              "NO_MATCHES": "Nema utakmica.",
+              "EDIT_BUTTON": "Uredi"
+            },
+            "MANAGE_PREDEFINED_UPCOMING": {
+              "NO_MATCHES": "Nema utakmica.",
+              "EDIT_BUTTON": "Uredi"
+            },
+            "FIND_TOURNAMENT": {
+              "DESCRIPTION": "Pregledajte javne turnire koji su otvoreni za sudjelovanje. Koristite tražilicu za pronalaženje turnira po nazivu i zatražite sudjelovanje.",
+              "SEARCH_PLACEHOLDER": "Pretraži turnire...",
+              "NO_RESULTS": "Nema turnira",
+              "PARTICIPANTS": "djelatnici",
+              "CREATED": "Stvoreno",
+              "REQUESTED": "Zatraženo",
+              "JOIN": "Pridruži se"
+            },
+            "SUMMARY": {
+              "DESCRIPTION": "Ovaj sažetak daje pregled učinka sudionika u turniru. Tablica sadrži rang, uspješne predikcije u različitim kategorijama oklada i ukupnu isplatu.",
+              "PLAYER": "Igrač",
+              "W": "P",
+              "Q": "Q",
+              "P": "P",
+              "RESULT": "Rezultat"
+            },
+            "MY_TOURNAMENTS": {
+              "DESCRIPTION": "Prikaz i upravljanje turnirima u kojima sudjelujete. Prihvatite pozivnice ili nastavite sa aktivnim turnirima.",
+              "PARTICIPANTS": "Sudionici",
+              "ROLE": "Uloga",
+              "ACCEPT": "Prihvati",
+              "SELECT": "Odaberi",
+              "QUIT": "Izlaz"
+            },
+            "BUILD_CUSTOM": {
+              "PREVIOUS": "Prethodno",
+              "NEXT": "Sljedeće",
+              "ADD": "Dodaj",
+              "SUBMIT": "Pošaljite"
+            },
+            "CUSTOM_TOURNAMENTS": {
+              "DESCRIPTION": "Upravljanje vlastitim turnirima. Koristite akcije za uređivanje, prebacivanje ili brisanje svakog turnira u nastavku.",
+              "CREATED": "Stvoreno",
+              "ACTIVE": "Aktivno",
+              "INACTIVE": "Neaktivno",
+              "EDIT": "Uredi turnir",
+              "RECALCULATE": "Ponovno izračunaj oklade",
+              "TOGGLE": "Prebaci vidljivost turnira",
+              "DELETE": "Izbriši turnir"
+            },
+            "BUILD_PREDEFINED": {
+              "PREVIOUS": "Prethodno",
+              "ADD": "Dodaj",
+              "SUBMIT": "Pošaljite",
+              "NEXT": "Sljedeće"
+            },
+            "PREDEFINED_TOURNAMENTS": {
+              "DESCRIPTION": "Upravljanje vašim turnirima. Koristite akcije za uređivanje, prebacivanje ili brisanje svakog turnira u nastavku.",
+              "CREATED": "Stvoreno",
+              "ACTIVE": "Aktivno",
+              "INACTIVE": "Neaktivno",
+              "EDIT_TOURNAMENT": "Uredi turnir",
+              "EDIT_MATCHES": "Uredi utakmice",
+              "TOGGLE_VISIBILITY": "Prebaci vidljivost turnira",
+              "DELETE_TOURNAMENT": "Izbriši turnir"
+            },
+            "STAGE_USERS_MANAGEMENT": {
+              "DESCRIPTION": "Upravljanje korisnicima turnira. Pozivnice se šalju korisnicima bez računa, oni se moraju registrirati i prihvatiti da bi sudjelovali.",
+              "NO_USERS": "Nema korisnika koji su dodani.",
+              "EDIT": "Uredi"
+            },
+            "STAGE_TEAMS_MANAGEMENT": {
+              "DESCRIPTION": "Uredi timove koji sudjeluju u turniru. Pomaknite se prema dolje kako biste dodali novi tim. Kliknite na gumb za brisanje za uklanjanje tima s popisa.",
+              "EDIT": "Uredi"
+            },
+                "STAGE_SUMMARY": {
+                  "DESCRIPTION1": "Pregledajte odabrane timove i utakmice prije nego što završite turnir. Ispod možete vidjeti naziv turnira, timove koji sudjeluju i zakazane utakmice s odgovarajućim koeficijentima.",
+                  "DESCRIPTION2": "Ako trebate izvršiti promjene, vratite se na prethodne korake. Nakon što potvrdite, kliknite na 'Pošaljite' za spremanje turnira.",
+                  "TOURNAMENT_NAME": "Naziv turnira",
+                  "NOT_PROVIDED": "Nema podataka",
+                  "TEAMS": "Timovi",
+                  "MATCHES": "Utakmice",
+                  "USERS": "Korisnici"
+                },
+                "STAGE_STAGES_MANAGEMENT": {
+                  "DESCRIPTION": "Uredi faze turnira. Pomaknite se prema dolje kako biste dodali novu fazu. Kliknite na gumb za brisanje kako biste uklonili fazu.",
+                  "EDIT": "Uredi"
+                },
+                "STAGE_SETTINGS": {
+                  "DESCRIPTION": "Konfigurirajte dodatne postavke turnira, uključujući bonus za točne rezultate, pravila za klađenje na kvalifikaciju i kazne.",
+                  "EXACT_RESULT_BONUS_TITLE": "Omogući bonus za točan rezultat",
+                  "EXACT_RESULT_BONUS_INFO": "Ako je omogućeno, korisnici dobivaju bonus bodove za točne rezultate utakmica.",
+                  "BONUS_CALCULATION_TYPE": "Vrsta izračuna bonusa",
+                  "EXACT_RESULT_BONUS_VALUE": "Vrijednost bonusa za točan rezultat",
+                  "ALLOW_WHO_QUALIFIES_BETS": "Dozvoli klađenje na to tko se kvalificira",
+                  "WHO_QUALIFIES_BETS_INFO": "Omogućuje klađenje na koji tim će se kvalificirati u nokaut rundama.",
+                  "ALLOW_BETS_WITH_BOOSTER": "Dozvoli klađenje s boosterom",
+                  "BETS_WITH_BOOSTER_INFO": "Korisnici mogu povećati osnovne koeficijente pomoću dodatnih booster bodova.",
+                  "MAX_BET_BOOSTER": "Maksimalni bet booster",
+                  "TOTAL_BOOSTER_POOL": "Ukupni booster pool",
+                  "ENTER_BOOSTER_POOL_SIZE": "Unesite veličinu booster pool-a",
+                  "APPLY_PENALTY_NO_BET": "Primijeni kaznu za izostale oklade",
+                  "PENALTY_INFO": "Ako je omogućeno, nedostatak oklada bit će kažnjen.",
+                  "PENALTY_POINTS": "Kazneni bodovi",
+                  "ENTER_PENALTY_VALUE": "Unesite kaznenu vrijednost"
+                },
+                "STAGE_MATCHES_MANAGEMENT": {
+                  "DESCRIPTION": "Prikaz i uređivanje utakmica turnira. Kliknite na 'Uredi' za promjenu detalja utakmice ili na 'Izbriši' kako biste uklonili utakmicu. Kliknite na 'Dodaj novu utakmicu' za dodavanje nove utakmice.",
+                  "EDIT": "Uredi",
+                  "DELETE": "Izbriši",
+                  "UNDO": "Poništi"
+                },
+                "STAGE_INPUT_TYPE": {
+                  "DESCRIPTION": "Upravljajte turnirima stvaranjem novih ili ažuriranjem postojećih, s mogućnostima prilagodbe timova, utakmica i detalja.",
+                  "DETAILS": "Postavite osnovne detalje, uvezite podatke iz datoteke ili predloška i konfigurirajte obradu utakmica.",
+                  "TOURNAMENT_VISIBILITY": "Vidljivost turnira",
+                  "PRIVATE": "Privatno",
+                  "PUBLIC": "Javno",
+                  "PRIVATE_DESC": "Samo administrator može pozvati sudionike.",
+                  "PUBLIC_DESC": "Svaka osoba može zatražiti sudjelovanje.",
+                  "TOURNAMENT_NAME": "Naziv turnira",
+                  "ENTER_NAME": "Unesite naziv turnira",
+                  "MATCH_UPDATE_METHOD": "Metoda ažuriranja utakmica",
+                  "MANUAL": "Ručno",
+                  "SEMI": "Poluautomatski",
+                  "AUTO": "Automatski",
+                  "MANUAL_DESC": "Administrator ručno dodaje ili ažurira utakmice.",
+                  "SEMI_DESC": "Administrator aktivira ažuriranja iz unaprijed definiranih turnira.",
+                  "AUTO_DESC": "Utakmice se automatski ažuriraju na temelju unaprijed definiranih turnira.",
+                  "IMPORT_DATA": "Uvoz podataka",
+                  "IMPORT_DESC": "Možete:",
+                  "IMPORT_EXCEL": "Uvoziti podatke iz Excel datoteke",
+                  "IMPORT_TEMPLATE": "Upotrijebiti unaprijed definirani turnir kao predložak",
+                  "CLEAR_FORM": "Obrišite sve podatke u obrascu i počnite ispočetka",
+                  "IMPORT_FROM_FILE": "Uvoz iz datoteke",
+                  "IMPORT_TOURNAMENT": "Uvoz turnira",
+                  "UPDATE_TOURNAMENT": "Ažurirajte turnir",
+                  "ERASE_FORM": "Izbrišite sve podatke obrasca"
+                },
+                "USERS_LIST": {
+                  "ACTIVE_PARTICIPANTS": "Aktivni sudionici",
+                  "EXCLUDE": "Isključi",
+                  "NO_PARTICIPANTS": "Nema sudionika."
+                },
+                "PENDING_REQUESTS": {
+                  "JOIN_REQUESTS": "Zahtjevi za sudjelovanje",
+                  "ACCEPT": "Prihvati",
+                  "REJECT": "Odbij",
+                  "NO_REQUESTS": "Nema zahtjeva za sudjelovanje."
+                },
+                "PENDING_INVITES": {
+                  "PENDING_INVITATIONS": "Čekajuće pozivnice",
+                  "RESEND": "Pošaljite ponovno",
+                  "EXCLUDE": "Isključi",
+                  "NO_INVITATIONS": "Nema čekajućih pozivnica."
+                }
+  }

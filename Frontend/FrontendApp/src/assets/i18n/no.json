@@ -1,0 +1,528 @@
+{
+    "WELCOME": {
+      "TITLE": "Veddemål med venner",
+      "SLOGAN": "Plasser veddemål med dine beste venner!",
+      "DESCRIPTION": "Ved på fotballkamper med venner — bare for moro skyld! Lag turneringer, forutsi resultater og klatre på lederlisten.",
+      "LOGIN": "Logg inn",
+      "REGISTER": "Registrer deg"
+    },
+    "LOGIN": {
+      "TITLE": "Logg inn",
+      "DESCRIPTION": "Skriv inn påloggingsinformasjonen din for å få tilgang til kontoen din.",
+      "EMAIL": "E-post",
+      "PASSWORD": "Passord",
+      "EMAIL_ERROR": "Vennligst skriv inn en gyldig e-postadresse.",
+      "PASSWORD_ERROR": "Passord er påkrevd.",
+      "FORGOT_PASSWORD": "Glemt passord?",
+      "RESEND_ACTIVATION": "Mottok du ikke en aktiverings-e-post?",
+      "SUBMIT": "Logg inn",
+      "NO_ACCOUNT": "Har du ikke en konto?",
+      "SIGN_UP": "Registrer deg"
+    },
+    "REGISTER": {
+      "TITLE": "Registrer deg",
+      "DESCRIPTION": "Opprett en konto for å delta i turneringer og plassere veddemål.",
+      "EMAIL": "E-post",
+      "EMAIL_ERROR": "Vennligst skriv inn en gyldig e-postadresse.",
+      "PASSWORD": "Passord",
+      "PASSWORD_ERROR": "Passord er påkrevd (min. 8 tegn).",
+      "CONFIRM_PASSWORD": "Bekreft passord",
+      "CONFIRM_PASSWORD_ERROR": "Passordene må samsvare.",
+      "CONSENT_TEXT": "Jeg godtar",
+      "TERMS_LINK": "Vilkår og betingelser",
+      "CONSENT_ERROR": "Du må godta vilkårene for å registrere deg.",
+      "SUBMIT": "Registrer deg",
+      "ALREADY_ACCOUNT": "Har du allerede en konto?",
+      "LOGIN_LINK": "Logg inn"
+    },
+    "FORGOT": {
+      "TITLE": "Glemt passord",
+      "DESCRIPTION": "Skriv inn e-postadressen din, så sender vi deg en link for å tilbakestille passordet.",
+      "EMAIL": "E-post",
+      "EMAIL_ERROR": "Vennligst skriv inn en gyldig e-postadresse.",
+      "SUBMIT": "Send tilbakestillingslink",
+      "BACK": "Tilbake til pålogging"
+    },
+    "CONFIRM": {
+      "SUCCESS_TITLE": "Konto aktivert!",
+      "FAILURE_TITLE": "E-postbekreftelse mislyktes ❌",
+      "PROCESSING": "Behandler forespørselen din...",
+      "GO_TO_LOGIN": "Gå til pålogging"
+    },
+    "LOGOUT": {
+      "TITLE": "Farvel!",
+      "MESSAGE": "Du har logget ut.",
+      "GO_TO_LOGIN": "Gå til pålogging"
+    },
+    "RESEND": {
+      "TITLE": "Send aktiverings-e-post på nytt",
+      "DESCRIPTION": "Skriv inn e-postadressen din, så sender vi deg en ny aktiveringslink.",
+      "EMAIL": "E-post",
+      "EMAIL_ERROR": "Vennligst skriv inn en gyldig e-postadresse.",
+      "BUTTON": "Send e-post",
+      "BACK": "Tilbake til pålogging"
+    },
+    "RESET": {
+      "TITLE": "Tilbakestill passord",
+      "DESCRIPTION": "Skriv inn det nye passordet ditt nedenfor.",
+      "NEW_PASSWORD": "Nytt passord",
+      "CONFIRM_PASSWORD": "Bekreft passord",
+      "PASSWORD_ERROR": "Passordet må være minst 8 tegn.",
+      "CONFIRM_ERROR": "Passordene må samsvare.",
+      "BUTTON": "Tilbakestill passord",
+      "BACK": "Tilbake til pålogging"
+    },
+    "APP": {
+      "MENU": "Meny",
+      "TITLE": "Veddemål med venner",
+      "HOME": "Hjem",
+      "MESSAGES": "Meldinger",
+      "TOURNAMENTS": "Turneringer",
+      "MY_TOURNAMENTS": "Mine turneringer",
+      "SUMMARY": "Sammendrag",
+      "FIND_TOURNAMENT": "Finn turnering",
+      "BETTING": "Veddemål",
+      "MY_BETS": "Mine veddemål",
+      "SETTINGS": "Innstillinger",
+      "PROFILE": "Profil",
+      "NOTIFICATIONS": "Varsler",
+      "ADMIN": "Admin",
+      "CREATE_TOURNAMENT": "Opprett turnering",
+      "MANAGE_TOURNAMENTS": "Administrer turneringer",
+      "MANAGE_MATCHES": "Administrer kamper",
+      "MANAGE_PARTICIPANTS": "Administrer deltakere",
+      "SUPER_ADMIN": "Super Admin",
+      "CREATE_PREDEFINED": "Opprett forhåndsdefinert turnering",
+      "MANAGE_PREDEFINED": "Administrer forhåndsdefinerte turneringer",
+      "MANAGE_USERS": "Administrer brukere",
+      "LOGOUT": "Logg ut"
+    },
+    "PROFILE": {
+      "TITLE": "Profildetaljer",
+      "MANAGEMENT": "Profiladministrasjon",
+      "MEMBER_SINCE": "Medlem siden",
+      "EMAIL": "E-post",
+      "NICKNAME": "Kallenavn (valgfritt)",
+      "NICKNAME_PLACEHOLDER": "Skriv inn kallenavn",
+      "LANGUAGE": "Språk",
+      "LOCATION": "Lokasjon (valgfritt)",
+      "SELECT_LOCATION": "Velg din lokasjon",
+      "DARK_MODE": "Mørk modus",
+      "SAVE": "Lagre profil",
+      "CHANGE_EMAIL": "Bytt e-post",
+      "UPDATE_PASSWORD": "Oppdater passord",
+      "DELETE_ACCOUNT": "Slett konto"
+    },
+    "NOTIFICATIONS": {
+      "TOURNAMENT_UPDATES": "Turneringsoppdateringer",
+      "MATCH_CLOSED": "Turneringsresultater recalculert",
+      "DAILY_UPDATES": "Daglige turneringsoppdateringer",
+      "TOURNAMENT_INVITES": "Turneringsinvitasjoner",
+      "BETTING_REMINDERS": "Veddemålspåminnelser",
+      "PENDING_BETS": "Påminnelse om ventende veddemål",
+      "NEW_GAMES": "Nye spill å vedde på",
+      "PROMOTIONS": "Kampanjer",
+      "SPECIAL_OFFERS": "Spesialtilbud",
+      "SAVE": "Lagre innstillinger"
+    },
+    "SETUP": {
+      "TITLE": "Sett opp kontoen din",
+      "DESCRIPTION": "Lag et passord for å fullføre kontooppsettet.",
+      "NEW_PASSWORD": "Nytt passord",
+      "CONFIRM_PASSWORD": "Bekreft passord",
+      "PASSWORD_ERROR": "Passordet må være minst 8 tegn langt.",
+      "CONFIRM_ERROR": "Passordene må samsvare.",
+      "CONSENT_TEXT": "Jeg godtar",
+      "TERMS_LINK": "Vilkår og betingelser",
+      "CONSENT_ERROR": "Du må godta vilkårene for å fortsette.",
+      "SUBMIT": "Fullfør oppsett"
+    },
+    "USER_MANAGER": {
+      "DESCRIPTION": "Bla gjennom alle brukere i systemet. Bruk søkefeltet for å finne brukere eller ta handling for å suspendere eller slette kontoer.",
+      "SEARCH_PLACEHOLDER": "Søk etter brukere...",
+      "NO_RESULTS": "Fant ingen brukere.",
+      "SINCE": "Siden",
+      "STATUS": "Status",
+      "ROLE": "Rolle",
+      "ADMIN_OF": "Admin for",
+      "PARTICIPANT_IN": "Deltaker i",
+      "SUSPEND": "Suspendere",
+      "UNSUSPEND": "Fjern suspensjon",
+      "DELETE": "Slett"
+    },
+        "INVITE": {
+          "TITLE": "Aksepter invitasjon",
+          "CLOSE": "Lukk",
+          "MESSAGE": "Du er invitert til å delta i <strong>{{ name }}</strong>.",
+          "NICKNAME_PROMPT": "Vennligst skriv inn et kallenavn for å delta.",
+          "NICKNAME_LABEL": "Kallenavn",
+          "NICKNAME_PLACEHOLDER": "Skriv inn kallenavn",
+          "ERROR_REQUIRED": "Kallenavn er påkrevd.",
+          "ERROR_MAXLENGTH": "Kallenavnet kan ikke være mer enn 20 tegn.",
+          "ACCEPT": "Aksepter"
+        },
+        "BETS_OVERVIEW": {
+          "TITLE": "Veddemålsoversikt",
+          "HOME_WIN": "Hjemmebanevinner",
+          "DRAW": "Uavgjort",
+          "AWAY_WIN": "Bortebanevinner",
+          "HOME_QUALIFIES": "Hjemmebane kvalifiserer",
+          "AWAY_QUALIFIES": "Bortebane kvalifiserer",
+          "USER_BETS": "Brukerens veddemål",
+          "PLAYER": "Spiller",
+          "BET": "Veddemål",
+          "HW": "HW",
+          "D": "D",
+          "AW": "AW",
+          "HQ": "HQ",
+          "AQ": "AQ",
+          "RESULT": "Resultat"
+        },
+        "BET_MODAL": {
+          "EDIT_TITLE": "Rediger veddemål",
+          "PLACE_TITLE": "Plasser veddemål",
+          "CLOSE": "Lukk",
+          "MATCH_ODDS": "90 minutters veddemålsodds",
+          "HOME_WIN": "Hjemmebanevinner",
+          "DRAW": "Uavgjort",
+          "AWAY_WIN": "Bortebanevinner",
+          "PREDICT_SCORE": "Forutsi resultatet etter 90 minutter",
+          "QUALIFY_ODDS": "Hvem kvalifiserer seg? Odds",
+          "QUALIFY_PREDICTION": "Din kvalifiseringsprediksjon",
+          "SAVE": "Lagre"
+        },
+        "MATCH_MODAL": {
+          "ADD_TITLE": "Legg til kamp",
+          "EDIT_TITLE": "Rediger kamp",
+          "CLOSE": "Lukk",
+          "STAGE": "Fase",
+          "HOME_TEAM": "Hjemmelag",
+          "AWAY_TEAM": "Bortelag",
+          "TYPE": "Kamp type",
+          "TYPE_REGULAR": "Vanlige 90 minutter",
+          "TYPE_EXTENDED": "90 minutter med kvalifisering",
+          "DATETIME": "Kamp dato og tid",
+          "ODDS_1X2": "1X2 veddemålsodds",
+          "HOME_WIN": "Hjemmebanevinner",
+          "DRAW": "Uavgjort",
+          "AWAY_WIN": "Bortebanevinner",
+          "ODDS_QUALIFICATION": "Kvalifikasjonsodds",
+          "HOME_QUAL": "Hjemmebane kvalifiserer",
+          "AWAY_QUAL": "Bortebane kvalifiserer",
+          "VISIBILITY": "Kamp synlighet",
+          "VISIBLE": "Synlig",
+          "HIDDEN": "Skjult",
+          "SAVE": "Lagre"
+        },
+        "MATCH_RESULT_MODAL": {
+          "TITLE": "Rediger kampresultat",
+          "CLOSE": "Lukk",
+          "DATETIME": "Kamp dato og tid",
+          "FINISHED_LABEL": "Er kampen ferdig?",
+          "FINAL_SCORE": "Sluttresultat",
+          "QUALIFY_LABEL": "Velg kvalifiserte lag",
+          "SAVE": "Lagre"
+        },
+        "STAGE_MODAL": {
+          "ADD_TITLE": "Legg til ny fase",
+          "EDIT_TITLE": "Rediger fase",
+          "CLOSE": "Lukk",
+          "STAGE_NAME_LABEL": "Fasenavn",
+          "STAGE_NAME_PLACEHOLDER": "Skriv inn fasenavn",
+          "STAGE_NAME_REQUIRED": "Fasenavn er påkrevd.",
+          "STAGE_NAME_MAXLENGTH": "Fasenavn kan ikke være mer enn 50 tegn.",
+          "STAGE_ORDER_LABEL": "Faseordre",
+          "STAGE_ORDER_PLACEHOLDER": "Skriv inn faseorden",
+          "STAGE_ORDER_REQUIRED": "Ordensnummer er påkrevd.",
+          "STAGE_ORDER_MIN": "Ordensnummer må være 1 eller høyere.",
+          "SAVE": "Lagre"
+        },
+        "TEAM_MODAL": {
+          "ADD_TITLE": "Legg til nytt lag",
+          "EDIT_TITLE": "Rediger lag",
+          "CLOSE": "Lukk",
+          "TEAM_NAME_LABEL": "Lag navn",
+          "TEAM_NAME_PLACEHOLDER": "Skriv inn lag navn",
+          "TEAM_NAME_REQUIRED": "Lag navn er påkrevd.",
+          "TEAM_NAME_MAXLENGTH": "Lag navn kan ikke være mer enn 50 tegn.",
+          "SAVE": "Lagre"
+        },
+        "USER_MODAL": {
+          "ADD_TITLE": "Legg til ny bruker",
+          "EDIT_TITLE": "Rediger bruker",
+          "CLOSE": "Lukk",
+          "USER_NAME": "Brukernavn",
+          "ADMIN_NAME": "Administrator navn",
+          "ADMIN_NAME_PLACEHOLDER": "Skriv inn administrator navn",
+          "ADMIN_NAME_REQUIRED": "Administrator navn er påkrevd.",
+          "EMAIL": "Bruker e-post",
+          "EMAIL_PLACEHOLDER": "Skriv inn bruker e-post",
+          "EMAIL_REQUIRED": "Bruker e-post er påkrevd.",
+          "EMAIL_INVALID": "Skriv inn en gyldig e-postadresse.",
+          "ROLE": "Brukerrolle",
+          "ROLE_PLAYER": "Spiller",
+          "ROLE_ADMIN": "Administrator",
+          "STATUS": "Status",
+          "SAVE": "Lagre"
+        },
+        "JOIN_MODAL": {
+          "TITLE": "Bli med på turneringen",
+          "CLOSE": "Lukk",
+          "DESCRIPTION_1": "Du ber om å delta i",
+          "DESCRIPTION_2": "Vennligst skriv inn et kallenavn og eventuelt en melding til administratoren.",
+          "NICKNAME_LABEL": "Kallenavn",
+          "NICKNAME_PLACEHOLDER": "Skriv inn kallenavn",
+          "MESSAGE_LABEL": "Melding til administrator",
+          "MESSAGE_PLACEHOLDER": "Valgfri melding",
+          "NICKNAME_REQUIRED": "Kallenavn er påkrevd.",
+          "NICKNAME_MAXLENGTH": "Kallenavn kan ikke være mer enn 20 tegn.",
+          "SUBMIT": "Send forespørsel"
+        },
+        "SELECT_MODAL": {
+          "TITLE": "Velg turnering",
+          "CLOSE": "Lukk",
+          "PARTICIPANTS": "Deltakere",
+          "ROLE": "Rolle",
+          "SELECT": "Velg",
+          "SELECTED": "Valgt"
+        },
+        "PLAYER_STATS": {
+          "TITLE": "Spillerstatistikk",
+          "CLOSE": "Lukk",
+          "NO_STATS": "Ingen statistikk tilgjengelig.",
+          "BET": "Veddemål",
+          "EXACT": "Nøyaktig",
+          "QUALIFY": "Kvalifisering"
+        },
+        "TOURNAMENT_SELECTION": {
+          "TITLE": "Velg en turnering",
+          "CANCEL": "Avbryt"
+        },
+            "MY_BETS": {
+              "TO_PLACE": "Å plassere",
+              "PLACED": "Plassert",
+              "FINALISED": "Ferdigstilt"
+            },
+            "MY_BETS_FINALISED": {
+              "NO_MATCHES": "Ingen ferdigstilte kamper funnet."
+            },
+            "MY_BETS_PLACED": {
+              "NO_MATCHES": "Ingen plasserte veddemål funnet.",
+              "EDIT_BUTTON": "Rediger veddemål"
+            },
+            "MY_BETS_TO_PLACE": {
+              "NO_MATCHES": "Ingen kommende kamper å vedde på.",
+              "PLACE_BUTTON": "Plasser veddemål"
+            },
+            "MESSAGES": {
+              "NO_NOTIFICATIONS": "Ingen varsler funnet."
+            },
+            "LATEST_MESSAGES": {
+              "TITLE": "Nyeste meldinger",
+              "NO_MESSAGES": "Ingen meldinger funnet."
+            },
+            "STARTED_MATCHES": {
+              "TITLE": "Startede tilpassede kamper"
+            },
+            "STARTED_MATCHES_PREDEFINED": {
+              "TITLE": "Startede forhåndsdefinerte kamper"
+            },
+            "TOURNAMENT_INVITES": {
+              "TITLE": "Turneringsinvitasjoner",
+              "PARTICIPANTS": "deltakere"
+            },
+            "TOURNAMENT_SUMMARY": {
+              "TITLE": "Turneringsoppsummering",
+              "YOU": "du",
+              "NO_DATA": "Ingen turneringsdata tilgjengelig."
+            },
+            "UPCOMING_BETS": {
+              "TITLE": "Kommende veddemål",
+              "NO_BETS": "Ingen kommende veddemål funnet."
+            },
+            "MANAGE_CUSTOM_FINALISED": {
+              "NO_MATCHES": "Ingen kamper funnet.",
+              "EDIT_BUTTON": "Rediger"
+            },
+            "MANAGE_CUSTOM_MATCHES": {
+              "TAB_UPCOMING": "Kommende",
+              "TAB_STARTED": "Startet",
+              "TAB_FINALISED": "Ferdigstilt",
+              "EDIT_BUTTON": "Rediger",
+              "NO_MATCHES": "Ingen kamper funnet.",
+              "DATE": "Dato",
+              "TIME": "Tid"
+            },
+            "MANAGE_CUSTOM_STARTED": {
+              "NO_MATCHES": "Ingen kamper funnet.",
+              "EDIT_BUTTON": "Rediger"
+            },
+            "MANAGE_CUSTOM_UPCOMING": {
+              "NO_MATCHES": "Ingen kamper funnet.",
+              "EDIT_BUTTON": "Rediger"
+            },
+            "MANAGE_PREDEFINED_FINALISED": {
+              "NO_MATCHES": "Ingen kamper funnet.",
+              "EDIT_BUTTON": "Rediger"
+            },
+            "MANAGE_PREDEFINED_MATCHES": {
+              "TAB_UPCOMING": "Kommende",
+              "TAB_STARTED": "Startet",
+              "TAB_FINALISED": "Ferdigstilt"
+            },
+            "MANAGE_PREDEFINED_STARTED": {
+              "NO_MATCHES": "Ingen kamper funnet.",
+              "EDIT_BUTTON": "Rediger"
+            },
+            "MANAGE_PREDEFINED_UPCOMING": {
+              "NO_MATCHES": "Ingen kamper funnet.",
+              "EDIT_BUTTON": "Rediger"
+            },
+            "FIND_TOURNAMENT": {
+              "DESCRIPTION": "Bla gjennom offentlige turneringer som er åpne for deltakelse. Bruk søkefeltet for å finne en turnering ved navn og be om å bli med.",
+              "SEARCH_PLACEHOLDER": "Søk turneringer...",
+              "NO_RESULTS": "Ingen turneringer funnet",
+              "PARTICIPANTS": "deltakere",
+              "CREATED": "Opprettet",
+              "REQUESTED": "Forespurt",
+              "JOIN": "Bli med"
+            },
+            "SUMMARY": {
+              "DESCRIPTION": "Denne oppsummeringen gir et overblikk over deltakerne i turneringen. Tabellen viser rangeringen, vellykkede prediksjoner i forskjellige veddemålskategorier og total utbetaling.",
+              "PLAYER": "Spiller",
+              "W": "V",
+              "Q": "Q",
+              "P": "P",
+              "RESULT": "Resultat"
+            },
+            "MY_TOURNAMENTS": {
+              "DESCRIPTION": "Vis og administrer turneringene du deltar i. Aksepter invitasjoner eller fortsett med aktive turneringer.",
+              "PARTICIPANTS": "Deltakere",
+              "ROLE": "Rolle",
+              "ACCEPT": "Aksepter",
+              "SELECT": "Velg",
+              "QUIT": "Avslutt"
+            },
+            "BUILD_CUSTOM": {
+              "PREVIOUS": "Forrige",
+              "NEXT": "Neste",
+              "ADD": "Legg til",
+              "SUBMIT": "Send"
+            },
+            "CUSTOM_TOURNAMENTS": {
+              "DESCRIPTION": "Administrer dine tilpassede turneringer. Bruk handlingene for redigering, bytte eller slette hver turnering nedenfor.",
+              "CREATED": "Opprettet",
+              "ACTIVE": "Aktiv",
+              "INACTIVE": "Inaktiv",
+              "EDIT": "Rediger turnering",
+              "RECALCULATE": "Beregne veddemål på nytt",
+              "TOGGLE": "Bytt turneringssynlighet",
+              "DELETE": "Slett turnering"
+            },
+            "BUILD_PREDEFINED": {
+              "PREVIOUS": "Forrige",
+              "ADD": "Legg til",
+              "SUBMIT": "Send",
+              "NEXT": "Neste"
+            },
+            "PREDEFINED_TOURNAMENTS": {
+              "DESCRIPTION": "Administrer turneringene dine. Bruk handlingene for redigering, bytte eller slette hver turnering nedenfor.",
+              "CREATED": "Opprettet",
+              "ACTIVE": "Aktiv",
+              "INACTIVE": "Inaktiv",
+              "EDIT_TOURNAMENT": "Rediger turnering",
+              "EDIT_MATCHES": "Rediger kamper",
+              "TOGGLE_VISIBILITY": "Bytt turneringssynlighet",
+              "DELETE_TOURNAMENT": "Slett turnering"
+            },
+            "STAGE_USERS_MANAGEMENT": {
+              "DESCRIPTION": "Administrer turneringsbrukere. Invitasjoner sendes til brukere uten konto, de må registrere seg og akseptere for å delta.",
+              "NO_USERS": "Ingen brukere lagt til ennå.",
+              "EDIT": "Rediger"
+            },
+            "STAGE_TEAMS_MANAGEMENT": {
+              "DESCRIPTION": "Rediger lagene som deltar i turneringen. Bla ned for å legge til et nytt lag. Klikk på sletteknappen for å fjerne et lag fra listen.",
+              "EDIT": "Rediger"
+            },
+                "STAGE_SUMMARY": {
+                  "DESCRIPTION1": "Gjennomgå de valgte lagene og kampene før du fullfører turneringen. Nedenfor kan du se turneringens navn, de deltakende lagene og planlagte kamper med tilhørende odds.",
+                  "DESCRIPTION2": "Hvis du trenger å gjøre endringer, kan du gå tilbake til forrige trinn. Når alt er bekreftet, klikker du på 'Send' for å lagre turneringen.",
+                  "TOURNAMENT_NAME": "Turneringsnavn",
+                  "NOT_PROVIDED": "Ikke oppgitt",
+                  "TEAMS": "Lag",
+                  "MATCHES": "Kamper",
+                  "USERS": "Brukere"
+                },
+                "STAGE_STAGES_MANAGEMENT": {
+                  "DESCRIPTION": "Rediger fasene i turneringen. Bla ned for å legge til en ny fase. Klikk på sletteknappen for å fjerne en fase.",
+                  "EDIT": "Rediger"
+                },
+                "STAGE_SETTINGS": {
+                  "DESCRIPTION": "Konfigurer ytterligere turneringsinnstillinger, inkludert bonus for eksakte resultater, regler for kvalifikasjonsveddemål og straffer.",
+                  "EXACT_RESULT_BONUS_TITLE": "Tillat bonus for eksakt resultat",
+                  "EXACT_RESULT_BONUS_INFO": "Hvis aktivert, får brukerne bonuspoeng for eksakte kampresultater.",
+                  "BONUS_CALCULATION_TYPE": "Bonusberegningsmetode",
+                  "EXACT_RESULT_BONUS_VALUE": "Bonusverdi for eksakt resultat",
+                  "ALLOW_WHO_QUALIFIES_BETS": "Tillat kvalifikasjonsveddemål",
+                  "WHO_QUALIFIES_BETS_INFO": "Lar brukere satse på hvilket lag som kvalifiserer seg i knockout-runder.",
+                  "ALLOW_BETS_WITH_BOOSTER": "Tillat veddemål med booster",
+                  "BETS_WITH_BOOSTER_INFO": "Brukere kan øke sine grunnodds ved å bruke ekstra boosterpoeng.",
+                  "MAX_BET_BOOSTER": "Maksimal bet-booster",
+                  "TOTAL_BOOSTER_POOL": "Total booster-pool",
+                  "ENTER_BOOSTER_POOL_SIZE": "Skriv inn størrelsen på booster-poolen",
+                  "APPLY_PENALTY_NO_BET": "Bruk straff for ingen veddemål",
+                  "PENALTY_INFO": "Hvis aktivert, pålegges straff for manglende veddemål.",
+                  "PENALTY_POINTS": "Straffepoeng",
+                  "ENTER_PENALTY_VALUE": "Skriv inn straffeverdi"
+                },
+                "STAGE_MATCHES_MANAGEMENT": {
+                  "DESCRIPTION": "Vis og rediger turneringskamper. Klikk på 'Rediger' for å endre kampdetaljer eller 'Slett' for å fjerne en kamp. Klikk på 'Legg til ny kamp' for å legge til en ny kamp.",
+                  "EDIT": "Rediger",
+                  "DELETE": "Slett",
+                  "UNDO": "Angre"
+                },
+                "STAGE_INPUT_TYPE": {
+                  "DESCRIPTION": "Administrer turneringer ved å opprette nye eller oppdatere eksisterende, med muligheter for å tilpasse lag, kamper og detaljer.",
+                  "DETAILS": "Angi grunnleggende detaljer, importer data fra en fil eller mal, og konfigurer kampbehandling.",
+                  "TOURNAMENT_VISIBILITY": "Turneringssynlighet",
+                  "PRIVATE": "Privat",
+                  "PUBLIC": "Offentlig",
+                  "PRIVATE_DESC": "Kun administrator kan invitere deltakere.",
+                  "PUBLIC_DESC": "Alle kan be om å bli med.",
+                  "TOURNAMENT_NAME": "Turneringsnavn",
+                  "ENTER_NAME": "Skriv inn turneringsnavn",
+                  "MATCH_UPDATE_METHOD": "Kampoppdateringsmetode",
+                  "MANUAL": "Manuell",
+                  "SEMI": "Semi-automatisk",
+                  "AUTO": "Automatisk",
+                  "MANUAL_DESC": "Administrator legger til eller oppdaterer kamper manuelt.",
+                  "SEMI_DESC": "Administrator aktiverer oppdateringer fra forhåndsdefinerte turneringer.",
+                  "AUTO_DESC": "Kampene oppdateres automatisk basert på forhåndsdefinerte turneringer.",
+                  "IMPORT_DATA": "Importer data",
+                  "IMPORT_DESC": "Du kan:",
+                  "IMPORT_EXCEL": "Importere data fra en Excel-fil",
+                  "IMPORT_TEMPLATE": "Bruke en forhåndsdefinert turnering som mal",
+                  "CLEAR_FORM": "Tøm alle skjemaopplysninger og start på nytt",
+                  "IMPORT_FROM_FILE": "Importer fra fil",
+                  "IMPORT_TOURNAMENT": "Importer turnering",
+                  "UPDATE_TOURNAMENT": "Oppdater turnering",
+                  "ERASE_FORM": "Slett alle skjemaopplysninger"
+                },
+                "USERS_LIST": {
+                  "ACTIVE_PARTICIPANTS": "Aktive deltakere",
+                  "EXCLUDE": "Ekskluder",
+                  "NO_PARTICIPANTS": "Ingen deltakere funnet."
+                },
+                "PENDING_REQUESTS": {
+                  "JOIN_REQUESTS": "Deltakerforespørsler",
+                  "ACCEPT": "Aksepter",
+                  "REJECT": "Avvis",
+                  "NO_REQUESTS": "Ingen deltakelsesforespørsler funnet."
+                },
+                "PENDING_INVITES": {
+                  "PENDING_INVITATIONS": "Ventende invitasjoner",
+                  "RESEND": "Send på nytt",
+                  "EXCLUDE": "Ekskluder",
+                  "NO_INVITATIONS": "Ingen ventende invitasjoner funnet."
+                }
+  } 
