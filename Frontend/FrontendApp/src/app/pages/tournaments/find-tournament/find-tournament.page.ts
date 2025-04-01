@@ -5,13 +5,15 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PublicTournament } from 'src/app/model/tournament-model';
 import { JoinRequestModalComponent } from 'src/app/modals/join-request-modal/join-request-modal.component';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-find-tournament',
   templateUrl: './find-tournament.page.html',
   styleUrls: ['./find-tournament.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
 })
 export class FindTournamentPage implements OnInit {
   searchTerm = '';

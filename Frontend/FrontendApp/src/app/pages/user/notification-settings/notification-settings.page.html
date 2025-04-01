@@ -6,11 +6,11 @@
       <div class="grid-frame">
         <ion-grid class="settings-grid">
           <ion-row class="align-center">
-            <ion-col size="12" class="section-title">Tournament Updates</ion-col>
+            <ion-col size="12" class="section-title">{{ 'NOTIFICATIONS.TOURNAMENT_UPDATES' | translate }}</ion-col>
           </ion-row>
 
           <ion-row class="notification-row">
-            <ion-col size="6">Tournament results recalculated</ion-col>
+            <ion-col size="6">{{ 'NOTIFICATIONS.MATCH_CLOSED' | translate }}</ion-col>
             <ion-col size="3" class="center-text">
               <ion-toggle formControlName="receiveEmailMatchClosed"></ion-toggle>
             </ion-col>
@@ -20,7 +20,7 @@
           </ion-row>
 
           <ion-row class="notification-row">
-            <ion-col size="6">Daily tournament updates</ion-col>
+            <ion-col size="6">{{ 'NOTIFICATIONS.DAILY_UPDATES' | translate }}</ion-col>
             <ion-col size="3" class="center-text">
               <ion-toggle formControlName="receiveEmailDailyUpdates"></ion-toggle>
             </ion-col>
@@ -30,7 +30,7 @@
           </ion-row>
 
           <ion-row class="notification-row">
-            <ion-col size="6">Tournament invitations</ion-col>
+            <ion-col size="6">{{ 'NOTIFICATIONS.TOURNAMENT_INVITES' | translate }}</ion-col>
             <ion-col size="3" class="center-text">
               <ion-toggle formControlName="receiveEmailTournamentInvitation"></ion-toggle>
             </ion-col>
@@ -45,11 +45,11 @@
       <div class="grid-frame">
         <ion-grid class="settings-grid">
           <ion-row class="align-center">
-            <ion-col size="12" class="section-title">Betting Reminders</ion-col>
+            <ion-col size="12" class="section-title">{{ 'NOTIFICATIONS.BETTING_REMINDERS' | translate }}</ion-col>
           </ion-row>
 
           <ion-row class="notification-row">
-            <ion-col size="6">Pending bets reminder</ion-col>
+            <ion-col size="6">{{ 'NOTIFICATIONS.PENDING_BETS' | translate }}</ion-col>
             <ion-col size="3" class="center-text">
               <ion-toggle formControlName="receiveEmailPendingBets"></ion-toggle>
             </ion-col>
@@ -59,7 +59,7 @@
           </ion-row>
 
           <ion-row class="notification-row">
-            <ion-col size="6">New games to bet</ion-col>
+            <ion-col size="6">{{ 'NOTIFICATIONS.NEW_GAMES' | translate }}</ion-col>
             <ion-col size="3" class="center-text">
               <ion-toggle formControlName="receiveEmailNewGames"></ion-toggle>
             </ion-col>
@@ -74,11 +74,11 @@
       <div class="grid-frame">
         <ion-grid class="settings-grid">
           <ion-row class="align-center">
-            <ion-col size="12" class="section-title">Promotions</ion-col>
+            <ion-col size="12" class="section-title">{{ 'NOTIFICATIONS.PROMOTIONS' | translate }}</ion-col>
           </ion-row>
 
           <ion-row class="notification-row">
-            <ion-col size="6">Special offers</ion-col>
+            <ion-col size="6">{{ 'NOTIFICATIONS.SPECIAL_OFFERS' | translate }}</ion-col>
             <ion-col size="3" class="center-text">
               <ion-toggle formControlName="receiveEmailSpecialOffers"></ion-toggle>
             </ion-col>
@@ -91,7 +91,7 @@
 
       <!-- Submit Button -->
       <ion-button expand="full" color="medium" type="submit" [disabled]="!notificationForm.valid">
-        Save Settings
+        {{ 'NOTIFICATIONS.SAVE' | translate }}
       </ion-button>
     </form>
   </div>

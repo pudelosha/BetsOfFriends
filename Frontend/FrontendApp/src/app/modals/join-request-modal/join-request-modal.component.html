@@ -1,44 +1,44 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Join Tournament</ion-title>
+    <ion-title>{{ 'JOIN_MODAL.TITLE' | translate }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="dismiss()">Close</ion-button>
+      <ion-button (click)="dismiss()">{{ 'JOIN_MODAL.CLOSE' | translate }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <div class="description">
-    <p>You are requesting to join <strong>{{ tournamentName }}</strong>.</p>
-    <p>Please enter a nickname and optionally a message for the admin.</p>
+    <p>{{ 'JOIN_MODAL.DESCRIPTION_1' | translate }} <strong>{{ tournamentName }}</strong>.</p>
+    <p>{{ 'JOIN_MODAL.DESCRIPTION_2' | translate }}</p>
   </div>
 
   <form [formGroup]="requestForm" class="nickname-form">
     <div class="form-row">
-      <ion-label class="selector-label">Nickname</ion-label>
+      <ion-label class="selector-label">{{ 'JOIN_MODAL.NICKNAME_LABEL' | translate }}</ion-label>
       <ion-input
         formControlName="nickname"
         type="text"
         maxlength="20"
-        placeholder="Enter nickname">
+        [placeholder]="'JOIN_MODAL.NICKNAME_PLACEHOLDER' | translate">
       </ion-input>
     </div>
 
     <div class="form-row">
-      <ion-label class="selector-label">Message for Admin</ion-label>
+      <ion-label class="selector-label">{{ 'JOIN_MODAL.MESSAGE_LABEL' | translate }}</ion-label>
       <ion-textarea
         formControlName="message"
-        placeholder="Optional message"
+        [placeholder]="'JOIN_MODAL.MESSAGE_PLACEHOLDER' | translate"
         rows="3">
       </ion-textarea>
     </div>
 
     <div class="validation-message">
       <p class="error" *ngIf="requestForm.controls['nickname'].hasError('required') && requestForm.controls['nickname'].touched">
-        Nickname is required.
+        {{ 'JOIN_MODAL.NICKNAME_REQUIRED' | translate }}
       </p>
       <p class="error" *ngIf="requestForm.controls['nickname'].hasError('maxlength') && requestForm.controls['nickname'].touched">
-        Nickname cannot exceed 20 characters.
+        {{ 'JOIN_MODAL.NICKNAME_MAXLENGTH' | translate }}
       </p>
       <p class="error" *ngIf="nicknameError">
         {{ nicknameError }}
@@ -47,7 +47,7 @@
 
     <div class="save-button-container">
       <ion-button expand="full" color="primary" (click)="submitRequest()" [disabled]="requestForm.invalid || isLoading">
-        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner> Submit Request
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner> {{ 'JOIN_MODAL.SUBMIT' | translate }}
       </ion-button>
     </div>
   </form>

@@ -8,7 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ToastController } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
-
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @Component({
@@ -16,7 +16,7 @@ import { NavController } from '@ionic/angular';
   templateUrl: './participant-tournaments-modal.component.html',
   styleUrls: ['./participant-tournaments-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class ParticipantTournamentsModalComponent implements OnInit {
   tournaments: UserActiveTournament[] = [];

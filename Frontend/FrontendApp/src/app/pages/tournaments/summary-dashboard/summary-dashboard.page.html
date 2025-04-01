@@ -3,8 +3,7 @@
 
     <div class="page-description">
       <p>
-        This summary provides an overview of participants' performance in the tournament.  
-        The table includes ranking, successful predictions in different bet categories, and total payout.
+        {{ 'SUMMARY.DESCRIPTION' | translate }}
       </p>
     </div>
 
@@ -14,11 +13,11 @@
       <!-- Table Header -->
       <ion-row class="summary-header">
         <ion-col size="2" class="centered-text"><strong>#</strong></ion-col>
-        <ion-col size="5" class="text-left"><strong>Player</strong></ion-col>
-        <ion-col size="1" class="centered-text"><strong>W</strong></ion-col>
-        <ion-col size="1" class="centered-text"><strong>Q</strong></ion-col>
-        <ion-col size="1" class="centered-text"><strong>P</strong></ion-col>
-        <ion-col size="2" class="centered-text"><strong>Result</strong></ion-col>
+        <ion-col size="5" class="text-left"><strong>{{ 'SUMMARY.PLAYER' | translate }}</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>{{ 'SUMMARY.W' | translate }}</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>{{ 'SUMMARY.Q' | translate }}</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>{{ 'SUMMARY.P' | translate }}</strong></ion-col>
+        <ion-col size="2" class="centered-text"><strong>{{ 'SUMMARY.RESULT' | translate }}</strong></ion-col>
       </ion-row>
 
       <!-- Table Data -->

@@ -1,5 +1,5 @@
 <div class="latest-messages-box" (click)="goToMessages()">
-  <h2 class="frame-title">Latest Messages</h2>
+  <h2 class="frame-title">{{ 'LATEST_MESSAGES.TITLE' | translate }}</h2>
 
   <ion-list class="latest-messages-list" *ngIf="messages.length > 0">
     <ion-item *ngFor="let message of messages" class="latest-messages-item">
@@ -19,7 +19,7 @@
 
   <!-- No messages message -->
   <p class="no-messages-message" *ngIf="!isLoading && messages.length === 0">
-    No messages found.
+    {{ 'LATEST_MESSAGES.NO_MESSAGES' | translate }}
   </p>
 
   <!-- Loading Spinner -->

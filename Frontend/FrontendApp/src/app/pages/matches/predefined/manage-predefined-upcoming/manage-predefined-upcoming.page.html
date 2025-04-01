@@ -3,7 +3,7 @@
 
 <!-- Display Message if No Matches Found -->
 <div *ngIf="!isLoading && errorMessage" class="no-matches">
-  <p>{{ errorMessage }}</p>
+  <p>{{ 'MANAGE_PREDEFINED_UPCOMING.NO_MATCHES' | translate }}</p>
 </div>
 
 <!-- Match List -->
@@ -21,7 +21,9 @@
       </div>
 
       <div class="match-button-container">
-        <ion-button size="small" class="match-button" color="medium" (click)="editMatchResult(match, $event)">Edit</ion-button>
+        <ion-button size="small" class="match-button" color="medium" (click)="editMatchResult(match, $event)">
+          {{ 'MANAGE_PREDEFINED_UPCOMING.EDIT_BUTTON' | translate }}
+        </ion-button>
       </div>
     </div>
   </ion-item>

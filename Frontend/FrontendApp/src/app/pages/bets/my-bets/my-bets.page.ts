@@ -10,13 +10,15 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-my-bets',
   templateUrl: './my-bets.page.html',
   styleUrls: ['./my-bets.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, MyBetsFinalisedPage, MyBetsPlacedPage, MyBetsToPlacePage],
+  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, MyBetsFinalisedPage, MyBetsPlacedPage, MyBetsToPlacePage, TranslateModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MyBetsPage implements OnInit, AfterViewInit {

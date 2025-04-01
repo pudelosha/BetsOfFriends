@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { BetStats } from 'src/app/model/bet';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-bets-overview-modal',
   templateUrl: './bets-overview-modal.component.html',
   styleUrls: ['./bets-overview-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
 })
 export class BetsOverviewModalComponent {
   @Input() betStats: BetStats = {

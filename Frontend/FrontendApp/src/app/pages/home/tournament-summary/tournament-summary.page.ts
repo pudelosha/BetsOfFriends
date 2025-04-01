@@ -6,11 +6,13 @@ import { TournamentPlayerResult } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-tournament-summary',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
   templateUrl: './tournament-summary.page.html',
   styleUrls: ['./tournament-summary.page.scss']
 })

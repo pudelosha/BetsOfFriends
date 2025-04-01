@@ -8,13 +8,15 @@ import { Bet, BetStats } from 'src/app/model/bet';
 import { firstValueFrom } from 'rxjs';
 import { BetsOverviewModalComponent } from 'src/app/modals/bets-overview-modal/bets-overview-modal.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-my-bets-finalised',
   templateUrl: './my-bets-finalised.page.html',
   styleUrls: ['./my-bets-finalised.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
 })
 export class MyBetsFinalisedPage implements OnInit, OnChanges {
   @Input() stage!: string; // Receive stage from parent

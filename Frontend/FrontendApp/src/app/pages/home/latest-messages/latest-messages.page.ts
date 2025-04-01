@@ -6,11 +6,13 @@ import { firstValueFrom } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-latest-messages',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './latest-messages.page.html',
   styleUrls: ['./latest-messages.page.scss']
 })

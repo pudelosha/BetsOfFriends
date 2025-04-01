@@ -1,8 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ isEditing ? 'Edit Team' : 'Add New Team' }}</ion-title>
+    <ion-title>{{ isEditing ? ('TEAM_MODAL.EDIT_TITLE' | translate) : ('TEAM_MODAL.ADD_TITLE' | translate) }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="closeModal()">Close</ion-button>
+      <ion-button (click)="closeModal()">{{ 'TEAM_MODAL.CLOSE' | translate }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -11,19 +11,21 @@
   <form [formGroup]="teamForm" class="team-form">
     <!-- Team Name Input -->
     <div class="form-group">
-      <ion-label class="selector-label">Team Name</ion-label>
-      <ion-input formControlName="teamName" placeholder="Enter team name"></ion-input>
+      <ion-label class="selector-label">{{ 'TEAM_MODAL.TEAM_NAME_LABEL' | translate }}</ion-label>
+      <ion-input formControlName="teamName" [placeholder]="'TEAM_MODAL.TEAM_NAME_PLACEHOLDER' | translate"></ion-input>
     </div>
     <div class="error-message" *ngIf="teamForm.get('teamName')?.hasError('required') && teamForm.get('teamName')?.touched">
-      Team name is required.
+      {{ 'TEAM_MODAL.TEAM_NAME_REQUIRED' | translate }}
     </div>
     <div class="error-message" *ngIf="teamForm.get('teamName')?.hasError('maxlength') && teamForm.get('teamName')?.touched">
-      Team name cannot exceed 50 characters.
+      {{ 'TEAM_MODAL.TEAM_NAME_MAXLENGTH' | translate }}
     </div>
 
     <!-- Save Button -->
     <div class="save-button-container">
-      <ion-button expand="full" color="medium" (click)="saveTeam()">Save</ion-button>
+      <ion-button expand="full" color="medium" (click)="saveTeam()">
+        {{ 'TEAM_MODAL.SAVE' | translate }}
+      </ion-button>
     </div>
   </form>
 </ion-content>

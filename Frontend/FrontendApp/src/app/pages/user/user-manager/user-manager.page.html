@@ -3,7 +3,7 @@
 
     <!-- Page Description -->
     <div class="page-description">
-      <p>Browse all users in the system. Use the search bar to find users, or take action to suspend or delete accounts.</p>
+      <p>{{ 'USER_MANAGER.DESCRIPTION' | translate }}</p>
     </div>
 
     <!-- Search Bar -->
@@ -11,7 +11,7 @@
       class="custom-searchbar"
       [(ngModel)]="searchTerm"
       (ionInput)="filterUsers()"
-      placeholder="Search users..."
+      [placeholder]="'USER_MANAGER.SEARCH_PLACEHOLDER' | translate"
       showClearButton="focus"
       debounce="200"
       animated>
@@ -19,7 +19,7 @@
 
     <!-- No Results -->
     <div *ngIf="filteredUsers.length === 0 && !isLoading" class="no-tournaments">
-      No users found.
+      {{ 'USER_MANAGER.NO_RESULTS' | translate }}
     </div>
 
     <!-- User List -->
@@ -32,26 +32,31 @@
         <div class="tournament-box">
           <ion-grid class="user-grid">
             <ion-row>
-              <!-- User Details (9 columns) -->
+              <!-- User Details (8 columns) -->
               <ion-col size="8" class="user-details">
                 <strong>{{ user.userEmail }}</strong>
-                <span class="tournament-date">Since: {{ user.memberSince | date: 'yyyy.MM.dd' }}</span>
-                <span>Status: {{ user.userStatus }}</span>
-                <span>Role: {{ user.userRole }}</span>
-                <span>Admin of {{ user.tournamentAdminCount }}, Participant in {{ user.tournamentParticipantCount }}</span>
+                <span class="tournament-date">
+                  {{ 'USER_MANAGER.SINCE' | translate }}: {{ user.memberSince | date: 'yyyy.MM.dd' }}
+                </span>
+                <span>{{ 'USER_MANAGER.STATUS' | translate }}: {{ user.userStatus }}</span>
+                <span>{{ 'USER_MANAGER.ROLE' | translate }}: {{ user.userRole }}</span>
+                <span>
+                  {{ 'USER_MANAGER.ADMIN_OF' | translate }} {{ user.tournamentAdminCount }},
+                  {{ 'USER_MANAGER.PARTICIPANT_IN' | translate }} {{ user.tournamentParticipantCount }}
+                </span>
               </ion-col>
 
-              <!-- Buttons (2 columns) -->
+              <!-- Buttons (4 columns) -->
               <ion-col size="4" class="user-actions">
                 <ion-button
                   expand="block"
                   [color]="user.userStatus === 'Suspended' ? 'medium' : 'warning'"
                   size="small"
                   (click)="toggleUserSuspension(user)">
-                  {{ user.userStatus === 'Suspended' ? 'Unsuspend' : 'Suspend' }}
-                </ion-button>             
+                  {{ user.userStatus === 'Suspended' ? ('USER_MANAGER.UNSUSPEND' | translate) : ('USER_MANAGER.SUSPEND' | translate) }}
+                </ion-button>
                 <ion-button expand="block" color="danger" size="small" (click)="deleteUser(user)">
-                  Delete
+                  {{ 'USER_MANAGER.DELETE' | translate }}
                 </ion-button>
               </ion-col>
             </ion-row>

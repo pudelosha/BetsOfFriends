@@ -3,7 +3,7 @@
 
 <!-- Display Message if No Matches Found -->
 <div *ngIf="!isLoading && errorMessage" class="no-matches">
-  <p>{{ errorMessage }}</p>
+  <p>{{ 'MY_BETS_TO_PLACE.NO_MATCHES' | translate }}</p>
 </div>
 
 <ion-list *ngIf="!isLoading && bets.length > 0" class="bet-list">
@@ -30,7 +30,9 @@
 
       <!-- Place Bet Button -->
       <div class="bet-button-container">
-        <ion-button size="small" class="bet-button" color="medium" (click)="editBet(bet, $event)">Place Bet</ion-button>
+        <ion-button size="small" class="bet-button" color="medium" (click)="editBet(bet, $event)">
+          {{ 'MY_BETS_TO_PLACE.PLACE_BUTTON' | translate }}
+        </ion-button>
       </div>
     </div>
   </ion-item>

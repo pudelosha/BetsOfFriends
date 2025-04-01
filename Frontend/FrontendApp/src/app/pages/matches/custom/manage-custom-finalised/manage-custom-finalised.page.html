@@ -3,7 +3,7 @@
 
 <!-- Display Message if No Matches Found -->
 <div *ngIf="!isLoading && errorMessage" class="no-matches">
-  <p>{{ errorMessage }}</p>
+  <p>{{ 'MANAGE_CUSTOM_FINALISED.NO_MATCHES' | translate }}</p>
 </div>
 
 <ion-list *ngIf="!isLoading && matches.length > 0" class="match-list">
@@ -30,7 +30,9 @@
 
       <!-- Edit Button -->
       <div class="match-button-container">
-        <ion-button size="small" class="match-button" color="medium" (click)="editMatchResult(match, $event)">Edit</ion-button>
+        <ion-button size="small" class="match-button" color="medium" (click)="editMatchResult(match, $event)">
+          {{ 'MANAGE_CUSTOM_FINALISED.EDIT_BUTTON' | translate }}
+        </ion-button>
       </div>
 
     </div>

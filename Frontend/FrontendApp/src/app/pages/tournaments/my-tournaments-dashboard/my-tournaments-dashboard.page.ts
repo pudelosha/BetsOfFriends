@@ -9,13 +9,15 @@ import { AcceptInvitationModalComponent } from 'src/app/modals/accept-invitation
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-my-tournaments-dashboard',
   templateUrl: './my-tournaments-dashboard.page.html',
   styleUrls: ['./my-tournaments-dashboard.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class MyTournamentsDashboardPage implements OnInit {
   tournaments: UserActiveTournament[] = [];

@@ -3,13 +3,15 @@ import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Team, Stage } from 'src/app/model/tournament-model';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-edit-match-modal',
   templateUrl: './edit-match-modal.component.html',
   styleUrls: ['./edit-match-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class EditMatchModalComponent implements OnInit {
   @Input() match: any; // Existing match (if editing), otherwise null

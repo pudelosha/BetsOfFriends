@@ -1,8 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ isEditing ? 'Edit User' : 'Add New User' }}</ion-title>
+    <ion-title>{{ isEditing ? ('USER_MODAL.EDIT_TITLE' | translate) : ('USER_MODAL.ADD_TITLE' | translate) }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="closeModal()">Close</ion-button>
+      <ion-button (click)="closeModal()">{{ 'USER_MODAL.CLOSE' | translate }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -11,53 +11,55 @@
   <form [formGroup]="userForm" class="user-form">
     <!-- User-Defined Name (Only If Available) -->
     <div class="form-group" *ngIf="user?.userName">
-      <ion-label class="selector-label">User-Defined Name</ion-label>
+      <ion-label class="selector-label">{{ 'USER_MODAL.USER_NAME' | translate }}</ion-label>
       <ion-input formControlName="userName" readonly></ion-input>
     </div>
 
     <!-- Admin-Defined Name -->
     <div class="form-group">
-      <ion-label class="selector-label">Admin-Defined Name</ion-label>
-      <ion-input formControlName="userAdminName" placeholder="Enter admin-defined name"></ion-input>
+      <ion-label class="selector-label">{{ 'USER_MODAL.ADMIN_NAME' | translate }}</ion-label>
+      <ion-input formControlName="userAdminName" [placeholder]="'USER_MODAL.ADMIN_NAME_PLACEHOLDER' | translate"></ion-input>
     </div>
     <div class="error-message" *ngIf="userForm.get('userAdminName')?.hasError('required') && userForm.get('userAdminName')?.touched">
-      Admin-defined name is required.
+      {{ 'USER_MODAL.ADMIN_NAME_REQUIRED' | translate }}
     </div>
 
     <!-- User Email -->
     <div class="form-group">
-      <ion-label class="selector-label">User Email</ion-label>
-      <ion-input formControlName="userEmail" type="email" placeholder="Enter user email"></ion-input>
+      <ion-label class="selector-label">{{ 'USER_MODAL.EMAIL' | translate }}</ion-label>
+      <ion-input formControlName="userEmail" type="email" [placeholder]="'USER_MODAL.EMAIL_PLACEHOLDER' | translate"></ion-input>
     </div>
     <div class="error-message" *ngIf="userForm.get('userEmail')?.hasError('required') && userForm.get('userEmail')?.touched">
-      User email is required.
+      {{ 'USER_MODAL.EMAIL_REQUIRED' | translate }}
     </div>
     <div class="error-message" *ngIf="userForm.get('userEmail')?.hasError('email') && userForm.get('userEmail')?.touched">
-      Please enter a valid email address.
+      {{ 'USER_MODAL.EMAIL_INVALID' | translate }}
     </div>
 
     <!-- User Role Selection -->
     <div class="form-group">
-      <ion-label class="selector-label">User Role</ion-label>
+      <ion-label class="selector-label">{{ 'USER_MODAL.ROLE' | translate }}</ion-label>
       <ion-segment formControlName="userRole">
         <ion-segment-button value="Player">
-          <ion-label>Player</ion-label>
+          <ion-label>{{ 'USER_MODAL.ROLE_PLAYER' | translate }}</ion-label>
         </ion-segment-button>
         <ion-segment-button value="Admin">
-          <ion-label>Admin</ion-label>
+          <ion-label>{{ 'USER_MODAL.ROLE_ADMIN' | translate }}</ion-label>
         </ion-segment-button>
       </ion-segment>
     </div>
 
     <!-- Status (Always Read-Only) -->
     <div class="form-group">
-      <ion-label class="selector-label">Status</ion-label>
+      <ion-label class="selector-label">{{ 'USER_MODAL.STATUS' | translate }}</ion-label>
       <ion-input formControlName="status" readonly></ion-input>
     </div>
 
     <!-- Save Button -->
     <div class="save-button-container">
-      <ion-button expand="full" color="medium" (click)="saveUser()">Save</ion-button>
+      <ion-button expand="full" color="medium" (click)="saveUser()">
+        {{ 'USER_MODAL.SAVE' | translate }}
+      </ion-button>
     </div>
   </form>
 </ion-content>

@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ModalController, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-edit-bet-modal',
@@ -11,7 +13,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./edit-bet-modal.component.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [CommonModule, IonicModule, FormsModule],
+  imports: [CommonModule, IonicModule, FormsModule, TranslateModule],
 })
 export class EditBetModalComponent implements AfterViewInit {
   @Input() set bet(value: Bet) {

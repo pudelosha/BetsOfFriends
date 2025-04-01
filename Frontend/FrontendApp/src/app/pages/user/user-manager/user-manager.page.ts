@@ -5,13 +5,15 @@ import { UserService } from 'src/app/services/user.service';
 import { ApplicationUser } from 'src/app/model/user-profile';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-user-manager',
   templateUrl: './user-manager.page.html',
   styleUrls: ['./user-manager.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule],
+  imports: [CommonModule, IonicModule, FormsModule, TranslateModule],
 })
 export class UserManagerPage implements OnInit {
   users: ApplicationUser[] = [];

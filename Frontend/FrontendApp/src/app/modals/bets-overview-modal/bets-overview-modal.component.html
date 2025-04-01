@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Bets Overview</ion-title>
+    <ion-title>{{ 'BETS_OVERVIEW.TITLE' | translate }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="closeModal()">✖</ion-button>
     </ion-buttons>
@@ -26,9 +26,9 @@
 
     <!-- 1X2 Betting Headers with Underline -->
     <ion-row class="betting-row">
-      <ion-col size="4" class="centered-text underline home-label"><strong>Home Win</strong></ion-col>
-      <ion-col size="4" class="centered-text underline draw-label"><strong>Draw</strong></ion-col>
-      <ion-col size="4" class="centered-text underline away-label"><strong>Away Win</strong></ion-col>
+      <ion-col size="4" class="centered-text underline home-label"><strong>{{ 'BETS_OVERVIEW.HOME_WIN' | translate }}</strong></ion-col>
+      <ion-col size="4" class="centered-text underline draw-label"><strong>{{ 'BETS_OVERVIEW.DRAW' | translate }}</strong></ion-col>
+      <ion-col size="4" class="centered-text underline away-label"><strong>{{ 'BETS_OVERVIEW.AWAY_WIN' | translate }}</strong></ion-col>
     </ion-row>
 
     <!-- Dynamic Percentage Bars with Text -->
@@ -50,8 +50,8 @@
 
     <!-- Qualification Betting Headers with Underline -->
     <ion-row class="betting-row">
-      <ion-col size="6" class="centered-text underline homeQ-label"><strong>Home Qualifies</strong></ion-col>
-      <ion-col size="6" class="centered-text underline awayQ-label"><strong>Away Qualifies</strong></ion-col>
+      <ion-col size="6" class="centered-text underline homeQ-label"><strong>{{ 'BETS_OVERVIEW.HOME_QUALIFIES' | translate }}</strong></ion-col>
+      <ion-col size="6" class="centered-text underline awayQ-label"><strong>{{ 'BETS_OVERVIEW.AWAY_QUALIFIES' | translate }}</strong></ion-col>
     </ion-row>
 
     <!-- Dynamic Qualification Bars with Text -->
@@ -70,55 +70,55 @@
 
     <!-- User Bets Table -->
     <ion-row class="betting-row">
-      <ion-col size="12" class="centered-text"><strong>User Bets</strong></ion-col>
+      <ion-col size="12" class="centered-text"><strong>{{ 'BETS_OVERVIEW.USER_BETS' | translate }}</strong></ion-col>
     </ion-row>
 
     <!-- Table Header -->
     <ion-row class="bet-table-header">
-      <ion-col size="4" class="centered-text"><strong>Player</strong></ion-col>
-      <ion-col size="2" class="centered-text"><strong>Bet</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>HW</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>D</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>AW</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>HQ</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>AQ</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>R</strong></ion-col>
+      <ion-col size="4" class="centered-text"><strong>{{ 'BETS_OVERVIEW.PLAYER' | translate }}</strong></ion-col>
+      <ion-col size="2" class="centered-text"><strong>{{ 'BETS_OVERVIEW.BET' | translate }}</strong></ion-col>
+      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.HW' | translate }}</strong></ion-col>
+      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.D' | translate }}</strong></ion-col>
+      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.AW' | translate }}</strong></ion-col>
+      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.HQ' | translate }}</strong></ion-col>
+      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.AQ' | translate }}</strong></ion-col>
+      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.RESULT' | translate }}</strong></ion-col>
     </ion-row>
 
     <ion-row *ngFor="let bet of betStats.userBets">
       <ion-col size="4" class="centered-text player-name">{{ bet.username }}</ion-col>
       <ion-col size="2" class="centered-text bet-result">{{ bet?.betScore ?? '-' }}</ion-col>
-    
+
       <!-- Home Win Column -->
       <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.homeWinSuccess === 1, 'failure': bet.homeWinSuccess === 0}">
         {{ bet.homeWinSuccess ?? '' }}
       </ion-col>
-    
+
       <!-- Draw Column -->
       <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.drawSuccess === 1, 'failure': bet.drawSuccess === 0}">
         {{ bet.drawSuccess ?? '' }}
       </ion-col>
-    
+
       <!-- Away Win Column -->
       <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.awayWinSuccess === 1, 'failure': bet.awayWinSuccess === 0}">
         {{ bet.awayWinSuccess ?? '' }}
       </ion-col>
-    
+
       <!-- Home Qualifies -->
       <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.homeQualifiesSuccess === 1, 'failure': bet.homeQualifiesSuccess === 0}">
         {{ bet.homeQualifiesSuccess ?? '' }}
       </ion-col>
-    
+
       <!-- Away Qualifies -->
       <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.awayQualifiesSuccess === 1, 'failure': bet.awayQualifiesSuccess === 0}">
         {{ bet.awayQualifiesSuccess ?? '' }}
       </ion-col>
-    
+
       <!-- Result (Overall Bet Success) -->
       <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.resultSuccess === 1, 'failure': bet.resultSuccess === 0}">
         {{ bet.resultSuccess ?? '' }}
       </ion-col>
     </ion-row>
-    
+
   </ion-grid>
 </ion-content>

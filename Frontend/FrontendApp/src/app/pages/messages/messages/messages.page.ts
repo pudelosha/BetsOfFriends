@@ -5,13 +5,15 @@ import { Component, OnInit } from '@angular/core';
 import { ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-messages',
   templateUrl: './messages.page.html',
   styleUrls: ['./messages.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
 })
 export class MessagesPage implements OnInit {
   notifications: NotificationDto[] = [];

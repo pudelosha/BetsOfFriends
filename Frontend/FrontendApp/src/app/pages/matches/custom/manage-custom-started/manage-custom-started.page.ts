@@ -9,13 +9,15 @@ import { firstValueFrom } from 'rxjs';
 import { CustomMatchService } from 'src/app/services/custom-match.service';
 import { Match } from 'src/app/model/match';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-manage-custom-started',
   templateUrl: './manage-custom-started.page.html',
   styleUrls: ['./manage-custom-started.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
 })
 export class ManageCustomStartedPage implements OnInit, OnChanges {
   @Input() stage!: string; // Receive stage from parent

@@ -3,13 +3,15 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { UserBettingStats } from 'src/app/model/tournament-model';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-player-stats-modal',
   templateUrl: './player-stats-modal.component.html',
   styleUrls: ['./player-stats-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
 })
 export class PlayerStatsModalComponent implements OnInit {
   @Input() tournamentId!: number;

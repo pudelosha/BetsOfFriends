@@ -1,30 +1,30 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Accept Invitation</ion-title>
+    <ion-title>{{ 'INVITE.TITLE' | translate }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="dismiss()">Close</ion-button>
+      <ion-button (click)="dismiss()">{{ 'INVITE.CLOSE' | translate }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <div class="description">
-    <p>You are invited to join <strong>{{ tournamentName }}</strong>.</p>
-    <p>Please enter a nickname to participate.</p>
+    <p>{{ 'INVITE.MESSAGE' | translate:{ name: tournamentName } }}</p>
+    <p>{{ 'INVITE.NICKNAME_PROMPT' | translate }}</p>
   </div>
 
   <form [formGroup]="nicknameForm" class="nickname-form">
     <div class="form-row vertical-align">
-      <ion-label class="selector-label">Nickname</ion-label>
-      <ion-input formControlName="nickname" type="text" maxlength="20" placeholder="Enter nickname"></ion-input>
+      <ion-label class="selector-label">{{ 'INVITE.NICKNAME_LABEL' | translate }}</ion-label>
+      <ion-input formControlName="nickname" type="text" maxlength="20" [placeholder]="'INVITE.NICKNAME_PLACEHOLDER' | translate"></ion-input>
     </div>
 
     <div class="validation-message">
       <p class="error" *ngIf="nicknameForm.controls['nickname'].hasError('required') && nicknameForm.controls['nickname'].touched">
-        Nickname is required.
+        {{ 'INVITE.ERROR_REQUIRED' | translate }}
       </p>
       <p class="error" *ngIf="nicknameForm.controls['nickname'].hasError('maxlength') && nicknameForm.controls['nickname'].touched">
-        Nickname cannot exceed 20 characters.
+        {{ 'INVITE.ERROR_MAXLENGTH' | translate }}
       </p>
       <p class="error" *ngIf="nicknameError">
         {{ nicknameError }}
@@ -33,9 +33,8 @@
 
     <div class="save-button-container">
       <ion-button expand="full" color="success" (click)="confirm()" [disabled]="nicknameForm.invalid || isLoading">
-        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner> Accept
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner> {{ 'INVITE.ACCEPT' | translate }}
       </ion-button>
     </div>
   </form>
 </ion-content>
-

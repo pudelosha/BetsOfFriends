@@ -1,8 +1,8 @@
 <ion-header *ngIf="bet">
   <ion-toolbar>
-    <ion-title>{{ bet.betId ? 'Edit Bet' : 'Place Bet' }}</ion-title>
+    <ion-title>{{ bet.betId ? ('BET_MODAL.EDIT_TITLE' | translate) : ('BET_MODAL.PLACE_TITLE' | translate) }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="closeModal()">Close</ion-button>
+      <ion-button (click)="closeModal()">{{ 'BET_MODAL.CLOSE' | translate }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -21,13 +21,13 @@
   <div class="divider"></div>
 
   <!-- 90-Min Match Odds -->
-  <ion-label class="section-title">90-Min Match Odds</ion-label>
+  <ion-label class="section-title">{{ 'BET_MODAL.MATCH_ODDS' | translate }}</ion-label>
 
   <ion-grid>
     <ion-row class="odds-labels">
-      <ion-col>Home Win</ion-col>
-      <ion-col>Draw</ion-col>
-      <ion-col>Away Win</ion-col>
+      <ion-col>{{ 'BET_MODAL.HOME_WIN' | translate }}</ion-col>
+      <ion-col>{{ 'BET_MODAL.DRAW' | translate }}</ion-col>
+      <ion-col>{{ 'BET_MODAL.AWAY_WIN' | translate }}</ion-col>
     </ion-row>
   </ion-grid>
 
@@ -43,7 +43,7 @@
   <div class="divider"></div>
 
   <!-- 90-Min Score Prediction -->
-  <ion-label class="section-title">Predict the 90-Min Result</ion-label>
+  <ion-label class="section-title">{{ 'BET_MODAL.PREDICT_SCORE' | translate }}</ion-label>
 
   <ion-grid class="center-grid">
     <ion-row class="prediction-row">
@@ -71,11 +71,11 @@
     </ion-row>
   </ion-grid>
 
-  <!-- Qualification Odds Section (Visible Only for 'ExtendedWithQualification') -->
+  <!-- Qualification Odds Section -->
   <ng-container *ngIf="bet.type === 'ExtendedWithQualification'">
     <div class="divider"></div>
 
-    <ion-label class="section-title">Who Qualifies? Odds</ion-label>
+    <ion-label class="section-title">{{ 'BET_MODAL.QUALIFY_ODDS' | translate }}</ion-label>
 
     <ion-grid>
       <ion-row class="odds-labels">
@@ -93,8 +93,7 @@
 
     <div class="divider"></div>
 
-    <!-- Player's Prediction: Who Do You Think Qualifies? -->
-    <ion-label class="section-title">Your Qualification Prediction</ion-label>
+    <ion-label class="section-title">{{ 'BET_MODAL.QUALIFY_PREDICTION' | translate }}</ion-label>
 
     <ion-item class="full-width no-padding">
       <ion-segment [(ngModel)]="playerQualifiedTeam" class="full-width">
@@ -106,6 +105,5 @@
   </ng-container>
 
   <!-- Save Button -->
-  <ion-button expand="full" color="medium" (click)="saveBet()">Save</ion-button>
-  
+  <ion-button expand="full" color="medium" (click)="saveBet()">{{ 'BET_MODAL.SAVE' | translate }}</ion-button>
 </ion-content>

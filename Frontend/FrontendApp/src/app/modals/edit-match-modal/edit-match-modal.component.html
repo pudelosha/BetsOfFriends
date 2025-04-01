@@ -1,8 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ index !== undefined ? 'Edit Match' : 'Add Match' }}</ion-title>
+    <ion-title>{{ index !== undefined ? ('MATCH_MODAL.EDIT_TITLE' | translate) : ('MATCH_MODAL.ADD_TITLE' | translate) }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="closeModal()">Close</ion-button>
+      <ion-button (click)="closeModal()">{{ 'MATCH_MODAL.CLOSE' | translate }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -12,7 +12,7 @@
 
     <!-- Stage Selection -->
     <div class="match-row">
-      <ion-label class="selector-label">Stage</ion-label>
+      <ion-label class="selector-label">{{ 'MATCH_MODAL.STAGE' | translate }}</ion-label>
       <ion-select formControlName="stageFrontendId" [compareWith]="compareWith">
         <ion-select-option *ngFor="let stage of stages" [value]="stage.stageFrontendId">
           {{ stage.stageName }}
@@ -22,7 +22,7 @@
 
     <!-- Home Team -->
     <div class="match-row">
-      <ion-label class="selector-label">Home Team</ion-label>
+      <ion-label class="selector-label">{{ 'MATCH_MODAL.HOME_TEAM' | translate }}</ion-label>
       <ion-select formControlName="homeTeamFrontendId" [compareWith]="compareWith">
         <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
           {{ team.teamName }}
@@ -32,7 +32,7 @@
 
     <!-- Away Team -->
     <div class="match-row">
-      <ion-label class="selector-label">Away Team</ion-label>
+      <ion-label class="selector-label">{{ 'MATCH_MODAL.AWAY_TEAM' | translate }}</ion-label>
       <ion-select formControlName="awayTeamFrontendId" [compareWith]="compareWith">
         <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
           {{ team.teamName }}
@@ -40,31 +40,31 @@
       </ion-select>
     </div>
 
-    <!-- Match Type (Label + Selector in One Row) -->
+    <!-- Match Type -->
     <div class="match-row">
-      <ion-label class="selector-label">Match Type</ion-label>
+      <ion-label class="selector-label">{{ 'MATCH_MODAL.TYPE' | translate }}</ion-label>
       <ion-select formControlName="matchType" class="wide-select">
-        <ion-select-option value="Regular90Min">Regular 90min</ion-select-option>
-        <ion-select-option value="ExtendedWithQualification">90min with qualification</ion-select-option>
+        <ion-select-option value="Regular90Min">{{ 'MATCH_MODAL.TYPE_REGULAR' | translate }}</ion-select-option>
+        <ion-select-option value="ExtendedWithQualification">{{ 'MATCH_MODAL.TYPE_EXTENDED' | translate }}</ion-select-option>
       </ion-select>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Match Date & Time Section -->
-    <div class="section-title">Match Date & Time</div>
+    <!-- Match Date -->
+    <div class="section-title">{{ 'MATCH_MODAL.DATETIME' | translate }}</div>
     <div class="match-row">
       <ion-datetime displayFormat="YYYY-MM-DD HH:mm" formControlName="matchStart" class="full-width"></ion-datetime>
     </div>
 
     <div class="divider"></div>
 
-    <!-- 1X2 Odds Section -->
-    <div class="section-title">1X2 Betting Odds</div>
+    <!-- 1X2 Odds -->
+    <div class="section-title">{{ 'MATCH_MODAL.ODDS_1X2' | translate }}</div>
     <div class="match-row">
-      <ion-label class="match-label center-align">Home Win</ion-label>
-      <ion-label class="match-label center-align">Draw</ion-label>
-      <ion-label class="match-label center-align">Away Win</ion-label>
+      <ion-label class="match-label center-align">{{ 'MATCH_MODAL.HOME_WIN' | translate }}</ion-label>
+      <ion-label class="match-label center-align">{{ 'MATCH_MODAL.DRAW' | translate }}</ion-label>
+      <ion-label class="match-label center-align">{{ 'MATCH_MODAL.AWAY_WIN' | translate }}</ion-label>
     </div>
 
     <div class="match-row">
@@ -75,14 +75,14 @@
 
     <div class="divider"></div>
 
-    <!-- Qualification Odds Section -->
+    <!-- Qualification Odds -->
     <div class="section-title" *ngIf="matchForm.value.matchType === 'ExtendedWithQualification'">
-      Qualification Odds
+      {{ 'MATCH_MODAL.ODDS_QUALIFICATION' | translate }}
     </div>
 
     <div class="match-row" *ngIf="matchForm.value.matchType === 'ExtendedWithQualification'">
-      <ion-label class="match-label center-align">Home Qualifies</ion-label>
-      <ion-label class="match-label center-align">Away Qualifies</ion-label>
+      <ion-label class="match-label center-align">{{ 'MATCH_MODAL.HOME_QUAL' | translate }}</ion-label>
+      <ion-label class="match-label center-align">{{ 'MATCH_MODAL.AWAY_QUAL' | translate }}</ion-label>
     </div>
 
     <div class="match-row" *ngIf="matchForm.value.matchType === 'ExtendedWithQualification'">
@@ -92,20 +92,20 @@
 
     <div class="divider" *ngIf="matchForm.value.matchType === 'ExtendedWithQualification'"></div>
 
-    <!-- Match Visibility -->
-    <div class="section-title">Match Visibility</div>
+    <!-- Visibility -->
+    <div class="section-title">{{ 'MATCH_MODAL.VISIBILITY' | translate }}</div>
     <div class="match-row">
       <ion-item lines="none" class="visibility-item">
         <ion-label class="visibility-status">
-          <strong>{{ matchForm.get('isVisible')?.value ? 'Visible' : 'Hidden' }}</strong>
+          <strong>{{ matchForm.get('isVisible')?.value ? ('MATCH_MODAL.VISIBLE' | translate) : ('MATCH_MODAL.HIDDEN' | translate) }}</strong>
         </ion-label>
         <ion-toggle slot="end" formControlName="isVisible"></ion-toggle>
       </ion-item>
     </div>
 
-    <!-- Save Button with Extra Spacing -->
+    <!-- Save Button -->
     <div class="save-button-container">
-      <ion-button expand="full" color="medium" (click)="saveMatch()">Save</ion-button>
+      <ion-button expand="full" color="medium" (click)="saveMatch()">{{ 'MATCH_MODAL.SAVE' | translate }}</ion-button>
     </div>
   </form>
 </ion-content>

@@ -2,13 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-notification-settings',
   templateUrl: './notification-settings.page.html',
   styleUrls: ['./notification-settings.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class NotificationSettingsPage implements OnInit {
   notificationForm: FormGroup;

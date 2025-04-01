@@ -1,8 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Player Stats</ion-title>
+    <ion-title>{{ 'PLAYER_STATS.TITLE' | translate }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="closeModal()">Close</ion-button>
+      <ion-button (click)="closeModal()">{{ 'PLAYER_STATS.CLOSE' | translate }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -14,12 +14,12 @@
 
   <!-- Display Message if No Matches Found -->
   <div *ngIf="!isLoading && stats.length === 0" class="no-stats">
-    <p>No stats available.</p>
+    <p>{{ 'PLAYER_STATS.NO_STATS' | translate }}</p>
   </div>
 
   <!-- Stats Accordion -->
   <ion-accordion-group *ngIf="!isLoading && stats.length > 0" (ionChange)="onAccordionChange($event)">
-    <ion-accordion   *ngFor="let stat of stats" [value]="stat.matchId" [disabled]="stat.matchStatus !== 'Finalised'">
+    <ion-accordion *ngFor="let stat of stats" [value]="stat.matchId" [disabled]="stat.matchStatus !== 'Finalised'">
       
       <!-- Accordion Header -->
       <ion-item slot="header" class="accordion-header" [class.expanded-header]="expandedMatchId === stat.matchId">
@@ -37,12 +37,12 @@
       <div class="accordion-content" slot="content">
         <ion-grid class="stats-table">
           <ion-row class="header-row">
-            <ion-col>Bet</ion-col>
+            <ion-col>{{ 'PLAYER_STATS.BET' | translate }}</ion-col>
             <ion-col></ion-col>
             <ion-col></ion-col>
-            <ion-col>Exact</ion-col>
+            <ion-col>{{ 'PLAYER_STATS.EXACT' | translate }}</ion-col>
             <ion-col></ion-col>
-            <ion-col>Qualify</ion-col>
+            <ion-col>{{ 'PLAYER_STATS.QUALIFY' | translate }}</ion-col>
             <ion-col></ion-col>
             <ion-col></ion-col>
           </ion-row>

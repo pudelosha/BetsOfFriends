@@ -9,13 +9,15 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-manage-predefined-matches',
   templateUrl: './manage-predefined-matches.page.html',
   styleUrls: ['./manage-predefined-matches.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, ManagePredefinedFinalisedPage, ManagePredefinedStartedPage, ManagePredefinedUpcomingPage],
+  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, ManagePredefinedFinalisedPage, ManagePredefinedStartedPage, ManagePredefinedUpcomingPage, TranslateModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {

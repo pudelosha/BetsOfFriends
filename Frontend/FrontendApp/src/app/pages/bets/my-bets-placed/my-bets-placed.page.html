@@ -3,38 +3,40 @@
 
 <!-- Display Message if No Matches Found -->
 <div *ngIf="!isLoading && errorMessage" class="no-matches">
-  <p>{{ errorMessage }}</p>
+  <p>{{ 'MY_BETS_PLACED.NO_MATCHES' | translate }}</p>
 </div>
 
 <ion-list *ngIf="!isLoading && bets.length > 0" class="bet-list">
   <ion-item *ngFor="let bet of bets" class="bet-item">
-      <div class="bet-grid">
+    <div class="bet-grid">
 
-        <div class="bet-details">
-          <span class="team">{{ bet.teamHome }}</span>
-          <span class="team">{{ bet.teamAway }}</span>
-        </div>
-
-        <div class="bet-result">
-          <span class="home-goals">{{ bet.playerHomeGoals ?? '-' }}</span>
-          <span class="away-goals">{{ bet.playerAwayGoals ?? '-' }}</span>
-        </div>
-
-        <div class="bet-date">
-          <span class="date">{{ bet.startTime | date: 'yyyy.MM.dd' }}</span>
-          <span class="time">{{ bet.startTime | date: 'HH:mm' }}</span>
-        </div>
-
-        <div class="bet-preview-container">
-          <ion-button size="small" class="preview-button" color="medium" (click)="openBetsOverview(bet)" fill="clear">
-            <ion-icon name="search-outline"></ion-icon>
-          </ion-button>
-        </div>
-
-        <div class="bet-button-container">
-          <ion-button size="small" class="bet-button" color="medium" (click)="editBet(bet, $event)">Edit Bet</ion-button>
-        </div>
-        
+      <div class="bet-details">
+        <span class="team">{{ bet.teamHome }}</span>
+        <span class="team">{{ bet.teamAway }}</span>
       </div>
-    </ion-item>
-  </ion-list>
+
+      <div class="bet-result">
+        <span class="home-goals">{{ bet.playerHomeGoals ?? '-' }}</span>
+        <span class="away-goals">{{ bet.playerAwayGoals ?? '-' }}</span>
+      </div>
+
+      <div class="bet-date">
+        <span class="date">{{ bet.startTime | date: 'yyyy.MM.dd' }}</span>
+        <span class="time">{{ bet.startTime | date: 'HH:mm' }}</span>
+      </div>
+
+      <div class="bet-preview-container">
+        <ion-button size="small" class="preview-button" color="medium" (click)="openBetsOverview(bet)" fill="clear">
+          <ion-icon name="search-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="bet-button-container">
+        <ion-button size="small" class="bet-button" color="medium" (click)="editBet(bet, $event)">
+          {{ 'MY_BETS_PLACED.EDIT_BUTTON' | translate }}
+        </ion-button>
+      </div>
+
+    </div>
+  </ion-item>
+</ion-list>

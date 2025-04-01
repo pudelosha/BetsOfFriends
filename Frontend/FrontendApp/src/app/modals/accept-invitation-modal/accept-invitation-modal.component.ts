@@ -5,13 +5,15 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-accept-invitation-modal',
   templateUrl: './accept-invitation-modal.component.html',
   styleUrls: ['./accept-invitation-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class AcceptInvitationModalComponent implements OnInit {
   @Input() tournamentName!: string;

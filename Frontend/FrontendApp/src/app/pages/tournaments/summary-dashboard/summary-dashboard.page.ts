@@ -6,13 +6,15 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { TournamentSummary } from 'src/app/model/tournament-model';
 import { ModalController } from '@ionic/angular';
 import { PlayerStatsModalComponent } from 'src/app/modals/player-stats-modal/player-stats-modal.component';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-summary-dashboard',
   templateUrl: './summary-dashboard.page.html',
   styleUrls: ['./summary-dashboard.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
 })
 export class SummaryDashboardPage implements OnInit {
   tournamentId: number | null = null;

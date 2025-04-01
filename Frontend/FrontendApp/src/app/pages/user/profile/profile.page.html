@@ -4,29 +4,29 @@
 
       <!-- Profile Details Frame -->
       <div class="profile-frame">
-        <div class="frame-title">Profile details</div>
+        <div class="frame-title">{{ 'PROFILE.TITLE' | translate }}</div>
 
         <!-- Member Since -->
         <ion-item>
-          <ion-label position="stacked">Member Since</ion-label>
+          <ion-label position="stacked">{{ 'PROFILE.MEMBER_SINCE' | translate }}</ion-label>
           <ion-input [value]="memberSince" readonly></ion-input>
         </ion-item>
 
         <!-- Email -->
         <ion-item>
-          <ion-label position="stacked">Email</ion-label>
+          <ion-label position="stacked">{{ 'PROFILE.EMAIL' | translate }}</ion-label>
           <ion-input formControlName="email" readonly></ion-input>
         </ion-item>
 
         <!-- Nickname -->
         <ion-item>
-          <ion-label position="stacked">Nickname (optional)</ion-label>
-          <ion-input formControlName="nickname" type="text" placeholder="Enter nickname"></ion-input>
+          <ion-label position="stacked">{{ 'PROFILE.NICKNAME' | translate }}</ion-label>
+          <ion-input formControlName="nickname" type="text" placeholder="{{ 'PROFILE.NICKNAME_PLACEHOLDER' | translate }}"></ion-input>
         </ion-item>
 
         <!-- Language -->
         <ion-item>
-          <ion-label>Language</ion-label>
+          <ion-label>{{ 'PROFILE.LANGUAGE' | translate }}</ion-label>
           <ion-select formControlName="language">
             <ion-select-option *ngFor="let lang of availableLanguages" [value]="lang.shortName">
               {{ lang.longName }}
@@ -36,9 +36,9 @@
 
         <!-- Location -->
         <ion-item>
-          <ion-label>Location (optional)</ion-label>
+          <ion-label>{{ 'PROFILE.LOCATION' | translate }}</ion-label>
           <ion-select formControlName="location">
-            <ion-select-option value="" disabled>Select your location</ion-select-option>
+            <ion-select-option value="" disabled>{{ 'PROFILE.SELECT_LOCATION' | translate }}</ion-select-option>
             <ion-select-option *ngFor="let country of availableCountries" [value]="country.countryId">
               {{ country.name }}
             </ion-select-option>
@@ -47,28 +47,34 @@
 
         <!-- Dark Mode -->
         <ion-item>
-          <ion-label>Dark Mode</ion-label>
+          <ion-label>{{ 'PROFILE.DARK_MODE' | translate }}</ion-label>
           <ion-toggle formControlName="darkMode"></ion-toggle>
         </ion-item>
 
         <!-- Save Button -->
         <ion-button expand="full" color="medium" type="submit" [disabled]="profileForm.invalid">
-          Save Profile
+          {{ 'PROFILE.SAVE' | translate }}
         </ion-button>
       </div>
 
       <!-- Profile Management Frame -->
       <div class="profile-frame">
-        <div class="frame-title">Profile management</div>
+        <div class="frame-title">{{ 'PROFILE.MANAGEMENT' | translate }}</div>
 
         <!-- Change Email Button -->
-        <ion-button expand="full" color="dark" (click)="changeEmail()">Change Email</ion-button>
+        <ion-button expand="full" color="dark" (click)="changeEmail()">
+          {{ 'PROFILE.CHANGE_EMAIL' | translate }}
+        </ion-button>
 
         <!-- Update Password Button -->
-        <ion-button expand="full" color="dark" (click)="updatePasswordPopup()">Update Password</ion-button>
+        <ion-button expand="full" color="dark" (click)="updatePasswordPopup()">
+          {{ 'PROFILE.UPDATE_PASSWORD' | translate }}
+        </ion-button>
 
         <!-- Delete Account Button -->
-        <ion-button expand="full" color="danger" (click)="confirmDeleteAccount()">Delete Account</ion-button>
+        <ion-button expand="full" color="danger" (click)="confirmDeleteAccount()">
+          {{ 'PROFILE.DELETE_ACCOUNT' | translate }}
+        </ion-button>
       </div>
     </form>
   </div>

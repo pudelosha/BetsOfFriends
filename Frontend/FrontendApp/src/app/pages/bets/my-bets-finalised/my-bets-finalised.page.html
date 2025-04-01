@@ -3,38 +3,38 @@
 
 <!-- Display Message if No Matches Found -->
 <div *ngIf="!isLoading && errorMessage" class="no-matches">
-  <p>{{ errorMessage }}</p>
+  <p>{{ 'MY_BETS_FINALISED.NO_MATCHES' | translate }}</p>
 </div>
 
 <ion-list *ngIf="!isLoading && bets.length > 0" class="bet-list">
-    <ion-item *ngFor="let bet of bets" class="bet-item">
-      <div class="bet-grid">
+  <ion-item *ngFor="let bet of bets" class="bet-item">
+    <div class="bet-grid">
 
-        <div class="bet-details">
-          <span class="team">{{ bet.teamHome }}</span>
-          <span class="team">{{ bet.teamAway }}</span>
-        </div>
-
-        <div class="bet-player-prediction">
-          <span>{{ bet.playerHomeGoals !== null ? bet.playerHomeGoals : '-' }}</span>
-          <span>{{ bet.playerAwayGoals !== null ? bet.playerAwayGoals : '-' }}</span>
-        </div>
-
-        <div class="bet-actual-result">
-          <span>{{ bet.actualHomeGoals !== null ? bet.actualHomeGoals : '-' }}</span>
-          <span>{{ bet.actualAwayGoals !== null ? bet.actualAwayGoals : '-' }}</span>
-        </div>
-
-        <div class="bet-result">
-          <span>{{ getBetStatus(bet) }}</span>
-        </div>
-
-        <div class="bet-preview-container">
-          <ion-button size="small" class="preview-button" color="medium" (click)="openBetsOverview(bet)" fill="clear">
-            <ion-icon name="search-outline"></ion-icon>
-          </ion-button>
-        </div>
-        
+      <div class="bet-details">
+        <span class="team">{{ bet.teamHome }}</span>
+        <span class="team">{{ bet.teamAway }}</span>
       </div>
-    </ion-item>
-  </ion-list>
+
+      <div class="bet-player-prediction">
+        <span>{{ bet.playerHomeGoals !== null ? bet.playerHomeGoals : '-' }}</span>
+        <span>{{ bet.playerAwayGoals !== null ? bet.playerAwayGoals : '-' }}</span>
+      </div>
+
+      <div class="bet-actual-result">
+        <span>{{ bet.actualHomeGoals !== null ? bet.actualHomeGoals : '-' }}</span>
+        <span>{{ bet.actualAwayGoals !== null ? bet.actualAwayGoals : '-' }}</span>
+      </div>
+
+      <div class="bet-result">
+        <span>{{ getBetStatus(bet) }}</span>
+      </div>
+
+      <div class="bet-preview-container">
+        <ion-button size="small" class="preview-button" color="medium" (click)="openBetsOverview(bet)" fill="clear">
+          <ion-icon name="search-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+    </div>
+  </ion-item>
+</ion-list>

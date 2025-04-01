@@ -1,8 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Edit Match Result</ion-title>
+    <ion-title>{{ 'MATCH_RESULT_MODAL.TITLE' | translate }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="closeModal()">Close</ion-button>
+      <ion-button (click)="closeModal()">{{ 'MATCH_RESULT_MODAL.CLOSE' | translate }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -21,14 +21,14 @@
   <div class="divider"></div>
 
   <!-- Match Date & Time -->
-  <div class="section-title">Match Date & Time</div>
+  <div class="section-title">{{ 'MATCH_RESULT_MODAL.DATETIME' | translate }}</div>
   <div class="center-container">
     <ion-datetime displayFormat="YYYY-MM-DD HH:mm" [(ngModel)]="matchStart" class="full-width"></ion-datetime>
   </div>
 
   <!-- Toggle Button: Did the match finish? -->
   <ion-item>
-    <ion-label>Did the match finish?</ion-label>
+    <ion-label>{{ 'MATCH_RESULT_MODAL.FINISHED_LABEL' | translate }}</ion-label>
     <ion-toggle [(ngModel)]="isFinished"></ion-toggle>
   </ion-item>
 
@@ -36,7 +36,7 @@
   <ng-container *ngIf="isFinished">
 
     <!-- Final Score -->
-    <ion-label class="section-title">Final Score</ion-label>
+    <ion-label class="section-title">{{ 'MATCH_RESULT_MODAL.FINAL_SCORE' | translate }}</ion-label>
     <ion-grid class="center-grid">
       <ion-row class="prediction-row">
         <ion-col class="center-align">
@@ -48,9 +48,9 @@
             </ion-picker-column>
           </ion-picker>       
         </ion-col>
-  
+
         <ion-col style="display: flex; justify-content: center; align-items: center; color: #1a65eb; font-weight: bold;">-</ion-col>
-  
+
         <ion-col class="center-align">
           <ion-picker>
             <ion-picker-column [value]="awayScore" (ionChange)="onAwayScoreChange($event)">
@@ -63,10 +63,10 @@
       </ion-row>
     </ion-grid>
 
-    <!-- Qualifying Team Selection: Only for ExtendedWithQualification -->
+    <!-- Qualifying Team Selection -->
     <ng-container *ngIf="matchType === 'ExtendedWithQualification'">
       <div class="divider"></div>
-      <ion-label class="section-title">Select the Qualifying Team</ion-label>
+      <ion-label class="section-title">{{ 'MATCH_RESULT_MODAL.QUALIFY_LABEL' | translate }}</ion-label>
       <ion-item class="full-width no-padding">
         <ion-segment [(ngModel)]="qualifySelection" class="full-width">
           <ion-segment-button value="home" class="segment-home">{{ match.homeTeam }}</ion-segment-button>
@@ -78,5 +78,7 @@
   </ng-container>
 
   <!-- Save Button -->
-  <ion-button expand="full" color="medium" (click)="saveMatchResult()">Save</ion-button>
+  <ion-button expand="full" color="medium" (click)="saveMatchResult()">
+    {{ 'MATCH_RESULT_MODAL.SAVE' | translate }}
+  </ion-button>
 </ion-content>

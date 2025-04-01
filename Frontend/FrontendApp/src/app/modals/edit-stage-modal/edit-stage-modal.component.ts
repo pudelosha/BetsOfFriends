@@ -3,13 +3,15 @@ import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Stage } from 'src/app/model/tournament-model';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-edit-stage-modal',
   templateUrl: './edit-stage-modal.component.html',
   styleUrls: ['./edit-stage-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class EditStageModalComponent implements OnInit {
   @Input() stage: Stage | null = null;

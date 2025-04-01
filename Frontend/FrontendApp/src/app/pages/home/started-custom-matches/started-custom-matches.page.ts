@@ -6,11 +6,13 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { CustomMatchService } from 'src/app/services/custom-match.service';
 import { firstValueFrom } from 'rxjs';
 import { Match } from 'src/app/model/match'; // or your custom match model
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-started-custom-matches',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
   templateUrl: './started-custom-matches.page.html',
   styleUrls: ['./started-custom-matches.page.scss']
 })

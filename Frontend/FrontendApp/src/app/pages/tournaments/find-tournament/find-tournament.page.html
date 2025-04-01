@@ -1,53 +1,52 @@
 <ion-content class="ion-padding page-with-header">
-    <div class="page-container find-tournament-container">
-  
-      <!-- Page Description -->
-      <div class="page-description">
-        <p>
-          Browse public tournaments open for participation. Use the search box to find a tournament by name and request to join.
-        </p>
-      </div>
-  
-      <!-- Search -->
-      <ion-searchbar
-        class="custom-searchbar"
-        [(ngModel)]="searchTerm"
-        (ionInput)="onSearchChange()"
-        placeholder="Search tournaments..."
-        showClearButton="focus"
-        debounce="200"
-        animated>
-      </ion-searchbar>
-  
-      <!-- No Tournaments Message -->
-      <div *ngIf="filteredTournaments.length === 0" class="no-tournaments">
-        No tournaments found
-      </div>
-  
-      <!-- Tournament List -->
-      <ion-list class="tournament-list" *ngIf="filteredTournaments.length > 0">
-        <ion-item *ngFor="let tournament of filteredTournaments" class="tournament-item" lines="none">
-          <div class="tournament-box">
-            <div class="tournament-grid">
-              <div class="tournament-details">
-                <strong>{{ tournament.tournamentName }}</strong>
-                <span>{{ tournament.participants }} participants</span>
-                <span class="tournament-date">Created: {{ tournament.createdAt | date:'yyyy.MM.dd HH:mm' }}</span>
-              </div>
-      
-              <div class="tournament-actions">
-                <ion-button
-                  size="small"
-                  [disabled]="tournament.joinRequested"
-                  (click)="requestToJoin(tournament)">
-                  {{ tournament.joinRequested ? 'Requested' : 'Join' }}
-                </ion-button>
-              </div>
+  <div class="page-container find-tournament-container">
+
+    <!-- Page Description -->
+    <div class="page-description">
+      <p>
+        {{ 'FIND_TOURNAMENT.DESCRIPTION' | translate }}
+      </p>
+    </div>
+
+    <!-- Search -->
+    <ion-searchbar
+      class="custom-searchbar"
+      [(ngModel)]="searchTerm"
+      (ionInput)="onSearchChange()"
+      [placeholder]="'FIND_TOURNAMENT.SEARCH_PLACEHOLDER' | translate"
+      showClearButton="focus"
+      debounce="200"
+      animated>
+    </ion-searchbar>
+
+    <!-- No Tournaments Message -->
+    <div *ngIf="filteredTournaments.length === 0" class="no-tournaments">
+      {{ 'FIND_TOURNAMENT.NO_RESULTS' | translate }}
+    </div>
+
+    <!-- Tournament List -->
+    <ion-list class="tournament-list" *ngIf="filteredTournaments.length > 0">
+      <ion-item *ngFor="let tournament of filteredTournaments" class="tournament-item" lines="none">
+        <div class="tournament-box">
+          <div class="tournament-grid">
+            <div class="tournament-details">
+              <strong>{{ tournament.tournamentName }}</strong>
+              <span>{{ tournament.participants }} {{ 'FIND_TOURNAMENT.PARTICIPANTS' | translate }}</span>
+              <span class="tournament-date">{{ 'FIND_TOURNAMENT.CREATED' | translate }}: {{ tournament.createdAt | date:'yyyy.MM.dd HH:mm' }}</span>
+            </div>
+
+            <div class="tournament-actions">
+              <ion-button
+                size="small"
+                [disabled]="tournament.joinRequested"
+                (click)="requestToJoin(tournament)">
+                {{ tournament.joinRequested ? ('FIND_TOURNAMENT.REQUESTED' | translate) : ('FIND_TOURNAMENT.JOIN' | translate) }}
+              </ion-button>
             </div>
           </div>
-        </ion-item>
-      </ion-list>      
-  
-    </div>
-  </ion-content>
-  
+        </div>
+      </ion-item>
+    </ion-list>      
+
+  </div>
+</ion-content>

@@ -3,6 +3,8 @@ import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Match } from 'src/app/model/match';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-edit-match-result-modal',
@@ -10,7 +12,7 @@ import { Match } from 'src/app/model/match';
   styleUrls: ['./edit-match-result-modal.component.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
 })
 export class EditMatchResultModalComponent implements AfterViewInit {
   @Input() set match(value: Match) {

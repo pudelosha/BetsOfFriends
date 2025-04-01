@@ -7,12 +7,14 @@ import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { ToastController, MenuController, ModalController } from '@ionic/angular';
 import { ParticipantTournamentsModalComponent } from './modals/participant-tournaments-modal/participant-tournaments-modal.component';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class AppComponent {
   isLoggedIn = false;

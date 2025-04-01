@@ -1,59 +1,58 @@
 <ion-content class="ion-padding page-with-header">
-    <div class="page-container">
-      
-      <!-- Loading Spinner -->
-      <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
-  
-      <!-- Display Message if No Notifications Found -->
-      <div *ngIf="!isLoading && notifications.length === 0" class="no-notifications">
-        <p>No notifications found.</p>
-      </div>
-  
-      <!-- Notifications List -->
-      <ion-list *ngIf="!isLoading && notifications.length > 0" class="notification-list">
-        <ion-accordion-group [value]="expandedNotificationId">
-          <ion-accordion *ngFor="let notification of notifications" [value]="notification.notificationId">
-            
-            <!-- Compact Row (Title & Date) -->
-            <ion-item 
-              slot="header"
-              class="notification-item"
-              [ngClass]="{ 'unread-notification': !notification.isRead }"
-              (click)="toggleNotification(notification)"
-            >
-              <div class="notification-grid">
-                
-                <!-- Notification Title -->
-                <div class="notification-title">
-                  <span>{{ notification.title }}</span>
-                </div>
-  
-                <!-- Date Column -->
-                <div class="notification-date">
-                  <span class="date">{{ notification.createdAt | date: 'yyyy.MM.dd' }}</span>
-                  <span class="time">{{ notification.createdAt | date: 'HH:mm' }}</span>
-                </div>
-  
-                <!-- Delete Button -->
-                <div class="notification-button-container">
-                  <ion-button fill="clear" color="danger" class="notification-button" 
-                    (click)="deleteNotification(notification); $event.stopPropagation();">
-                    <ion-icon slot="icon-only" name="trash"></ion-icon>
-                  </ion-button>
-                </div>
-  
-              </div>
-            </ion-item>
-  
-            <!-- Expanded Content (Message Body & Details) -->
-            <div slot="content" class="notification-content">
-              <p>{{ notification.message }}</p>
-            </div>
-  
-          </ion-accordion>
-        </ion-accordion-group>
-      </ion-list>
-  
+  <div class="page-container">
+    
+    <!-- Loading Spinner -->
+    <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+
+    <!-- Display Message if No Notifications Found -->
+    <div *ngIf="!isLoading && notifications.length === 0" class="no-notifications">
+      <p>{{ 'MESSAGES.NO_NOTIFICATIONS' | translate }}</p>
     </div>
-  </ion-content>
-  
+
+    <!-- Notifications List -->
+    <ion-list *ngIf="!isLoading && notifications.length > 0" class="notification-list">
+      <ion-accordion-group [value]="expandedNotificationId">
+        <ion-accordion *ngFor="let notification of notifications" [value]="notification.notificationId">
+          
+          <!-- Compact Row (Title & Date) -->
+          <ion-item 
+            slot="header"
+            class="notification-item"
+            [ngClass]="{ 'unread-notification': !notification.isRead }"
+            (click)="toggleNotification(notification)"
+          >
+            <div class="notification-grid">
+              
+              <!-- Notification Title -->
+              <div class="notification-title">
+                <span>{{ notification.title }}</span>
+              </div>
+
+              <!-- Date Column -->
+              <div class="notification-date">
+                <span class="date">{{ notification.createdAt | date: 'yyyy.MM.dd' }}</span>
+                <span class="time">{{ notification.createdAt | date: 'HH:mm' }}</span>
+              </div>
+
+              <!-- Delete Button -->
+              <div class="notification-button-container">
+                <ion-button fill="clear" color="danger" class="notification-button" 
+                  (click)="deleteNotification(notification); $event.stopPropagation();">
+                  <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-button>
+              </div>
+
+            </div>
+          </ion-item>
+
+          <!-- Expanded Content (Message Body & Details) -->
+          <div slot="content" class="notification-content">
+            <p>{{ notification.message }}</p>
+          </div>
+
+        </ion-accordion>
+      </ion-accordion-group>
+    </ion-list>
+
+  </div>
+</ion-content>

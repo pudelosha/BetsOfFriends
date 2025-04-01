@@ -5,11 +5,13 @@ import { firstValueFrom } from 'rxjs';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-tournament-invites',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
   templateUrl: './tournament-invites.page.html',
   styleUrls: ['./tournament-invites.page.scss']
 })

@@ -10,6 +10,7 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { firstValueFrom } from 'rxjs';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @Component({
@@ -17,7 +18,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './manage-custom-matches.page.html',
   styleUrls: ['./manage-custom-matches.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, ManageCustomFinalisedPage, ManageCustomStartedPage, ManageCustomUpcomingPage],
+  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, ManageCustomFinalisedPage, ManageCustomStartedPage, ManageCustomUpcomingPage, TranslateModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ManageCustomMatchesPage implements OnInit, AfterViewInit {

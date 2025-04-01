@@ -4,13 +4,15 @@ import { IonicModule, ToastController, ModalController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-join-request-modal',
   templateUrl: './join-request-modal.component.html',
   styleUrls: ['./join-request-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class JoinRequestModalComponent implements OnInit {
   @Input() tournamentId!: number;

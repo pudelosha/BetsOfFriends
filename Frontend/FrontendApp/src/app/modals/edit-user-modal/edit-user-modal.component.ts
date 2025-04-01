@@ -2,13 +2,15 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalController, ToastController, IonicModule} from '@ionic/angular';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-edit-user-modal',
   templateUrl: './edit-user-modal.component.html',
   styleUrls: ['./edit-user-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class EditUserModalComponent implements OnInit {
   @Input() user: {

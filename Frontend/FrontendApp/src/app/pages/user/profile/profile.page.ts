@@ -11,13 +11,14 @@ import { LocationService } from 'src/app/services/location.service';
 import { firstValueFrom } from 'rxjs';
 import { LanguageService } from 'src/app/services/language.service';
 import { Language } from 'src/app/model/language';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class ProfilePage implements OnInit {
   profileForm: FormGroup;

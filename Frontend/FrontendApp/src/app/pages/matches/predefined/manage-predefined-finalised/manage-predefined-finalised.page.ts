@@ -8,13 +8,15 @@ import { firstValueFrom } from 'rxjs';
 import { PredefinedMatchService } from 'src/app/services/predefined-match.service';
 import { Match } from 'src/app/model/match';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-manage-predefined-finalised',
   templateUrl: './manage-predefined-finalised.page.html',
   styleUrls: ['./manage-predefined-finalised.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
 })
 export class ManagePredefinedFinalisedPage implements OnInit, OnChanges {
   @Input() stage!: string;

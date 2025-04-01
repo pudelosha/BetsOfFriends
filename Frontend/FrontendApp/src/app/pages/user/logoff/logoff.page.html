@@ -6,12 +6,12 @@
 
     <!-- Foreground Content -->
     <div class="unauth-container">
-      <h2>Goodbye!</h2>
-      <p>You have been logged out.</p>
+      <h2>{{ 'LOGOUT.TITLE' | translate }}</h2>
+      <p>{{ 'LOGOUT.MESSAGE' | translate }}</p>
 
       <div class="button-group">
         <ion-button expand="full" color="medium" class="rounded-button" (click)="navigateToLogin()">
-          Go to Login
+          {{ 'LOGOUT.GO_TO_LOGIN' | translate }}
         </ion-button>
       </div>
     </div>

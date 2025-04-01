@@ -6,29 +6,29 @@
 
     <!-- Foreground Content -->
     <div class="unauth-container">
-      <h2>Setup Your Account</h2>
-      <p>Create a password to complete your account setup.</p>
+      <h2>{{ 'SETUP.TITLE' | translate }}</h2>
+      <p>{{ 'SETUP.DESCRIPTION' | translate }}</p>
 
       <form [formGroup]="setupForm" (ngSubmit)="submit()">
         <!-- Password -->
         <ion-item>
-          <ion-label position="floating">New Password</ion-label>
+          <ion-label position="floating">{{ 'SETUP.NEW_PASSWORD' | translate }}</ion-label>
           <ion-input formControlName="password" type="password"></ion-input>
         </ion-item>
         <div class="validation-message">
           <p class="error" *ngIf="f['password'].invalid && f['password'].touched">
-            Password must be at least 8 characters long.
+            {{ 'SETUP.PASSWORD_ERROR' | translate }}
           </p>
         </div>
 
         <!-- Confirm Password -->
         <ion-item>
-          <ion-label position="floating">Confirm Password</ion-label>
+          <ion-label position="floating">{{ 'SETUP.CONFIRM_PASSWORD' | translate }}</ion-label>
           <ion-input formControlName="confirmPassword" type="password"></ion-input>
         </ion-item>
         <div class="validation-message">
           <p class="error" *ngIf="setupForm.errors?.['passwordsMismatch']">
-            Passwords do not match.
+            {{ 'SETUP.CONFIRM_ERROR' | translate }}
           </p>
         </div>
 
@@ -36,18 +36,19 @@
         <ion-item lines="none" class="terms-item">
           <ion-checkbox formControlName="consent" slot="start"></ion-checkbox>
           <ion-label class="terms-label" (click)="toggleConsent($event)">
-            I agree to the <a (click)="openTerms($event)">Terms & Conditions</a>
+            {{ 'SETUP.CONSENT_TEXT' | translate }}
+            <a (click)="openTerms($event)">{{ 'SETUP.TERMS_LINK' | translate }}</a>
           </ion-label>
         </ion-item>
         <div class="validation-message">
           <p class="error" *ngIf="!f['consent'].value && f['consent'].touched">
-            You must accept the terms to continue.
+            {{ 'SETUP.CONSENT_ERROR' | translate }}
           </p>
         </div>
 
         <div class="button-group">
           <ion-button expand="full" color="medium" class="rounded-button" type="submit" [disabled]="setupForm.invalid">
-            Complete Setup
+            {{ 'SETUP.SUBMIT' | translate }}
           </ion-button>
         </div>
       </form>
@@ -56,4 +57,3 @@
 </ion-content>
 
 <app-language-fab></app-language-fab>
-

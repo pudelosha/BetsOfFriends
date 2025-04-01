@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges  } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges  } from '@angular/core';
 import { ModalController, ToastController, LoadingController } from '@ionic/angular';
 import { EditBetModalComponent } from 'src/app/modals/edit-bet-modal/edit-bet-modal.component';
 import { CommonModule } from '@angular/common';
@@ -10,14 +10,15 @@ import { Bet, BetUpdateDto, BetStats } from 'src/app/model/bet';
 import { firstValueFrom } from 'rxjs';
 import { BetsOverviewModalComponent } from 'src/app/modals/bets-overview-modal/bets-overview-modal.component';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-my-bets-to-place',
   templateUrl: './my-bets-to-place.page.html',
   styleUrls: ['./my-bets-to-place.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class MyBetsToPlacePage implements OnInit {
   @Input() stage!: string; // Receive stage from parent

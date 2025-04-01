@@ -4,7 +4,7 @@
        [ngClass]="{ 'has-started-matches': startedMatches.length > 0 }"
        (click)="navigateToPredefinedMatches()">
     
-    <h2 class="started-matches-title">Started Predefined Matches</h2>
+    <h2 class="started-matches-title">{{ 'STARTED_MATCHES_PREDEFINED.TITLE' | translate }}</h2>
 
     <ion-spinner *ngIf="isLoading" class="started-matches-spinner" name="crescent"></ion-spinner>
 

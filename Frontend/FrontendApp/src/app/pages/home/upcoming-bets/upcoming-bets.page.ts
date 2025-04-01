@@ -6,11 +6,13 @@ import { firstValueFrom } from 'rxjs';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { BetService } from 'src/app/services/bet.service';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-upcoming-bets',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
   templateUrl: './upcoming-bets.page.html',
   styleUrls: ['./upcoming-bets.page.scss']
 })

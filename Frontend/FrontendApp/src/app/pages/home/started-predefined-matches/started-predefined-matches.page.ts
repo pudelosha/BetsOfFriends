@@ -5,11 +5,13 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Match } from 'src/app/model/match';
 import { PredefinedMatchService } from 'src/app/services/predefined-match.service';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-started-predefined-matches',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
   templateUrl: './started-predefined-matches.page.html',
   styleUrls: ['./started-predefined-matches.page.scss']
 })
