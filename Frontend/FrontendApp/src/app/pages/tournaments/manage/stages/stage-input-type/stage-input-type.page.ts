@@ -8,13 +8,15 @@ import { Tournament, Team, Match, Stage } from 'src/app/model/tournament-model';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { ModalController } from '@ionic/angular';
 import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-selection-modal/tournament-selection.modal';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-stage-input-type',
   templateUrl: './stage-input-type.page.html',
   styleUrls: ['./stage-input-type.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
 })
 export class StageInputTypePage implements OnInit {
   @Input() tournamentForm!: FormGroup;

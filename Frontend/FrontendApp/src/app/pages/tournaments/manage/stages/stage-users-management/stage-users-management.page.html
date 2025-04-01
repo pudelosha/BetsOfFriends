@@ -1,6 +1,6 @@
 <div class="page-description">
   <p>
-    Manage tournament users. Invitations are sent to users without accounts, they must sign up and accept to join.
+    {{ 'STAGE_USERS_MANAGEMENT.DESCRIPTION' | translate }}
   </p>
 </div>
 
@@ -8,7 +8,7 @@
   <!-- Show empty row when no users are added -->
   <ion-item *ngIf="usersArray.controls.length === 0" class="user-item empty-user">
     <div class="user-grid">
-      <div class="user-details">No users added yet.</div>
+      <div class="user-details">{{ 'STAGE_USERS_MANAGEMENT.NO_USERS' | translate }}</div>
     </div>
   </ion-item>
 
@@ -27,7 +27,9 @@
 
       <!-- Buttons: Edit and Delete/Undo -->
       <div class="user-button-container">
-        <ion-button size="small" fill="outline" color="primary" class="user-button" (click)="editUser(i)">Edit</ion-button>
+        <ion-button size="small" fill="outline" color="primary" class="user-button" (click)="editUser(i)">
+          {{ 'STAGE_USERS_MANAGEMENT.EDIT' | translate }}
+        </ion-button>
 
         <ion-button size="small" fill="outline"
                     [color]="getDeleteButtonColor(getUserControl(i).get('recordStatus')?.value)"

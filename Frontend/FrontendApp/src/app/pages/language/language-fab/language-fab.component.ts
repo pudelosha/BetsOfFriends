@@ -24,7 +24,7 @@ import { LanguageService } from 'src/app/services/language.service';
 })
 export class LanguageFabComponent {
   @Input() supportedLangs: string[] = [
-    'en', 'fr', 'pl', 'de', 'es', 'it', 'pt', 'ru', 'uk', 'tr', 'ar', 'zh', 'hi'
+    'en', 'pl', 'de', 'fr', 'es', 'it', 'pt', 'nl', 'se', 'no', 'dk', 'cz', 'hr', 'ru', 'uk', 'tr', 'ar', 'zh', 'hi'
   ];
 
   constructor(private languageService: LanguageService) {}

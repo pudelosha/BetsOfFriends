@@ -13,10 +13,10 @@ export class LanguageService {
 
   constructor(private translate: TranslateService, private http: HttpClient) {
     this.translate.addLangs([
-      'en', 'fr', 'pl', 'de', 'es', 'zh', 'ar', 'hi', 'it', 'pt', 'ru', 'uk', 'tr']);
+      'en', 'pl', 'de', 'fr', 'es', 'it', 'pt', 'nl', 'se', 'no', 'dk', 'cz', 'hr', 'ru', 'uk', 'tr', 'ar', 'zh', 'hi']);
     this.translate.setDefaultLang(this.defaultLang);
   }
-
+  
   initLanguage(): void {
     const storedLang = localStorage.getItem('lang');
     const browserLang = this.translate.getBrowserLang();

@@ -1,5 +1,5 @@
 <div class="tournament-participants-box">
-  <h2 class="frame-title">Join Requests</h2>
+  <h2 class="frame-title">{{ 'PENDING_REQUESTS.JOIN_REQUESTS' | translate }}</h2>
 
   <ion-list class="tournament-participants-list" *ngIf="pendingRequests.length > 0">
     <ion-item *ngFor="let participant of pendingRequests" class="tournament-participants-item">
@@ -10,10 +10,10 @@
         </div>
         <div class="tournament-participants-actions">
           <ion-button size="small" color="success" (click)="confirmAccept(participant.userEmail)">
-            Accept
+            {{ 'PENDING_REQUESTS.ACCEPT' | translate }}
           </ion-button>
           <ion-button size="small" color="danger" (click)="confirmReject(participant.userEmail)">
-            Reject
+            {{ 'PENDING_REQUESTS.REJECT' | translate }}
           </ion-button>
         </div>
       </div>
@@ -21,7 +21,7 @@
   </ion-list>
 
   <p class="no-participants-message" *ngIf="!isLoading && pendingRequests.length === 0">
-    No join requests found.
+    {{ 'PENDING_REQUESTS.NO_REQUESTS' | translate }}
   </p>
 
   <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>

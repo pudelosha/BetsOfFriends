@@ -57,7 +57,6 @@
         [usersArray]="usersArray.value">
       </app-stage-summary>
     </div>
-      
   </div>
 
   <div class="button-container">
@@ -69,7 +68,7 @@
           color="medium"
           class="third-width"
           (click)="prevStep()">
-          Previous
+          {{ 'BUILD_CUSTOM.PREVIOUS' | translate }}
         </ion-button>
       </div>
   
@@ -80,7 +79,7 @@
           class="third-width"
           color="medium"
           (click)="openAddModal()">
-          Add
+          {{ 'BUILD_CUSTOM.ADD' | translate }}
         </ion-button>
   
         <ion-button
@@ -88,7 +87,7 @@
           class="third-width"
           color="dark"
           (click)="submitTournament()">
-          Submit
+          {{ 'BUILD_CUSTOM.SUBMIT' | translate }}
         </ion-button>
       </div>
   
@@ -99,12 +98,11 @@
           color="medium"
           class="third-width"
           (click)="nextStep()">
-          Next
+          {{ 'BUILD_CUSTOM.NEXT' | translate }}
         </ion-button>
       </div>
     </div>
   </div>
-
 </ion-content>
 
 <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>

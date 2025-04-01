@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250331112002_Initial")]
+    [Migration("20250401143904_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -489,8 +489,8 @@ namespace Backend.Migrations
                         new
                         {
                             LanguageId = 2,
-                            LongName = "Français",
-                            ShortName = "fr"
+                            LongName = "Polski",
+                            ShortName = "pl"
                         },
                         new
                         {
@@ -501,60 +501,96 @@ namespace Backend.Migrations
                         new
                         {
                             LanguageId = 4,
+                            LongName = "Français",
+                            ShortName = "fr"
+                        },
+                        new
+                        {
+                            LanguageId = 5,
                             LongName = "Español",
                             ShortName = "es"
                         },
                         new
                         {
-                            LanguageId = 5,
+                            LanguageId = 6,
                             LongName = "Italiano",
                             ShortName = "it"
                         },
                         new
                         {
-                            LanguageId = 6,
+                            LanguageId = 7,
                             LongName = "Português",
                             ShortName = "pt"
                         },
                         new
                         {
-                            LanguageId = 7,
-                            LongName = "Polski",
-                            ShortName = "pl"
+                            LanguageId = 8,
+                            LongName = "Dutch",
+                            ShortName = "nl"
                         },
                         new
                         {
-                            LanguageId = 8,
+                            LanguageId = 9,
+                            LongName = "Swedish",
+                            ShortName = "se"
+                        },
+                        new
+                        {
+                            LanguageId = 10,
+                            LongName = "Norge",
+                            ShortName = "no"
+                        },
+                        new
+                        {
+                            LanguageId = 11,
+                            LongName = "Dansk",
+                            ShortName = "dk"
+                        },
+                        new
+                        {
+                            LanguageId = 12,
+                            LongName = "Czesky/Slovacky",
+                            ShortName = "cz"
+                        },
+                        new
+                        {
+                            LanguageId = 13,
+                            LongName = "Hrvatski",
+                            ShortName = "hr"
+                        },
+                        new
+                        {
+                            LanguageId = 14,
                             LongName = "Русский",
                             ShortName = "ru"
                         },
                         new
                         {
-                            LanguageId = 9,
+                            LanguageId = 15,
                             LongName = "Українська",
                             ShortName = "uk"
                         },
                         new
                         {
-                            LanguageId = 10,
+                            LanguageId = 16,
                             LongName = "Türkçe",
                             ShortName = "tr"
                         },
                         new
                         {
-                            LanguageId = 11,
+                            LanguageId = 17,
                             LongName = "العربية",
                             ShortName = "ar"
                         },
                         new
                         {
-                            LanguageId = 12,
+                            LanguageId = 18,
                             LongName = "中文",
                             ShortName = "zh"
                         },
                         new
                         {
-                            LanguageId = 13,
+                            LanguageId = 19,
                             LongName = "हिन्दी",
                             ShortName = "hi"
                         });

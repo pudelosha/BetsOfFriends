@@ -1,26 +1,26 @@
 <div class="page-description">
   <p>
-    Review the selected teams and matches before finalizing the tournament.
-    Below, you can see the tournament name, teams participating, and the scheduled matches with corresponding odds.
+    {{ 'STAGE_SUMMARY.DESCRIPTION1' | translate }}
   </p>
   <p>
-    If you need to make changes, go back to the previous steps.
-    Once confirmed, click the Submit button to save the tournament.
+    {{ 'STAGE_SUMMARY.DESCRIPTION2' | translate }}
   </p>
 </div>
 
 <!-- Tournament Name Section -->
 <div class="tournament-name-container">
-  <ion-label class="section-title">Tournament Name</ion-label>
+  <ion-label class="section-title">
+    {{ 'STAGE_SUMMARY.TOURNAMENT_NAME' | translate }}
+  </ion-label>
   <div class="tournament-name-box">
-    {{ tournamentName || 'Not provided' }}
+    {{ tournamentName || ('STAGE_SUMMARY.NOT_PROVIDED' | translate) }}
   </div>
 </div>
 
 <div class="divider"></div>
 
 <!-- Teams Section -->
-<div class="section-title">Teams</div>
+<div class="section-title">{{ 'STAGE_SUMMARY.TEAMS' | translate }}</div>
 <div class="summary-grid-teams">
   <div *ngFor="let team of teamsArray" class="team-column" [ngClass]="getRecordStatusClass(team.recordStatus)">
     {{ team.teamName }}
@@ -30,7 +30,7 @@
 <div class="divider"></div>
 
 <!-- Matches Section -->
-<div class="section-title">Matches</div>
+<div class="section-title">{{ 'STAGE_SUMMARY.MATCHES' | translate }}</div>
 <div class="summary-grid-matches">
   <div *ngFor="let match of matchesArray" class="match-row" [ngClass]="getRecordStatusClass(match.recordStatus)">
     <div class="match-teams">{{ match.homeTeam }} - {{ match.awayTeam }}</div>
@@ -44,11 +44,10 @@
 </div>
 
 <!-- Users Section -->
-<!-- Users Section -->
 <div *ngIf="(usersArray?.length ?? 0) > 0">
   <div class="divider"></div>
 
-  <div class="section-title">Users</div>
+  <div class="section-title">{{ 'STAGE_SUMMARY.USERS' | translate }}</div>
   <div class="summary-grid-users">
     <div *ngFor="let user of usersArray" 
          class="user-row" 
@@ -61,4 +60,3 @@
 </div>
 
 <div class="nav-menu-space"></div>
-

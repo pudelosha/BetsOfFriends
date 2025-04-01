@@ -5,13 +5,15 @@ import { IonContent,  } from '@ionic/angular/standalone';
 import { UserListPage } from '../user-list/user-list.page';
 import { PendingRequestsPage } from '../pending-requests/pending-requests.page';
 import { PendingInvitesPage } from '../pending-invites/pending-invites.page';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-manage-participants',
   templateUrl: './manage-participants.page.html',
   styleUrls: ['./manage-participants.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, FormsModule, UserListPage, PendingRequestsPage, PendingInvitesPage],
+  imports: [IonContent, CommonModule, FormsModule, UserListPage, PendingRequestsPage, PendingInvitesPage, TranslateModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ManageParticipantsPage implements OnInit {

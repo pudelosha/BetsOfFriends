@@ -5,13 +5,15 @@ import { PredefinedTournamentService } from 'src/app/services/predefined-tournam
 import { Tournament } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-predefined-tournaments-list',
   templateUrl: './predefined-tournaments-list.page.html',
   styleUrls: ['./predefined-tournaments-list.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
 })
 export class PredefinedTournamentsListPage implements OnInit {
   tournaments: Tournament[] = []; // Store fetched tournaments

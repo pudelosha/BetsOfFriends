@@ -1,6 +1,6 @@
 <div class="page-description">
   <p>
-    View and modify tournament matches. Click Edit to change match details, or Delete to remove a match. To add a new match, click Add New Match below.
+    {{ 'STAGE_MATCHES_MANAGEMENT.DESCRIPTION' | translate }}
   </p>
 </div>
 
@@ -25,7 +25,7 @@
       <!-- Buttons: Edit and Delete/Undo -->
       <div class="match-button-container">
         <ion-button size="small" fill="outline" color="primary" class="match-button"
-                    (click)="openEditModal(i)">Edit</ion-button>
+                    (click)="openEditModal(i)">{{ 'STAGE_MATCHES_MANAGEMENT.EDIT' | translate }}</ion-button>
 
         <ion-button size="small" fill="outline"
                     [color]="getDeleteButtonColor(getMatchControl(i).get('recordStatus')?.value)"

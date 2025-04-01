@@ -1,76 +1,528 @@
 {
-    "WELCOME": {
-      "TITLE": "Bets of Friends",
-      "SLOGAN": "Typuj razem z przyjaciółmi!",
-      "DESCRIPTION": "Obstawiaj mecze piłkarskie dla zabawy! Twórz turnieje, przewiduj wyniki i wspinaj się w rankingu.",
-      "LOGIN": "Zaloguj",
-      "REGISTER": "Rejestracja"
-    },
-    "LOGIN": {
-      "TITLE": "Logowanie",
-      "DESCRIPTION": "Wprowadź dane, aby uzyskać dostęp do konta.",
-      "EMAIL": "Email",
-      "PASSWORD": "Hasło",
-      "EMAIL_ERROR": "Wprowadź poprawny adres email.",
-      "PASSWORD_ERROR": "Hasło jest wymagane.",
-      "FORGOT_PASSWORD": "Nie pamiętasz hasła?",
-      "RESEND_ACTIVATION": "Nie otrzymałeś maila aktywacyjnego?",
-      "SUBMIT": "Zaloguj",
-      "NO_ACCOUNT": "Nie masz konta?",
-      "SIGN_UP": "Zarejestruj"
-    },
-    "REGISTER": {
-      "TITLE": "Rejestracja",
-      "DESCRIPTION": "Załóż konto, aby dołączyć do turniejów i typować wyniki.",
-      "EMAIL": "Email",
-      "EMAIL_ERROR": "Wprowadź poprawny adres email.",
-      "PASSWORD": "Hasło",
-      "PASSWORD_ERROR": "Hasło musi mieć co najmniej 8 znaków.",
-      "CONFIRM_PASSWORD": "Powtórz hasło",
-      "CONFIRM_PASSWORD_ERROR": "Hasła muszą być takie same.",
-      "CONSENT_TEXT": "Akceptuję",
-      "TERMS_LINK": "regulamin",
-      "CONSENT_ERROR": "Musisz zaakceptować regulamin, aby się zarejestrować.",
-      "SUBMIT": "Zarejestruj",
-      "ALREADY_ACCOUNT": "Masz już konto?",
-      "LOGIN_LINK": "Zaloguj"
-    },
-    "FORGOT": {
-      "TITLE": "Resetuj hasło",
-      "DESCRIPTION": "Podaj swój adres email, a wyślemy link do zresetowania hasła.",
-      "EMAIL": "Email",
-      "EMAIL_ERROR": "Wprowadź poprawny adres email.",
-      "SUBMIT": "Wyślij link",
-      "BACK": "Powrót"
-    },
-    "CONFIRM": {
-      "SUCCESS_TITLE": "Konto aktywowane!",
-      "FAILURE_TITLE": "Błąd aktywacji ❌",
-      "PROCESSING": "Przetwarzanie...",
-      "GO_TO_LOGIN": "Zaloguj"
-    },
-    "LOGOUT": {
-      "TITLE": "Do zobaczenia!",
-      "MESSAGE": "Zostałeś wylogowany.",
-      "GO_TO_LOGIN": "Zaloguj"
-    },
-    "RESEND": {
-      "TITLE": "Wyślij ponownie link aktywacyjny",
-      "DESCRIPTION": "Podaj swój email, a wyślemy nowy link aktywacyjny.",
-      "EMAIL": "Email",
-      "EMAIL_ERROR": "Wprowadź poprawny adres email.",
-      "BUTTON": "Wyślij",
-      "BACK": "Powrót"
-    },
-    "RESET": {
-      "TITLE": "Nowe hasło",
-      "DESCRIPTION": "Wprowadź nowe hasło poniżej.",
-      "NEW_PASSWORD": "Nowe hasło",
-      "CONFIRM_PASSWORD": "Powtórz hasło",
-      "PASSWORD_ERROR": "Hasło musi mieć co najmniej 8 znaków.",
-      "CONFIRM_ERROR": "Hasła muszą być takie same.",
-      "BUTTON": "Zmień hasło",
-      "BACK": "Powrót"
-    }
+  "WELCOME": {
+    "TITLE": "Zakłady z Przyjaciółmi",
+    "SLOGAN": "Złóż zakłady z najlepszymi przyjaciółmi!",
+    "DESCRIPTION": "Zakładaj się o wyniki meczów piłkarskich z przyjaciółmi — tylko dla zabawy! Twórz turnieje, przewiduj wyniki i wspinaj się po liście najlepszych.",
+    "LOGIN": "Zaloguj się",
+    "REGISTER": "Zarejestruj się"
+  },
+  "LOGIN": {
+    "TITLE": "Zaloguj się",
+    "DESCRIPTION": "Wprowadź dane logowania, aby uzyskać dostęp do swojego konta.",
+    "EMAIL": "Email",
+    "PASSWORD": "Hasło",
+    "EMAIL_ERROR": "Proszę wprowadzić poprawny email.",
+    "PASSWORD_ERROR": "Hasło jest wymagane.",
+    "FORGOT_PASSWORD": "Zapomniałeś hasła?",
+    "RESEND_ACTIVATION": "Nie otrzymałeś emaila aktywacyjnego?",
+    "SUBMIT": "Zaloguj się",
+    "NO_ACCOUNT": "Nie masz konta?",
+    "SIGN_UP": "Zarejestruj się"
+  },
+  "REGISTER": {
+    "TITLE": "Rejestracja",
+    "DESCRIPTION": "Utwórz konto, aby dołączyć do turniejów i składać zakłady.",
+    "EMAIL": "Email",
+    "EMAIL_ERROR": "Proszę wprowadzić poprawny email.",
+    "PASSWORD": "Hasło",
+    "PASSWORD_ERROR": "Hasło jest wymagane (min. 8 znaków).",
+    "CONFIRM_PASSWORD": "Potwierdź hasło",
+    "CONFIRM_PASSWORD_ERROR": "Hasła muszą być takie same.",
+    "CONSENT_TEXT": "Zgadzam się z",
+    "TERMS_LINK": "Regulaminem",
+    "CONSENT_ERROR": "Musisz zaakceptować warunki, aby się zarejestrować.",
+    "SUBMIT": "Zarejestruj się",
+    "ALREADY_ACCOUNT": "Masz już konto?",
+    "LOGIN_LINK": "Zaloguj się"
+  },
+  "FORGOT": {
+    "TITLE": "Zapomniałeś hasła",
+    "DESCRIPTION": "Wprowadź swój adres email, a wyślemy Ci link do resetowania hasła.",
+    "EMAIL": "Email",
+    "EMAIL_ERROR": "Proszę wprowadzić poprawny email.",
+    "SUBMIT": "Wyślij link do resetowania",
+    "BACK": "Powrót do logowania"
+  },
+  "CONFIRM": {
+    "SUCCESS_TITLE": "Konto Aktywowane!",
+    "FAILURE_TITLE": "Potwierdzenie emaila nie powiodło się ❌",
+    "PROCESSING": "Przetwarzanie...",
+    "GO_TO_LOGIN": "Przejdź do logowania"
+  },
+  "LOGOUT": {
+    "TITLE": "Do widzenia!",
+    "MESSAGE": "Zostałeś wylogowany.",
+    "GO_TO_LOGIN": "Przejdź do logowania"
+  },
+  "RESEND": {
+    "TITLE": "Ponownie wyślij email aktywacyjny",
+    "DESCRIPTION": "Wprowadź swój email, a wyślemy nowy link aktywacyjny.",
+    "EMAIL": "Email",
+    "EMAIL_ERROR": "Proszę wprowadzić poprawny email.",
+    "BUTTON": "Wyślij email",
+    "BACK": "Powrót do logowania"
+  },
+  "RESET": {
+    "TITLE": "Resetowanie hasła",
+    "DESCRIPTION": "Wprowadź nowe hasło poniżej.",
+    "NEW_PASSWORD": "Nowe hasło",
+    "CONFIRM_PASSWORD": "Potwierdź hasło",
+    "PASSWORD_ERROR": "Hasło musi mieć co najmniej 8 znaków.",
+    "CONFIRM_ERROR": "Hasła muszą być takie same.",
+    "BUTTON": "Resetuj hasło",
+    "BACK": "Powrót do logowania"
+  },
+  "APP": {
+    "MENU": "Menu",
+    "TITLE": "Zakłady z Przyjaciółmi",
+    "HOME": "Strona główna",
+    "MESSAGES": "Wiadomości",
+    "TOURNAMENTS": "Turnieje",
+    "MY_TOURNAMENTS": "Moje turnieje",
+    "SUMMARY": "Podsumowanie",
+    "FIND_TOURNAMENT": "Znajdź turniej",
+    "BETTING": "Zakłady",
+    "MY_BETS": "Moje zakłady",
+    "SETTINGS": "Ustawienia",
+    "PROFILE": "Profil",
+    "NOTIFICATIONS": "Powiadomienia",
+    "ADMIN": "Admin",
+    "CREATE_TOURNAMENT": "Utwórz turniej",
+    "MANAGE_TOURNAMENTS": "Zarządzaj turniejami",
+    "MANAGE_MATCHES": "Zarządzaj meczami",
+    "MANAGE_PARTICIPANTS": "Zarządzaj uczestnikami",
+    "SUPER_ADMIN": "Super Admin",
+    "CREATE_PREDEFINED": "Utwórz turniej predefined",
+    "MANAGE_PREDEFINED": "Zarządzaj turniejami predefined",
+    "MANAGE_USERS": "Zarządzaj użytkownikami",
+    "LOGOUT": "Wyloguj się"
+  },
+  "PROFILE": {
+    "TITLE": "Szczegóły profilu",
+    "MANAGEMENT": "Zarządzanie profilem",
+    "MEMBER_SINCE": "Członek od",
+    "EMAIL": "Email",
+    "NICKNAME": "Nick (opcjonalnie)",
+    "NICKNAME_PLACEHOLDER": "Wprowadź nick",
+    "LANGUAGE": "Język",
+    "LOCATION": "Lokalizacja (opcjonalnie)",
+    "SELECT_LOCATION": "Wybierz lokalizację",
+    "DARK_MODE": "Tryb ciemny",
+    "SAVE": "Zapisz profil",
+    "CHANGE_EMAIL": "Zmień email",
+    "UPDATE_PASSWORD": "Zaktualizuj hasło",
+    "DELETE_ACCOUNT": "Usuń konto"
+  },
+  "NOTIFICATIONS": {
+    "TOURNAMENT_UPDATES": "Aktualizacje turniejów",
+    "MATCH_CLOSED": "Wyniki turnieju przeliczone",
+    "DAILY_UPDATES": "Codzienne aktualizacje turniejów",
+    "TOURNAMENT_INVITES": "Zaproszenia do turniejów",
+    "BETTING_REMINDERS": "Przypomnienia o zakładach",
+    "PENDING_BETS": "Przypomnienie o oczekujących zakładach",
+    "NEW_GAMES": "Nowe mecze do obstawiania",
+    "PROMOTIONS": "Promocje",
+    "SPECIAL_OFFERS": "Oferty specjalne",
+    "SAVE": "Zapisz ustawienia"
+  },
+  "SETUP": {
+    "TITLE": "Ustaw konto",
+    "DESCRIPTION": "Utwórz hasło, aby zakończyć ustawienie konta.",
+    "NEW_PASSWORD": "Nowe hasło",
+    "CONFIRM_PASSWORD": "Potwierdź hasło",
+    "PASSWORD_ERROR": "Hasło musi mieć co najmniej 8 znaków.",
+    "CONFIRM_ERROR": "Hasła muszą być takie same.",
+    "CONSENT_TEXT": "Zgadzam się z",
+    "TERMS_LINK": "Regulaminem",
+    "CONSENT_ERROR": "Musisz zaakceptować warunki, aby kontynuować.",
+    "SUBMIT": "Zakończ konfigurację"
+  },
+  "USER_MANAGER": {
+    "DESCRIPTION": "Przeglądaj wszystkich użytkowników w systemie. Użyj paska wyszukiwania, aby znaleźć użytkowników lub podejmować działania, aby zawiesić lub usunąć konta.",
+    "SEARCH_PLACEHOLDER": "Wyszukaj użytkowników...",
+    "NO_RESULTS": "Nie znaleziono użytkowników.",
+    "SINCE": "Od",
+    "STATUS": "Status",
+    "ROLE": "Rola",
+    "ADMIN_OF": "Administrator",
+    "PARTICIPANT_IN": "Uczestnik w",
+    "SUSPEND": "Zawiesić",
+    "UNSUSPEND": "Przywrócić",
+    "DELETE": "Usuń"
+  },
+  "INVITE": {
+    "TITLE": "Akceptuj zaproszenie",
+    "CLOSE": "Zamknij",
+    "MESSAGE": "Zostałeś zaproszony do dołączenia do <strong>{{ name }}</strong>.",
+    "NICKNAME_PROMPT": "Proszę podać nick, aby uczestniczyć.",
+    "NICKNAME_LABEL": "Nick",
+    "NICKNAME_PLACEHOLDER": "Wprowadź nick",
+    "ERROR_REQUIRED": "Nick jest wymagany.",
+    "ERROR_MAXLENGTH": "Nick nie może przekroczyć 20 znaków.",
+    "ACCEPT": "Akceptuj"
+  },
+  "BETS_OVERVIEW": {
+    "TITLE": "Przegląd zakładów",
+    "HOME_WIN": "Wygrana gospodarzy",
+    "DRAW": "Remis",
+    "AWAY_WIN": "Wygrana gości",
+    "HOME_QUALIFIES": "Gospodarze awansują",
+    "AWAY_QUALIFIES": "Goście awansują",
+    "USER_BETS": "Zakłady użytkowników",
+    "PLAYER": "Gracz",
+    "BET": "Zakład",
+    "HW": "HG",
+    "D": "R",
+    "AW": "GG",
+    "HQ": "GA",
+    "AQ": "GA",
+    "RESULT": "Wynik"
+  },
+  "BET_MODAL": {
+    "EDIT_TITLE": "Edytuj zakład",
+    "PLACE_TITLE": "Złóż zakład",
+    "CLOSE": "Zamknij",
+    "MATCH_ODDS": "Wyniki zakładów na 90 minut",
+    "HOME_WIN": "Wygrana gospodarzy",
+    "DRAW": "Remis",
+    "AWAY_WIN": "Wygrana gości",
+    "PREDICT_SCORE": "Przewidź wynik po 90 minutach",
+    "QUALIFY_ODDS": "Zakłady na awans",
+    "QUALIFY_PREDICTION": "Twoja prognoza awansu",
+    "SAVE": "Zapisz"
+  },
+  "MATCH_MODAL": {
+    "ADD_TITLE": "Dodaj mecz",
+    "EDIT_TITLE": "Edytuj mecz",
+    "CLOSE": "Zamknij",
+    "STAGE": "Etap",
+    "HOME_TEAM": "Drużyna gospodarzy",
+    "AWAY_TEAM": "Drużyna gości",
+    "TYPE": "Typ meczu",
+    "TYPE_REGULAR": "Regularne 90min",
+    "TYPE_EXTENDED": "90min z kwalifikacjami",
+    "DATETIME": "Data i godzina meczu",
+    "ODDS_1X2": "Zakłady 1X2",
+    "HOME_WIN": "Wygrana gospodarzy",
+    "DRAW": "Remis",
+    "AWAY_WIN": "Wygrana gości",
+    "ODDS_QUALIFICATION": "Zakłady na awans",
+    "HOME_QUAL": "Gospodarze awansują",
+    "AWAY_QUAL": "Goście awansują",
+    "VISIBILITY": "Widoczność meczu",
+    "VISIBLE": "Widoczny",
+    "HIDDEN": "Ukryty",
+    "SAVE": "Zapisz"
+  },
+  "MATCH_RESULT_MODAL": {
+    "TITLE": "Edytuj wynik meczu",
+    "CLOSE": "Zamknij",
+    "DATETIME": "Data i godzina meczu",
+    "FINISHED_LABEL": "Czy mecz się zakończył?",
+    "FINAL_SCORE": "Wynik końcowy",
+    "QUALIFY_LABEL": "Wybierz drużynę, która awansuje",
+    "SAVE": "Zapisz"
+  },
+  "STAGE_MODAL": {
+    "ADD_TITLE": "Dodaj nowy etap",
+    "EDIT_TITLE": "Edytuj etap",
+    "CLOSE": "Zamknij",
+    "STAGE_NAME_LABEL": "Nazwa etapu",
+    "STAGE_NAME_PLACEHOLDER": "Wprowadź nazwę etapu",
+    "STAGE_NAME_REQUIRED": "Nazwa etapu jest wymagana.",
+    "STAGE_NAME_MAXLENGTH": "Nazwa etapu nie może przekroczyć 50 znaków.",
+    "STAGE_ORDER_LABEL": "Numer etapu",
+    "STAGE_ORDER_PLACEHOLDER": "Wprowadź numer etapu",
+    "STAGE_ORDER_REQUIRED": "Numer etapu jest wymagany.",
+    "STAGE_ORDER_MIN": "Numer etapu musi być większy niż 0.",
+    "SAVE": "Zapisz"
+  },
+  "TEAM_MODAL": {
+    "ADD_TITLE": "Dodaj nową drużynę",
+    "EDIT_TITLE": "Edytuj drużynę",
+    "CLOSE": "Zamknij",
+    "TEAM_NAME_LABEL": "Nazwa drużyny",
+    "TEAM_NAME_PLACEHOLDER": "Wprowadź nazwę drużyny",
+    "TEAM_NAME_REQUIRED": "Nazwa drużyny jest wymagana.",
+    "TEAM_NAME_MAXLENGTH": "Nazwa drużyny nie może przekroczyć 50 znaków.",
+    "SAVE": "Zapisz"
+  },
+  "USER_MODAL": {
+    "ADD_TITLE": "Dodaj nowego użytkownika",
+    "EDIT_TITLE": "Edytuj użytkownika",
+    "CLOSE": "Zamknij",
+    "USER_NAME": "Nazwa użytkownika",
+    "ADMIN_NAME": "Nazwa nadana przez administratora",
+    "ADMIN_NAME_PLACEHOLDER": "Wprowadź nazwę nadaną przez administratora",
+    "ADMIN_NAME_REQUIRED": "Nazwa nadana przez administratora jest wymagana.",
+    "EMAIL": "Email użytkownika",
+    "EMAIL_PLACEHOLDER": "Wprowadź email użytkownika",
+    "EMAIL_REQUIRED": "Email użytkownika jest wymagany.",
+    "EMAIL_INVALID": "Proszę wprowadzić poprawny adres email.",
+    "ROLE": "Rola użytkownika",
+    "ROLE_PLAYER": "Gracz",
+    "ROLE_ADMIN": "Administrator",
+    "STATUS": "Status",
+    "SAVE": "Zapisz"
+  },
+  "JOIN_MODAL": {
+    "TITLE": "Dołącz do turnieju",
+    "CLOSE": "Zamknij",
+    "DESCRIPTION_1": "Składasz prośbę o dołączenie do",
+    "DESCRIPTION_2": "Wprowadź nick i opcjonalnie wiadomość dla administratora.",
+    "NICKNAME_LABEL": "Nick",
+    "NICKNAME_PLACEHOLDER": "Wprowadź nick",
+    "MESSAGE_LABEL": "Wiadomość dla administratora",
+    "MESSAGE_PLACEHOLDER": "Opcjonalna wiadomość",
+    "NICKNAME_REQUIRED": "Nick jest wymagany.",
+    "NICKNAME_MAXLENGTH": "Nick nie może przekroczyć 20 znaków.",
+    "SUBMIT": "Złóż prośbę"
+  },
+  "SELECT_MODAL": {
+    "TITLE": "Wybierz turniej",
+    "CLOSE": "Zamknij",
+    "PARTICIPANTS": "Uczestnicy",
+    "ROLE": "Rola",
+    "SELECT": "Wybierz",
+    "SELECTED": "Wybrano"
+  },
+  "PLAYER_STATS": {
+    "TITLE": "Statystyki gracza",
+    "CLOSE": "Zamknij",
+    "NO_STATS": "Brak statystyk.",
+    "BET": "Zakład",
+    "EXACT": "Dokładny wynik",
+    "QUALIFY": "Awans"
+  },
+  "TOURNAMENT_SELECTION": {
+    "TITLE": "Wybierz turniej",
+    "CANCEL": "Anuluj"
+  },
+  "MY_BETS": {
+    "TO_PLACE": "Do złożenia",
+    "PLACED": "Złożone",
+    "FINALISED": "Zakończone"
+  },
+  "MY_BETS_FINALISED": {
+    "NO_MATCHES": "Brak zakończonych meczów."
+  },
+  "MY_BETS_PLACED": {
+    "NO_MATCHES": "Brak złożonych zakładów.",
+    "EDIT_BUTTON": "Edytuj zakład"
+  },
+  "MY_BETS_TO_PLACE": {
+    "NO_MATCHES": "Brak nadchodzących meczów do obstawiania.",
+    "PLACE_BUTTON": "Złóż zakład"
+  },
+  "MESSAGES": {
+    "NO_NOTIFICATIONS": "Brak powiadomień."
+  },
+  "LATEST_MESSAGES": {
+    "TITLE": "Najnowsze wiadomości",
+    "NO_MESSAGES": "Brak wiadomości."
+  },
+  "STARTED_MATCHES": {
+    "TITLE": "Rozpoczęte mecze niestandardowe"
+  },
+  "STARTED_MATCHES_PREDEFINED": {
+    "TITLE": "Rozpoczęte mecze predefined"
+  },
+  "TOURNAMENT_INVITES": {
+    "TITLE": "Zaproszenia do turniejów",
+    "PARTICIPANTS": "uczestnicy"
+  },
+  "TOURNAMENT_SUMMARY": {
+    "TITLE": "Podsumowanie turnieju",
+    "YOU": "ty",
+    "NO_DATA": "Brak danych o turnieju."
+  },
+  "UPCOMING_BETS": {
+    "TITLE": "Nadchodzące zakłady",
+    "NO_BETS": "Brak nadchodzących zakładów."
+  },
+  "MANAGE_CUSTOM_FINALISED": {
+    "NO_MATCHES": "Brak meczów.",
+    "EDIT_BUTTON": "Edytuj"
+  },
+  "MANAGE_CUSTOM_MATCHES": {
+    "TAB_UPCOMING": "Nadchodzące",
+    "TAB_STARTED": "Rozpoczęte",
+    "TAB_FINALISED": "Zakończone",
+    "EDIT_BUTTON": "Edytuj",
+    "NO_MATCHES": "Brak meczów.",
+    "DATE": "Data",
+    "TIME": "Czas"
+  },
+  "MANAGE_CUSTOM_STARTED": {
+    "NO_MATCHES": "Brak meczów.",
+    "EDIT_BUTTON": "Edytuj"
+  },
+  "MANAGE_CUSTOM_UPCOMING": {
+    "NO_MATCHES": "Brak meczów.",
+    "EDIT_BUTTON": "Edytuj"
+  },
+  "MANAGE_PREDEFINED_FINALISED": {
+    "NO_MATCHES": "Brak meczów.",
+    "EDIT_BUTTON": "Edytuj"
+  },
+  "MANAGE_PREDEFINED_MATCHES": {
+    "TAB_UPCOMING": "Nadchodzące",
+    "TAB_STARTED": "Rozpoczęte",
+    "TAB_FINALISED": "Zakończone"
+  },
+  "MANAGE_PREDEFINED_STARTED": {
+    "NO_MATCHES": "Brak meczów.",
+    "EDIT_BUTTON": "Edytuj"
+  },
+  "MANAGE_PREDEFINED_UPCOMING": {
+    "NO_MATCHES": "Brak meczów.",
+    "EDIT_BUTTON": "Edytuj"
+  },
+  "FIND_TOURNAMENT": {
+    "DESCRIPTION": "Przeglądaj publiczne turnieje otwarte do udziału. Użyj pola wyszukiwania, aby znaleźć turniej po nazwie i zgłoś chęć udziału.",
+    "SEARCH_PLACEHOLDER": "Szukaj turniejów...",
+    "NO_RESULTS": "Brak wyników",
+    "PARTICIPANTS": "uczestnicy",
+    "CREATED": "Utworzono",
+    "REQUESTED": "Poproszono",
+    "JOIN": "Dołącz"
+  },
+  "SUMMARY": {
+    "DESCRIPTION": "To podsumowanie zapewnia przegląd wyników uczestników w turnieju. Tabela zawiera ranking, udane prognozy w różnych kategoriach zakładów i łączną wypłatę.",
+    "PLAYER": "Gracz",
+    "W": "W",
+    "Q": "Q",
+    "P": "P",
+    "RESULT": "Wynik"
+  },
+  "MY_TOURNAMENTS": {
+    "DESCRIPTION": "Przeglądaj i zarządzaj turniejami, w których bierzesz udział. Akceptuj zaproszenia lub kontynuuj aktywne turnieje.",
+    "PARTICIPANTS": "Uczestnicy",
+    "ROLE": "Rola",
+    "ACCEPT": "Akceptuj",
+    "SELECT": "Wybierz",
+    "QUIT": "Opuść"
+  },
+  "BUILD_CUSTOM": {
+    "PREVIOUS": "Poprzedni",
+    "NEXT": "Następny",
+    "ADD": "Dodaj",
+    "SUBMIT": "Zatwierdź"
+  },
+  "CUSTOM_TOURNAMENTS": {
+    "DESCRIPTION": "Zarządzaj swoimi turniejami niestandardowymi. Użyj opcji edycji, zmiany widoczności lub usunięcia dla każdego turnieju.",
+    "CREATED": "Utworzono",
+    "ACTIVE": "Aktywny",
+    "INACTIVE": "Nieaktywny",
+    "EDIT": "Edytuj turniej",
+    "RECALCULATE": "Przelicz zakłady",
+    "TOGGLE": "Zmień widoczność turnieju",
+    "DELETE": "Usuń turniej"
+  },
+  "BUILD_PREDEFINED": {
+    "PREVIOUS": "Poprzedni",
+    "ADD": "Dodaj",
+    "SUBMIT": "Zatwierdź",
+    "NEXT": "Następny"
+  },
+  "PREDEFINED_TOURNAMENTS": {
+    "DESCRIPTION": "Zarządzaj swoimi turniejami. Użyj opcji edycji, zmiany widoczności lub usunięcia dla każdego turnieju.",
+    "CREATED": "Utworzono",
+    "ACTIVE": "Aktywny",
+    "INACTIVE": "Nieaktywny",
+    "EDIT_TOURNAMENT": "Edytuj turniej",
+    "EDIT_MATCHES": "Edytuj mecze",
+    "TOGGLE_VISIBILITY": "Zmień widoczność turnieju",
+    "DELETE_TOURNAMENT": "Usuń turniej"
+  },
+  "STAGE_USERS_MANAGEMENT": {
+    "DESCRIPTION": "Zarządzaj użytkownikami turnieju. Zaproszenia są wysyłane do użytkowników bez kont, muszą się zarejestrować i zaakceptować, aby dołączyć.",
+    "NO_USERS": "Brak dodanych użytkowników.",
+    "EDIT": "Edytuj"
+  },
+  "STAGE_TEAMS_MANAGEMENT": {
+    "DESCRIPTION": "Edytuj drużyny biorące udział w turnieju. Przewiń na dół listy, aby dodać nową drużynę. Kliknij przycisk usuwania, aby usunąć drużynę z listy.",
+    "EDIT": "Edytuj"
+  },
+  "STAGE_SUMMARY": {
+    "DESCRIPTION1": "Przejrzyj wybrane drużyny i mecze przed finalizowaniem turnieju. Poniżej znajdują się nazwa turnieju, drużyny biorące udział oraz zaplanowane mecze z odpowiednimi kursami.",
+    "DESCRIPTION2": "Jeśli potrzebujesz wprowadzić zmiany, wróć do poprzednich kroków. Po potwierdzeniu kliknij przycisk Zatwierdź, aby zapisać turniej.",
+    "TOURNAMENT_NAME": "Nazwa turnieju",
+    "NOT_PROVIDED": "Nie podano",
+    "TEAMS": "Drużyny",
+    "MATCHES": "Mecze",
+    "USERS": "Użytkownicy"
+  },
+  "STAGE_STAGES_MANAGEMENT": {
+    "DESCRIPTION": "Edytuj etapy turnieju. Przewiń na dół listy, aby dodać nowy etap. Kliknij przycisk usuwania, aby usunąć etap.",
+    "EDIT": "Edytuj"
+  },
+  "STAGE_SETTINGS": {
+    "DESCRIPTION": "Skonfiguruj dodatkowe ustawienia turnieju, w tym bonusy za dokładny wynik, zasady zakładów kwalifikacyjnych i kary.",
+    "EXACT_RESULT_BONUS_TITLE": "Zezwól na bonus za dokładny wynik",
+    "EXACT_RESULT_BONUS_INFO": "Jeśli włączone, użytkownicy otrzymują bonusowe punkty za dokładne wyniki meczów.",
+    "BONUS_CALCULATION_TYPE": "Typ obliczania bonusu",
+    "EXACT_RESULT_BONUS_VALUE": "Wartość bonusu za dokładny wynik",
+    "ALLOW_WHO_QUALIFIES_BETS": "Zezwól na zakłady, kto awansuje",
+    "WHO_QUALIFIES_BETS_INFO": "Zezwala na zakłady na drużynę, która awansuje w rundach pucharowych.",
+    "ALLOW_BETS_WITH_BOOSTER": "Zezwól na zakłady z boosterem",
+    "BETS_WITH_BOOSTER_INFO": "Użytkownicy mogą zwiększyć kurs podstawowy za pomocą dodatkowych punktów booster.",
+    "MAX_BET_BOOSTER": "Maksymalny booster zakładu",
+    "TOTAL_BOOSTER_POOL": "Całkowita pula boosterów",
+    "ENTER_BOOSTER_POOL_SIZE": "Wprowadź rozmiar puli boosterów",
+    "APPLY_PENALTY_NO_BET": "Zastosuj karę za brak zakładu",
+    "PENALTY_INFO": "Jeśli włączone, brak zakładów wiąże się z karą.",
+    "PENALTY_POINTS": "Punkty kary",
+    "ENTER_PENALTY_VALUE": "Wprowadź wartość kary"
+  },
+  "STAGE_MATCHES_MANAGEMENT": {
+    "DESCRIPTION": "Przeglądaj i modyfikuj mecze turnieju. Kliknij Edytuj, aby zmienić szczegóły meczu, lub Usuń, aby usunąć mecz. Aby dodać nowy mecz, kliknij Dodaj nowy mecz poniżej.",
+    "EDIT": "Edytuj",
+    "DELETE": "Usuń",
+    "UNDO": "Cofnij"
+  },
+  "STAGE_INPUT_TYPE": {
+    "DESCRIPTION": "Zarządzaj turniejami, tworząc nowe lub aktualizując istniejące, z opcjami dostosowania drużyn, meczów i szczegółów.",
+    "DETAILS": "Ustaw szczegóły podstawowe, zaimportuj dane z pliku lub szablonów, i skonfiguruj obsługę meczów.",
+    "TOURNAMENT_VISIBILITY": "Widoczność turnieju",
+    "PRIVATE": "Prywatny",
+    "PUBLIC": "Publiczny",
+    "PRIVATE_DESC": "Tylko administrator może zapraszać uczestników.",
+    "PUBLIC_DESC": "Każdy może poprosić o dołączenie.",
+    "TOURNAMENT_NAME": "Nazwa turnieju",
+    "ENTER_NAME": "Wprowadź nazwę turnieju",
+    "MATCH_UPDATE_METHOD": "Metoda aktualizacji meczu",
+    "MANUAL": "Ręcznie",
+    "SEMI": "Półautomatycznie",
+    "AUTO": "Automatycznie",
+    "MANUAL_DESC": "Administrator ręcznie dodaje lub aktualizuje mecze.",
+    "SEMI_DESC": "Administrator inicjuje aktualizacje z predefined turniejów.",
+    "AUTO_DESC": "Mecze aktualizowane automatycznie na podstawie predefined turniejów.",
+    "IMPORT_DATA": "Importuj dane",
+    "IMPORT_DESC": "Możesz:",
+    "IMPORT_EXCEL": "Zaimportować dane z pliku Excel",
+    "IMPORT_TEMPLATE": "Użyć predefined turnieju jako szablonu",
+    "CLEAR_FORM": "Wyczyść wszystkie dane formularza i zacznij od nowa",
+    "IMPORT_FROM_FILE": "Importuj z pliku",
+    "IMPORT_TOURNAMENT": "Importuj turniej",
+    "UPDATE_TOURNAMENT": "Aktualizuj turniej",
+    "ERASE_FORM": "Wyczyść wszystkie dane formularza"
+  },
+  "USERS_LIST": {
+    "ACTIVE_PARTICIPANTS": "Aktywni uczestnicy",
+    "EXCLUDE": "Usuń",
+    "NO_PARTICIPANTS": "Brak uczestników."
+  },
+  "PENDING_REQUESTS": {
+    "JOIN_REQUESTS": "Prośby o dołączenie",
+    "ACCEPT": "Akceptuj",
+    "REJECT": "Odrzuć",
+    "NO_REQUESTS": "Brak próśb o dołączenie."
+  },
+  "PENDING_INVITES": {
+    "PENDING_INVITATIONS": "Oczekujące zaproszenia",
+    "RESEND": "Wyślij ponownie",
+    "EXCLUDE": "Usuń",
+    "NO_INVITATIONS": "Brak oczekujących zaproszeń."
   }
-  
+}

@@ -601,18 +601,24 @@ namespace Backend.Migrations
                 values: new object[,]
                 {
                     { 1, "English", "en" },
-                    { 2, "Français", "fr" },
+                    { 2, "Polski", "pl" },
                     { 3, "Deutsch", "de" },
-                    { 4, "Español", "es" },
-                    { 5, "Italiano", "it" },
-                    { 6, "Português", "pt" },
-                    { 7, "Polski", "pl" },
-                    { 8, "Русский", "ru" },
-                    { 9, "Українська", "uk" },
-                    { 10, "Türkçe", "tr" },
-                    { 11, "العربية", "ar" },
-                    { 12, "中文", "zh" },
-                    { 13, "हिन्दी", "hi" }
+                    { 4, "Français", "fr" },
+                    { 5, "Español", "es" },
+                    { 6, "Italiano", "it" },
+                    { 7, "Português", "pt" },
+                    { 8, "Dutch", "nl" },
+                    { 9, "Swedish", "se" },
+                    { 10, "Norge", "no" },
+                    { 11, "Dansk", "dk" },
+                    { 12, "Czesky/Slovacky", "cz" },
+                    { 13, "Hrvatski", "hr" },
+                    { 14, "Русский", "ru" },
+                    { 15, "Українська", "uk" },
+                    { 16, "Türkçe", "tr" },
+                    { 17, "العربية", "ar" },
+                    { 18, "中文", "zh" },
+                    { 19, "हिन्दी", "hi" }
                 });
 
             migrationBuilder.InsertData(

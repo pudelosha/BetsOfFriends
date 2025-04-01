@@ -1,49 +1,52 @@
 <ion-content class="ion-padding page-with-header">
-    <div class="page-container">
-      <div class="page-description">
-        <p>Manage your custom tournaments. Use the edit, toggle, or delete actions for each tournament below.</p>
-      </div>
-    
-      <ion-list *ngIf="!isLoading" class="tournament-list">
-        <ion-item *ngFor="let tournament of tournaments" class="tournament-item">
-          <ion-grid>
-            <ion-row class="tournament-row">
-              <!-- Tournament Info -->
-              <ion-col size="6" class="tournament-info">
-                <span class="tournament-title">{{ tournament.tournamentName }}</span>
-                <span class="tournament-meta">
-                  Created: {{ tournament.createdAt | date:'yyyy.MM.dd' }}
-                </span>
-                <span class="tournament-status" [class.active]="tournament.isActive" [class.inactive]="!tournament.isActive">
-                  {{ tournament.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </ion-col>
-    
-              <!-- Action Buttons -->
-              <ion-col size="6" class="button-col">
-                <ion-button fill="outline" color="primary" (click)="editTournament(tournament)" title="Edit Tournament">
-                  <ion-icon name="create-outline"></ion-icon>
-                </ion-button>
-                
-                <ion-button fill="outline" color="success" (click)="recalculateBets(tournament)" title="Recalculate Bets">
-                  <ion-icon name="cog-outline"></ion-icon>
-                </ion-button>
-                
-                <ion-button fill="outline" color="warning" (click)="toggleTournamentStatus(tournament)" title="Change Tournament Visibility">
-                  <ion-icon name="pause-outline"></ion-icon>
-                </ion-button>
-                
-                <ion-button fill="outline" color="danger" (click)="deleteTournament(tournament)" title="Delete Tournament">
-                  <ion-icon name="trash-outline"></ion-icon>
-                </ion-button>                
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
-      </ion-list>  
+  <div class="page-container">
+    <div class="page-description">
+      <p>{{ 'CUSTOM_TOURNAMENTS.DESCRIPTION' | translate }}</p>
     </div>
-    
-    <!-- Loading Spinner -->
-    <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
-  </ion-content>
-  
+
+    <ion-list *ngIf="!isLoading" class="tournament-list">
+      <ion-item *ngFor="let tournament of tournaments" class="tournament-item">
+        <ion-grid>
+          <ion-row class="tournament-row">
+
+            <!-- Tournament Info -->
+            <ion-col size="6" class="tournament-info">
+              <span class="tournament-title">{{ tournament.tournamentName }}</span>
+              <span class="tournament-meta">
+                {{ 'CUSTOM_TOURNAMENTS.CREATED' | translate }}: {{ tournament.createdAt | date:'yyyy.MM.dd' }}
+              </span>
+              <span class="tournament-status" 
+                    [class.active]="tournament.isActive" 
+                    [class.inactive]="!tournament.isActive">
+                {{ tournament.isActive ? ('CUSTOM_TOURNAMENTS.ACTIVE' | translate) : ('CUSTOM_TOURNAMENTS.INACTIVE' | translate) }}
+              </span>
+            </ion-col>
+
+            <!-- Action Buttons -->
+            <ion-col size="6" class="button-col">
+              <ion-button fill="outline" color="primary" (click)="editTournament(tournament)" [title]="'CUSTOM_TOURNAMENTS.EDIT' | translate">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+
+              <ion-button fill="outline" color="success" (click)="recalculateBets(tournament)" [title]="'CUSTOM_TOURNAMENTS.RECALCULATE' | translate">
+                <ion-icon name="cog-outline"></ion-icon>
+              </ion-button>
+
+              <ion-button fill="outline" color="warning" (click)="toggleTournamentStatus(tournament)" [title]="'CUSTOM_TOURNAMENTS.TOGGLE' | translate">
+                <ion-icon name="pause-outline"></ion-icon>
+              </ion-button>
+
+              <ion-button fill="outline" color="danger" (click)="deleteTournament(tournament)" [title]="'CUSTOM_TOURNAMENTS.DELETE' | translate">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Loading Spinner -->
+  <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+</ion-content>

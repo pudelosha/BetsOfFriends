@@ -6,13 +6,15 @@ import { ModalController } from '@ionic/angular';
 import { EditTeamModalComponent } from 'src/app/modals/edit-team-modal/edit-team-modal.component';
 import { AlertController } from '@ionic/angular';
 import { Team } from 'src/app/model/tournament-model';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-stage-teams-management',
   templateUrl: './stage-teams-management.page.html',
   styleUrls: ['./stage-teams-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class StageTeamsManagementPage {
   @Input() teamsArray!: FormArray; // Input from parent for teams FormArray

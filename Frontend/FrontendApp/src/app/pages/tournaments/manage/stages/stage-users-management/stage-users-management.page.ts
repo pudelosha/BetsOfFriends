@@ -4,13 +4,15 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } fr
 import { CommonModule } from '@angular/common';
 import { ModalController, AlertController } from '@ionic/angular';
 import { EditUserModalComponent } from 'src/app/modals/edit-user-modal/edit-user-modal.component';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-stage-users-management',
   templateUrl: './stage-users-management.page.html',
   styleUrls: ['./stage-users-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class StageUsersManagementPage {
   @Input() usersArray!: FormArray; // Input from parent for users FormArray

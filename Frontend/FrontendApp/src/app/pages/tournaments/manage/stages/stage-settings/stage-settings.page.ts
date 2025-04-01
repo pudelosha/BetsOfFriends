@@ -5,13 +5,15 @@ import { CommonModule } from '@angular/common';
 import { TournamentSettings } from 'src/app/model/tournament-model';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-stage-settings',
   templateUrl: './stage-settings.page.html',
   styleUrls: ['./stage-settings.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class StageSettingsPage implements OnDestroy {
   @Input() settings!: TournamentSettings;

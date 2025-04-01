@@ -16,13 +16,15 @@ import { ViewChild } from '@angular/core';
 import { Match, Team, User, Stage, RecordStatus } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-build-custom-tournament',
   templateUrl: './build-custom-tournament.page.html',
   styleUrls: ['./build-custom-tournament.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageStagesManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage, StageSettingsPage],
+  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageStagesManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage, StageSettingsPage, TranslateModule],
 })
 export class BuildCustomTournamentPage implements OnInit {
   @ViewChild(StageInputTypePage) stageInputTypePage!: StageInputTypePage;

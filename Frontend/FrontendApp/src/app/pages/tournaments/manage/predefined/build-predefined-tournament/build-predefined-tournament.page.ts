@@ -11,13 +11,15 @@ import { PredefinedTournamentService } from 'src/app/services/predefined-tournam
 import { Router, ActivatedRoute } from '@angular/router';
 import { Tournament, Team, Match, Stage } from '../../../../../model/tournament-model';
 import { ViewChild } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-build-predefined-tournament',
   templateUrl: './build-predefined-tournament.page.html',
   styleUrls: ['./build-predefined-tournament.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageStagesManagementPage, StageMatchesManagementPage, StageSummaryPage],
+  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageStagesManagementPage, StageMatchesManagementPage, StageSummaryPage, TranslateModule],
 })
 export class BuildPredefinedTournamentPage implements OnInit {
   @ViewChild(StageTeamsManagementPage) stageTeamsManagement!: StageTeamsManagementPage;

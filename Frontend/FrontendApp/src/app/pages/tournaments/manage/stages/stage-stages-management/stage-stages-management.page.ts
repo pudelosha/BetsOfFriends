@@ -5,13 +5,15 @@ import { CommonModule } from '@angular/common';
 import { ModalController, AlertController } from '@ionic/angular';
 import { EditStageModalComponent } from 'src/app/modals/edit-stage-modal/edit-stage-modal.component';
 import { Stage } from 'src/app/model/tournament-model';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-stage-stages-management',
   templateUrl: './stage-stages-management.page.html',
   styleUrls: ['./stage-stages-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class StageStagesManagementPage {
   @Input() stagesArray!: FormArray;

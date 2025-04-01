@@ -1,42 +1,44 @@
 <ion-content class="ion-padding  page-with-header">
   <div class="page-container">
     <div class="page-description">
-      <p>Manage your tournaments. Use the edit, toggle, or delete actions for each tournament below.</p>
+      <p>{{ 'PREDEFINED_TOURNAMENTS.DESCRIPTION' | translate }}</p>
     </div>
   
     <ion-list *ngIf="!isLoading" class="tournament-list">
       <ion-item *ngFor="let tournament of tournaments" class="tournament-item">
         <ion-grid>
           <ion-row class="tournament-row">
+
             <!-- Tournament Info -->
             <ion-col size="7" class="tournament-info">
               <span class="tournament-title">{{ tournament.tournamentName }}</span>
               <span class="tournament-meta">
-                Created: {{ tournament.createdAt | date:'yyyy.MM.dd' }}
+                {{ 'PREDEFINED_TOURNAMENTS.CREATED' | translate }}: {{ tournament.createdAt | date:'yyyy.MM.dd' }}
               </span>
               <span class="tournament-status" [class.active]="tournament.isActive" [class.inactive]="!tournament.isActive">
-                {{ tournament.isActive ? 'Active' : 'Inactive' }}
+                {{ tournament.isActive ? ('PREDEFINED_TOURNAMENTS.ACTIVE' | translate) : ('PREDEFINED_TOURNAMENTS.INACTIVE' | translate) }}
               </span>
             </ion-col>
   
             <!-- Action Buttons -->
             <ion-col size="5" class="button-col">
-              <ion-button fill="outline" color="primary" (click)="editTournament(tournament)" title="Edit Tournament">
+              <ion-button fill="outline" color="primary" (click)="editTournament(tournament)" [title]="'PREDEFINED_TOURNAMENTS.EDIT_TOURNAMENT' | translate">
                 <ion-icon name="create-outline"></ion-icon>
               </ion-button>
               
-              <ion-button fill="outline" color="primary" (click)="editMatches(tournament.tournamentId)" title="Edit Matches">
+              <ion-button fill="outline" color="primary" (click)="editMatches(tournament.tournamentId)" [title]="'PREDEFINED_TOURNAMENTS.EDIT_MATCHES' | translate">
                 <ion-icon name="list-outline"></ion-icon>
               </ion-button>              
               
-              <ion-button fill="outline" color="warning" (click)="toggleTournamentStatus(tournament)" title="Change Tournament Visibility">
+              <ion-button fill="outline" color="warning" (click)="toggleTournamentStatus(tournament)" [title]="'PREDEFINED_TOURNAMENTS.TOGGLE_VISIBILITY' | translate">
                 <ion-icon name="pause-outline"></ion-icon>
               </ion-button>
               
-              <ion-button fill="outline" color="danger" (click)="deleteTournament(tournament)" title="Delete Tournament">
+              <ion-button fill="outline" color="danger" (click)="deleteTournament(tournament)" [title]="'PREDEFINED_TOURNAMENTS.DELETE_TOURNAMENT' | translate">
                 <ion-icon name="trash-outline"></ion-icon>
               </ion-button>              
             </ion-col>
+
           </ion-row>
         </ion-grid>
       </ion-item>

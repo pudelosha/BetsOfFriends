@@ -1,0 +1,529 @@
+{
+    "WELCOME": {
+      "TITLE": "رهانات الأصدقاء",
+      "SLOGAN": "ضع رهانات مع أفضل أصدقائك!",
+      "DESCRIPTION": "راهن على مباريات كرة القدم مع الأصدقاء - فقط من أجل المتعة! أنشئ بطولات، وتوقع النتائج، واصعد في لوحة المتصدرين.",
+      "LOGIN": "تسجيل الدخول",
+      "REGISTER": "التسجيل"
+    },
+    "LOGIN": {
+      "TITLE": "تسجيل الدخول",
+      "DESCRIPTION": "أدخل بيانات اعتمادك للوصول إلى حسابك.",
+      "EMAIL": "البريد الإلكتروني",
+      "PASSWORD": "كلمة المرور",
+      "EMAIL_ERROR": "يرجى إدخال بريد إلكتروني صالح.",
+      "PASSWORD_ERROR": "كلمة المرور مطلوبة.",
+      "FORGOT_PASSWORD": "نسيت كلمة المرور؟",
+      "RESEND_ACTIVATION": "لم تتلقَ رسالة التفعيل؟",
+      "SUBMIT": "تسجيل الدخول",
+      "NO_ACCOUNT": "ليس لديك حساب؟",
+      "SIGN_UP": "التسجيل"
+    },
+    "REGISTER": {
+      "TITLE": "التسجيل",
+      "DESCRIPTION": "أنشئ حسابًا للانضمام إلى البطولات ووضع الرهانات.",
+      "EMAIL": "البريد الإلكتروني",
+      "EMAIL_ERROR": "يرجى إدخال بريد إلكتروني صالح.",
+      "PASSWORD": "كلمة المرور",
+      "PASSWORD_ERROR": "كلمة المرور مطلوبة (8 أحرف على الأقل).",
+      "CONFIRM_PASSWORD": "تأكيد كلمة المرور",
+      "CONFIRM_PASSWORD_ERROR": "يجب أن تتطابق كلمات المرور.",
+      "CONSENT_TEXT": "أوافق على",
+      "TERMS_LINK": "الشروط والأحكام",
+      "CONSENT_ERROR": "يجب قبول الشروط للتسجيل.",
+      "SUBMIT": "التسجيل",
+      "ALREADY_ACCOUNT": "هل لديك حساب بالفعل؟",
+      "LOGIN_LINK": "تسجيل الدخول"
+    },
+    "FORGOT": {
+      "TITLE": "نسيت كلمة المرور",
+      "DESCRIPTION": "أدخل عنوان بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور.",
+      "EMAIL": "البريد الإلكتروني",
+      "EMAIL_ERROR": "يرجى إدخال بريد إلكتروني صالح.",
+      "SUBMIT": "إرسال رابط إعادة التعيين",
+      "BACK": "الرجوع إلى تسجيل الدخول"
+    },
+    "CONFIRM": {
+      "SUCCESS_TITLE": "تم تفعيل الحساب!",
+      "FAILURE_TITLE": "فشل تأكيد البريد الإلكتروني ❌",
+      "PROCESSING": "جاري معالجة طلبك...",
+      "GO_TO_LOGIN": "الذهاب إلى تسجيل الدخول"
+    },
+    "LOGOUT": {
+      "TITLE": "إلى اللقاء!",
+      "MESSAGE": "تم تسجيل الخروج.",
+      "GO_TO_LOGIN": "الذهاب إلى تسجيل الدخول"
+    },
+    "RESEND": {
+      "TITLE": "إعادة إرسال بريد التفعيل",
+      "DESCRIPTION": "أدخل عنوان بريدك الإلكتروني وسنرسل لك رابط تفعيل جديد.",
+      "EMAIL": "البريد الإلكتروني",
+      "EMAIL_ERROR": "يرجى إدخال بريد إلكتروني صالح.",
+      "BUTTON": "إرسال البريد",
+      "BACK": "الرجوع إلى تسجيل الدخول"
+    },
+    "RESET": {
+      "TITLE": "إعادة تعيين كلمة المرور",
+      "DESCRIPTION": "أدخل كلمة مرورك الجديدة أدناه.",
+      "NEW_PASSWORD": "كلمة مرور جديدة",
+      "CONFIRM_PASSWORD": "تأكيد كلمة المرور",
+      "PASSWORD_ERROR": "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل.",
+      "CONFIRM_ERROR": "يجب أن تتطابق كلمات المرور.",
+      "BUTTON": "إعادة تعيين كلمة المرور",
+      "BACK": "الرجوع إلى تسجيل الدخول"
+    },
+    "APP": {
+      "MENU": "القائمة",
+      "TITLE": "رهانات الأصدقاء",
+      "HOME": "الصفحة الرئيسية",
+      "MESSAGES": "الرسائل",
+      "TOURNAMENTS": "البطولات",
+      "MY_TOURNAMENTS": "بطولاتي",
+      "SUMMARY": "الملخص",
+      "FIND_TOURNAMENT": "البحث عن بطولة",
+      "BETTING": "المراهنات",
+      "MY_BETS": "رهاناتي",
+      "SETTINGS": "الإعدادات",
+      "PROFILE": "الملف الشخصي",
+      "NOTIFICATIONS": "الإشعارات",
+      "ADMIN": "الإدارة",
+      "CREATE_TOURNAMENT": "إنشاء بطولة",
+      "MANAGE_TOURNAMENTS": "إدارة البطولات",
+      "MANAGE_MATCHES": "إدارة المباريات",
+      "MANAGE_PARTICIPANTS": "إدارة المشاركين",
+      "SUPER_ADMIN": "المشرف الأعلى",
+      "CREATE_PREDEFINED": "إنشاء بطولة معرفة مسبقًا",
+      "MANAGE_PREDEFINED": "إدارة البطولات المعرفة مسبقًا",
+      "MANAGE_USERS": "إدارة المستخدمين",
+      "LOGOUT": "تسجيل الخروج"
+    },
+    "PROFILE": {
+      "TITLE": "تفاصيل الملف الشخصي",
+      "MANAGEMENT": "إدارة الملف الشخصي",
+      "MEMBER_SINCE": "عضو منذ",
+      "EMAIL": "البريد الإلكتروني",
+      "NICKNAME": "الاسم المستعار (اختياري)",
+      "NICKNAME_PLACEHOLDER": "أدخل الاسم المستعار",
+      "LANGUAGE": "اللغة",
+      "LOCATION": "الموقع (اختياري)",
+      "SELECT_LOCATION": "اختر موقعك",
+      "DARK_MODE": "الوضع المظلم",
+      "SAVE": "حفظ الملف الشخصي",
+      "CHANGE_EMAIL": "تغيير البريد الإلكتروني",
+      "UPDATE_PASSWORD": "تحديث كلمة المرور",
+      "DELETE_ACCOUNT": "حذف الحساب"
+    },
+    "NOTIFICATIONS": {
+      "TOURNAMENT_UPDATES": "تحديثات البطولة",
+      "MATCH_CLOSED": "تم إعادة حساب نتائج البطولة",
+      "DAILY_UPDATES": "تحديثات البطولة اليومية",
+      "TOURNAMENT_INVITES": "دعوات البطولة",
+      "BETTING_REMINDERS": "تذكيرات المراهنة",
+      "PENDING_BETS": "تذكير بالرهانات المعلقة",
+      "NEW_GAMES": "ألعاب جديدة للمراهنة",
+      "PROMOTIONS": "العروض الترويجية",
+      "SPECIAL_OFFERS": "العروض الخاصة",
+      "SAVE": "حفظ الإعدادات"
+    },
+    "SETUP": {
+      "TITLE": "إعداد حسابك",
+      "DESCRIPTION": "أنشئ كلمة مرور لإكمال إعداد حسابك.",
+      "NEW_PASSWORD": "كلمة مرور جديدة",
+      "CONFIRM_PASSWORD": "تأكيد كلمة المرور",
+      "PASSWORD_ERROR": "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل.",
+      "CONFIRM_ERROR": "يجب أن تتطابق كلمات المرور.",
+      "CONSENT_TEXT": "أوافق على",
+      "TERMS_LINK": "الشروط والأحكام",
+      "CONSENT_ERROR": "يجب قبول الشروط للاستمرار.",
+      "SUBMIT": "إكمال الإعداد"
+    },
+    "USER_MANAGER": {
+      "DESCRIPTION": "تصفح جميع المستخدمين في النظام. استخدم شريط البحث للعثور على المستخدمين، أو قم بإجراء إجراءات لتعليق الحسابات أو حذفها.",
+      "SEARCH_PLACEHOLDER": "ابحث عن المستخدمين...",
+      "NO_RESULTS": "لم يتم العثور على مستخدمين.",
+      "SINCE": "منذ",
+      "STATUS": "الحالة",
+      "ROLE": "الدور",
+      "ADMIN_OF": "مشرف على",
+      "PARTICIPANT_IN": "مشارك في",
+      "SUSPEND": "تعليق",
+      "UNSUSPEND": "إلغاء التعليق",
+      "DELETE": "حذف"
+    },
+        "INVITE": {
+          "TITLE": "قبول الدعوة",
+          "CLOSE": "إغلاق",
+          "MESSAGE": "تم دعوتك للانضمام إلى <strong>{{ name }}</strong>.",
+          "NICKNAME_PROMPT": "يرجى إدخال اسم مستعار للمشاركة.",
+          "NICKNAME_LABEL": "الاسم المستعار",
+          "NICKNAME_PLACEHOLDER": "أدخل الاسم المستعار",
+          "ERROR_REQUIRED": "الاسم المستعار مطلوب.",
+          "ERROR_MAXLENGTH": "الاسم المستعار لا يمكن أن يتجاوز 20 حرفًا.",
+          "ACCEPT": "قبول"
+        },
+        "BETS_OVERVIEW": {
+          "TITLE": "نظرة عامة على الرهانات",
+          "HOME_WIN": "فوز الفريق المضيف",
+          "DRAW": "تعادل",
+          "AWAY_WIN": "فوز الفريق الضيف",
+          "HOME_QUALIFIES": "الفريق المضيف يتأهل",
+          "AWAY_QUALIFIES": "الفريق الضيف يتأهل",
+          "USER_BETS": "رهانات المستخدم",
+          "PLAYER": "اللاعب",
+          "BET": "رهان",
+          "HW": "HW",
+          "D": "D",
+          "AW": "AW",
+          "HQ": "HQ",
+          "AQ": "AQ",
+          "RESULT": "النتيجة"
+        },
+        "BET_MODAL": {
+          "EDIT_TITLE": "تعديل الرهان",
+          "PLACE_TITLE": "ضع رهان",
+          "CLOSE": "إغلاق",
+          "MATCH_ODDS": "احتمالات المباراة لمدة 90 دقيقة",
+          "HOME_WIN": "فوز الفريق المضيف",
+          "DRAW": "تعادل",
+          "AWAY_WIN": "فوز الفريق الضيف",
+          "PREDICT_SCORE": "توقع نتيجة 90 دقيقة",
+          "QUALIFY_ODDS": "من سيتأهل؟ الاحتمالات",
+          "QUALIFY_PREDICTION": "توقعك للتأهل",
+          "SAVE": "حفظ"
+        },
+        "MATCH_MODAL": {
+          "ADD_TITLE": "إضافة مباراة",
+          "EDIT_TITLE": "تعديل مباراة",
+          "CLOSE": "إغلاق",
+          "STAGE": "المرحلة",
+          "HOME_TEAM": "الفريق المضيف",
+          "AWAY_TEAM": "الفريق الضيف",
+          "TYPE": "نوع المباراة",
+          "TYPE_REGULAR": "90 دقيقة عادية",
+          "TYPE_EXTENDED": "90 دقيقة مع التأهل",
+          "DATETIME": "تاريخ ووقت المباراة",
+          "ODDS_1X2": "احتمالات الرهان 1X2",
+          "HOME_WIN": "فوز الفريق المضيف",
+          "DRAW": "تعادل",
+          "AWAY_WIN": "فوز الفريق الضيف",
+          "ODDS_QUALIFICATION": "احتمالات التأهل",
+          "HOME_QUAL": "الفريق المضيف يتأهل",
+          "AWAY_QUAL": "الفريق الضيف يتأهل",
+          "VISIBILITY": "رؤية المباراة",
+          "VISIBLE": "مرئي",
+          "HIDDEN": "مخفي",
+          "SAVE": "حفظ"
+        },
+        "MATCH_RESULT_MODAL": {
+          "TITLE": "تعديل نتيجة المباراة",
+          "CLOSE": "إغلاق",
+          "DATETIME": "تاريخ ووقت المباراة",
+          "FINISHED_LABEL": "هل انتهت المباراة؟",
+          "FINAL_SCORE": "النتيجة النهائية",
+          "QUALIFY_LABEL": "اختر الفريق المتأهل",
+          "SAVE": "حفظ"
+        },
+        "STAGE_MODAL": {
+          "ADD_TITLE": "إضافة مرحلة جديدة",
+          "EDIT_TITLE": "تعديل المرحلة",
+          "CLOSE": "إغلاق",
+          "STAGE_NAME_LABEL": "اسم المرحلة",
+          "STAGE_NAME_PLACEHOLDER": "أدخل اسم المرحلة",
+          "STAGE_NAME_REQUIRED": "اسم المرحلة مطلوب.",
+          "STAGE_NAME_MAXLENGTH": "اسم المرحلة لا يمكن أن يتجاوز 50 حرفًا.",
+          "STAGE_ORDER_LABEL": "ترتيب المرحلة",
+          "STAGE_ORDER_PLACEHOLDER": "أدخل ترتيب المرحلة",
+          "STAGE_ORDER_REQUIRED": "الترتيب مطلوب.",
+          "STAGE_ORDER_MIN": "يجب أن يكون الترتيب 1 أو أعلى.",
+          "SAVE": "حفظ"
+        },
+        "TEAM_MODAL": {
+          "ADD_TITLE": "إضافة فريق جديد",
+          "EDIT_TITLE": "تعديل الفريق",
+          "CLOSE": "إغلاق",
+          "TEAM_NAME_LABEL": "اسم الفريق",
+          "TEAM_NAME_PLACEHOLDER": "أدخل اسم الفريق",
+          "TEAM_NAME_REQUIRED": "اسم الفريق مطلوب.",
+          "TEAM_NAME_MAXLENGTH": "اسم الفريق لا يمكن أن يتجاوز 50 حرفًا.",
+          "SAVE": "حفظ"
+        },
+        "USER_MODAL": {
+          "ADD_TITLE": "إضافة مستخدم جديد",
+          "EDIT_TITLE": "تعديل المستخدم",
+          "CLOSE": "إغلاق",
+          "USER_NAME": "اسم المستخدم",
+          "ADMIN_NAME": "اسم المسؤول",
+          "ADMIN_NAME_PLACEHOLDER": "أدخل اسم المسؤول",
+          "ADMIN_NAME_REQUIRED": "اسم المسؤول مطلوب.",
+          "EMAIL": "البريد الإلكتروني للمستخدم",
+          "EMAIL_PLACEHOLDER": "أدخل بريد المستخدم الإلكتروني",
+          "EMAIL_REQUIRED": "البريد الإلكتروني للمستخدم مطلوب.",
+          "EMAIL_INVALID": "يرجى إدخال عنوان بريد إلكتروني صالح.",
+          "ROLE": "دور المستخدم",
+          "ROLE_PLAYER": "لاعب",
+          "ROLE_ADMIN": "مشرف",
+          "STATUS": "الحالة",
+          "SAVE": "حفظ"
+        },
+        "JOIN_MODAL": {
+          "TITLE": "الانضمام إلى البطولة",
+          "CLOSE": "إغلاق",
+          "DESCRIPTION_1": "أنت تطلب الانضمام إلى",
+          "DESCRIPTION_2": "يرجى إدخال اسم مستعار وترك رسالة اختياريًا للإدارة.",
+          "NICKNAME_LABEL": "الاسم المستعار",
+          "NICKNAME_PLACEHOLDER": "أدخل الاسم المستعار",
+          "MESSAGE_LABEL": "الرسالة للإدارة",
+          "MESSAGE_PLACEHOLDER": "رسالة اختيارية",
+          "NICKNAME_REQUIRED": "الاسم المستعار مطلوب.",
+          "NICKNAME_MAXLENGTH": "الاسم المستعار لا يمكن أن يتجاوز 20 حرفًا.",
+          "SUBMIT": "إرسال الطلب"
+        },
+        "SELECT_MODAL": {
+          "TITLE": "اختر البطولة",
+          "CLOSE": "إغلاق",
+          "PARTICIPANTS": "المشاركون",
+          "ROLE": "الدور",
+          "SELECT": "اختر",
+          "SELECTED": "تم الاختيار"
+        },
+        "PLAYER_STATS": {
+          "TITLE": "إحصائيات اللاعب",
+          "CLOSE": "إغلاق",
+          "NO_STATS": "لا توجد إحصائيات متاحة.",
+          "BET": "رهان",
+          "EXACT": "دقيق",
+          "QUALIFY": "تأهل"
+        },
+        "TOURNAMENT_SELECTION": {
+          "TITLE": "اختيار بطولة",
+          "CANCEL": "إلغاء"
+        },
+            "MY_BETS": {
+              "TO_PLACE": "لإجراء الرهان",
+              "PLACED": "تم الرهان",
+              "FINALISED": "تم الانتهاء"
+            },
+            "MY_BETS_FINALISED": {
+              "NO_MATCHES": "لا توجد مباريات مكتملة."
+            },
+            "MY_BETS_PLACED": {
+              "NO_MATCHES": "لا توجد رهانات موضوعة.",
+              "EDIT_BUTTON": "تعديل الرهان"
+            },
+            "MY_BETS_TO_PLACE": {
+              "NO_MATCHES": "لا توجد مباريات قادمة للمراهنة عليها.",
+              "PLACE_BUTTON": "ضع الرهان"
+            },
+            "MESSAGES": {
+              "NO_NOTIFICATIONS": "لا توجد إشعارات."
+            },
+            "LATEST_MESSAGES": {
+              "TITLE": "أحدث الرسائل",
+              "NO_MESSAGES": "لا توجد رسائل."
+            },
+            "STARTED_MATCHES": {
+              "TITLE": "المباريات المخصصة التي بدأت"
+            },
+            "STARTED_MATCHES_PREDEFINED": {
+              "TITLE": "المباريات المبدئية التي بدأت"
+            },
+            "TOURNAMENT_INVITES": {
+              "TITLE": "دعوات البطولة",
+              "PARTICIPANTS": "المشاركون"
+            },
+            "TOURNAMENT_SUMMARY": {
+              "TITLE": "ملخص البطولة",
+              "YOU": "أنت",
+              "NO_DATA": "لا توجد بيانات للبطولة."
+            },
+            "UPCOMING_BETS": {
+              "TITLE": "الرهانات القادمة",
+              "NO_BETS": "لا توجد رهانات قادمة."
+            },
+            "MANAGE_CUSTOM_FINALISED": {
+              "NO_MATCHES": "لا توجد مباريات.",
+              "EDIT_BUTTON": "تعديل"
+            },
+            "MANAGE_CUSTOM_MATCHES": {
+              "TAB_UPCOMING": "القادمة",
+              "TAB_STARTED": "بدأت",
+              "TAB_FINALISED": "مكتملة",
+              "EDIT_BUTTON": "تعديل",
+              "NO_MATCHES": "لا توجد مباريات.",
+              "DATE": "التاريخ",
+              "TIME": "الوقت"
+            },
+            "MANAGE_CUSTOM_STARTED": {
+              "NO_MATCHES": "لا توجد مباريات.",
+              "EDIT_BUTTON": "تعديل"
+            },
+            "MANAGE_CUSTOM_UPCOMING": {
+              "NO_MATCHES": "لا توجد مباريات.",
+              "EDIT_BUTTON": "تعديل"
+            },
+            "MANAGE_PREDEFINED_FINALISED": {
+              "NO_MATCHES": "لا توجد مباريات.",
+              "EDIT_BUTTON": "تعديل"
+            },
+            "MANAGE_PREDEFINED_MATCHES": {
+              "TAB_UPCOMING": "القادمة",
+              "TAB_STARTED": "بدأت",
+              "TAB_FINALISED": "مكتملة"
+            },
+            "MANAGE_PREDEFINED_STARTED": {
+              "NO_MATCHES": "لا توجد مباريات.",
+              "EDIT_BUTTON": "تعديل"
+            },
+            "MANAGE_PREDEFINED_UPCOMING": {
+              "NO_MATCHES": "لا توجد مباريات.",
+              "EDIT_BUTTON": "تعديل"
+            },
+            "FIND_TOURNAMENT": {
+              "DESCRIPTION": "تصفح البطولات العامة المتاحة للمشاركة. استخدم مربع البحث للعثور على البطولة حسب الاسم وطلب الانضمام.",
+              "SEARCH_PLACEHOLDER": "ابحث عن البطولات...",
+              "NO_RESULTS": "لم يتم العثور على بطولات",
+              "PARTICIPANTS": "المشاركون",
+              "CREATED": "تم الإنشاء",
+              "REQUESTED": "تم الطلب",
+              "JOIN": "انضم"
+            },
+            "SUMMARY": {
+              "DESCRIPTION": "يقدم هذا الملخص لمحة عامة عن أداء المشاركين في البطولة. تتضمن الجدول الترتيب، والتوقعات الناجحة في فئات الرهانات المختلفة، والمجموع الكلي للمدفوعات.",
+              "PLAYER": "اللاعب",
+              "W": "و",
+              "Q": "ق",
+              "P": "ب",
+              "RESULT": "النتيجة"
+            },
+            "MY_TOURNAMENTS": {
+              "DESCRIPTION": "عرض وإدارة البطولات التي تشارك فيها. قبول الدعوات أو متابعة البطولات النشطة.",
+              "PARTICIPANTS": "المشاركون",
+              "ROLE": "الدور",
+              "ACCEPT": "قبول",
+              "SELECT": "اختر",
+              "QUIT": "انسحب"
+            },
+            "BUILD_CUSTOM": {
+              "PREVIOUS": "السابق",
+              "NEXT": "التالي",
+              "ADD": "إضافة",
+              "SUBMIT": "إرسال"
+            },
+            "CUSTOM_TOURNAMENTS": {
+              "DESCRIPTION": "إدارة البطولات المخصصة الخاصة بك. استخدم الإجراءات لتعديل، تغيير الحالة أو حذف كل بطولة أدناه.",
+              "CREATED": "تم الإنشاء",
+              "ACTIVE": "نشط",
+              "INACTIVE": "غير نشط",
+              "EDIT": "تعديل البطولة",
+              "RECALCULATE": "إعادة حساب الرهانات",
+              "TOGGLE": "تغيير رؤية البطولة",
+              "DELETE": "حذف البطولة"
+            },
+            "BUILD_PREDEFINED": {
+              "PREVIOUS": "السابق",
+              "ADD": "إضافة",
+              "SUBMIT": "إرسال",
+              "NEXT": "التالي"
+            },
+            "PREDEFINED_TOURNAMENTS": {
+              "DESCRIPTION": "إدارة بطولاتك. استخدم الإجراءات لتعديل، تغيير الحالة أو حذف كل بطولة أدناه.",
+              "CREATED": "تم الإنشاء",
+              "ACTIVE": "نشط",
+              "INACTIVE": "غير نشط",
+              "EDIT_TOURNAMENT": "تعديل البطولة",
+              "EDIT_MATCHES": "تعديل المباريات",
+              "TOGGLE_VISIBILITY": "تغيير رؤية البطولة",
+              "DELETE_TOURNAMENT": "حذف البطولة"
+            },
+                "STAGE_USERS_MANAGEMENT": {
+                  "DESCRIPTION": "إدارة مستخدمي البطولة. يتم إرسال الدعوات للمستخدمين الذين ليس لديهم حسابات، يجب عليهم التسجيل والموافقة للانضمام.",
+                  "NO_USERS": "لم تتم إضافة مستخدمين بعد.",
+                  "EDIT": "تعديل"
+                },
+                "STAGE_TEAMS_MANAGEMENT": {
+                  "DESCRIPTION": "تعديل الفرق المشاركة في البطولة. قم بالتمرير إلى أسفل القائمة لإضافة فريق جديد. انقر على زر الحذف لإزالة فريق من القائمة.",
+                  "EDIT": "تعديل"
+                },
+                "STAGE_SUMMARY": {
+                  "DESCRIPTION1": "مراجعة الفرق والمباريات المحددة قبل إنهاء البطولة. أدناه، يمكنك مشاهدة اسم البطولة، الفرق المشاركة، والمباريات المجدولة مع الاحتمالات المناسبة.",
+                  "DESCRIPTION2": "إذا كنت بحاجة لإجراء تغييرات، ارجع إلى الخطوات السابقة. بمجرد التأكيد، انقر على زر إرسال لحفظ البطولة.",
+                  "TOURNAMENT_NAME": "اسم البطولة",
+                  "NOT_PROVIDED": "غير مزود",
+                  "TEAMS": "الفرق",
+                  "MATCHES": "المباريات",
+                  "USERS": "المستخدمون"
+                },
+                "STAGE_STAGES_MANAGEMENT": {
+                  "DESCRIPTION": "تعديل المراحل الخاصة بالبطولة. قم بالتمرير إلى أسفل القائمة لإضافة مرحلة جديدة. انقر على زر الحذف لإزالة مرحلة.",
+                  "EDIT": "تعديل"
+                },
+                "STAGE_SETTINGS": {
+                  "DESCRIPTION": "تكوين إعدادات إضافية للبطولة، بما في ذلك مكافآت النتائج الدقيقة، قواعد رهان التأهل، والعقوبات.",
+                  "EXACT_RESULT_BONUS_TITLE": "السماح بمكافأة النتيجة الدقيقة",
+                  "EXACT_RESULT_BONUS_INFO": "إذا تم تمكينها، يحصل المستخدمون على نقاط مكافأة لنتائج المباريات الدقيقة.",
+                  "BONUS_CALCULATION_TYPE": "نوع حساب المكافأة",
+                  "EXACT_RESULT_BONUS_VALUE": "قيمة مكافأة النتيجة الدقيقة",
+                  "ALLOW_WHO_QUALIFIES_BETS": "السماح بمراهنات من سيتأهل",
+                  "WHO_QUALIFIES_BETS_INFO": "يسمح بالرهانات على الفريق الذي سيتأهل في الجولات الإقصائية.",
+                  "ALLOW_BETS_WITH_BOOSTER": "السماح بالرهانات باستخدام المحفز",
+                  "BETS_WITH_BOOSTER_INFO": "يمكن للمستخدمين زيادة الاحتمالات الأساسية باستخدام نقاط المحفز الإضافية.",
+                  "MAX_BET_BOOSTER": "أقصى رهان باستخدام المحفز",
+                  "TOTAL_BOOSTER_POOL": "إجمالي حوض المحفز",
+                  "ENTER_BOOSTER_POOL_SIZE": "أدخل حجم حوض المحفز",
+                  "APPLY_PENALTY_NO_BET": "تطبيق العقوبة على عدم وجود رهان",
+                  "PENALTY_INFO": "إذا تم تمكينها، ستفرض عقوبة على الرهانات المفقودة.",
+                  "PENALTY_POINTS": "نقاط العقوبة",
+                  "ENTER_PENALTY_VALUE": "أدخل قيمة العقوبة"
+                },
+                "STAGE_MATCHES_MANAGEMENT": {
+                  "DESCRIPTION": "عرض وتعديل المباريات الخاصة بالبطولة. انقر على تعديل لتغيير تفاصيل المباراة، أو حذف لإزالة مباراة. لإضافة مباراة جديدة، انقر على إضافة مباراة جديدة أدناه.",
+                  "EDIT": "تعديل",
+                  "DELETE": "حذف",
+                  "UNDO": "تراجع"
+                },
+                "STAGE_INPUT_TYPE": {
+                  "DESCRIPTION": "إدارة البطولات عن طريق إنشاء بطولات جديدة أو تحديث البطولات الحالية، مع خيارات لتخصيص الفرق، المباريات، والتفاصيل.",
+                  "DETAILS": "تحديد التفاصيل الأساسية، استيراد البيانات من الملفات أو القوالب، وتكوين معالجة المباريات.",
+                  "TOURNAMENT_VISIBILITY": "رؤية البطولة",
+                  "PRIVATE": "خاص",
+                  "PUBLIC": "عام",
+                  "PRIVATE_DESC": "يمكن للمشرف فقط دعوة المشاركين.",
+                  "PUBLIC_DESC": "يمكن لأي شخص طلب الانضمام.",
+                  "TOURNAMENT_NAME": "اسم البطولة",
+                  "ENTER_NAME": "أدخل اسم البطولة",
+                  "MATCH_UPDATE_METHOD": "طريقة تحديث المباريات",
+                  "MANUAL": "يدوي",
+                  "SEMI": "نصف يدوي",
+                  "AUTO": "آلي",
+                  "MANUAL_DESC": "المشرف يضيف أو يحدث المباريات يدويًا.",
+                  "SEMI_DESC": "المشرف يثير التحديثات من البطولات المعروفة مسبقًا.",
+                  "AUTO_DESC": "تتم تحديث المباريات تلقائيًا استنادًا إلى البطولات المعرفة مسبقًا.",
+                  "IMPORT_DATA": "استيراد البيانات",
+                  "IMPORT_DESC": "يمكنك:",
+                  "IMPORT_EXCEL": "استيراد البيانات من ملف Excel",
+                  "IMPORT_TEMPLATE": "استخدام بطولة معرفة مسبقًا كقالب",
+                  "CLEAR_FORM": "مسح جميع بيانات النموذج والبدء من الصفر",
+                  "IMPORT_FROM_FILE": "استيراد من ملف",
+                  "IMPORT_TOURNAMENT": "استيراد البطولة",
+                  "UPDATE_TOURNAMENT": "تحديث البطولة",
+                  "ERASE_FORM": "مسح جميع بيانات النموذج"
+                },
+                "USERS_LIST": {
+                  "ACTIVE_PARTICIPANTS": "المشاركون النشطون",
+                  "EXCLUDE": "استبعاد",
+                  "NO_PARTICIPANTS": "لم يتم العثور على مشاركين."
+                },
+                "PENDING_REQUESTS": {
+                  "JOIN_REQUESTS": "طلبات الانضمام",
+                  "ACCEPT": "قبول",
+                  "REJECT": "رفض",
+                  "NO_REQUESTS": "لم يتم العثور على طلبات انضمام."
+                },
+                "PENDING_INVITES": {
+                    "PENDING_INVITATIONS": "الدعوات المعلقة",
+                    "RESEND": "إعادة الإرسال",
+                    "EXCLUDE": "استبعاد",
+                    "NO_INVITATIONS": "لا توجد دعوات معلقة."
+                }
+  }
+  

@@ -1,5 +1,5 @@
 <div class="tournament-participants-box">
-  <h2 class="frame-title">Active Participants</h2>
+  <h2 class="frame-title">{{ 'USERS_LIST.ACTIVE_PARTICIPANTS' | translate }}</h2>
 
   <ion-list class="tournament-participants-list" *ngIf="participants.length > 0">
     <ion-item *ngFor="let participant of participants" class="tournament-participants-item">
@@ -10,7 +10,7 @@
         </div>
         <div class="tournament-participants-actions">
           <ion-button size="small" color="danger" (click)="confirmExclude(participant.userEmail)">
-            Exclude
+            {{ 'USERS_LIST.EXCLUDE' | translate }}
           </ion-button>
         </div>
       </div>
@@ -18,7 +18,7 @@
   </ion-list>
 
   <p class="no-participants-message" *ngIf="!isLoading && participants.length === 0">
-    No participants found.
+    {{ 'USERS_LIST.NO_PARTICIPANTS' | translate }}
   </p>
 
   <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>

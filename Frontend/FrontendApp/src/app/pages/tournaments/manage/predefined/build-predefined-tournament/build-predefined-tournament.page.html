@@ -52,7 +52,7 @@
           color="medium"
           class="third-width"
           (click)="prevStep()">
-          Previous
+          {{ 'BUILD_PREDEFINED.PREVIOUS' | translate }}
         </ion-button>
       </div>
   
@@ -63,7 +63,7 @@
           color="medium"
           class="third-width"
           (click)="openAddModal()">
-          Add
+          {{ 'BUILD_PREDEFINED.ADD' | translate }}
         </ion-button>
   
         <ion-button
@@ -71,7 +71,7 @@
           class="third-width"
           color="dark"
           (click)="submitTournament()">
-          Submit
+          {{ 'BUILD_PREDEFINED.SUBMIT' | translate }}
         </ion-button>
       </div>
   
@@ -82,12 +82,11 @@
           color="medium"
           class="third-width"
           (click)="nextStep()">
-          Next
+          {{ 'BUILD_PREDEFINED.NEXT' | translate }}
         </ion-button>
       </div>
     </div>
   </div>
-
 </ion-content>
 
 <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>

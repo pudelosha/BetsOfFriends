@@ -5,11 +5,13 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
 import { IonicModule, ToastController, LoadingController, AlertController } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-pending-invites',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
   templateUrl: './pending-invites.page.html',
   styleUrls: ['./pending-invites.page.scss']
 })

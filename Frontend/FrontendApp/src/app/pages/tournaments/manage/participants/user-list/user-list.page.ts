@@ -6,13 +6,15 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentParticipant } from 'src/app/model/tournament-model';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.page.html',
   styleUrls: ['./user-list.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
 })
 export class UserListPage implements OnInit {
   @Input() refreshTrigger: number = 0;

@@ -1,5 +1,5 @@
 <div class="tournament-participants-box">
-  <h2 class="frame-title">Pending Invitations</h2>
+  <h2 class="frame-title">{{ 'PENDING_INVITES.PENDING_INVITATIONS' | translate }}</h2>
 
   <ion-list class="tournament-participants-list" *ngIf="pendingParticipants.length > 0">
     <ion-item *ngFor="let participant of pendingParticipants" class="tournament-participants-item">
@@ -10,10 +10,10 @@
         </div>
         <div class="tournament-participants-actions">
           <ion-button size="small" color="medium" (click)="confirmResendInvite(participant.userEmail)">
-            Resend
+            {{ 'PENDING_INVITES.RESEND' | translate }}
           </ion-button>
           <ion-button size="small" color="danger" (click)="confirmExcludeInvite(participant.userEmail)">
-            Exclude
+            {{ 'PENDING_INVITES.EXCLUDE' | translate }}
           </ion-button>          
         </div>
       </div>
@@ -21,7 +21,7 @@
   </ion-list>
 
   <p class="no-participants-message" *ngIf="!isLoading && pendingParticipants.length === 0">
-    No pending invitations found.
+    {{ 'PENDING_INVITES.NO_INVITATIONS' | translate }}
   </p>
 
   <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>

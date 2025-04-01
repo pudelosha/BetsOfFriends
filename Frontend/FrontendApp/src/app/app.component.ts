@@ -8,13 +8,14 @@ import { filter } from 'rxjs/operators';
 import { ToastController, MenuController, ModalController } from '@ionic/angular';
 import { ParticipantTournamentsModalComponent } from './modals/participant-tournaments-modal/participant-tournaments-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { LanguageFabComponent } from './pages/language/language-fab/language-fab.component';
 
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule, LanguageFabComponent],
 })
 export class AppComponent {
   isLoggedIn = false;

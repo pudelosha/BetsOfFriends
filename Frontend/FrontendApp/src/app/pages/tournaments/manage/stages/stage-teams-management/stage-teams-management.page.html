@@ -1,6 +1,6 @@
 <div class="page-description">
   <p>
-    Edit the teams participating in the tournament. Scroll down to the bottom of the list to add a new team. Click the delete button to remove a team from the list.
+    {{ 'STAGE_TEAMS_MANAGEMENT.DESCRIPTION' | translate }}
   </p>
 </div>
 
@@ -18,7 +18,9 @@
       <!-- Buttons: Edit and Delete/Undo -->
       <div class="team-button-container">
         <ion-button size="small" fill="outline" color="primary" class="team-button"
-                    (click)="editTeam(i)">Edit</ion-button>
+                    (click)="editTeam(i)">
+          {{ 'STAGE_TEAMS_MANAGEMENT.EDIT' | translate }}
+        </ion-button>
 
         <ion-button size="small" fill="outline"
                     [color]="getDeleteButtonColor(getTeamControl(i).get('recordStatus')?.value)"
@@ -30,6 +32,3 @@
     </div>
   </ion-item>
 </ion-list>
-
-
-

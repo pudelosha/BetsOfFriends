@@ -5,13 +5,15 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
 import { Tournament } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-custom-tournaments-list',
   templateUrl: './custom-tournaments-list.page.html',
   styleUrls: ['./custom-tournaments-list.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, TranslateModule],
 })
 export class CustomTournamentsListPage implements OnInit {
   tournaments: Tournament[] = [];

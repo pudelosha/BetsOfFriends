@@ -77,30 +77,24 @@
     "TITLE": "Bets of Friends",
     "HOME": "Home",
     "MESSAGES": "Messages",
-
     "TOURNAMENTS": "Tournaments",
     "MY_TOURNAMENTS": "My Tournaments",
     "SUMMARY": "Summary",
     "FIND_TOURNAMENT": "Find Tournament",
-
     "BETTING": "Betting",
     "MY_BETS": "My Bets",
-
     "SETTINGS": "Settings",
     "PROFILE": "Profile",
     "NOTIFICATIONS": "Notifications",
-
     "ADMIN": "Admin",
     "CREATE_TOURNAMENT": "Create Tournament",
     "MANAGE_TOURNAMENTS": "Manage Tournaments",
     "MANAGE_MATCHES": "Manage Matches",
     "MANAGE_PARTICIPANTS": "Manage Participants",
-
     "SUPER_ADMIN": "Super Admin",
     "CREATE_PREDEFINED": "Create Predefined Tournament",
     "MANAGE_PREDEFINED": "Manage Predefined Tournaments",
     "MANAGE_USERS": "Manage Users",
-
     "LOGOUT": "Logout"
   },
     "PROFILE": {
@@ -124,14 +118,11 @@
     "MATCH_CLOSED": "Tournament results recalculated",
     "DAILY_UPDATES": "Daily tournament updates",
     "TOURNAMENT_INVITES": "Tournament invitations",
-
     "BETTING_REMINDERS": "Betting Reminders",
     "PENDING_BETS": "Pending bets reminder",
     "NEW_GAMES": "New games to bet",
-
     "PROMOTIONS": "Promotions",
     "SPECIAL_OFFERS": "Special offers",
-
     "SAVE": "Save Settings"
   },
   "SETUP": {
@@ -260,21 +251,17 @@
     "ADD_TITLE": "Add New User",
     "EDIT_TITLE": "Edit User",
     "CLOSE": "Close",
-
     "USER_NAME": "User-Defined Name",
     "ADMIN_NAME": "Admin-Defined Name",
     "ADMIN_NAME_PLACEHOLDER": "Enter admin-defined name",
     "ADMIN_NAME_REQUIRED": "Admin-defined name is required.",
-
     "EMAIL": "User Email",
     "EMAIL_PLACEHOLDER": "Enter user email",
     "EMAIL_REQUIRED": "User email is required.",
     "EMAIL_INVALID": "Please enter a valid email address.",
-
     "ROLE": "User Role",
     "ROLE_PLAYER": "Player",
     "ROLE_ADMIN": "Admin",
-
     "STATUS": "Status",
     "SAVE": "Save"
   },
@@ -415,52 +402,127 @@
     "ACCEPT": "Accept",
     "SELECT": "Select",
     "QUIT": "Quit"
+  },
+  "BUILD_CUSTOM": {
+    "PREVIOUS": "Previous",
+    "NEXT": "Next",
+    "ADD": "Add",
+    "SUBMIT": "Submit"
+  },
+  "CUSTOM_TOURNAMENTS": {
+    "DESCRIPTION": "Manage your custom tournaments. Use the edit, toggle, or delete actions for each tournament below.",
+    "CREATED": "Created",
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "EDIT": "Edit Tournament",
+    "RECALCULATE": "Recalculate Bets",
+    "TOGGLE": "Change Tournament Visibility",
+    "DELETE": "Delete Tournament"
+  },
+  "BUILD_PREDEFINED": {
+    "PREVIOUS": "Previous",
+    "ADD": "Add",
+    "SUBMIT": "Submit",
+    "NEXT": "Next"
+  },
+  "PREDEFINED_TOURNAMENTS": {
+    "DESCRIPTION": "Manage your tournaments. Use the edit, toggle, or delete actions for each tournament below.",
+    "CREATED": "Created",
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "EDIT_TOURNAMENT": "Edit Tournament",
+    "EDIT_MATCHES": "Edit Matches",
+    "TOGGLE_VISIBILITY": "Change Tournament Visibility",
+    "DELETE_TOURNAMENT": "Delete Tournament"
+  },
+  "STAGE_USERS_MANAGEMENT": {
+    "DESCRIPTION": "Manage tournament users. Invitations are sent to users without accounts, they must sign up and accept to join.",
+    "NO_USERS": "No users added yet.",
+    "EDIT": "Edit"
+  },
+  "STAGE_TEAMS_MANAGEMENT": {
+    "DESCRIPTION": "Edit the teams participating in the tournament. Scroll down to the bottom of the list to add a new team. Click the delete button to remove a team from the list.",
+    "EDIT": "Edit"
+  },
+  "STAGE_SUMMARY": {
+    "DESCRIPTION1": "Review the selected teams and matches before finalizing the tournament. Below, you can see the tournament name, teams participating, and the scheduled matches with corresponding odds.",
+    "DESCRIPTION2": "If you need to make changes, go back to the previous steps. Once confirmed, click the Submit button to save the tournament.",
+    "TOURNAMENT_NAME": "Tournament Name",
+    "NOT_PROVIDED": "Not provided",
+    "TEAMS": "Teams",
+    "MATCHES": "Matches",
+    "USERS": "Users"
+  },
+  "STAGE_STAGES_MANAGEMENT": {
+    "DESCRIPTION": "Edit the stages for the tournament. Scroll down to the bottom of the list to add a new stage. Click the delete button to remove a stage.",
+    "EDIT": "Edit"
+  },
+  "STAGE_SETTINGS": {
+    "DESCRIPTION": "Configure additional tournament settings, including exact result bonuses, qualification bet rules, and penalties.",
+    "EXACT_RESULT_BONUS_TITLE": "Allow Exact Result Bonus",
+    "EXACT_RESULT_BONUS_INFO": "If enabled, users get bonus points for exact match results.",
+    "BONUS_CALCULATION_TYPE": "Bonus Calculation Type",
+    "EXACT_RESULT_BONUS_VALUE": "Exact Result Bonus Value",
+    "ALLOW_WHO_QUALIFIES_BETS": "Allow Who Qualifies Bets",
+    "WHO_QUALIFIES_BETS_INFO": "Allows betting on which team qualifies in knockout rounds.",
+    "ALLOW_BETS_WITH_BOOSTER": "Allow Bets with Booster",
+    "BETS_WITH_BOOSTER_INFO": "Users can increase base odds using additional booster points.",
+    "MAX_BET_BOOSTER": "Max Bet Booster",
+    "TOTAL_BOOSTER_POOL": "Total Booster Pool",
+    "ENTER_BOOSTER_POOL_SIZE": "Enter booster pool size",
+    "APPLY_PENALTY_NO_BET": "Apply Penalty for No Bet",
+    "PENALTY_INFO": "If enabled, missing bets will incur a penalty.",
+    "PENALTY_POINTS": "Penalty Points",
+    "ENTER_PENALTY_VALUE": "Enter penalty value"
+  },
+  "STAGE_MATCHES_MANAGEMENT": {
+    "DESCRIPTION": "View and modify tournament matches. Click Edit to change match details, or Delete to remove a match. To add a new match, click Add New Match below.",
+    "EDIT": "Edit",
+    "DELETE": "Delete",
+    "UNDO": "Undo"
+  },
+  "STAGE_INPUT_TYPE": {
+    "DESCRIPTION": "Manage tournaments by creating new ones or updating existing ones, with options to customize teams, games, and details.",
+    "DETAILS": "Set basic details, import data from file or templates, and configure match handling.",
+    "TOURNAMENT_VISIBILITY": "Tournament Visibility",
+    "PRIVATE": "Private",
+    "PUBLIC": "Public",
+    "PRIVATE_DESC": "Only admin can invite participants.",
+    "PUBLIC_DESC": "Anyone can request to join.",
+    "TOURNAMENT_NAME": "Tournament Name",
+    "ENTER_NAME": "Enter tournament name",
+    "MATCH_UPDATE_METHOD": "Match Update Method",
+    "MANUAL": "Manual",
+    "SEMI": "Semi",
+    "AUTO": "Auto",
+    "MANUAL_DESC": "Admin manually adds or updates matches.",
+    "SEMI_DESC": "Admin triggers updates from predefined tournaments.",
+    "AUTO_DESC": "Matches update automatically based on predefined tournaments.",
+    "IMPORT_DATA": "Import Data",
+    "IMPORT_DESC": "You can:",
+    "IMPORT_EXCEL": "Import data from an Excel file",
+    "IMPORT_TEMPLATE": "Use a predefined tournament as a template",
+    "CLEAR_FORM": "Clear all form data and start from scratch",
+    "IMPORT_FROM_FILE": "Import from file",
+    "IMPORT_TOURNAMENT": "Import tournament",
+    "UPDATE_TOURNAMENT": "Update tournament",
+    "ERASE_FORM": "Erase All Form Data"
+  },
+  "USERS_LIST": {
+    "ACTIVE_PARTICIPANTS": "Active Participants",
+    "EXCLUDE": "Exclude",
+    "NO_PARTICIPANTS": "No participants found."
+  },
+  "PENDING_REQUESTS": {
+    "JOIN_REQUESTS": "Join Requests",
+    "ACCEPT": "Accept",
+    "REJECT": "Reject",
+    "NO_REQUESTS": "No join requests found."
+  },
+  "PENDING_INVITES": {
+    "PENDING_INVITATIONS": "Pending Invitations",
+    "RESEND": "Resend",
+    "EXCLUDE": "Exclude",
+    "NO_INVITATIONS": "No pending invitations found."
   }
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
 }

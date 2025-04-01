@@ -3,10 +3,10 @@
   <!-- Page Description -->
   <div class="page-description">
     <p>
-      Manage tournaments by creating new ones or updating existing ones, with options to customize teams, games, and details.
+      {{ 'STAGE_INPUT_TYPE.DESCRIPTION' | translate }}
     </p>
     <p>
-      Set basic details, import data from file or templates, and configure match handling.
+      {{ 'STAGE_INPUT_TYPE.DETAILS' | translate }}
     </p>
   </div>
 
@@ -15,7 +15,7 @@
     <ion-grid class="settings-grid" *ngIf="!isPredefinedTournament">
       <ion-row class="align-center">
         <ion-col size="10" class="left-align">
-          <ion-label class="section-header">Tournament Visibility</ion-label>
+          <ion-label class="section-header">{{ 'STAGE_INPUT_TYPE.TOURNAMENT_VISIBILITY' | translate }}</ion-label>
         </ion-col>
         <ion-col size="2" class="right-align">
           <ion-button fill="clear" size="small" id="visibilityInfo">
@@ -24,8 +24,8 @@
           <ion-popover [keepContentsMounted]="true" trigger="visibilityInfo">
             <ng-template>
               <ion-content class="ion-padding">
-                <p><strong>Private:</strong> Only admin can invite participants.</p>
-                <p><strong>Public:</strong> Anyone can request to join.</p>
+                <p><strong>{{ 'STAGE_INPUT_TYPE.PRIVATE' | translate }}:</strong> {{ 'STAGE_INPUT_TYPE.PRIVATE_DESC' | translate }}</p>
+                <p><strong>{{ 'STAGE_INPUT_TYPE.PUBLIC' | translate }}:</strong> {{ 'STAGE_INPUT_TYPE.PUBLIC_DESC' | translate }}</p>
               </ion-content>
             </ng-template>
           </ion-popover>
@@ -35,13 +35,13 @@
 
     <div *ngIf="!isPredefinedTournament">
       <ion-segment formControlName="tournamentVisibility">
-        <ion-segment-button value="Private"><ion-label>Private</ion-label></ion-segment-button>
-        <ion-segment-button value="Public"><ion-label>Public</ion-label></ion-segment-button>
+        <ion-segment-button value="Private"><ion-label>{{ 'STAGE_INPUT_TYPE.PRIVATE' | translate }}</ion-label></ion-segment-button>
+        <ion-segment-button value="Public"><ion-label>{{ 'STAGE_INPUT_TYPE.PUBLIC' | translate }}</ion-label></ion-segment-button>
       </ion-segment>
     </div>
 
-    <ion-label class="form-label label-spaced">Tournament Name</ion-label>
-    <ion-input formControlName="tournamentName" placeholder="Enter tournament name"></ion-input>
+    <ion-label class="form-label label-spaced">{{ 'STAGE_INPUT_TYPE.TOURNAMENT_NAME' | translate }}</ion-label>
+    <ion-input formControlName="tournamentName" placeholder="{{ 'STAGE_INPUT_TYPE.ENTER_NAME' | translate }}"></ion-input>
   </div>
 
   <!-- Match Update Method -->
@@ -49,7 +49,7 @@
     <ion-grid class="settings-grid">
       <ion-row class="align-center">
         <ion-col size="10" class="left-align">
-          <ion-label class="section-header">Match Update Method</ion-label>
+          <ion-label class="section-header">{{ 'STAGE_INPUT_TYPE.MATCH_UPDATE_METHOD' | translate }}</ion-label>
         </ion-col>
         <ion-col size="2" class="right-align">
           <ion-button fill="clear" size="small" id="updateMethodInfo">
@@ -58,9 +58,9 @@
           <ion-popover [keepContentsMounted]="true" trigger="updateMethodInfo">
             <ng-template>
               <ion-content class="ion-padding">
-                <p><strong>Manual:</strong> Admin manually adds or updates matches.</p>
-                <p><strong>Semi:</strong> Admin triggers updates from predefined tournaments.</p>
-                <p><strong>Auto:</strong> Matches update automatically based on predefined tournaments.</p>
+                <p><strong>{{ 'STAGE_INPUT_TYPE.MANUAL' | translate }}:</strong> {{ 'STAGE_INPUT_TYPE.MANUAL_DESC' | translate }}</p>
+                <p><strong>{{ 'STAGE_INPUT_TYPE.SEMI' | translate }}:</strong> {{ 'STAGE_INPUT_TYPE.SEMI_DESC' | translate }}</p>
+                <p><strong>{{ 'STAGE_INPUT_TYPE.AUTO' | translate }}:</strong> {{ 'STAGE_INPUT_TYPE.AUTO_DESC' | translate }}</p>
               </ion-content>
             </ng-template>
           </ion-popover>
@@ -69,9 +69,9 @@
     </ion-grid>
 
     <ion-segment formControlName="updateMethod">
-      <ion-segment-button value="Manual"><ion-label>Manual</ion-label></ion-segment-button>
-      <ion-segment-button value="Semi"><ion-label>Semi</ion-label></ion-segment-button>
-      <ion-segment-button value="Auto"><ion-label>Auto</ion-label></ion-segment-button>
+      <ion-segment-button value="Manual"><ion-label>{{ 'STAGE_INPUT_TYPE.MANUAL' | translate }}</ion-label></ion-segment-button>
+      <ion-segment-button value="Semi"><ion-label>{{ 'STAGE_INPUT_TYPE.SEMI' | translate }}</ion-label></ion-segment-button>
+      <ion-segment-button value="Auto"><ion-label>{{ 'STAGE_INPUT_TYPE.AUTO' | translate }}</ion-label></ion-segment-button>
     </ion-segment>
   </div>
 
@@ -80,7 +80,7 @@
     <ion-grid class="settings-grid">
       <ion-row class="align-center">
         <ion-col size="10" class="left-align">
-          <ion-label class="section-header">Import Data</ion-label>
+          <ion-label class="section-header">{{ 'STAGE_INPUT_TYPE.IMPORT_DATA' | translate }}</ion-label>
         </ion-col>
         <ion-col size="2" class="right-align">
           <ion-button fill="clear" size="small" id="importInfo">
@@ -89,11 +89,11 @@
           <ion-popover [keepContentsMounted]="true" trigger="importInfo">
             <ng-template>
               <ion-content class="ion-padding">
-                <p>You can:</p>
+                <p>{{ 'STAGE_INPUT_TYPE.IMPORT_DESC' | translate }}</p>
                 <ul>
-                  <li>Import data from an Excel file</li>
-                  <li>Use a predefined tournament as a template</li>
-                  <li>Clear all form data and start from scratch</li>
+                  <li>{{ 'STAGE_INPUT_TYPE.IMPORT_EXCEL' | translate }}</li>
+                  <li>{{ 'STAGE_INPUT_TYPE.IMPORT_TEMPLATE' | translate }}</li>
+                  <li>{{ 'STAGE_INPUT_TYPE.CLEAR_FORM' | translate }}</li>
                 </ul>
               </ion-content>
             </ng-template>
@@ -108,7 +108,7 @@
       expand="full"
       color="medium"
       (click)="triggerFileInput()">
-      Import from file
+      {{ 'STAGE_INPUT_TYPE.IMPORT_FROM_FILE' | translate }}
     </ion-button>
     <input
       #fileInput
@@ -122,7 +122,7 @@
       expand="full"
       color="medium"
       (click)="openTournamentSelection()">
-      Import tournament
+      {{ 'STAGE_INPUT_TYPE.IMPORT_TOURNAMENT' | translate }}
     </ion-button>
 
     <!-- Update tournament -->
@@ -131,7 +131,7 @@
       expand="full"
       color="medium"
       (click)="triggerFileInput()">
-      Update tournament
+      {{ 'STAGE_INPUT_TYPE.UPDATE_TOURNAMENT' | translate }}
     </ion-button>
 
     <!-- Erase form -->
@@ -139,7 +139,7 @@
       color="danger"
       expand="full"
       (click)="confirmEraseForm()">
-      Erase All Form Data
+      {{ 'STAGE_INPUT_TYPE.ERASE_FORM' | translate }}
     </ion-button>
   </div>
 
