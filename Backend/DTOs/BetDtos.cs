@@ -42,6 +42,8 @@ namespace Backend.DTOs
         public string Status { get; set; }
         public string Result { get; set; }
         public string Type { get; set; }
+
+        public bool ShowWhoQualifies{ get; set; } = false;
     }
 
     public class BetStatsDto
@@ -92,6 +94,9 @@ namespace Backend.DTOs
 
     public class UserBettingStatsDto
     {
+        public bool ShowExactResult { get; set; } = false;
+        public bool ShowQualified { get; set; } = false;
+
         public int MatchId { get; set; }
         public string MatchStatus { get; set; } = string.Empty;
         public string HomeTeam { get; set; } = string.Empty;

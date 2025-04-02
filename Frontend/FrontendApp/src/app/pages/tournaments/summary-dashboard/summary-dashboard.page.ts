@@ -106,6 +106,22 @@ export class SummaryDashboardPage implements OnInit {
     await modal.present();
   }
 
+  get showQualifiedColumn(): boolean {
+    return this.summaryData?.length ? this.summaryData[0].showQualified : false;
+  }
+  
+  get showExactResultColumn(): boolean {
+    return this.summaryData?.length ? this.summaryData[0].showExactResult : false;
+  }
+  
+  calculatePlayerColumnSize(): number {
+    const baseSize = 4; // increased to account for smaller # column
+    let extra = 0;
+    if (!this.showQualifiedColumn) extra += 1;
+    if (!this.showExactResultColumn) extra += 1;
+    return baseSize + extra;
+  }
+          
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary') {
     const toast = await this.toastController.create({
       message,

@@ -36,17 +36,21 @@
       <!-- Accordion Content -->
       <div class="accordion-content" slot="content">
         <ion-grid class="stats-table">
+          <!-- Header -->
           <ion-row class="header-row">
             <ion-col>{{ 'PLAYER_STATS.BET' | translate }}</ion-col>
             <ion-col></ion-col>
             <ion-col></ion-col>
-            <ion-col>{{ 'PLAYER_STATS.EXACT' | translate }}</ion-col>
-            <ion-col></ion-col>
-            <ion-col>{{ 'PLAYER_STATS.QUALIFY' | translate }}</ion-col>
-            <ion-col></ion-col>
-            <ion-col></ion-col>
+
+            <ion-col *ngIf="stat.showExactResult">{{ 'PLAYER_STATS.EXACT' | translate }}</ion-col>
+            <ion-col *ngIf="stat.showExactResult"></ion-col>
+
+            <ion-col *ngIf="stat.showQualified">{{ 'PLAYER_STATS.QUALIFY' | translate }}</ion-col>
+            <ion-col *ngIf="stat.showQualified"></ion-col>
+            <ion-col *ngIf="stat.showQualified"></ion-col>
           </ion-row>
 
+          <!-- Data -->
           <ion-row class="data-row">
             <ion-col>{{ stat.betPlaced ?? '-' }}</ion-col>
             <ion-col [ngClass]="getStatusClass(stat.outcomeRegular)">
@@ -54,16 +58,22 @@
             </ion-col>
             <ion-col>{{ stat.payoutRegular?.toFixed(2) ?? '0' }}</ion-col>
 
-            <ion-col [ngClass]="getStatusClass(stat.outcomeExactResult)">
+            <ion-col *ngIf="stat.showExactResult" [ngClass]="getStatusClass(stat.outcomeExactResult)">
               {{ getStatusIcon(stat.outcomeExactResult) }}
             </ion-col>
-            <ion-col>{{ stat.payoutExactResult?.toFixed(2) ?? '0' }}</ion-col>
+            <ion-col *ngIf="stat.showExactResult">
+              {{ stat.payoutExactResult?.toFixed(2) ?? '0' }}
+            </ion-col>
 
-            <ion-col>{{ stat.whoQualifiedBet ?? '-' }}</ion-col>
-            <ion-col [ngClass]="getStatusClass(stat.outcomeQualification)">
+            <ion-col *ngIf="stat.showQualified">
+              {{ stat.whoQualifiedBet ?? '-' }}
+            </ion-col>
+            <ion-col *ngIf="stat.showQualified" [ngClass]="getStatusClass(stat.outcomeQualification)">
               {{ getStatusIcon(stat.outcomeQualification) }}
             </ion-col>
-            <ion-col>{{ stat.payoutQualification?.toFixed(2) ?? '0' }}</ion-col>
+            <ion-col *ngIf="stat.showQualified">
+              {{ stat.payoutQualification?.toFixed(2) ?? '0' }}
+            </ion-col>
           </ion-row>
         </ion-grid>
       </div>

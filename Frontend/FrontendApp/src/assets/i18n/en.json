@@ -389,6 +389,7 @@
   },
   "SUMMARY": {
     "DESCRIPTION": "This summary provides an overview of participants' performance in the tournament. The table includes ranking, successful predictions in different bet categories, and total payout.",
+    "MATCH_PROGRESS": "Match Completion",
     "PLAYER": "Player",
     "W": "W",
     "Q": "Q",

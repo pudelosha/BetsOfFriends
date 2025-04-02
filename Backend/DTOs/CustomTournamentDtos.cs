@@ -186,10 +186,16 @@ namespace Backend.DTOs
 
     public class TournamentSummaryDto
     {
+        public bool ShowExactResult { get; set; } = false;
+        public bool ShowQualified { get; set; } = false;
+        public int MatchesCount { get; set; } = 0;
+        public int FinalisedMatchesCount { get; set; } = 0;
+
         public int Position { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }
         public int TotalBetsPlaced { get; set; }
+        public decimal BetSuccessRate { get; set; }
         public int Successful1X2Results { get; set; }
         public int SuccessfulQualifications { get; set; }
         public int SuccessfulExactResults { get; set; }

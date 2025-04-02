@@ -5,6 +5,21 @@
       <p>
         {{ 'SUMMARY.DESCRIPTION' | translate }}
       </p>
+
+      <!-- Match Completion Progress -->
+      <div *ngIf="summaryData?.length" class="match-progress-container">
+        <div class="progress-label">
+          {{ 'SUMMARY.MATCH_PROGRESS' | translate }}:
+          {{ summaryData[0].finalisedMatchesCount }} / {{ summaryData[0].matchesCount }}
+        </div>
+
+        <ion-progress-bar
+          [value]="summaryData[0].matchesCount > 0
+                    ? summaryData[0].finalisedMatchesCount / summaryData[0].matchesCount
+                    : 0"
+          color="success">
+        </ion-progress-bar>
+      </div>
     </div>
 
     <!-- Summary Table -->
@@ -12,22 +27,48 @@
 
       <!-- Table Header -->
       <ion-row class="summary-header">
-        <ion-col size="2" class="centered-text"><strong>#</strong></ion-col>
-        <ion-col size="5" class="text-left"><strong>{{ 'SUMMARY.PLAYER' | translate }}</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>#</strong></ion-col>
+        <ion-col [size]="calculatePlayerColumnSize()" class="text-left">
+          <strong>{{ 'SUMMARY.PLAYER' | translate }}</strong>
+        </ion-col>
+        <ion-col size="2" class="centered-text"><strong>%</strong></ion-col>
         <ion-col size="1" class="centered-text"><strong>{{ 'SUMMARY.W' | translate }}</strong></ion-col>
-        <ion-col size="1" class="centered-text"><strong>{{ 'SUMMARY.Q' | translate }}</strong></ion-col>
-        <ion-col size="1" class="centered-text"><strong>{{ 'SUMMARY.P' | translate }}</strong></ion-col>
-        <ion-col size="2" class="centered-text"><strong>{{ 'SUMMARY.RESULT' | translate }}</strong></ion-col>
+
+        <ion-col *ngIf="showQualifiedColumn" size="1" class="centered-text">
+          <strong>{{ 'SUMMARY.Q' | translate }}</strong>
+        </ion-col>
+
+        <ion-col *ngIf="showExactResultColumn" size="1" class="centered-text">
+          <strong>{{ 'SUMMARY.P' | translate }}</strong>
+        </ion-col>
+
+        <ion-col size="2" class="centered-text">
+          <strong>{{ 'SUMMARY.RESULT' | translate }}</strong>
+        </ion-col>
       </ion-row>
 
       <!-- Table Data -->
       <ion-row *ngFor="let player of summaryData" (click)="openPlayerStats(player.userId)">
-        <ion-col size="2" class="centered-text">{{ player.position }}</ion-col>
-        <ion-col size="5" class="text-left player-name">{{ player.userName }}</ion-col>
+        <ion-col size="1" class="centered-text">{{ player.position }}</ion-col>
+        <ion-col [size]="calculatePlayerColumnSize()" class="text-left player-name">
+          {{ player.userName }}
+        </ion-col>
+        <ion-col size="2" class="centered-text">
+          {{ player.betSuccessRate / 100 | percent:'1.0-0' }}
+        </ion-col>
         <ion-col size="1" class="centered-text">{{ player.successful1X2Results }}</ion-col>
-        <ion-col size="1" class="centered-text">{{ player.successfulQualifications }}</ion-col>
-        <ion-col size="1" class="centered-text">{{ player.successfulExactResults }}</ion-col>
-        <ion-col size="2" class="centered-text payout">{{ player.totalPayout | number: '1.2-2' }}</ion-col>
+
+        <ion-col *ngIf="showQualifiedColumn" size="1" class="centered-text">
+          {{ player.successfulQualifications }}
+        </ion-col>
+
+        <ion-col *ngIf="showExactResultColumn" size="1" class="centered-text">
+          {{ player.successfulExactResults }}
+        </ion-col>
+
+        <ion-col size="2" class="centered-text payout">
+          {{ player.totalPayout | number: '1.2-2' }}
+        </ion-col>
       </ion-row>
 
     </ion-grid>

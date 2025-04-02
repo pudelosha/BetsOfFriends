@@ -1038,17 +1038,33 @@ namespace Backend.Repository.Services
             {
                 _logger.LogInformation($"Fetching tournament summary for ID {tournamentId}, requested by user {userId}");
 
-                // Check if the user is assigned to the tournament
                 var isParticipant = await _context.CustomTournamentUserAssignments
                     .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
 
                 if (!isParticipant)
                 {
                     _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}.");
-                    return null; // Unauthorized access
+                    return null;
                 }
 
-                // Fetch all tournament bets and participants
+                var tournament = await _context.CustomTournaments
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Tournament ID {tournamentId} not found.");
+                    return null;
+                }
+
+                // Fetch all matches in the tournament (used for MatchesCount and FinalisedMatchesCount)
+                var matches = await _context.CustomMatches
+                    .Where(m => m.TournamentId == tournamentId)
+                    .ToListAsync();
+
+                int matchesCount = matches.Count;
+                int finalisedMatchesCount = matches.Count(m => m.Status == CustomMatch.MatchStatus.Finalised);
+
+                // Fetch bets
                 var tournamentBets = await _context.Bets
                     .Where(b => b.Match.TournamentId == tournamentId)
                     .Include(b => b.Match)
@@ -1060,12 +1076,13 @@ namespace Backend.Repository.Services
                     return new List<TournamentSummaryDto>();
                 }
 
-                // Fetch user assignments (to get UserName)
                 var userAssignments = await _context.CustomTournamentUserAssignments
                     .Where(a => a.TournamentId == tournamentId)
                     .ToDictionaryAsync(a => a.UserId, a => a.UserName ?? a.UserAdminName);
 
-                // Group by user to generate statistics
+                bool showExactResult = tournament.AllowExactResultBonus;
+                bool showQualified = tournament.AllowWhoQualifiesBets;
+
                 var summary = tournamentBets
                     .GroupBy(b => b.UserId)
                     .Select(group =>
@@ -1073,34 +1090,56 @@ namespace Backend.Repository.Services
                         var userId = group.Key;
                         var bets = group.ToList();
 
-                        var successful1X2 = bets.Count(b => b.Status == Bet.BetStatus.Finalised && b.Result == Bet.BetResult.Won);
-                        var successfulQualification = bets.Count(b =>
+                        int totalBetsPlaced = bets.Count;
+
+                        int finalisedBets = bets.Count(b => b.Status == Bet.BetStatus.Finalised);
+                        int wonBets = bets.Count(b => b.Status == Bet.BetStatus.Finalised && b.Result == Bet.BetResult.Won);
+                        decimal betSuccessRate = finalisedBets > 0
+                            ? Math.Round((decimal)wonBets / finalisedBets * 100, 2)
+                            : 0;
+
+                        int successful1X2 = wonBets;
+
+                        int successfulQualification = bets.Count(b =>
                             b.Status == Bet.BetStatus.Finalised &&
                             b.Match.Type == CustomMatch.MatchType.ExtendedWithQualification &&
                             b.Qualified == b.Match.Qualified);
-                        var successfulExactResults = bets.Count(b =>
+
+                        int successfulExactResults = bets.Count(b =>
                             b.Status == Bet.BetStatus.Finalised &&
                             b.HomeGoals == b.Match.HomeScore &&
                             b.AwayGoals == b.Match.AwayScore);
-                        var totalPayout = bets
+
+                        decimal totalPayout = bets
                             .Where(b => b.Status == Bet.BetStatus.Finalised)
-                            .Sum(b => (b.BasePayout ?? 0) + (b.QualificationPayout ?? 0) + (b.ExactScorePayout ?? 0));
+                            .Sum(b =>
+                                (b.BasePayout ?? 0) +
+                                (showQualified ? (b.QualificationPayout ?? 0) : 0) +
+                                (showExactResult ? (b.ExactScorePayout ?? 0) : 0)
+                            );
 
                         return new TournamentSummaryDto
                         {
                             UserId = userId,
                             UserName = userAssignments.ContainsKey(userId) ? userAssignments[userId] : "Unknown",
-                            TotalBetsPlaced = bets.Count,
+
+                            TotalBetsPlaced = totalBetsPlaced,
                             Successful1X2Results = successful1X2,
                             SuccessfulQualifications = successfulQualification,
                             SuccessfulExactResults = successfulExactResults,
-                            TotalPayout = totalPayout
+                            TotalPayout = totalPayout,
+
+                            BetSuccessRate = betSuccessRate,
+                            MatchesCount = matchesCount,
+                            FinalisedMatchesCount = finalisedMatchesCount,
+
+                            ShowExactResult = showExactResult,
+                            ShowQualified = showQualified
                         };
                     })
                     .OrderByDescending(s => s.TotalPayout)
                     .ToList();
 
-                // Assign positions based on payout ranking
                 for (int i = 0; i < summary.Count; i++)
                 {
                     summary[i].Position = i + 1;
@@ -1140,8 +1179,17 @@ namespace Backend.Repository.Services
                     return new List<UserBettingStatsDto>();
                 }
 
+                var tournament = await _context.CustomTournaments
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Tournament {tournamentId} not found.");
+                    return new List<UserBettingStatsDto>();
+                }
+
                 var tournamentMatches = await _context.CustomMatches
-                    .Where(m => m.TournamentId == tournamentId && m.IsVisible)  // display only visible
+                    .Where(m => m.TournamentId == tournamentId && m.IsVisible) // display only visible
                     .Include(m => m.HomeTeam)
                     .Include(m => m.AwayTeam)
                     .Include(m => m.Bets.Where(b => b.UserId == statsUserId))
@@ -1159,6 +1207,11 @@ namespace Backend.Repository.Services
                     string? betPlaced = userBet?.HomeGoals.HasValue == true && userBet?.AwayGoals.HasValue == true
                         ? $"{userBet.HomeGoals}:{userBet.AwayGoals}"
                         : userBet != null ? "-" : null;
+
+                    // Determine ShowExactResult and ShowQualified based on tournament settings and match type
+                    bool showExactResult = tournament.AllowExactResultBonus && isFinalised;
+                    bool showQualified = tournament.AllowWhoQualifiesBets && match.Type == CustomMatch.MatchType.ExtendedWithQualification
+                                         && userBet?.Qualified != null;
 
                     return new UserBettingStatsDto
                     {
@@ -1191,8 +1244,14 @@ namespace Backend.Repository.Services
                         PayoutExactResult = isFinalised ? userBet?.ExactScorePayout : null,
                         PayoutQualification = isFinalised ? userBet?.QualificationPayout : null,
                         TotalPayout = isFinalised
-                            ? ((userBet?.BasePayout ?? 0) + (userBet?.ExactScorePayout ?? 0) + (userBet?.QualificationPayout ?? 0))
-                            : null
+                            ? ((userBet?.BasePayout ?? 0) +
+                               (showExactResult ? (userBet?.ExactScorePayout ?? 0) : 0) +
+                               (showQualified ? (userBet?.QualificationPayout ?? 0) : 0))
+                            : null,
+
+                        // Set ShowExactResult and ShowQualified flags based on the rules
+                        ShowExactResult = showExactResult,
+                        ShowQualified = showQualified
                     };
                 }).ToList();
 

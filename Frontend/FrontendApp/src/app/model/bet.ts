@@ -24,6 +24,8 @@ export interface Bet {
   status: 'ToPlace' | 'Placed' | 'Finalised';
   result: 'Pending' | 'Won' | 'Lost';
   type: 'Regular90Min' | 'ExtendedWithQualification'
+
+  showWhoQualifies: boolean | false;
 }
 
 export interface BetUpdateDto {

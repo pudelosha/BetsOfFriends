@@ -60,4 +60,20 @@ export class PlayerStatsModalComponent implements OnInit {
   getStatusClass(value?: string): string {
     return value === 'V' ? 'v-status' : value === 'X' ? 'x-status' : '';
   }  
+
+  get showQualified(): boolean {
+    return this.stats.some(s => s.showQualified);
+  }
+  
+  get showExact(): boolean {
+    return this.stats.some(s => s.showExactResult);
+  }
+    
+  get columnGridTemplate(): string {
+    // Always 3 base columns (Bet, OutcomeRegular, PayoutRegular)
+    const base = ['1fr', '1fr', '1fr'];
+    if (this.showExact) base.push('1fr', '1fr');       // Exact: Outcome + Payout
+    if (this.showQualified) base.push('1fr', '1fr', '1fr'); // Qualify: Bet + Outcome + Payout
+    return base.join(' ');
+  }  
 }

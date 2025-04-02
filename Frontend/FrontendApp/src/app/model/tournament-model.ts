@@ -102,10 +102,16 @@ export interface UserActiveTournament {
 }
 
 export interface TournamentSummary {
+  showExactResult: boolean | false;
+  showQualified: boolean | false;
+  matchesCount: number;
+  finalisedMatchesCount: number;
+
   position: number;
   userId: string;
   userName: string;
   totalBetsPlaced: number;
+  betSuccessRate: number;
   successful1X2Results: number;
   successfulQualifications: number;
   successfulExactResults: number;
@@ -126,6 +132,9 @@ export interface TournamentInvite {
 }
 
 export interface UserBettingStats {
+  showExactResult: boolean | false;
+  showQualified: boolean | false;
+
   matchId: number;
   matchStatus: string;
   homeTeam: string;

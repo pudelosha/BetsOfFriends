@@ -72,7 +72,7 @@
   </ion-grid>
 
   <!-- Qualification Odds Section -->
-  <ng-container *ngIf="bet.type === 'ExtendedWithQualification'">
+  <ng-container *ngIf="bet.type === 'ExtendedWithQualification' && bet.showWhoQualifies">
     <div class="divider"></div>
 
     <ion-label class="section-title">{{ 'BET_MODAL.QUALIFY_ODDS' | translate }}</ion-label>

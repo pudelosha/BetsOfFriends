@@ -60,7 +60,8 @@ export class EditBetModalComponent implements AfterViewInit {
     console.log("Original Bet Data Before Saving:", JSON.parse(JSON.stringify(this._bet)));
   
     // Check if qualification is required (only for ExtendedWithQualification)
-    const qualificationRequired = this._bet.type === 'ExtendedWithQualification' &&
+    const qualificationRequired = this._bet.showWhoQualifies &&
+                                  this._bet.type === 'ExtendedWithQualification' &&
                                   this._bet.qualifyHomeOdds !== null && 
                                   this._bet.qualifyAwayOdds !== null;
   

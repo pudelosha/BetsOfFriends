@@ -172,6 +172,16 @@ namespace Backend.Repository.Services
                     return new List<BetDto>(); // Return empty list instead of throwing an error
                 }
 
+                // Get tournament
+                var tournament = await _context.CustomTournaments
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Tournament {tournamentId} not found.");
+                    return new List<BetDto>();
+                }
+
                 // Step 2: Check if the user is assigned to the tournament
                 var isAssigned = await _context.CustomTournamentUserAssignments
                     .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
@@ -241,7 +251,9 @@ namespace Backend.Repository.Services
 
                     Status = b.Status.ToString(),
                     Result = b.Result.ToString(),
-                    Type = b.Match.Type.ToString()
+                    Type = b.Match.Type.ToString(),
+
+                    ShowWhoQualifies = tournament.AllowWhoQualifiesBets
                 }).ToList();
 
                 return betDtos;
