@@ -46,11 +46,18 @@ export class StartedPredefinedMatchesPage implements OnInit {
 
   async loadStartedMatches() {
     this.loadingStart.emit();
-
+    this.isLoading = true;
+    this.startedMatches = [];
+    this.errorMessage = '';
+  
     try {
       this.startedMatches = await firstValueFrom(
         this.matchService.getStartedMatches()
       );
+  
+      if (!this.startedMatches.length) {
+        this.errorMessage = 'No started matches found.';
+      }
     } catch (error) {
       console.error('Error loading started predefined matches:', error);
       this.errorMessage = 'Failed to load matches.';
@@ -59,7 +66,7 @@ export class StartedPredefinedMatchesPage implements OnInit {
       this.loadingEnd.emit();
     }
   }
-
+  
   navigateToPredefinedMatches() {
     this.router.navigate(['/tournaments/predefined']);
   }

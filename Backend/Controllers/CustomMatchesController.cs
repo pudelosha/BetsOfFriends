@@ -95,12 +95,7 @@ namespace Backend.Controllers
 
                 var matches = await _matchService.GetStartedMatchesAsync(tournamentId, userId);
 
-                if (matches == null || !matches.Any())
-                {
-                    return NotFound(new { Message = "No started custom matches found." });
-                }
-
-                return Ok(matches);
+                return Ok(matches ?? Enumerable.Empty<MatchDto>());
             }
             catch (Exception ex)
             {

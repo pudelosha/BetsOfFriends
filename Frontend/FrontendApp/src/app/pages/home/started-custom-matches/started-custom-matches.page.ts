@@ -62,18 +62,33 @@ export class StartedCustomMatchesPage implements OnInit {
   }
 
   async loadStartedMatches() {
-    if (this.tournamentId === null) return;
-
+    this.isLoading = true;
+    this.startedMatches = [];
+    this.errorMessage = '';
+  
+    if (this.tournamentId === null) {
+      console.warn("No tournament ID provided.");
+      this.errorMessage = "No tournament ID provided.";
+      this.isLoading = false;
+      return;
+    }
+  
     try {
-      this.startedMatches = await firstValueFrom(this.matchService.getStartedMatches(this.tournamentId));
+      this.startedMatches = await firstValueFrom(
+        this.matchService.getStartedMatches(this.tournamentId)
+      );
+  
+      if (!this.startedMatches.length) {
+        this.errorMessage = "No started matches found.";
+      }
     } catch (error) {
-      console.error('Error loading started custom matches:', error);
-      this.errorMessage = 'Failed to load matches.';
+      console.error("Error loading started custom matches:", error);
+      this.errorMessage = "Failed to load matches.";
     } finally {
       this.isLoading = false;
     }
   }
-
+  
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary') {
     const toast = await this.toastController.create({
       message,

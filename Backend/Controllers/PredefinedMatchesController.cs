@@ -93,12 +93,7 @@ namespace Backend.Controllers
 
                 var matches = await _matchService.GetStartedMatchesAsync();
 
-                if (matches == null || !matches.Any())
-                {
-                    return NotFound(new { Message = "No started predefined matches found." });
-                }
-
-                return Ok(matches);
+                return Ok(matches ?? Enumerable.Empty<MatchDto>());
             }
             catch (Exception ex)
             {
