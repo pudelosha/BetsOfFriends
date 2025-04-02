@@ -27,9 +27,20 @@
               <ion-icon name="chevron-back-outline"></ion-icon>
             </ion-button>
           </ion-col>
+
           <ion-col size="auto">
-            <span class="stage-label">{{ availableStages[selectedStageIndex] }}</span>
+            <ion-select
+              interface="popover"
+              [value]="selectedStage"
+              (ionChange)="onStageSelected($event.detail.value)"
+              class="stage-selector"
+            >
+              <ion-select-option *ngFor="let stage of availableStages" [value]="stage">
+                {{ stage }}
+              </ion-select-option>
+            </ion-select>
           </ion-col>
+
           <ion-col size="auto">
             <ion-button fill="clear" (click)="nextStage()" [disabled]="selectedStageIndex === availableStages.length - 1">
               <ion-icon name="chevron-forward-outline"></ion-icon>

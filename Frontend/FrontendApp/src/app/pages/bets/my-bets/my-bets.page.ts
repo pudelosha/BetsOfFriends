@@ -89,6 +89,15 @@ export class MyBetsPage implements OnInit, AfterViewInit {
     }
   }
 
+  onStageSelected(selected: string) {
+    const index = this.availableStages.indexOf(selected);
+    if (index !== -1) {
+      this.selectedStageIndex = index;
+      this.selectedStage = selected;
+      console.log(`Stage changed to: ${selected}`);
+    }
+  }
+  
   async loadStages() {
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
     

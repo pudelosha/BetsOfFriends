@@ -95,6 +95,15 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
       this.selectedStage = this.availableStages[this.selectedStageIndex];
     }
   }
+
+  onStageSelected(selected: string) {
+    const index = this.availableStages.indexOf(selected);
+    if (index !== -1) {
+      this.selectedStageIndex = index;
+      this.selectedStage = selected;
+      console.log(`Stage changed to: ${selected}`);
+    }
+  }  
   
   changeTab(tab: string) {
     this.selectedTab = tab;
