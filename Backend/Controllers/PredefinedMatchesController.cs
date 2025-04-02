@@ -35,12 +35,7 @@ namespace Backend.Controllers
 
                 var matches = await _matchService.GetMatchesByStatusAndStageAsync(tournamentId, status, stage);
 
-                if (matches == null || !matches.Any())
-                {
-                    return NotFound(new { Message = "No matches found for the given criteria." });
-                }
-
-                return Ok(matches);
+                return Ok(matches ?? Enumerable.Empty<MatchDto>());
             }
             catch (Exception ex)
             {

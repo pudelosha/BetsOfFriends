@@ -65,8 +65,8 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
   
     if (!this.tournamentId) {
       console.warn("No tournamentId received.");
-      this.isLoading = false;
       this.errorMessage = "No tournament ID provided.";
+      this.isLoading = false;
       await loading.dismiss();
       return;
     }
@@ -82,11 +82,9 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
     } catch (error: unknown) {
       console.error("API error:", error);
       if (error instanceof HttpErrorResponse) {
-        this.errorMessage = error.status === 404
-          ? "No matches found for the given criteria"
-          : `An error occurred: ${error.message}`;
+        this.errorMessage = `An error occurred: ${error.message}`;
       } else {
-        this.errorMessage = "An unexpected error occurred";
+        this.errorMessage = "An unexpected error occurred.";
       }
     } finally {
       const elapsedTime = Date.now() - startTime;
@@ -96,8 +94,8 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
         await loading.dismiss();
       }, delay);
     }
-  }  
-   
+  }
+     
   async editMatchResult(match: Match, event: Event) {
     event.stopPropagation();
     console.log("Opening Edit Match Result Modal:", match);

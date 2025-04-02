@@ -5,13 +5,13 @@
     <div class="sticky-inner">
       <ion-segment [(ngModel)]="selectedTab" class="full-width">
         <ion-segment-button value="upcoming" (click)="changeTab('upcoming')">
-          {{ 'MANAGE_PREDEFINED_MATCHES.UPCOMING' | translate }}
+          {{ 'MANAGE_PREDEFINED_MATCHES.TAB_UPCOMING' | translate }}
         </ion-segment-button>
         <ion-segment-button value="started" (click)="changeTab('started')">
-          {{ 'MANAGE_PREDEFINED_MATCHES.STARTED' | translate }}
+          {{ 'MANAGE_PREDEFINED_MATCHES.TAB_STARTED' | translate }}
         </ion-segment-button>
         <ion-segment-button value="finalised" (click)="changeTab('finalised')">
-          {{ 'MANAGE_PREDEFINED_MATCHES.FINALISED' | translate }}
+          {{ 'MANAGE_PREDEFINED_MATCHES.TAB_FINALISED' | translate }}
         </ion-segment-button>
       </ion-segment>
     </div>
