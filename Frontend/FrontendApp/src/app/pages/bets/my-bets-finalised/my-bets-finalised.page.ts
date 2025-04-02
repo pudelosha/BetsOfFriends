@@ -59,14 +59,14 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
     });
     await loading.present();
   
-    const startTime = Date.now(); // Start timer
+    const startTime = Date.now();
   
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
   
     if (!tournamentId) {
       console.warn("No tournament selected.");
-      this.isLoading = false;
       this.errorMessage = "No tournament selected.";
+      this.isLoading = false;
       await loading.dismiss();
       return;
     }
@@ -83,9 +83,9 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
       console.error("API error:", error);
   
       if (error instanceof HttpErrorResponse) {
-        this.errorMessage = error.status === 404 ? "No bets found for the given criteria" : `An error occurred: ${error.message}`;
+        this.errorMessage = `An error occurred: ${error.message}`;
       } else {
-        this.errorMessage = "An unexpected error occurred";
+        this.errorMessage = "An unexpected error occurred.";
       }
     } finally {
       const elapsedTime = Date.now() - startTime;
@@ -96,7 +96,7 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
         await loading.dismiss();
       }, delay);
     }
-  }
+  }  
   
   getBetStatus(bet: Bet): string {
     if (

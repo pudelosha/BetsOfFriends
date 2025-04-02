@@ -64,7 +64,7 @@ export class MyBetsToPlacePage implements OnInit {
     });
     await loading.present();
   
-    const startTime = Date.now(); // Start timer
+    const startTime = Date.now();
   
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
   
@@ -88,7 +88,7 @@ export class MyBetsToPlacePage implements OnInit {
       console.error("API error:", error);
   
       if (error instanceof HttpErrorResponse) {
-        this.errorMessage = error.status === 404 ? "No bets found for the given criteria" : `An error occurred: ${error.message}`;
+        this.errorMessage = `An error occurred: ${error.message}`;
       } else {
         this.errorMessage = "An unexpected error occurred";
       }
@@ -102,7 +102,7 @@ export class MyBetsToPlacePage implements OnInit {
       }, delay);
     }
   }
-  
+    
   async editBet(bet: Bet, event: Event) {
     event.stopPropagation();
     console.log("Opening Edit Bet Modal:", bet);
