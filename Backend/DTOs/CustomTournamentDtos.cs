@@ -129,6 +129,7 @@ namespace Backend.DTOs
 
         [Required]
         public string RecordStatus { get; set; } = "New";
+        public bool IsVisible { get; set; } = true;
     }
 
     public class CustomUserDto

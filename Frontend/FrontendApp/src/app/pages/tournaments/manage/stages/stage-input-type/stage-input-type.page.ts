@@ -176,8 +176,8 @@ export class StageInputTypePage implements OnInit {
         const matches = this.extractMatches(workbook, teams, stages);
 
         this.teamsExtracted.emit(teams);
-        this.matchesExtracted.emit(matches);
         this.stagesExtracted.emit(stages);
+        this.matchesExtracted.emit(matches);
 
         this.showToast('Excel file read successfully!', 'success');
       } catch (error) {
@@ -299,12 +299,12 @@ export class StageInputTypePage implements OnInit {
           matchStart: this.convertToTimestamp(row['Date'], row['Time'], row['UTC Offset']),
           matchType: row['Match Type'] || 'default',
   
-          homeWinOdds: this.parseOdds(row['Home Win Odds']) ?? 0,
-          drawOdds: this.parseOdds(row['Draw Odds']) ?? 0,
-          awayWinOdds: this.parseOdds(row['Away Win Odds']) ?? 0,
-  
-          homeQualifies: null,
-          awayQualifies: null,
+          homeWinOdds: this.parseMandatoryOdds(row['Home Win Odds'], 'Home Win Odds'),
+          drawOdds: this.parseMandatoryOdds(row['Draw Odds'], 'Draw Odds'),
+          awayWinOdds: this.parseMandatoryOdds(row['Away Win Odds'], 'Away Win Odds'),
+        
+          homeQualifies: this.parseOptionalQualifier(row['Home Team Qualifies']),
+          awayQualifies: this.parseOptionalQualifier(row['Away Team Qualifies']),
 
           isVisible: true,
 
@@ -321,6 +321,21 @@ export class StageInputTypePage implements OnInit {
   
     return matches;
   }  
+
+  private parseMandatoryOdds(value: any, label: string): number {
+    const num = Number(value);
+    if (isNaN(num) || num < 1) {
+      throw new Error(`${label} must be a number greater than 1. Received: ${value}`);
+    }
+    return num;
+  }
+  
+  private parseOptionalQualifier(value: any): number | null {
+    if (value === undefined || value === '') return null;
+    const num = Number(value);
+    return !isNaN(num) && num >= 1 ? num : null;
+  }
+  
 
   convertToTimestamp(date: string, time: string, utcOffset: number): string {
     if (!date || !time) return '';

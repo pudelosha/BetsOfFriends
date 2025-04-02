@@ -149,7 +149,7 @@ namespace Backend.Repository.Services
                     HomeQualifies = m.HomeQualifies ?? 0,
                     AwayQualifies = m.AwayQualifies ?? 0,
                     Status = MatchStatus.Upcoming,
-                    IsVisible = true,
+                    IsVisible = m.IsVisible,
                     PredefinedMatchId = m.PredefinedMatchId
                 }).ToList();
 
@@ -567,6 +567,7 @@ namespace Backend.Repository.Services
                         existingMatch.AwayWinOdds = match.AwayWinOdds;
                         existingMatch.HomeQualifies = match.HomeQualifies;
                         existingMatch.AwayQualifies = match.AwayQualifies;
+                        existingMatch.IsVisible = match.IsVisible;
                     }
                 }
 
@@ -595,7 +596,8 @@ namespace Backend.Repository.Services
                         DrawOdds = newMatch.DrawOdds,
                         AwayWinOdds = newMatch.AwayWinOdds,
                         HomeQualifies = newMatch.HomeQualifies,
-                        AwayQualifies = newMatch.AwayQualifies
+                        AwayQualifies = newMatch.AwayQualifies,
+                        IsVisible = newMatch.IsVisible
                     });
                 }
 
@@ -760,7 +762,8 @@ namespace Backend.Repository.Services
                         DrawOdds = match.DrawOdds,
                         AwayWinOdds = match.AwayWinOdds,
                         HomeQualifies = match.HomeQualifies,
-                        AwayQualifies = match.AwayQualifies
+                        AwayQualifies = match.AwayQualifies,
+                        IsVisible = match.IsVisible
                     }).ToList(),
                     Users = tournament.Participants.Select(p => new CustomUserDto
                     {
@@ -1083,7 +1086,6 @@ namespace Backend.Repository.Services
                             .Where(b => b.Status == Bet.BetStatus.Finalised)
                             .Sum(b => (b.BasePayout ?? 0) + (b.QualificationPayout ?? 0) + (b.ExactScorePayout ?? 0));
 
-
                         return new TournamentSummaryDto
                         {
                             UserId = userId,
@@ -1139,7 +1141,7 @@ namespace Backend.Repository.Services
                 }
 
                 var tournamentMatches = await _context.CustomMatches
-                    .Where(m => m.TournamentId == tournamentId)
+                    .Where(m => m.TournamentId == tournamentId && m.IsVisible)  // display only visible
                     .Include(m => m.HomeTeam)
                     .Include(m => m.AwayTeam)
                     .Include(m => m.Bets.Where(b => b.UserId == statsUserId))

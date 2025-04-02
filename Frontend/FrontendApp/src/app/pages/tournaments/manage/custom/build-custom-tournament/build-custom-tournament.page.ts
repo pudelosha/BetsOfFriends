@@ -294,7 +294,9 @@ export class BuildCustomTournamentPage implements OnInit {
           awayWinOdds: [match.awayWinOdds],
           homeQualifies: [match.homeQualifies],
           awayQualifies: [match.awayQualifies],
-          recordStatus: ['Uploaded', Validators.required]
+          recordStatus: ['Uploaded', Validators.required],
+
+          isVisible: [match.isVisible ?? true],
         })
       );
     });
@@ -339,6 +341,7 @@ export class BuildCustomTournamentPage implements OnInit {
       homeQualifies: [match.homeQualifies],
       awayQualifies: [match.awayQualifies],
       recordStatus: [match.recordStatus ?? 'New'],
+      isVisible: [match.isVisible ?? true],
     });
   }
          
@@ -639,7 +642,8 @@ export class BuildCustomTournamentPage implements OnInit {
         awayWinOdds: [match.awayWinOdds ?? 0],
         homeQualifies: [match.homeQualifies ?? null],
         awayQualifies: [match.awayQualifies ?? null],
-        recordStatus: [isUpdated ? 'Update' : match.recordStatus || 'New']
+        recordStatus: [isUpdated ? 'Update' : match.recordStatus || 'New'],
+        isVisible: [match.isVisible ?? true],
       }));
     });
   
@@ -748,7 +752,8 @@ export class BuildCustomTournamentPage implements OnInit {
         awayWinOdds: match.awayWinOdds,
         homeQualifies: match.homeQualifies,
         awayQualifies: match.awayQualifies,
-        recordStatus: match.recordStatus || 'New'
+        recordStatus: match.recordStatus || 'New',
+        isVisible: match.isVisible ?? true,
       })),
 
       users: this.usersArray.value.map((user: User) => ({

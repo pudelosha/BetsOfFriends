@@ -202,6 +202,7 @@ namespace Backend.Repository.Services
                         b.Match.TournamentId == tournamentId &&
                         b.UserId == userId &&
                         b.Status == betStatus &&
+                        b.Match.IsVisible == true && 
                         b.Match.Stage.StageName == stage)
                     .OrderBy(b => b.Match.MatchStart)
                     .ToListAsync();
