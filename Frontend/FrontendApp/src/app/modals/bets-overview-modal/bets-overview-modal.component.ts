@@ -15,6 +15,9 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class BetsOverviewModalComponent {
   @Input() betStats: BetStats = {
+    showExactResult: null,
+    showQualified: null,
+    matchStatus: null,
     homeTeam: '',
     awayTeam: '',
     homeScoreUser: null,

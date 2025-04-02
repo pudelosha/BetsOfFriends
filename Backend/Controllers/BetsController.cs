@@ -65,9 +65,9 @@ namespace Backend.Controllers
                     return Unauthorized(new { Message = "User authentication failed." });
                 }
 
-                var matches = await _betService.GetBetsByStatusAndStageAsync(tournamentId, userId, status, stage);
+                var bets = await _betService.GetBetsByStatusAndStageAsync(tournamentId, userId, status, stage);
 
-                return Ok(matches ?? Enumerable.Empty<BetDto>());
+                return Ok(bets ?? Enumerable.Empty<BetDto>());
             }
             catch (Exception ex)
             {

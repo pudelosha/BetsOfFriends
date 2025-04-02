@@ -11,7 +11,7 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 
 import { addIcons } from 'ionicons';
-import { logOutOutline, homeOutline, trophyOutline, trash, mailOutline, peopleOutline, chevronBackOutline, chevronForwardOutline, searchOutline, chatbubblesOutline, cogOutline, informationCircleOutline, pauseOutline, trashOutline, settingsOutline, listOutline, podiumOutline, statsChartOutline, footballOutline, createOutline, eyeOutline, personOutline, notificationsOutline, shieldCheckmarkOutline, addCircleOutline, hammerOutline, clipboardOutline, starOutline, documentTextOutline, buildOutline, exitOutline, filterOutline } from 'ionicons/icons';
+import { logOutOutline, homeOutline, trophyOutline, checkmark, trash, close, mailOutline, peopleOutline, chevronBackOutline, chevronForwardOutline, searchOutline, chatbubblesOutline, cogOutline, informationCircleOutline, pauseOutline, trashOutline, settingsOutline, listOutline, podiumOutline, statsChartOutline, footballOutline, createOutline, eyeOutline, personOutline, notificationsOutline, shieldCheckmarkOutline, addCircleOutline, hammerOutline, clipboardOutline, starOutline, documentTextOutline, buildOutline, exitOutline, filterOutline } from 'ionicons/icons';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -25,6 +25,8 @@ bootstrapApplication(AppComponent, {
 });
 
 addIcons({
+  'close': close,
+  'checkmark': checkmark,
   'people-outline': peopleOutline,
   'mail-outline': mailOutline,
   'trash': trash,

@@ -3,6 +3,7 @@ using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static Backend.Model.Entities.CustomMatch;
 using static Backend.Model.Entities.CustomTournament;
 
 namespace Backend.Repository.Services
@@ -508,6 +509,15 @@ namespace Backend.Repository.Services
                     return null;
                 }
 
+                var tournament = await _context.CustomTournaments
+                    .FirstOrDefaultAsync(t => t.TournamentId == match.TournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Tournament with ID {match.TournamentId} not found.");
+                    return null;
+                }
+
                 // Filter bets to only include placed bets
                 var bets = match.Bets.Where(b => b.HomeGoals.HasValue && b.AwayGoals.HasValue).ToList();
                 var qualificationBets = match.Bets.Where(b => b.Qualified.HasValue).ToList();
@@ -523,9 +533,17 @@ namespace Backend.Repository.Services
 
                 string? resultQualified = match.Qualified.ToString();
 
+                bool showQualified = tournament.AllowWhoQualifiesBets &&
+                                     match.Type == CustomMatch.MatchType.ExtendedWithQualification;
+                bool showExactResult = tournament.AllowExactResultBonus;
+
                 // Create DTO
                 var betStats = new BetStatsDto
                 {
+                    ShowQualified = showQualified,
+                    ShowExactResult = showExactResult,
+                    MatchStatus = match.Status.ToString(),
+
                     HomeTeam = match.HomeTeam.TeamName,
                     AwayTeam = match.AwayTeam.TeamName,
                     HomeScoreActual = match.HomeScore,
@@ -561,20 +579,21 @@ namespace Backend.Repository.Services
                                 ? (result == "2" ? 1 : 0) : null,
 
                             // Qualification bets - only if the user placed a qualification bet
-                            HomeQualifiesSuccess = (b.Qualified.HasValue)
-                                ? (resultQualified == "home" ? (b.Qualified == CustomMatch.TeamQualified.Home ? 1 : 0) : null)
-                                : null,
+                            HomeQualifiesSuccess = b.Qualified == CustomMatch.TeamQualified.Home
+                                ? (match.Qualified == CustomMatch.TeamQualified.Home ? 1 : 0)
+                                : (b.Qualified == CustomMatch.TeamQualified.Away ? null : null),
 
-                            AwayQualifiesSuccess = (b.Qualified.HasValue)
-                                ? (resultQualified == "away" ? (b.Qualified == CustomMatch.TeamQualified.Away ? 1 : 0) : null)
-                                : null,
+                            AwayQualifiesSuccess = b.Qualified == CustomMatch.TeamQualified.Away
+                                ? (match.Qualified == CustomMatch.TeamQualified.Away ? 1 : 0)
+                                : (b.Qualified == CustomMatch.TeamQualified.Home ? null : null),
 
                             // Determine result success (only if the user placed a score prediction)
-                            ResultSuccess = (b.HomeGoals.HasValue && b.AwayGoals.HasValue) &&
-                                            ((result == "1" && b.HomeGoals > b.AwayGoals) ||
-                                             (result == "X" && b.HomeGoals == b.AwayGoals) ||
-                                             (result == "2" && b.HomeGoals < b.AwayGoals))
-                                            ? 1 : null
+                            ResultSuccess = (b.HomeGoals.HasValue && b.AwayGoals.HasValue &&
+                                 match.HomeScore.HasValue && match.AwayScore.HasValue &&
+                                 b.HomeGoals == match.HomeScore &&
+                                 b.AwayGoals == match.AwayScore)
+                                 ? 1 : null
+
                         }).ToList() : null
                 };
 

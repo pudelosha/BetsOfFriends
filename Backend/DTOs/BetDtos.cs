@@ -1,5 +1,6 @@
 ﻿using Backend.Model.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Backend.DTOs
 {
@@ -48,6 +49,10 @@ namespace Backend.DTOs
 
     public class BetStatsDto
     {
+        public bool ShowExactResult { get; set; } = false;
+        public bool ShowQualified { get; set; } = false;
+        public string MatchStatus { get; set; } = string.Empty;
+
         public string HomeTeam { get; set; }
         public string AwayTeam { get; set; }
 

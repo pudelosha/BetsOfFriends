@@ -167,3 +167,14 @@ ion-col[size="12"] {
   background-color: #f44336; /* Red for incorrect bets */
   color: #f44336; /* Same as background = invisible */
 }
+
+.success-icon {
+  color: #4caf50; // Green
+  font-size: 1.2rem;
+}
+
+.failure-icon {
+  color: #f44336; // Red
+  font-size: 1.2rem;
+}
+

@@ -48,14 +48,14 @@
       </ion-col>
     </ion-row>
 
-    <!-- Qualification Betting Headers with Underline -->
-    <ion-row class="betting-row">
+    <!-- Qualification Betting Headers -->
+    <ion-row class="betting-row" *ngIf="betStats.showQualified">
       <ion-col size="6" class="centered-text underline homeQ-label"><strong>{{ 'BETS_OVERVIEW.HOME_QUALIFIES' | translate }}</strong></ion-col>
       <ion-col size="6" class="centered-text underline awayQ-label"><strong>{{ 'BETS_OVERVIEW.AWAY_QUALIFIES' | translate }}</strong></ion-col>
     </ion-row>
 
-    <!-- Dynamic Qualification Bars with Text -->
-    <ion-row class="betting-bar">
+    <!-- Qualification Bars -->
+    <ion-row class="betting-bar" *ngIf="betStats.showQualified">
       <ion-col size="12">
         <div class="progress-bar">
           <div class="bar homeQ" *ngIf="betStats && betStats.percent1Q && betStats.percent1Q > 0" [style.width.%]="betStats.percent1Q">
@@ -68,57 +68,60 @@
       </ion-col>
     </ion-row>
 
-    <!-- User Bets Table -->
-    <ion-row class="betting-row">
-      <ion-col size="12" class="centered-text"><strong>{{ 'BETS_OVERVIEW.USER_BETS' | translate }}</strong></ion-col>
-    </ion-row>
+    <!-- User Bets Table (Only if Match is Finalised) -->
+    <ng-container *ngIf="betStats.matchStatus === 'Finalised'">
+      <ion-row class="betting-row">
+        <ion-col size="12" class="centered-text"><strong>{{ 'BETS_OVERVIEW.USER_BETS' | translate }}</strong></ion-col>
+      </ion-row>
 
-    <!-- Table Header -->
-    <ion-row class="bet-table-header">
-      <ion-col size="4" class="centered-text"><strong>{{ 'BETS_OVERVIEW.PLAYER' | translate }}</strong></ion-col>
-      <ion-col size="2" class="centered-text"><strong>{{ 'BETS_OVERVIEW.BET' | translate }}</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.HW' | translate }}</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.D' | translate }}</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.AW' | translate }}</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.HQ' | translate }}</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.AQ' | translate }}</strong></ion-col>
-      <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.RESULT' | translate }}</strong></ion-col>
-    </ion-row>
+      <!-- Table Header -->
+      <ion-row class="bet-table-header">
+        <ion-col size="4" class="centered-text"><strong>{{ 'BETS_OVERVIEW.PLAYER' | translate }}</strong></ion-col>
+        <ion-col size="2" class="centered-text"><strong>{{ 'BETS_OVERVIEW.BET' | translate }}</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.HW' | translate }}</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.D' | translate }}</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.AW' | translate }}</strong></ion-col>
+        <ion-col *ngIf="betStats.showQualified" size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.HQ' | translate }}</strong></ion-col>
+        <ion-col *ngIf="betStats.showQualified" size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.AQ' | translate }}</strong></ion-col>
+        <ion-col *ngIf="betStats.showExactResult" size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.RESULT' | translate }}</strong></ion-col>
+      </ion-row>
 
-    <ion-row *ngFor="let bet of betStats.userBets">
-      <ion-col size="4" class="centered-text player-name">{{ bet.username }}</ion-col>
-      <ion-col size="2" class="centered-text bet-result">{{ bet?.betScore ?? '-' }}</ion-col>
+      <!-- Table Rows -->
+      <ion-row *ngFor="let bet of betStats.userBets">
+        <ion-col size="4" class="centered-text player-name">{{ bet.username }}</ion-col>
+        <ion-col size="2" class="centered-text bet-result">{{ bet?.betScore ?? '-' }}</ion-col>
+      
+        <ion-col size="1" class="bet-result">
+          <ion-icon *ngIf="bet.homeWinSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
+          <ion-icon *ngIf="bet.homeWinSuccess === 0" name="close" class="failure-icon"></ion-icon>
+        </ion-col>
+      
+        <ion-col size="1" class="bet-result">
+          <ion-icon *ngIf="bet.drawSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
+          <ion-icon *ngIf="bet.drawSuccess === 0" name="close" class="failure-icon"></ion-icon>
+        </ion-col>
+      
+        <ion-col size="1" class="bet-result">
+          <ion-icon *ngIf="bet.awayWinSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
+          <ion-icon *ngIf="bet.awayWinSuccess === 0" name="close" class="failure-icon"></ion-icon>
+        </ion-col>
+      
+        <ion-col *ngIf="betStats.showQualified" size="1" class="bet-result">
+          <ion-icon *ngIf="bet.homeQualifiesSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
+          <ion-icon *ngIf="bet.homeQualifiesSuccess === 0" name="close" class="failure-icon"></ion-icon>
+        </ion-col>
+      
+        <ion-col *ngIf="betStats.showQualified" size="1" class="bet-result">
+          <ion-icon *ngIf="bet.awayQualifiesSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
+          <ion-icon *ngIf="bet.awayQualifiesSuccess === 0" name="close" class="failure-icon"></ion-icon>
+        </ion-col>
+      
+        <ion-col *ngIf="betStats.showExactResult" size="1" class="bet-result">
+          <ion-icon *ngIf="bet.resultSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
+          <ion-icon *ngIf="bet.resultSuccess === 0" name="close" class="failure-icon"></ion-icon>
+        </ion-col>
+      </ion-row>      
 
-      <!-- Home Win Column -->
-      <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.homeWinSuccess === 1, 'failure': bet.homeWinSuccess === 0}">
-        {{ bet.homeWinSuccess ?? '' }}
-      </ion-col>
-
-      <!-- Draw Column -->
-      <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.drawSuccess === 1, 'failure': bet.drawSuccess === 0}">
-        {{ bet.drawSuccess ?? '' }}
-      </ion-col>
-
-      <!-- Away Win Column -->
-      <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.awayWinSuccess === 1, 'failure': bet.awayWinSuccess === 0}">
-        {{ bet.awayWinSuccess ?? '' }}
-      </ion-col>
-
-      <!-- Home Qualifies -->
-      <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.homeQualifiesSuccess === 1, 'failure': bet.homeQualifiesSuccess === 0}">
-        {{ bet.homeQualifiesSuccess ?? '' }}
-      </ion-col>
-
-      <!-- Away Qualifies -->
-      <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.awayQualifiesSuccess === 1, 'failure': bet.awayQualifiesSuccess === 0}">
-        {{ bet.awayQualifiesSuccess ?? '' }}
-      </ion-col>
-
-      <!-- Result (Overall Bet Success) -->
-      <ion-col size="1" class="bet-result" [ngClass]="{'success': bet.resultSuccess === 1, 'failure': bet.resultSuccess === 0}">
-        {{ bet.resultSuccess ?? '' }}
-      </ion-col>
-    </ion-row>
-
+    </ng-container>
   </ion-grid>
 </ion-content>
