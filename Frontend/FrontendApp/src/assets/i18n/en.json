@@ -97,8 +97,8 @@
     "MANAGE_USERS": "Manage Users",
     "LOGOUT": "Logout"
   },
-    "PROFILE": {
-    "TITLE": "Profile details",
+  "PROFILE": {
+    "TITLE": "Profile",
     "MANAGEMENT": "Profile management",
     "MEMBER_SINCE": "Member Since",
     "EMAIL": "Email",
@@ -138,6 +138,7 @@
     "SUBMIT": "Complete Setup"
   },
   "USER_MANAGER": {
+    "TITLE": "Manage Users",
     "DESCRIPTION": "Browse all users in the system. Use the search bar to find users, or take action to suspend or delete accounts.",
     "SEARCH_PLACEHOLDER": "Search users...",
     "NO_RESULTS": "No users found.",
@@ -151,15 +152,18 @@
     "DELETE": "Delete"
   },
   "INVITE": {
-    "TITLE": "Accept Invitation",
+    "TITLE": "Tournament Assignment",
     "CLOSE": "Close",
-    "MESSAGE": "You are invited to join <strong>{{ name }}</strong>.",
-    "NICKNAME_PROMPT": "Please enter a nickname to participate.",
+    "MESSAGE": "You have been invited to join {{name}}!",
+    "NICKNAME_PROMPT": "Please choose your nickname:",
     "NICKNAME_LABEL": "Nickname",
     "NICKNAME_PLACEHOLDER": "Enter nickname",
     "ERROR_REQUIRED": "Nickname is required.",
-    "ERROR_MAXLENGTH": "Nickname cannot exceed 20 characters.",
-    "ACCEPT": "Accept"
+    "ERROR_MAXLENGTH": "Nickname must be at most 20 characters.",
+    "ACCEPT": "Accept Invitation",
+    "REJECT": "Reject Invitation",
+    "QUIT": "Leave Tournament",
+    "UPDATE": "Update Nickname"
   },
   "BETS_OVERVIEW": {
     "TITLE": "Bets Overview",
@@ -299,6 +303,7 @@
     "CANCEL": "Cancel"
   },
   "MY_BETS": {
+    "TITLE": "My Bets",
     "TO_PLACE": "To Place",
     "PLACED": "Placed",
     "FINALISED": "Finalised"
@@ -315,6 +320,7 @@
     "PLACE_BUTTON": "Place Bet"
   },
   "MESSAGES": {
+    "TITLE": "Messages",
     "NO_NOTIFICATIONS": "No notifications found."
   },
   "LATEST_MESSAGES": {
@@ -345,6 +351,7 @@
     "EDIT_BUTTON": "Edit"
   },
   "MANAGE_CUSTOM_MATCHES": {
+    "TITLE": "Manage Matches",
     "TAB_UPCOMING": "Upcoming",
     "TAB_STARTED": "Started",
     "TAB_FINALISED": "Finalised",
@@ -366,6 +373,7 @@
     "EDIT_BUTTON": "Edit"
   },
   "MANAGE_PREDEFINED_MATCHES": {
+    "TITLE": "Manage Matches",
     "TAB_UPCOMING": "Upcoming",
     "TAB_STARTED": "Started",
     "TAB_FINALISED": "Finalised"
@@ -379,15 +387,18 @@
     "EDIT_BUTTON": "Edit"
   },
   "FIND_TOURNAMENT": {
+    "TITLE": "Find Tournament",
     "DESCRIPTION": "Browse public tournaments open for participation. Use the search box to find a tournament by name and request to join.",
     "SEARCH_PLACEHOLDER": "Search tournaments...",
     "NO_RESULTS": "No tournaments found",
     "PARTICIPANTS": "participants",
     "CREATED": "Created",
     "REQUESTED": "Requested",
-    "JOIN": "Join"
+    "JOIN": "Join",
+    "WITHDRAW": "Withdraw"
   },
   "SUMMARY": {
+    "TITLE": "Summary",
     "DESCRIPTION": "This summary provides an overview of participants' performance in the tournament. The table includes ranking, successful predictions in different bet categories, and total payout.",
     "MATCH_PROGRESS": "Match Completion",
     "PLAYER": "Player",
@@ -397,20 +408,22 @@
     "RESULT": "Result"
   },
   "MY_TOURNAMENTS": {
+    "TITLE": "My Tournaments",
     "DESCRIPTION": "View and manage tournaments you are participating in. Accept invitations or proceed with active tournaments.",
     "PARTICIPANTS": "Participants",
     "ROLE": "Role",
     "ACCEPT": "Accept",
-    "SELECT": "Select",
-    "QUIT": "Quit"
+    "EDIT": "Edit"
   },
   "BUILD_CUSTOM": {
+    "TITLE": "Create Tournament",
     "PREVIOUS": "Previous",
     "NEXT": "Next",
     "ADD": "Add",
     "SUBMIT": "Submit"
   },
   "CUSTOM_TOURNAMENTS": {
+    "TITLE": "Manage Tournaments",
     "DESCRIPTION": "Manage your custom tournaments. Use the edit, toggle, or delete actions for each tournament below.",
     "CREATED": "Created",
     "ACTIVE": "Active",
@@ -421,12 +434,14 @@
     "DELETE": "Delete Tournament"
   },
   "BUILD_PREDEFINED": {
+    "TITLE": "Create Tournament",
     "PREVIOUS": "Previous",
     "ADD": "Add",
     "SUBMIT": "Submit",
     "NEXT": "Next"
   },
   "PREDEFINED_TOURNAMENTS": {
+    "TITLE": "Manage Tournaments",
     "DESCRIPTION": "Manage your tournaments. Use the edit, toggle, or delete actions for each tournament below.",
     "CREATED": "Created",
     "ACTIVE": "Active",
@@ -525,5 +540,11 @@
     "RESEND": "Resend",
     "EXCLUDE": "Exclude",
     "NO_INVITATIONS": "No pending invitations found."
+  },
+  "HOME": {
+    "TITLE": "Home"
+  },
+  "MANAGE_PARTICIPANTS": {
+    "TITLE": "Manage Participants"
   }
 }

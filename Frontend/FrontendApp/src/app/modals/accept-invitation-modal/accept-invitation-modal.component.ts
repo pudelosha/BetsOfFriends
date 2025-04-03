@@ -7,7 +7,6 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
-
 @Component({
   selector: 'app-accept-invitation-modal',
   templateUrl: './accept-invitation-modal.component.html',
@@ -18,6 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 export class AcceptInvitationModalComponent implements OnInit {
   @Input() tournamentName!: string;
   @Input() tournamentId!: number;
+  @Input() editMode: boolean = false;
 
   nicknameForm: FormGroup;
   isLoading = false;
@@ -36,40 +36,64 @@ export class AcceptInvitationModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Listen for nickname input changes and clear backend error message
+    if (this.editMode) {
+      this.loadAssignment();
+    }
+
     this.nicknameForm.get('nickname')!.valueChanges.subscribe(() => {
       this.nicknameError = null;
     });
   }
 
+  async loadAssignment() {
+    try {
+      const assignment = await firstValueFrom(this.tournamentService.getAssignmentDetails(this.tournamentId));
+      this.nicknameForm.patchValue({ nickname: assignment.nickname });
+    } catch (error) {
+      this.nicknameError = 'Failed to load current assignment.';
+    }
+  }
+
   async confirm() {
     if (this.nicknameForm.invalid) return;
-  
     this.isLoading = true;
     this.nicknameError = null;
     const nickname = this.nicknameForm.value.nickname;
-  
+
     try {
-      // Call backend API to accept invitation
-      const response = await firstValueFrom(
-        this.tournamentService.acceptTournamentInvitation(this.tournamentId, nickname)
-      );
-  
-      this.showToast(response.message, 'success');
-  
-      // Set selected tournament in frontend
-      this.tournamentSelectionService.setSelectedTournament(this.tournamentId);
-        
-      this.modalController.dismiss({ accepted: true });
-  
+      if (this.editMode) {
+        const response = await firstValueFrom(
+          this.tournamentService.updateTournamentAssignment(this.tournamentId, nickname)
+        );
+        this.showToast(response.message, 'success');
+      } else {
+        const response = await firstValueFrom(
+          this.tournamentService.acceptTournamentInvitation(this.tournamentId, nickname)
+        );
+        this.showToast(response.message, 'success');
+        this.tournamentSelectionService.setSelectedTournament(this.tournamentId);
+      }
+
+      this.modalController.dismiss({ accepted: true, nickname });
+
     } catch (error: any) {
-      console.error('Error accepting invitation:', error);
+      console.error('Error:', error);
       this.nicknameError = error?.error?.message || 'An unexpected error occurred.';
     } finally {
       this.isLoading = false;
     }
   }
-   
+
+  async quitTournament() {
+    try {
+      await firstValueFrom(this.tournamentService.quitTournament(this.tournamentId));
+      this.showToast(this.editMode ? 'You have left the tournament.' : 'You rejected the invitation.', 'success');
+      this.modalController.dismiss({ accepted: false, quit: true });
+    } catch (error: any) {
+      this.nicknameError = error?.error?.message || 'Error leaving tournament.';
+    }
+  }
+
   dismiss() {
     this.modalController.dismiss({ accepted: false });
   }

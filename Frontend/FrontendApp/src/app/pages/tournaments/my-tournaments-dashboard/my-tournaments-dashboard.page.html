@@ -5,12 +5,17 @@
     </div>
 
     <ion-list *ngIf="!isLoading" class="tournament-list">
-      <ion-item *ngFor="let tournament of tournaments" class="tournament-item">
+      <ion-item
+        *ngFor="let tournament of tournaments"
+        class="tournament-item"
+        [ngClass]="{ 'selected-tournament': tournament.tournamentId === selectedTournamentId }"
+        (click)="tournament.assignmentStatus === 'Accepted' && selectTournament(tournament)">
+    
         <ion-grid>
           <ion-row class="tournament-row">
 
             <!-- Tournament Info -->
-            <ion-col size="5" class="tournament-info">
+            <ion-col size="7" class="tournament-info">
               <span class="tournament-title">{{ tournament.tournamentName }}</span>
               <span class="tournament-meta">
                 {{ 'MY_TOURNAMENTS.PARTICIPANTS' | translate }}: {{ tournament.numberOfParticipants }}
@@ -19,44 +24,37 @@
                 {{ 'MY_TOURNAMENTS.ROLE' | translate }}: {{ tournament.role }}
               </span>
               <span class="tournament-status" 
-                [class.invited]="tournament.assignmentStatus === 'Invited'"
-                [class.accepted]="tournament.assignmentStatus === 'Accepted'">
+                    [class.invited]="tournament.assignmentStatus === 'Invited'"
+                    [class.accepted]="tournament.assignmentStatus === 'Accepted'">
                 {{ tournament.assignmentStatus }}
               </span>
             </ion-col>
 
             <!-- Eye Icon -->
             <ion-col size="1" class="eye-icon-col">
-              <ion-button fill="clear" (click)="toggleTournamentVisibility(tournament)">
+              <ion-button fill="clear" (click)="toggleTournamentVisibility(tournament); $event.stopPropagation()">
                 <ion-icon name="eye-outline" [ngClass]="{'hidden': !tournament.isVisible}"></ion-icon>
               </ion-button>
             </ion-col>
 
             <!-- Action Buttons -->
-            <ion-col size="3" class="button-col">
+            <ion-col size="4" class="button-col">
               <ion-button *ngIf="tournament.assignmentStatus === 'Invited'" fill="outline" color="success"
-                (click)="acceptInvitation(tournament)">
+                          (click)="openEditModal(tournament, false); $event.stopPropagation()">
                 {{ 'MY_TOURNAMENTS.ACCEPT' | translate }}
               </ion-button>
 
               <ion-button *ngIf="tournament.assignmentStatus === 'Accepted'" fill="outline" color="primary"
-                (click)="selectTournament(tournament)">
-                {{ 'MY_TOURNAMENTS.SELECT' | translate }}
+                          (click)="openEditModal(tournament, true); $event.stopPropagation()">
+                {{ 'MY_TOURNAMENTS.EDIT' | translate }}
               </ion-button>
             </ion-col>
 
-            <!-- Quit -->
-            <ion-col size="3" class="quit-button-col">
-              <ion-button fill="outline" color="danger" (click)="quitTournament(tournament)">
-                {{ 'MY_TOURNAMENTS.QUIT' | translate }}
-              </ion-button>
-            </ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
     </ion-list>
   </div>
 
-  <!-- Loading Spinner -->
   <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
 </ion-content>

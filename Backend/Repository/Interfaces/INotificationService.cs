@@ -7,6 +7,9 @@ namespace Backend.Repository.Interfaces
     {
         Task NotifyMatchClosureAsync(CustomMatch match);
         Task NotifyUserAcceptedTournamentInviteAsync(CustomTournamentUserAssignment assignment);
+        Task NotifyAdminsJoinRequestAsync(CustomTournamentUserAssignment joinRequest);
+        Task NotifyUserJoinRequestApprovedAsync(CustomTournamentUserAssignment assignment);
+
         Task ProcessNotificationsAsync(
             List<ApplicationUser> recipients,
             string title,

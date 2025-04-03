@@ -6,6 +6,7 @@ import { ApplicationUser } from 'src/app/model/user-profile';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -25,14 +26,17 @@ export class UserManagerPage implements OnInit {
     private userService: UserService,
     private toastController: ToastController,
     private alertController: AlertController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private titleService: TitleService
   ) {}
 
   ngOnInit(): void {
+    this.titleService.setTitle('USER_MANAGER.TITLE');
     this.loadUsers();
   }
 
   ionViewWillEnter(): void {
+    this.titleService.setTitle('USER_MANAGER.TITLE');
     this.loadUsers(); // Always refresh the user list on view enter
   }
   

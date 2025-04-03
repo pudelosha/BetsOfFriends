@@ -10,6 +10,7 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -22,12 +23,13 @@ import { TranslateModule } from '@ngx-translate/core';
 export class MyTournamentsDashboardPage implements OnInit {
   tournaments: UserActiveTournament[] = [];
   isLoading = true;
+  selectedTournamentId: number | null = null;
 
   constructor(
     private tournamentService: CustomTournamentService,
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
-    private alertController: AlertController,
+    private titleService: TitleService,
     private modalController: ModalController,
     private router: Router,
     private cdRef: ChangeDetectorRef,
@@ -35,10 +37,14 @@ export class MyTournamentsDashboardPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.titleService.setTitle('MY_TOURNAMENTS.TITLE');
+    this.selectedTournamentId = this.tournamentSelectionService.getSelectedTournament();
     this.loadTournaments();
   }
 
   async ionViewWillEnter() {
+    this.titleService.setTitle('MY_TOURNAMENTS.TITLE');
+    this.selectedTournamentId = this.tournamentSelectionService.getSelectedTournament();
     this.loadTournaments();
   }
 
@@ -77,10 +83,30 @@ export class MyTournamentsDashboardPage implements OnInit {
       }
     });
   }
+
+  async openEditModal(tournament: UserActiveTournament, editMode: boolean): Promise<void> {
+    const modal = await this.modalController.create({
+      component: AcceptInvitationModalComponent,
+      componentProps: {
+        tournamentName: tournament.tournamentName,
+        tournamentId: tournament.tournamentId,
+        editMode
+      },
+      breakpoints: [0, 0.5, 1],
+      initialBreakpoint: 0.5,
+    });
+  
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+  
+    if (data?.accepted || data?.quit) {
+      this.loadTournaments();
+    }
+  }  
      
   selectTournament(tournament: any): void {
     this.tournamentSelectionService.setSelectedTournament(tournament.tournamentId);
-    console.log(this.tournamentSelectionService.getSelectedTournament());
+    this.selectedTournamentId = tournament.tournamentId;
     this.router.navigate(['/my-bets']);
   }
 
@@ -98,51 +124,7 @@ export class MyTournamentsDashboardPage implements OnInit {
       }
     });
   }
-          
-  async acceptInvitation(tournament: any): Promise<void> {
-    const modal = await this.modalController.create({
-      component: AcceptInvitationModalComponent,
-      componentProps: {
-        tournamentName: tournament.tournamentName,
-        tournamentId: tournament.tournamentId,
-      },
-      breakpoints: [0, 0.5, 1],
-      initialBreakpoint: 0.5,
-    });
-  
-    await modal.present();
-  
-    const { data } = await modal.onWillDismiss();
-  
-    if (data?.accepted) {
-      this.loadTournaments();
-    }
-  }
-    
-  async quitTournament(tournament: UserActiveTournament) {
-    const alert = await this.alertController.create({
-      header: 'Confirm Quit',
-      message: `Are you sure you want to quit ${tournament.tournamentName}?`,
-      buttons: [
-        { text: 'Cancel', role: 'cancel' },
-        {
-          text: 'Quit',
-          handler: async () => {
-            try {
-              await firstValueFrom(this.tournamentService.quitTournament(tournament.tournamentId));
-              this.showToast(`You have quit ${tournament.tournamentName} successfully.`, 'success');
-              this.loadTournaments(); // Refresh list after quitting
-            } catch (error) {
-              console.error('Error quitting tournament:', error);
-              this.showToast('Failed to quit tournament. Please try again.', 'danger');
-            }
-          },
-        },
-      ],
-    });
-    await alert.present();
-  }
-  
+                
   // Show toast messages for notifications
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastController.create({

@@ -9,6 +9,7 @@ import { TournamentInvitesPage } from '../tournament-invites/tournament-invites.
 import { StartedCustomMatchesPage } from '../started-custom-matches/started-custom-matches.page';
 import { StartedPredefinedMatchesPage } from '../started-predefined-matches/started-predefined-matches.page';
 import { LoadingController } from '@ionic/angular';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -24,13 +25,17 @@ export class HomePage implements OnInit {
   private loadingCount = 0;
   private loading: HTMLIonLoadingElement | null = null;
 
-  constructor(private loadingController: LoadingController) {}
+  constructor(private loadingController: LoadingController,
+              private titleService: TitleService
+  ) {}
 
   ngOnInit() {
+    this.titleService.setTitle('HOME.TITLE');
     this.triggerRefresh();
   }
 
   ionViewWillEnter() {
+    this.titleService.setTitle('HOME.TITLE');
     this.triggerRefresh();
   }
 

@@ -38,10 +38,10 @@
             <div class="tournament-actions">
               <ion-button
                 size="small"
-                [disabled]="tournament.joinRequested"
-                (click)="requestToJoin(tournament)">
-                {{ tournament.joinRequested ? ('FIND_TOURNAMENT.REQUESTED' | translate) : ('FIND_TOURNAMENT.JOIN' | translate) }}
-              </ion-button>
+                color="{{ tournament.joinRequested ? 'danger' : 'primary' }}"
+                (click)="tournament.joinRequested ? withdrawRequest(tournament) : requestToJoin(tournament)">
+                {{ tournament.joinRequested ? ('FIND_TOURNAMENT.WITHDRAW' | translate) : ('FIND_TOURNAMENT.JOIN' | translate) }}
+              </ion-button>        
             </div>
           </div>
         </div>

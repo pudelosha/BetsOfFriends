@@ -878,90 +878,6 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task<TournamentInvitationResponseDto> AcceptTournamentInvitationAsync(int tournamentId, string userId, string nickname)
-        {
-            try
-            {
-                _logger.LogInformation($"User {userId} attempting to accept invitation for tournament ID {tournamentId} with nickname {nickname}");
-
-                // Validate nickname length
-                if (string.IsNullOrWhiteSpace(nickname) || nickname.Length > 20)
-                {
-                    _logger.LogWarning($"Invalid nickname '{nickname}' for tournament ID {tournamentId}");
-                    return new TournamentInvitationResponseDto
-                    {
-                        Success = false,
-                        Message = "Nickname cannot be empty or exceed 20 characters."
-                    };
-                }
-
-                // Check if the nickname is already taken within this tournament
-                bool isNicknameTaken = await _context.CustomTournamentUserAssignments
-                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserName == nickname);
-
-                if (isNicknameTaken)
-                {
-                    _logger.LogWarning($"Nickname '{nickname}' is already taken in tournament ID {tournamentId}.");
-                    return new TournamentInvitationResponseDto
-                    {
-                        Success = false,
-                        Message = "This nickname is already taken. Please choose a different one."
-                    };
-                }
-
-                // Fetch user tournament assignment
-                var assignment = await _context.CustomTournamentUserAssignments
-                    .Where(a => a.UserId == userId)
-                    .ToListAsync();
-
-                var tournamentAssignment = assignment.FirstOrDefault(a => a.TournamentId == tournamentId);
-
-                if (tournamentAssignment == null || tournamentAssignment.Status != AssignmentStatus.Invited)
-                {
-                    _logger.LogWarning($"No valid invitation found for user {userId} in tournament ID {tournamentId}");
-                    return new TournamentInvitationResponseDto
-                    {
-                        Success = false,
-                        Message = "Tournament invitation could not be accepted. You may not be invited."
-                    };
-                }
-
-                // Accept the invitation and set the nickname
-                tournamentAssignment.Status = AssignmentStatus.Accepted;
-                tournamentAssignment.UserName = nickname;
-
-                // Unselect all other tournaments and select this one
-                foreach (var entry in assignment)
-                {
-                    entry.IsSelected = entry.TournamentId == tournamentId;
-                }
-
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation($"User {userId} successfully accepted invitation for tournament ID {tournamentId} with nickname {nickname}. Tournament set as default.");
-
-                await _tournamentSelectionService.SetSelectedTournamentAsync(userId, tournamentAssignment.TournamentId);
-
-                // Notify admins
-                await _notificationService.NotifyUserAcceptedTournamentInviteAsync(tournamentAssignment);
-
-                return new TournamentInvitationResponseDto
-                {
-                    Success = true,
-                    Message = $"You have successfully joined the tournament as {nickname}."
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error while accepting invitation for tournament ID {tournamentId}");
-                return new TournamentInvitationResponseDto
-                {
-                    Success = false,
-                    Message = "An unexpected error occurred while accepting the invitation. Please try again."
-                };
-            }
-        }
-
         public async Task<bool?> ToggleTournamentVisibilityAsync(int tournamentId, string userId)
         {
             try
@@ -1581,6 +1497,8 @@ namespace Backend.Repository.Services
                 assignment.Status = AssignmentStatus.Accepted;
                 await _context.SaveChangesAsync();
 
+                await _notificationService.NotifyUserJoinRequestApprovedAsync(assignment);
+
                 return ActionResultDto.SuccessResult($"{targetUserEmail} has been accepted into the tournament.");
             }
             catch (Exception ex)
@@ -1621,6 +1539,265 @@ namespace Backend.Repository.Services
             {
                 _logger.LogError(ex, $"Error resending invite to {targetUserEmail} for tournament {tournamentId}");
                 return ActionResultDto.ErrorResult("An error occurred while resending the invitation.");
+            }
+        }
+
+        public async Task<TournamentAssignmentDto?> GetAssignmentDetailsAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching assignment details for user {userId} in tournament {tournamentId}");
+
+                var assignment = await _context.CustomTournamentUserAssignments
+                    .FirstOrDefaultAsync(a => a.TournamentId == tournamentId && a.UserId == userId && a.Status == AssignmentStatus.Accepted);
+
+                if (assignment == null)
+                {
+                    _logger.LogWarning($"No assignment found for user {userId} in tournament {tournamentId}");
+                    return null;
+                }
+
+                return new TournamentAssignmentDto
+                {
+                    Nickname = assignment.UserName ?? string.Empty
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error retrieving assignment details for tournament {tournamentId}, user {userId}");
+                throw;
+            }
+        }
+
+        public async Task<TournamentInvitationResponseDto> UpdateTournamentAssignmentAsync(int tournamentId, string userId, string newNickname)
+        {
+            try
+            {
+                _logger.LogInformation($"User {userId} attempting to update tournament assignment for tournament ID {tournamentId} with new nickname '{newNickname}'");
+
+                // Validate nickname length
+                if (string.IsNullOrWhiteSpace(newNickname) || newNickname.Length > 20)
+                {
+                    _logger.LogWarning($"Invalid nickname '{newNickname}' for tournament ID {tournamentId}");
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "Nickname cannot be empty or exceed 20 characters."
+                    };
+                }
+
+                // Check if nickname is already taken in the tournament (excluding current user)
+                bool isNicknameTaken = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId &&
+                                   a.UserId != userId &&
+                                   a.UserName == newNickname);
+
+                if (isNicknameTaken)
+                {
+                    _logger.LogWarning($"Nickname '{newNickname}' is already taken in tournament ID {tournamentId}");
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "This nickname is already taken. Please choose a different one."
+                    };
+                }
+
+                // Fetch the user's assignment
+                var assignment = await _context.CustomTournamentUserAssignments
+                    .FirstOrDefaultAsync(a => a.TournamentId == tournamentId &&
+                                              a.UserId == userId &&
+                                              a.Status == AssignmentStatus.Accepted);
+
+                if (assignment == null)
+                {
+                    _logger.LogWarning($"No accepted assignment found for user {userId} in tournament ID {tournamentId}");
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "No accepted assignment found. Cannot update nickname."
+                    };
+                }
+
+                assignment.UserName = newNickname;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"User {userId} successfully updated nickname to '{newNickname}' for tournament ID {tournamentId}");
+
+                return new TournamentInvitationResponseDto
+                {
+                    Success = true,
+                    Message = "Nickname updated successfully."
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error updating assignment for user {userId} in tournament ID {tournamentId}");
+                return new TournamentInvitationResponseDto
+                {
+                    Success = false,
+                    Message = "An unexpected error occurred while updating your nickname. Please try again."
+                };
+            }
+        }
+
+        public async Task<TournamentInvitationResponseDto> AcceptTournamentInvitationAsync(int tournamentId, string userId, string nickname)
+        {
+            try
+            {
+                _logger.LogInformation($"User {userId} attempting to accept invitation for tournament ID {tournamentId} with nickname {nickname}");
+
+                // Validate nickname length
+                if (string.IsNullOrWhiteSpace(nickname) || nickname.Length > 20)
+                {
+                    _logger.LogWarning($"Invalid nickname '{nickname}' for tournament ID {tournamentId}");
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "Nickname cannot be empty or exceed 20 characters."
+                    };
+                }
+
+                // Check if the nickname is already taken within this tournament
+                bool isNicknameTaken = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserName == nickname);
+
+                if (isNicknameTaken)
+                {
+                    _logger.LogWarning($"Nickname '{nickname}' is already taken in tournament ID {tournamentId}.");
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "This nickname is already taken. Please choose a different one."
+                    };
+                }
+
+                // Fetch user tournament assignment
+                var assignment = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.UserId == userId)
+                    .ToListAsync();
+
+                var tournamentAssignment = assignment.FirstOrDefault(a => a.TournamentId == tournamentId);
+
+                if (tournamentAssignment == null || tournamentAssignment.Status != AssignmentStatus.Invited)
+                {
+                    _logger.LogWarning($"No valid invitation found for user {userId} in tournament ID {tournamentId}");
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "Tournament invitation could not be accepted. You may not be invited."
+                    };
+                }
+
+                // Accept the invitation and set the nickname
+                tournamentAssignment.Status = AssignmentStatus.Accepted;
+                tournamentAssignment.UserName = nickname;
+
+                // Unselect all other tournaments and select this one
+                foreach (var entry in assignment)
+                {
+                    entry.IsSelected = entry.TournamentId == tournamentId;
+                }
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"User {userId} successfully accepted invitation for tournament ID {tournamentId} with nickname {nickname}. Tournament set as default.");
+
+                await _tournamentSelectionService.SetSelectedTournamentAsync(userId, tournamentAssignment.TournamentId);
+
+                // Notify admins
+                await _notificationService.NotifyUserAcceptedTournamentInviteAsync(tournamentAssignment);
+
+                return new TournamentInvitationResponseDto
+                {
+                    Success = true,
+                    Message = $"You have successfully joined the tournament as {nickname}."
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while accepting invitation for tournament ID {tournamentId}");
+                return new TournamentInvitationResponseDto
+                {
+                    Success = false,
+                    Message = "An unexpected error occurred while accepting the invitation. Please try again."
+                };
+            }
+        }
+
+        public async Task<TournamentInvitationResponseDto> RequestToJoinTournamentAsync(string userId, int tournamentId, string nickname, string message)
+        {
+            try
+            {
+                _logger.LogInformation($"User {userId} is requesting to join tournament {tournamentId} as '{nickname}'");
+
+                // Validate nickname
+                if (string.IsNullOrWhiteSpace(nickname) || nickname.Length > 20)
+                {
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "Nickname cannot be empty or exceed 20 characters."
+                    };
+                }
+
+                // Check if user is already assigned to this tournament
+                bool alreadyAssigned = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (alreadyAssigned)
+                {
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "You have already requested or joined this tournament."
+                    };
+                }
+
+                // Check if nickname is already taken
+                bool nicknameTaken = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserName == nickname);
+
+                if (nicknameTaken)
+                {
+                    return new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "This nickname is already taken in the tournament. Please choose a different one."
+                    };
+                }
+
+                // Create join request
+                var assignment = new CustomTournamentUserAssignment
+                {
+                    TournamentId = tournamentId,
+                    UserId = userId,
+                    UserAdminName = nickname,
+                    UserName = nickname,
+                    Status = AssignmentStatus.Requested,
+                    IsSelected = false
+                };
+
+                await _context.CustomTournamentUserAssignments.AddAsync(assignment);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"User {userId} successfully requested to join tournament {tournamentId} as '{nickname}'.");
+
+                await _notificationService.NotifyAdminsJoinRequestAsync(assignment);
+
+                return new TournamentInvitationResponseDto
+                {
+                    Success = true,
+                    Message = $"You have successfully requested to join the tournament as '{nickname}'."
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while processing join request for user {userId} in tournament {tournamentId}");
+                return new TournamentInvitationResponseDto
+                {
+                    Success = false,
+                    Message = "An error occurred while requesting to join the tournament. Please try again."
+                };
             }
         }
     }

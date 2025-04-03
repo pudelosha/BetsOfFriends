@@ -9,14 +9,19 @@
 
 <ion-content class="ion-padding">
   <div class="description">
-    <p>{{ 'INVITE.MESSAGE' | translate:{ name: tournamentName } }}</p>
+    <p *ngIf="!editMode">{{ 'INVITE.MESSAGE' | translate:{ name: tournamentName } }}</p>
     <p>{{ 'INVITE.NICKNAME_PROMPT' | translate }}</p>
   </div>
 
   <form [formGroup]="nicknameForm" class="nickname-form">
     <div class="form-row vertical-align">
       <ion-label class="selector-label">{{ 'INVITE.NICKNAME_LABEL' | translate }}</ion-label>
-      <ion-input formControlName="nickname" type="text" maxlength="20" [placeholder]="'INVITE.NICKNAME_PLACEHOLDER' | translate"></ion-input>
+      <ion-input
+        formControlName="nickname"
+        type="text"
+        maxlength="20"
+        [placeholder]="'INVITE.NICKNAME_PLACEHOLDER' | translate">
+      </ion-input>
     </div>
 
     <div class="validation-message">
@@ -31,9 +36,19 @@
       </p>
     </div>
 
+    <!-- Accept / Update Button -->
     <div class="save-button-container">
       <ion-button expand="full" color="success" (click)="confirm()" [disabled]="nicknameForm.invalid || isLoading">
-        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner> {{ 'INVITE.ACCEPT' | translate }}
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        {{ editMode ? ('INVITE.UPDATE' | translate) : ('INVITE.ACCEPT' | translate) }}
+      </ion-button>
+    </div>
+
+    <!-- Quit Button -->
+    <div class="save-button-container">
+      <ion-button expand="full" color="danger" (click)="quitTournament()" [disabled]="isLoading">
+        <ion-icon slot="start" name="exit-outline"></ion-icon>
+        {{ editMode ? ('INVITE.QUIT' | translate) : ('INVITE.REJECT' | translate) }}
       </ion-button>
     </div>
   </form>

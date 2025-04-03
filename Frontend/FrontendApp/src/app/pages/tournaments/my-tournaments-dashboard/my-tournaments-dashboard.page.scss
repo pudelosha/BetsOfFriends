@@ -1,69 +1,111 @@
-/* Tournament List Styling */
+/* ✅ Tournament List Styling */
 .tournament-list {
-    margin: 0;
-    padding: 0;
-  }
-  
-  .tournament-item {
-    --padding-start: 0px;
-    --padding-end: 0px;
-    --inner-padding-start: 0px;
-    --inner-padding-end: 0px;
-  }
-  
-  /* Tournament Info Column */
-  .tournament-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: left;
-    font-size: 0.9rem;
-  }
-  
-  .tournament-title {
-    font-weight: bold;
-    font-size: 14px;
-  }
-  
-  .tournament-meta {
-    font-size: 12px;
-    color: #666;
-  }
-  
-  .tournament-role {
-    font-size: 12px;
-    font-weight: bold;
-    color: #555;
-  }
-  
-  /* Tournament Status */
-  .tournament-status {
-    font-size: 12px;
-    font-weight: bold;
-  }
-  
-  .tournament-status.invited {
-    color: orange;
-  }
-  
-  .tournament-status.accepted {
-    color: green;
-  }
-  
-/* Eye Icon Column */
+  --background: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* ✅ Individual Tournament Row */
+.tournament-item {
+  --padding-start: 0 !important;
+  --padding-end: 0 !important;
+  --inner-padding-start: 0 !important;
+  --inner-padding-end: 0 !important;
+  --ion-item-background: transparent !important;
+
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  transition: background-color 0.2s ease-in-out;
+  border: none !important;
+}
+
+/* Remove bottom border from ion-item */
+ion-item.tournament-item {
+  --border-width: 0 !important;
+  --inner-border-width: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.tournament-item:hover {
+  background-color: #ebebeb;
+}
+
+/* ✅ Grid Cleanup */
+ion-grid {
+  --ion-grid-padding: 0px;
+  --ion-grid-margin: 0px;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+ion-row {
+  --ion-grid-padding: 0px;
+  --ion-grid-margin: 0px;
+  padding: 8px 0px !important;
+  margin: 0 !important;
+}
+
+ion-col {
+  --padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --padding-top: 0px !important;
+  --padding-bottom: 0px !important;
+  padding: 0 !important;
+}
+
+/* ✅ Tournament Info */
+.tournament-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.tournament-title {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+.tournament-meta {
+  font-size: 12px;
+  color: #666;
+}
+
+.tournament-role {
+  font-size: 12px;
+  font-weight: bold;
+  color: #555;
+}
+
+.tournament-status {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tournament-status.invited {
+  color: orange;
+}
+
+.tournament-status.accepted {
+  color: green;
+}
+
+/* ✅ Eye Icon Column */
 .eye-icon-col {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 !important;
 }
 
-/* Make the Eye Icon Light Gray When Not Visible */
 .eye-icon-col .hidden {
   color: lightgray !important;
 }
 
-/* Proper Button Size */
 .eye-icon-col ion-button {
   --padding-start: 8px;
   --padding-end: 8px;
@@ -72,13 +114,12 @@
   min-width: 40px;
 }
 
-/* Increase Icon Size */
 .eye-icon-col ion-icon {
   font-size: 1.6rem;
   color: #333;
 }
 
-/* Adjust for Smaller Screens */
+/* Responsive icon tweak */
 @media (max-width: 480px) {
   .eye-icon-col ion-icon {
     font-size: 1.8rem;
@@ -90,68 +131,39 @@
   }
 }
 
-  
-  /* Action Buttons Column */
-  .button-col {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0px 0px 0px 10px !important;
-  }
-  
-  /* Quit Button Column */
-  .quit-button-col {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0px 0px 0px 10px !important;
-  }
-  
-  ion-button {
-    width: 100%;
-    height: 40px;
-    font-size: 0.9rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center; 
-  }
-  
-  /* Increase Icon Size Inside Buttons */
-  ion-button ion-icon {
-    font-size: 1.2rem;
-  }
-  
-  /* General Page Description Styling */
-  .page-description {
-    margin-bottom: 1rem;
-    color: #666;
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-  
-  /* Remove Padding and Margins from ion-grid */
-  ion-grid {
-    --ion-grid-padding: 0px;
-    --ion-grid-margin: 0px;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  
-  /* Remove Padding and Margins from ion-row */
-  ion-row {
-    --ion-grid-padding: 0px;
-    --ion-grid-margin: 0px;
-    padding: 8px 0px !important;
-    margin: 0 !important;
-  }
-  
-  /* Remove Padding from ion-col */
-  ion-col {
-    --padding-start: 0px !important;
-    --padding-end: 0px !important;
-    --padding-top: 0px !important;
-    --padding-bottom: 0px !important;
-    padding: 0 !important;
-  }
-  
+/* ✅ Buttons */
+.button-col,
+.quit-button-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 10px !important;
+}
+
+ion-button {
+  width: 100%;
+  height: 40px;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+ion-button ion-icon {
+  font-size: 1.2rem;
+}
+
+/* ✅ General Page Text */
+.page-description {
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.selected-tournament {
+  background-color: #e0f7e9; // Pale green
+  border-radius: 12px;
+}
+

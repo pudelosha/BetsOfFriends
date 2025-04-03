@@ -12,6 +12,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Tournament, Team, Match, Stage } from '../../../../../model/tournament-model';
 import { ViewChild } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -37,7 +38,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private tournamentService: PredefinedTournamentService,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private titleService: TitleService
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
@@ -60,9 +62,11 @@ export class BuildPredefinedTournamentPage implements OnInit {
         this.tournamentId = null;
       }
     });
+    this.titleService.setTitle('BUILD_PREDEFINED.TITLE');
   }
 
   ionViewWillEnter(): void {
+    this.titleService.setTitle('BUILD_PREDEFINED.TITLE');
     this.resetFormData();
     this.scrollToTop();
     this.step = 1;

@@ -2,7 +2,6 @@
   width: 100%;
 }
 
-/* Align Text to Center */
 .centered-text {
   text-align: center;
   display: flex;
@@ -10,103 +9,94 @@
   align-items: center;
 }
 
-/* Center Team Names and Scores */
 .team-names,
 .match-score {
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  font-size: 14px; /* Adjusted font size */
+  font-size: 14px;
   font-weight: bold;
 }
 
-/* === Player Name Styling (Smaller, Left-Aligned) === */
 .player-name {
-  text-align: left !important; /* Force left alignment */
+  text-align: left !important;
   display: flex;
-  justify-content: flex-start !important; /* Aligns text to the left */
-  align-items: center; /* Keeps vertical alignment */
-  font-size: 10px; /* Smaller font size */
+  justify-content: flex-start !important;
+  align-items: center;
+  font-size: 10px;
   font-weight: bold;
   padding-left: 5px;
 }
 
-/* === Betting Row Headers === */
 .betting-row {
   font-weight: bold;
   font-size: 12px;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 15px;
+  margin-bottom: 5px;
 }
 
-/* Underline for Labels */
-.underline {
-  display: inline-block;
-  position: relative;
-  padding-bottom: 4px;
+.no-margin {
+  margin-top: 20px !important;
+  margin-bottom: 0 !important;
 }
 
-.home-label::after,
-.homeQ-label::after {
-  content: "";
-  display: block;
-  width: 100%;
-  height: 3px;
-  background-color: #003366; /* Dark Blue */
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.label-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
 }
 
-.draw-label::after {
-  content: "";
-  display: block;
-  width: 100%;
-  height: 3px;
-  background-color: #607D8B; /* Blue-Gray */
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.home-bg {
+  background-color: #003366;
 }
 
-.away-label::after,
-.awayQ-label::after {
-  content: "";
-  display: block;
-  width: 100%;
-  height: 3px;
-  background-color: #9E9E9E; /* Gray */
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.draw-bg {
+  background-color: #607D8B;
 }
 
-/* === Remove Padding Around Bars === */
+.away-bg {
+  background-color: #9E9E9E;
+}
+
+.homeQ-bg {
+  background-color: #003366;
+}
+
+.awayQ-bg {
+  background-color: #9E9E9E;
+}
+
 .betting-bar {
   padding: 0 !important;
   margin: 0 !important;
   width: 100%;
 }
 
-/* Progress Bar Container - Remove Left/Right Padding */
-.progress-bar {
-  display: flex;
-  width: 100%;
-  height: 28px; /* Adjusted height */
-  border-radius: 5px;
-  overflow: hidden;
-  padding: 2px 0 !important; /* Only top/bottom padding */
-  margin: 0 !important;
-}
-
-/* Ensure ion-col has no extra padding */
-ion-col[size="12"] {
+.no-padding {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
-/* Dynamic Percentage Bars - Add Inner Padding */
+.progress-bar {
+  display: flex;
+  width: 100%;
+  height: 30px;
+  border-radius: 0px;
+  overflow: hidden;
+  padding: 0px 0 !important;
+  margin: 0 !important;
+}
+
+.progress-bar.compact {
+  height: 30px;
+}
+
 .bar {
   height: 100%;
   display: flex;
@@ -114,67 +104,78 @@ ion-col[size="12"] {
   justify-content: center;
   color: white;
   font-weight: bold;
-  font-size: 11px; /* Reduced font size */
-  padding: 2px 0; /* Add internal padding to increase height */
+  font-size: 12px;
+  padding: 0px 0;
 }
 
-/* Bar Colors */
 .home,
 .homeQ {
-  background-color: #003366; /* Dark Blue */
+  background-color: #003366;
 }
 
 .draw {
-  background-color: #607D8B; /* Blue-Gray */
+  background-color: #607D8B;
 }
 
 .away,
 .awayQ {
-  background-color: #9E9E9E; /* Gray */
+  background-color: #9E9E9E;
 }
 
-/* === Table Header Styling === */
 .bet-table-header {
   font-weight: bold;
   font-size: 12px;
   text-align: center;
   background-color: #f0f0f0;
-  padding: 5px 0;
-  border-bottom: 2px solid white;
+  padding: 10px 0;
 }
 
-/* === Table Body Styling (Smaller Font) === */
 .bet-table-body {
-  font-size: 10px; /* Smaller font size */
+  font-size: 10px;
 }
 
-/* === Table Cell Formatting === */
 .bet-result {
   font-size: 12px;
   text-align: center;
   font-weight: bold;
-  padding: 4px;
-  border: 1px solid white; /* White Borders */
 }
 
-/* === Success & Failure Cells (Now Hide "1" and "0" Text) === */
 .success {
-  background-color: #4caf50; /* Green for correct bets */
-  color: #4caf50; /* Same as background = invisible */
+  background-color: #4caf50;
+  color: #4caf50;
 }
 
 .failure {
-  background-color: #f44336; /* Red for incorrect bets */
-  color: #f44336; /* Same as background = invisible */
+  background-color: #f44336;
+  color: #f44336;
 }
 
 .success-icon {
-  color: #4caf50; // Green
+  color: #4caf50;
   font-size: 1.2rem;
 }
 
 .failure-icon {
-  color: #f44336; // Red
+  color: #f44336;
   font-size: 1.2rem;
 }
 
+/* Remove vertical padding inside all ion-rows (applies to child ion-cols) */
+ion-row > ion-col {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* ===== User Bets Table Hover & Border Styling ===== */
+
+/* Make each user bet row slightly interactive */
+.bets-overview-grid ion-row.user-bet-row {
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.3s ease-in-out;
+  cursor: default; // Optional: Change to pointer if clickable
+
+  &:hover {
+    background-color: #F7F8FE; /* Pale blue on hover */
+  }
+}

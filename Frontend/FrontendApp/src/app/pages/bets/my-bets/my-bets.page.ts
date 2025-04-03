@@ -11,6 +11,7 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -32,15 +33,17 @@ export class MyBetsPage implements OnInit, AfterViewInit {
   constructor(
     private tournamentService: CustomTournamentService,
     private tournamentSelectionService: TournamentSelectionService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private titleService: TitleService
   ) {}
 
   ngOnInit() {
+    this.titleService.setTitle('MY_BETS.TITLE');
     this.loadStages(); // Load tournament stages
   }
 
   ngAfterViewInit() {
-
+    this.titleService.setTitle('MY_BETS.TITLE');
   }
 
   ionViewDidEnter() {

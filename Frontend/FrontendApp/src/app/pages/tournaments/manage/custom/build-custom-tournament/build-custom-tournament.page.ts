@@ -17,6 +17,7 @@ import { Match, Team, User, Stage, RecordStatus } from 'src/app/model/tournament
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -46,7 +47,8 @@ export class BuildCustomTournamentPage implements OnInit {
     private route: ActivatedRoute,
     private tournamentService: CustomTournamentService,
     private loadingController: LoadingController,
-    private tournamentSelectionService: TournamentSelectionService
+    private tournamentSelectionService: TournamentSelectionService,
+    private titleService: TitleService
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
@@ -83,9 +85,11 @@ export class BuildCustomTournamentPage implements OnInit {
         this.tournamentId = null;
       }
     });
+    this.titleService.setTitle('BUILD_CUSTOM.TITLE');
   }
 
   ionViewWillEnter(): void {
+    this.titleService.setTitle('BUILD_CUSTOM.TITLE');
     this.resetFormData();
     this.scrollToTop();
     this.step = 1;

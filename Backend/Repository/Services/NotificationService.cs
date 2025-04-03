@@ -119,6 +119,66 @@ public class NotificationService : INotificationService
         }
     }
 
+    public async Task NotifyAdminsJoinRequestAsync(CustomTournamentUserAssignment joinRequest)
+    {
+        var tournamentId = joinRequest.TournamentId;
+
+        var populatedJoinRequest = await _dbContext.CustomTournamentUserAssignments
+            .Include(a => a.Tournament)
+            .Include(a => a.User)
+            .FirstOrDefaultAsync(a => a.TournamentId == tournamentId && a.UserId == joinRequest.UserId);
+
+        if (populatedJoinRequest == null)
+        {
+            _logger.LogWarning($"Join request not found for user {joinRequest.UserId} in tournament {tournamentId}");
+            return;
+        }
+
+        var admins = await _dbContext.CustomTournamentUserAssignments
+            .Where(a => a.TournamentId == tournamentId && a.Role == UserTournamentRole.Admin)
+            .Include(a => a.User)
+            .Select(a => a.User)
+            .ToListAsync();
+
+        if (!admins.Any())
+        {
+            _logger.LogWarning($"No admins found for Tournament ID {tournamentId}. Cannot notify about join request.");
+            return;
+        }
+
+        _logger.LogInformation($"Sending join request notifications to {admins.Count} admins for Tournament ID {tournamentId}");
+
+        await ProcessNotificationsAsync(
+            admins,
+            $"New Join Request for Tournament",
+            $"User '{populatedJoinRequest.UserName}' has requested to join your tournament '{populatedJoinRequest.Tournament.Name}'. Review the request in the dashboard.",
+            user => (user.ReceiveEmailTournamentInvitation, user.ReceivePushTournamentInvitation)
+        );
+    }
+
+    public async Task NotifyUserJoinRequestApprovedAsync(CustomTournamentUserAssignment assignment)
+    {
+        var fullAssignment = await _dbContext.CustomTournamentUserAssignments
+            .Include(a => a.Tournament)
+            .Include(a => a.User)
+            .FirstOrDefaultAsync(a => a.TournamentId == assignment.TournamentId && a.UserId == assignment.UserId);
+
+        if (fullAssignment?.User == null)
+        {
+            _logger.LogWarning($"User not found for UserId {assignment.UserId}. Cannot send join approval notification.");
+            return;
+        }
+
+        _logger.LogInformation($"Sending join approval notification to user {fullAssignment.User.Id} for Tournament ID {fullAssignment.TournamentId}");
+
+        await ProcessNotificationsAsync(
+            new List<ApplicationUser> { fullAssignment.User },
+            $"Join Request Approved",
+            $"Your request to join tournament '{fullAssignment.Tournament.Name}' has been approved! You can now start betting.",
+            u => (u.ReceiveEmailTournamentInvitation, u.ReceivePushTournamentInvitation)
+        );
+    }
+
     public async Task<bool> MarkNotificationAsReadAsync(int notificationId, string userId)
     {
         var notificationRecipient = await _dbContext.NotificationRecipients

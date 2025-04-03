@@ -9,6 +9,7 @@ import { ToastController, MenuController, ModalController } from '@ionic/angular
 import { ParticipantTournamentsModalComponent } from './modals/participant-tournaments-modal/participant-tournaments-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageFabComponent } from './pages/language/language-fab/language-fab.component';
+import { TitleService } from './services/title.service';
 
 
 @Component({
@@ -22,8 +23,13 @@ export class AppComponent {
   isSuperAdmin = false;
   isAdmin = false;
   showFab: boolean = false; // Control FAB visibility
+  pageTitle: string = 'APP.TITLE';
 
-  constructor(private authService: AuthService, private router: Router, private toastController: ToastController, private menuCtrl: MenuController, private modalController: ModalController) {}
+  constructor(private authService: AuthService, 
+              private router: Router, 
+              private toastController: ToastController, 
+              private titleService: TitleService,
+              private modalController: ModalController) {}
 
   ngOnInit() {
     // Subscribe to authentication status changes
@@ -31,6 +37,10 @@ export class AppComponent {
       this.isLoggedIn = loggedIn;
       console.log('Auth status changed:', loggedIn);
       this.updateUserRoles();
+    });
+
+    this.titleService.title$.subscribe(title => {
+      this.pageTitle = title;
     });
 
     // Monitor navigation changes

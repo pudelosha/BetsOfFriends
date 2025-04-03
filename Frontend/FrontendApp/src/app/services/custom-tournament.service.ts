@@ -116,4 +116,15 @@ export class CustomTournamentService {
   resendParticipantInvite(tournamentId: number, userEmail: string): Observable<ActionResult> {
     return this.http.post<ActionResult>(`${this.apiUrl}/participants/${tournamentId}/resend`, { userEmail });
   } 
+
+  getAssignmentDetails(tournamentId: number): Observable<{ nickname: string }> {
+    return this.http.get<{ nickname: string }>(`${this.apiUrl}/assignment/${tournamentId}`);
+  }
+
+  updateTournamentAssignment(tournamentId: number, nickname: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}/assignment/${tournamentId}`,
+      { nickname }
+    );
+  }
 }

@@ -12,6 +12,8 @@ import { firstValueFrom } from 'rxjs';
 import { LanguageService } from 'src/app/services/language.service';
 import { Language } from 'src/app/model/language';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
+
 
 @Component({
   selector: 'app-profile',
@@ -36,7 +38,8 @@ export class ProfilePage implements OnInit {
     private userService: UserService,
     private locationService: LocationService,
     private loadingController: LoadingController,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private titleService: TitleService
   ) {
     this.profileForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -48,12 +51,14 @@ export class ProfilePage implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('PROFILE.TITLE');
     this.loadCountries();
     this.loadLanguages();
     this.loadUserProfile();
   }
 
   ionViewWillEnter() {
+    this.titleService.setTitle('PROFILE.TITLE');
     this.loadCountries();
     this.loadLanguages();
     this.loadUserProfile();

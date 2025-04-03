@@ -6,6 +6,7 @@ import { Tournament } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -24,14 +25,17 @@ export class CustomTournamentsListPage implements OnInit {
     private toastController: ToastController,
     private alertController: AlertController,
     private router: Router,
-    private loadingController: LoadingController 
+    private loadingController: LoadingController,
+    private titleService: TitleService 
   ) {}
 
   ngOnInit() {
+    this.titleService.setTitle('CUSTOM_TOURNAMENTS.TITLE');
     this.loadTournaments();
   }
 
   ionViewWillEnter() {
+    this.titleService.setTitle('CUSTOM_TOURNAMENTS.TITLE');
     this.loadTournaments();
     this.scrollToTop();
   }

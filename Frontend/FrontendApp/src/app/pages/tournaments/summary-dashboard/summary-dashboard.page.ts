@@ -7,6 +7,7 @@ import { TournamentSummary } from 'src/app/model/tournament-model';
 import { ModalController } from '@ionic/angular';
 import { PlayerStatsModalComponent } from 'src/app/modals/player-stats-modal/player-stats-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -26,14 +27,17 @@ export class SummaryDashboardPage implements OnInit {
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
     private loadingController: LoadingController,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private titleService: TitleService
   ) {}
 
   async ngOnInit() {
+    this.titleService.setTitle('SUMMARY.TITLE');
     await this.loadTournamentAndFetchSummary();
   }
 
   async ionViewWillEnter() {
+    this.titleService.setTitle('SUMMARY.TITLE');
     await this.loadTournamentAndFetchSummary(); // Ensure summary is refreshed on view enter
   }
 

@@ -6,6 +6,7 @@ import { UserListPage } from '../user-list/user-list.page';
 import { PendingRequestsPage } from '../pending-requests/pending-requests.page';
 import { PendingInvitesPage } from '../pending-invites/pending-invites.page';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -24,11 +25,13 @@ export class ManageParticipantsPage implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('MANAGE_PARTICIPANTS.TITLE');
   }
 
   ionViewWillEnter(){
+    this.titleService.setTitle('MANAGE_PARTICIPANTS.TITLE');
     this.triggerRefresh();
   }
 
-  constructor() { }
+  constructor(private titleService: TitleService) { }
 }

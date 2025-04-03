@@ -10,6 +10,8 @@ import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
+
 
 
 @Component({
@@ -32,9 +34,11 @@ export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private tournamentService: PredefinedTournamentService,
+    private titleService: TitleService
   ) {}
 
   async ngOnInit() {
+    this.titleService.setTitle('MANAGE_PREDEFINED_MATCHES.TITLE');
     this.selectedTab = 'upcoming';
 
     this.tournamentId = Number(this.route.snapshot.paramMap.get('tournamentId'));
@@ -47,6 +51,7 @@ export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.titleService.setTitle('MANAGE_PREDEFINED_MATCHES.TITLE');
     this.selectedTab = 'upcoming';
     setTimeout(() => {
       this.scrollToTop();

@@ -11,6 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -32,14 +33,18 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
   constructor(
     private tournamentService: CustomTournamentService,
     private tournamentSelectionService: TournamentSelectionService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private titleService: TitleService
   ) {}
 
   async ngOnInit() {
+    this.titleService.setTitle('MANAGE_CUSTOM_MATCHES.TITLE');
     this.loadStages(); // Load tournament stages
   }
 
   ionViewDidEnter() {
+    this.titleService.setTitle('MANAGE_CUSTOM_MATCHES.TITLE');
+
     const urlTab = this.route.snapshot.queryParamMap.get('tab');
     if (urlTab === 'upcoming' || urlTab === 'started' || urlTab === 'finalised') {
       this.selectedTab = urlTab;

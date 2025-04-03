@@ -6,6 +6,8 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PublicTournament } from 'src/app/model/tournament-model';
 import { JoinRequestModalComponent } from 'src/app/modals/join-request-modal/join-request-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -22,11 +24,18 @@ export class FindTournamentPage implements OnInit {
 
   constructor(private tournamentService: CustomTournamentService,
               private modalController: ModalController,
-              private toastController: ToastController
+              private toastController: ToastController,
+              private titleService: TitleService            
   ) {}
 
   ngOnInit() {
+    this.titleService.setTitle('FIND_TOURNAMENT.TITLE');
     this.loadTournaments(); // Initial load with all public tournaments
+  }
+
+  ionViewWillEnter() {
+    this.titleService.setTitle('FIND_TOURNAMENT.TITLE');
+    this.loadTournaments();
   }
 
   onSearchChange() {
@@ -70,6 +79,17 @@ export class FindTournamentPage implements OnInit {
     }
   }
 
+  async withdrawRequest(tournament: any) {
+    try {
+      await firstValueFrom(this.tournamentService.quitTournament(tournament.tournamentId));
+      tournament.joinRequested = false;
+      this.showToast('You have withdrawn your join request.', 'success');
+    } catch (error: any) {
+      console.error('Error withdrawing request:', error);
+      this.showToast(error?.error?.message || 'An error occurred.', 'danger');
+    }
+  }
+  
   async showToast(message: string, color: 'success' | 'danger' | 'warning') {
     const toast = await this.toastController.create({
       message,

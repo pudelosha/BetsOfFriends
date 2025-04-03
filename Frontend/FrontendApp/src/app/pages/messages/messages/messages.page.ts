@@ -6,7 +6,7 @@ import { ToastController, AlertController, LoadingController } from '@ionic/angu
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { TitleService } from 'src/app/services/title.service';
 
 @Component({
   selector: 'app-messages',
@@ -24,17 +24,20 @@ export class MessagesPage implements OnInit {
     private notificationService: NotificationService,
     private toastController: ToastController,
     private alertController: AlertController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private titleService: TitleService
   ) {}
 
   ngOnInit() {
+    this.titleService.setTitle('MESSAGES.TITLE');
     this.loadNotifications();
   }
 
   ionViewWillEnter() {
+    this.titleService.setTitle('MESSAGES.TITLE');
     this.loadNotifications();
   }
-
+  
   // Load notifications from API
   async loadNotifications() {
     this.isLoading = true;

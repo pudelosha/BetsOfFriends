@@ -207,6 +207,13 @@ namespace Backend.DTOs
         public string Nickname { get; set; }
     }
 
+    public class TournamentJoinRequestDto
+    {
+        public int TournamentId { get; set; }
+        public string Nickname { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+    }
+
     public class TournamentInvitationResponseDto
     {
         public bool Success { get; set; }
@@ -258,5 +265,15 @@ namespace Backend.DTOs
     public class ParticipantActionRequest
     {
         public string UserEmail { get; set; }
+    }
+
+    public class TournamentAssignmentDto
+    {
+        public string Nickname { get; set; } = string.Empty;
+    }
+
+    public class UpdateAssignmentRequest
+    {
+        public string Nickname { get; set; }
     }
 }

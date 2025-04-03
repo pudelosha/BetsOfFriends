@@ -12,7 +12,6 @@ namespace Backend.Repository.Interfaces
         Task<CustomTournamentDto?> GetCustomTournamentByIdAsync(int tournamentId, string userId);
         Task<List<UserActiveTournamentDto>> GetUserActiveTournamentsAsync(string userId);
         Task<bool> QuitTournamentAsync(int tournamentId, string userId);
-        Task<TournamentInvitationResponseDto> AcceptTournamentInvitationAsync(int tournamentId, string userId, string nickname);
         Task<bool?> ToggleTournamentVisibilityAsync(int tournamentId, string userId);
         Task<bool> RecalculateTournamentBetsAsync(int tournamentId, string userId);
         Task<List<TournamentSummaryDto>?> GetTournamentSummaryAsync(int tournamentId, string userId);
@@ -26,5 +25,9 @@ namespace Backend.Repository.Interfaces
         Task<ActionResultDto> ExcludeParticipantAsync(int tournamentId, string requesterUserId, string targetUserEmail);
         Task<ActionResultDto> AcceptParticipantAsync(int tournamentId, string requesterUserId, string targetUserEmail);
         Task<ActionResultDto> ResendInviteAsync(int tournamentId, string requesterUserId, string targetUserEmail);
+        Task<TournamentInvitationResponseDto> UpdateTournamentAssignmentAsync(int tournamentId, string userId, string newNickname);
+        Task<TournamentAssignmentDto?> GetAssignmentDetailsAsync(int tournamentId, string userId);
+        Task<TournamentInvitationResponseDto> AcceptTournamentInvitationAsync(int tournamentId, string userId, string nickname);
+        Task<TournamentInvitationResponseDto> RequestToJoinTournamentAsync(string userId, int tournamentId, string nickname, string message);
     }
 }

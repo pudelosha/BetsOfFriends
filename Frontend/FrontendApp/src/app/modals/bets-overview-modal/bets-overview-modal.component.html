@@ -24,44 +24,54 @@
       <ion-col size="5"><strong>{{ betStats.awayScoreActual ?? '-' }}</strong></ion-col>
     </ion-row>
 
-    <!-- 1X2 Betting Headers with Underline -->
-    <ion-row class="betting-row">
-      <ion-col size="4" class="centered-text underline home-label"><strong>{{ 'BETS_OVERVIEW.HOME_WIN' | translate }}</strong></ion-col>
-      <ion-col size="4" class="centered-text underline draw-label"><strong>{{ 'BETS_OVERVIEW.DRAW' | translate }}</strong></ion-col>
-      <ion-col size="4" class="centered-text underline away-label"><strong>{{ 'BETS_OVERVIEW.AWAY_WIN' | translate }}</strong></ion-col>
+    <!-- Combined 1X2 Labels with Background Colors -->
+    <ion-row class="betting-row no-margin">
+      <ion-col size="4" class="label-box home-bg">
+        <strong>{{ 'BETS_OVERVIEW.HOME_WIN' | translate }}</strong>
+      </ion-col>
+      <ion-col size="4" class="label-box draw-bg">
+        <strong>{{ 'BETS_OVERVIEW.DRAW' | translate }}</strong>
+      </ion-col>
+      <ion-col size="4" class="label-box away-bg">
+        <strong>{{ 'BETS_OVERVIEW.AWAY_WIN' | translate }}</strong>
+      </ion-col>
     </ion-row>
 
-    <!-- Dynamic Percentage Bars with Text -->
-    <ion-row class="betting-bar">
-      <ion-col size="12">
-        <div class="progress-bar">
-          <div class="bar home" *ngIf="betStats && betStats.percent1 && betStats.percent1 > 0" [style.width.%]="betStats.percent1">
+    <!-- Unified Progress Bar Below Labels -->
+    <ion-row class="betting-bar compact-bar no-margin">
+      <ion-col size="12" class="no-padding">
+        <div class="progress-bar compact">
+          <div class="bar home" *ngIf="betStats.percent1 && betStats.percent1 > 0" [style.width.%]="betStats.percent1">
             <span>{{ betStats.percent1 }}%</span>
           </div>
-          <div class="bar draw" *ngIf="betStats && betStats.percentX && betStats.percentX > 0" [style.width.%]="betStats.percentX">
+          <div class="bar draw" *ngIf="betStats.percentX && betStats.percentX > 0" [style.width.%]="betStats.percentX">
             <span>{{ betStats.percentX }}%</span>
           </div>
-          <div class="bar away" *ngIf="betStats && betStats.percent2 && betStats.percent2 > 0" [style.width.%]="betStats.percent2">
+          <div class="bar away" *ngIf="betStats.percent2 && betStats.percent2 > 0" [style.width.%]="betStats.percent2">
             <span>{{ betStats.percent2 }}%</span>
           </div>
         </div>
       </ion-col>
     </ion-row>
 
-    <!-- Qualification Betting Headers -->
-    <ion-row class="betting-row" *ngIf="betStats.showQualified">
-      <ion-col size="6" class="centered-text underline homeQ-label"><strong>{{ 'BETS_OVERVIEW.HOME_QUALIFIES' | translate }}</strong></ion-col>
-      <ion-col size="6" class="centered-text underline awayQ-label"><strong>{{ 'BETS_OVERVIEW.AWAY_QUALIFIES' | translate }}</strong></ion-col>
+    <!-- Qualification Betting Labels with Background Colors -->
+    <ion-row class="betting-row no-margin" *ngIf="betStats.showQualified">
+      <ion-col size="6" class="label-box homeQ-bg">
+        <strong>{{ 'BETS_OVERVIEW.HOME_QUALIFIES' | translate }}</strong>
+      </ion-col>
+      <ion-col size="6" class="label-box awayQ-bg">
+        <strong>{{ 'BETS_OVERVIEW.AWAY_QUALIFIES' | translate }}</strong>
+      </ion-col>
     </ion-row>
 
-    <!-- Qualification Bars -->
-    <ion-row class="betting-bar" *ngIf="betStats.showQualified">
-      <ion-col size="12">
-        <div class="progress-bar">
-          <div class="bar homeQ" *ngIf="betStats && betStats.percent1Q && betStats.percent1Q > 0" [style.width.%]="betStats.percent1Q">
+    <!-- Unified Qualification Progress Bar -->
+    <ion-row class="betting-bar compact-bar no-margin" *ngIf="betStats.showQualified">
+      <ion-col size="12" class="no-padding">
+        <div class="progress-bar compact">
+          <div class="bar homeQ" *ngIf="betStats.percent1Q && betStats.percent1Q > 0" [style.width.%]="betStats.percent1Q">
             <span>{{ betStats.percent1Q }}%</span>
           </div>
-          <div class="bar awayQ" *ngIf="betStats && betStats.percent2Q && betStats.percent2Q > 0" [style.width.%]="betStats.percent2Q">
+          <div class="bar awayQ" *ngIf="betStats.percent2Q && betStats.percent2Q > 0" [style.width.%]="betStats.percent2Q">
             <span>{{ betStats.percent2Q }}%</span>
           </div>
         </div>
@@ -76,7 +86,7 @@
 
       <!-- Table Header -->
       <ion-row class="bet-table-header">
-        <ion-col size="4" class="centered-text"><strong>{{ 'BETS_OVERVIEW.PLAYER' | translate }}</strong></ion-col>
+        <ion-col [size]="calculatePlayerColumnSize()" class="centered-text"><strong>{{ 'BETS_OVERVIEW.PLAYER' | translate }}</strong></ion-col>
         <ion-col size="2" class="centered-text"><strong>{{ 'BETS_OVERVIEW.BET' | translate }}</strong></ion-col>
         <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.HW' | translate }}</strong></ion-col>
         <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.D' | translate }}</strong></ion-col>
@@ -87,8 +97,8 @@
       </ion-row>
 
       <!-- Table Rows -->
-      <ion-row *ngFor="let bet of betStats.userBets">
-        <ion-col size="4" class="centered-text player-name">{{ bet.username }}</ion-col>
+      <ion-row *ngFor="let bet of betStats.userBets" class="user-bet-row">
+        <ion-col [size]="calculatePlayerColumnSize()" class="centered-text player-name">{{ bet.username }}</ion-col>
         <ion-col size="2" class="centered-text bet-result">{{ bet?.betScore ?? '-' }}</ion-col>
       
         <ion-col size="1" class="bet-result">

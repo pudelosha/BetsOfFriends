@@ -270,34 +270,6 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
-        [HttpPost("accept-invitation/{tournamentId}")]
-        public async Task<IActionResult> AcceptTournamentInvitation(int tournamentId, [FromBody] TournamentInvitationRequestDto request)
-        {
-            try
-            {
-                var userId = _userService.GetUserIdFromClaims(User);
-                if (userId == null)
-                {
-                    return Unauthorized(new { message = "User not found." });
-                }
-
-                var result = await _tournamentService.AcceptTournamentInvitationAsync(tournamentId, userId, request.Nickname);
-
-                if (!result.Success)
-                {
-                    return BadRequest(new { message = result.Message });
-                }
-
-                return Ok(new { message = result.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error while accepting tournament invitation for ID {tournamentId}");
-                return StatusCode(500, new { message = "An error occurred while accepting the tournament invitation." });
-            }
-        }
-
-        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPatch("visibility/{tournamentId}")]
         public async Task<IActionResult> ToggleTournamentVisibility(int tournamentId)
         {
@@ -640,5 +612,130 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while resending the invitation." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("assignment/{tournamentId}")]
+        public async Task<IActionResult> GetAssignmentDetails(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var assignment = await _tournamentService.GetAssignmentDetailsAsync(tournamentId, userId);
+
+                if (assignment == null)
+                {
+                    return NotFound(new { Message = "Assignment not found for this tournament." });
+                }
+
+                return Ok(new { nickname = assignment.Nickname });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching assignment for user in tournament {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while retrieving assignment details." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPut("assignment/{tournamentId}")]
+        public async Task<IActionResult> UpdateTournamentAssignment(int tournamentId, [FromBody] UpdateAssignmentRequest request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new TournamentInvitationResponseDto
+                    {
+                        Success = false,
+                        Message = "User authentication failed."
+                    });
+                }
+
+                var response = await _tournamentService.UpdateTournamentAssignmentAsync(tournamentId, userId, request.Nickname);
+
+                if (!response.Success)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error updating assignment for user in tournament {tournamentId}");
+                return StatusCode(500, new TournamentInvitationResponseDto
+                {
+                    Success = false,
+                    Message = "An error occurred while updating the assignment."
+                });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("accept-invitation/{tournamentId}")]
+        public async Task<IActionResult> AcceptTournamentInvitation(int tournamentId, [FromBody] TournamentInvitationRequestDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "User not found." });
+                }
+
+                var result = await _tournamentService.AcceptTournamentInvitationAsync(tournamentId, userId, request.Nickname);
+
+                if (!result.Success)
+                {
+                    return BadRequest(new { message = result.Message });
+                }
+
+                return Ok(new { message = result.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while accepting tournament invitation for ID {tournamentId}");
+                return StatusCode(500, new { message = "An error occurred while accepting the tournament invitation." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("request-join")]
+        public async Task<IActionResult> RequestToJoinTournament([FromBody] TournamentJoinRequestDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var result = await _tournamentService.RequestToJoinTournamentAsync(userId, request.TournamentId, request.Nickname, request.Message);
+
+                if (!result.Success)
+                {
+                    return BadRequest(result);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while requesting to join tournament.");
+                return StatusCode(500, new TournamentInvitationResponseDto
+                {
+                    Success = false,
+                    Message = "An unexpected error occurred while requesting to join the tournament."
+                });
+            }
+        }
+
     }
 }
