@@ -539,7 +539,7 @@ namespace Backend.Controllers
 
                 if (participants == null)
                 {
-                    return Forbid(); // User is not an admin or not authorized
+                    return Ok(new List<CustomUserDto>());
                 }
 
                 return Ok(participants);

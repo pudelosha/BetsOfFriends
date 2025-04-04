@@ -45,7 +45,6 @@ export class PendingInvitesPage implements OnInit {
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
 
     if (this.tournamentId === null) {
-      await this.showToast('No tournament selected.', 'warning');
       this.isLoading = false;
       return;
     }

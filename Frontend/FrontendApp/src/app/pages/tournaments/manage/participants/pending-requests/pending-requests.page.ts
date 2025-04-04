@@ -45,7 +45,6 @@ export class PendingRequestsPage implements OnInit {
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
 
     if (!this.tournamentId) {
-      await this.showToast('No tournament selected.', 'warning');
       this.isLoading = false;
       return;
     }
