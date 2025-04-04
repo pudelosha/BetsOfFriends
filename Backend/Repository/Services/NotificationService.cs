@@ -26,6 +26,35 @@ public class NotificationService : INotificationService
         _logger = logger;
     }
 
+    public async Task NotifyMatchStartingSoonAsync(CustomMatch match, TimeSpan threshold)
+    {
+        // Get users who have a "ToPlace" bet for this match (means they haven't submitted it yet)
+        var usersWithToPlaceBets = await _dbContext.Bets
+            .Where(b => b.MatchId == match.MatchId && b.Status == Bet.BetStatus.ToPlace)
+            .Include(b => b.User)
+            .Select(b => b.User)
+            .Distinct()
+            .ToListAsync();
+
+        if (!usersWithToPlaceBets.Any())
+        {
+            _logger.LogInformation($"No pending bets to place for Match ID {match.MatchId}. No reminders needed.");
+            return;
+        }
+
+        var timeStr = threshold.TotalHours == 1 ? "1 hour" : "24 hours";
+
+        _logger.LogInformation($"Sending match start reminders to {usersWithToPlaceBets.Count} users for Match ID {match.MatchId} (threshold: {timeStr})");
+
+        await ProcessNotificationsAsync(
+            usersWithToPlaceBets,
+            $"Reminder: Match starts in {timeStr}",
+            $"You haven't submitted your bet for {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName}. The match starts in less than {timeStr}!",
+            "/my-bets",
+            u => (u.ReceiveEmailPendingBets, u.ReceivePushPendingBets)
+        );
+    }
+
     public async Task NotifyMatchClosureAsync(CustomMatch match)
     {
         var tournamentId = match.TournamentId;
@@ -42,6 +71,13 @@ public class NotificationService : INotificationService
             return;
         }
 
+        string stageName = match.Stage?.StageName ?? await _dbContext.CustomMatchStages
+            .Where(s => s.StageId == match.StageId)
+            .Select(s => s.StageName)
+            .FirstOrDefaultAsync();
+
+        string encodedStage = Uri.EscapeDataString(stageName ?? "");
+
         _logger.LogInformation($"Sending match closure notifications to {participants.Count} users for Match ID {match.MatchId}");
 
         await ProcessNotificationsAsync(
@@ -49,6 +85,7 @@ public class NotificationService : INotificationService
             $"Match Closed: {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName}",
             $"The match {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName} has been finalized.\n" +
             $"Final Score: {match.HomeScore}-{match.AwayScore}.\nCheck your bets and standings!",
+            $"/my-bets?tab=finalised&stage={encodedStage}",
             user => (user.ReceiveEmailMatchClosed, user.ReceivePushMatchClosed)
         );
     }
@@ -88,6 +125,7 @@ public class NotificationService : INotificationService
             admins,
             $"User Joined: {displayName}",
             $"{displayName} has accepted the tournament invite and joined your tournament.",
+            "/tournaments/participants",
             user => (user.ReceiveEmailTournamentInvitation, user.ReceivePushTournamentInvitation)
         );
     }
@@ -107,6 +145,7 @@ public class NotificationService : INotificationService
                     NotificationId = nr.NotificationId,
                     Title = nr.Notification.Title,
                     Message = nr.Notification.Message,
+                    Route = nr.Notification.Route,
                     CreatedAt = nr.Notification.CreatedAt,
                     IsRead = nr.IsRead
                 })
@@ -152,6 +191,7 @@ public class NotificationService : INotificationService
             admins,
             $"New Join Request for Tournament",
             $"User '{populatedJoinRequest.UserName}' has requested to join your tournament '{populatedJoinRequest.Tournament.Name}'. Review the request in the dashboard.",
+            "/tournaments/participants",
             user => (user.ReceiveEmailTournamentInvitation, user.ReceivePushTournamentInvitation)
         );
     }
@@ -175,6 +215,7 @@ public class NotificationService : INotificationService
             new List<ApplicationUser> { fullAssignment.User },
             $"Join Request Approved",
             $"Your request to join tournament '{fullAssignment.Tournament.Name}' has been approved! You can now start betting.",
+            "/my-bets",
             u => (u.ReceiveEmailTournamentInvitation, u.ReceivePushTournamentInvitation)
         );
     }
@@ -226,6 +267,7 @@ public class NotificationService : INotificationService
         List<ApplicationUser> recipients,
         string title,
         string message,
+        string route,
         Func<ApplicationUser, (bool emailConsent, bool pushConsent)> getConsent)
     {
         if (recipients == null || !recipients.Any())
@@ -241,6 +283,7 @@ public class NotificationService : INotificationService
         {
             Title = title,
             Message = message,
+            Route = route,
             CreatedAt = DateTime.UtcNow
         };
 

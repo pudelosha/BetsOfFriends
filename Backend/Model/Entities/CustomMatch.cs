@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Model.Entities
 {
-    public class CustomMatch
+    public class CustomMatch : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -48,6 +48,10 @@ namespace Backend.Model.Entities
         public MatchType Type { get; set; } = MatchType.Regular90Min;
 
         public bool IsVisible { get; set; } = true;
+
+        public bool Notifications1Sent { get; set; } = false;
+        public bool Notifications24Sent { get; set; } = false;
+
 
         public ICollection<Bet> Bets { get; set; } = new List<Bet>();
 

@@ -6,7 +6,7 @@ namespace Backend.Model.Entities
     /// <summary>
     /// Represents a football tournament where users can bet on matches.
     /// </summary>
-    public class CustomTournament
+    public class CustomTournament : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

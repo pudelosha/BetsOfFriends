@@ -1,6 +1,6 @@
 ﻿namespace Backend.Model.Entities
 {
-    public class NotificationRecipient
+    public class NotificationRecipient : BaseEntity
     {
         public int Id { get; set; }
 

@@ -31,6 +31,7 @@ namespace Backend.Extensions
 
             services.AddHostedService<MatchUpdateHostedService>();
             services.AddHostedService<BetUpdateHostedService>();
+            services.AddHostedService<NotificationHostedService>();
 
             return services;
         }

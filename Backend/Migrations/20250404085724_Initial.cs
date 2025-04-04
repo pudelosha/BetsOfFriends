@@ -49,7 +49,11 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Route = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -66,7 +70,9 @@ namespace Backend.Migrations
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Update = table.Column<int>(type: "int", nullable: false)
+                    Update = table.Column<int>(type: "int", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -150,7 +156,11 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Order = table.Column<int>(type: "int", nullable: false),
                     StageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    TournamentId = table.Column<int>(type: "int", nullable: false)
+                    TournamentId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -170,7 +180,11 @@ namespace Backend.Migrations
                     TeamId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TeamName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PredefinedTournamentId = table.Column<int>(type: "int", nullable: false)
+                    PredefinedTournamentId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -226,7 +240,10 @@ namespace Backend.Migrations
                     AllowNonSubmittedBetsPenalty = table.Column<bool>(type: "bit", nullable: false),
                     NonSubmittedBetPenalty = table.Column<int>(type: "int", nullable: true),
                     Visibility = table.Column<int>(type: "int", nullable: false),
-                    Update = table.Column<int>(type: "int", nullable: false)
+                    Update = table.Column<int>(type: "int", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -255,7 +272,11 @@ namespace Backend.Migrations
                     NotificationId = table.Column<int>(type: "int", nullable: false),
                     IsRead = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     SentEmail = table.Column<bool>(type: "bit", nullable: false),
-                    SentPush = table.Column<bool>(type: "bit", nullable: false)
+                    SentPush = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -381,7 +402,11 @@ namespace Backend.Migrations
                     DrawOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AwayWinOdds = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     HomeQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    AwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                    AwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -421,7 +446,11 @@ namespace Backend.Migrations
                     PredefinedStageId = table.Column<int>(type: "int", nullable: true),
                     Order = table.Column<int>(type: "int", nullable: false),
                     StageName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    TournamentId = table.Column<int>(type: "int", nullable: false)
+                    TournamentId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -448,7 +477,11 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PredefinedTeamId = table.Column<int>(type: "int", nullable: true),
                     TeamName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    TournamentId = table.Column<int>(type: "int", nullable: false)
+                    TournamentId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -480,7 +513,11 @@ namespace Backend.Migrations
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsVisible = table.Column<bool>(type: "bit", nullable: false),
                     IsSelected = table.Column<bool>(type: "bit", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -521,7 +558,13 @@ namespace Backend.Migrations
                     AwayQualifies = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    IsVisible = table.Column<bool>(type: "bit", nullable: false)
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
+                    Notifications1Sent = table.Column<bool>(type: "bit", nullable: false),
+                    Notifications24Sent = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -576,7 +619,11 @@ namespace Backend.Migrations
                     Submitted = table.Column<bool>(type: "bit", nullable: false),
                     BasePayout = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     QualificationPayout = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    ExactScorePayout = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                    ExactScorePayout = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

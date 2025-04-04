@@ -4,7 +4,7 @@ using static Backend.Model.Entities.CustomTournament;
 
 namespace Backend.Model.Entities
 {
-    public class PredefinedTournament
+    public class PredefinedTournament : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

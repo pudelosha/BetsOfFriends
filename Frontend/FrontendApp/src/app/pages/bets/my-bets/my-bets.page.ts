@@ -39,23 +39,27 @@ export class MyBetsPage implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.titleService.setTitle('MY_BETS.TITLE');
-    this.loadStages(); // Load tournament stages
   }
 
   ngAfterViewInit() {
-    this.titleService.setTitle('MY_BETS.TITLE');
+
   }
 
   ionViewDidEnter() {
-    const urlTab = this.route.snapshot.queryParamMap.get('tab');
-    if (urlTab === 'to-place' || urlTab === 'placed' || urlTab === 'finalised') {
-      this.selectedTab = urlTab;
-    } else {
-      this.selectedTab = 'to-place'; 
-    }
-    this.forceTabReload();
-  }
-
+    this.route.queryParamMap.subscribe(params => {
+      const urlTab = params.get('tab') ?? 'to-place';
+      const urlStage = params.get('stage') ?? undefined;
+  
+      if (urlTab === 'to-place' || urlTab === 'placed' || urlTab === 'finalised') {
+        this.selectedTab = urlTab;
+      } else {
+        this.selectedTab = 'to-place';
+      }
+  
+      this.loadStages(urlStage);
+    });
+  }  
+  
   triggerRefresh() {
     console.log('Triggering tab refresh...');
     this.changeTab(this.selectedTab);
@@ -101,24 +105,32 @@ export class MyBetsPage implements OnInit, AfterViewInit {
     }
   }
   
-  async loadStages() {
+  async loadStages(stageFromUrl?: string) {
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
     
     if (!tournamentId) {
       console.warn("No tournament selected.");
       return;
     }
-
+  
     try {
       this.availableStages = await firstValueFrom(this.tournamentService.getTournamentStages(tournamentId));
+      
       if (this.availableStages.length > 0) {
-        this.selectedStageIndex = 0;
-        this.selectedStage = this.availableStages[0]; // Set the first stage as default
+        if (stageFromUrl && this.availableStages.includes(stageFromUrl)) {
+          this.selectedStage = stageFromUrl;
+          this.selectedStageIndex = this.availableStages.indexOf(stageFromUrl);
+        } else {
+          this.selectedStage = this.availableStages[0];
+          this.selectedStageIndex = 0;
+        }
       }
+      
+      this.forceTabReload();
     } catch (error) {
       console.error("Error fetching tournament stages:", error);
     }
-  }  
+  }   
 
   scrollToTop() {
     if (this.content) {

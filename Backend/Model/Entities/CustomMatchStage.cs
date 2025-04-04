@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Model.Entities
 {
-    public class CustomMatchStage
+    public class CustomMatchStage : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

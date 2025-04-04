@@ -46,8 +46,10 @@
           </ion-item>
 
           <!-- Expanded Content (Message Body & Details) -->
-          <div slot="content" class="notification-content">
-            <p>{{ notification.message }}</p>
+          <div slot="content" class="notification-content" (click)="openNotificationLink(notification)">
+            <div class="notification-grid">
+              <p>{{ notification.message }}</p>
+            </div>
           </div>
 
         </ion-accordion>

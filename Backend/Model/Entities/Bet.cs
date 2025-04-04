@@ -4,7 +4,7 @@ using static Backend.Model.Entities.CustomMatch;
 
 namespace Backend.Model.Entities
 {
-    public class Bet
+    public class Bet : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

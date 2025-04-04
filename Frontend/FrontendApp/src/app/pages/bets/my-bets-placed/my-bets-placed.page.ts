@@ -53,6 +53,10 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
   }
 
   async loadBets() {
+    if (!this.stage) {
+      return;
+    }
+
     this.isLoading = true;
     this.bets = [];
     this.errorMessage = '';

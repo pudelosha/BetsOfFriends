@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Model.Entities
 {
-    public class PredefinedTeam
+    public class PredefinedTeam : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -7,7 +7,7 @@ namespace Backend.Model.Entities
     /// Many-to-Many Relationship Table Between Users and Tournaments.
     /// Stores user participation and role in tournaments.
     /// </summary>
-    public class CustomTournamentUserAssignment
+    public class CustomTournamentUserAssignment : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

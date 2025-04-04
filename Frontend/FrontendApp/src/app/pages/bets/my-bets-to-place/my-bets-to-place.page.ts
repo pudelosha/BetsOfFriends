@@ -54,6 +54,10 @@ export class MyBetsToPlacePage implements OnInit {
   }
   
   async loadBets() {
+    if (!this.stage) {
+      return;
+    }
+
     this.isLoading = true;
     this.bets = [];
     this.errorMessage = '';

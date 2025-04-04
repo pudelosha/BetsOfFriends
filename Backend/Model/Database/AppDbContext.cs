@@ -555,5 +555,31 @@ namespace Backend.Model.Database
                 new Location { LocationId = 249, Name = "Åland Islands", ISOCode = "AX" }
             );
         }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker
+                .Entries()
+                .Where(e => e.Entity is BaseEntity &&
+                           (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+            foreach (var entry in entries)
+            {
+                var entity = (BaseEntity)entry.Entity;
+                var now = DateTime.UtcNow;
+
+                if (entry.State == EntityState.Added)
+                {
+                    entity.CreatedAt = now;
+                    entity.UpdatedAt = null;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entity.UpdatedAt = now;
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
     }
 }

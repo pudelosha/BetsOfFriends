@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-messages',
@@ -25,7 +26,8 @@ export class MessagesPage implements OnInit {
     private toastController: ToastController,
     private alertController: AlertController,
     private loadingController: LoadingController,
-    private titleService: TitleService
+    private titleService: TitleService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -37,7 +39,16 @@ export class MessagesPage implements OnInit {
     this.titleService.setTitle('MESSAGES.TITLE');
     this.loadNotifications();
   }
+
+  openNotificationLink(notification: NotificationDto) {
+    console.log('Opening notification:', notification);
   
+    if (notification.route) {
+      this.router.navigateByUrl(notification.route)
+        .catch(err => console.error('Navigation error:', err));
+    }
+  }
+     
   // Load notifications from API
   async loadNotifications() {
     this.isLoading = true;
