@@ -30,6 +30,10 @@ export class CustomTournamentService {
     return this.http.put(`${this.apiUrl}/update`, tournament, { responseType: 'text' });
   }
 
+  checkForTournamentUpdates(tournamentId: number): Observable<Tournament> {
+    return this.http.get<Tournament>(`${this.apiUrl}/pending-updates/${tournamentId}`);
+  }
+  
   getCustomTournaments(): Observable<Tournament[]> {
     return this.http.get<Tournament[]>(`${this.apiUrl}`);
   } 

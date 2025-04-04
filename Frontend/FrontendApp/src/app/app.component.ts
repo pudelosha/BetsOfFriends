@@ -2,21 +2,19 @@ import { Component  } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { Router, NavigationEnd  } from '@angular/router';
 import { AuthService } from './services/auth.service';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
-import { ToastController, MenuController, ModalController } from '@ionic/angular';
+import { ToastController, ModalController } from '@ionic/angular';
 import { ParticipantTournamentsModalComponent } from './modals/participant-tournaments-modal/participant-tournaments-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
-import { LanguageFabComponent } from './pages/language/language-fab/language-fab.component';
 import { TitleService } from './services/title.service';
-
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule, LanguageFabComponent],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class AppComponent {
   isLoggedIn = false;

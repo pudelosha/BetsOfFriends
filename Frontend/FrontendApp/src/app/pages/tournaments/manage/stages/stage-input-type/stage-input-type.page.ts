@@ -9,6 +9,7 @@ import { PredefinedTournamentService } from 'src/app/services/predefined-tournam
 import { ModalController } from '@ionic/angular';
 import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-selection-modal/tournament-selection.modal';
 import { TranslateModule } from '@ngx-translate/core';
+import { AlertController } from '@ionic/angular';
 
 
 @Component({
@@ -26,6 +27,7 @@ export class StageInputTypePage implements OnInit {
   @Output() stagesExtracted = new EventEmitter<Stage[]>();
   @Output() matchesExtracted = new EventEmitter<Match[]>(); 
   @Output() tournamentSelected = new EventEmitter<Tournament>();
+  @Output() tournamentUpdateRequested = new EventEmitter<void>();
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   file: File | null = null;
@@ -35,7 +37,8 @@ export class StageInputTypePage implements OnInit {
   constructor(
     private toastController: ToastController, 
     private tournamentService: PredefinedTournamentService, 
-    private modalController: ModalController
+    private modalController: ModalController,
+    private alertController: AlertController
   ) {}
 
   ngOnInit(): void {
@@ -151,6 +154,27 @@ export class StageInputTypePage implements OnInit {
 
   triggerFileInput(): void {
     this.fileInput.nativeElement.click();
+  }
+
+  async triggerTournamentUpdate(): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Confirm Update',
+      message: 'This will refresh your tournament with the latest data from the source. All matching records will be updated and marked accordingly.',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Update',
+          handler: () => {
+            this.tournamentUpdateRequested.emit();
+          },
+        },
+      ],
+    });
+  
+    await alert.present();
   }
 
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary' = 'primary') {

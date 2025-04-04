@@ -737,5 +737,33 @@ namespace Backend.Controllers
             }
         }
 
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("pending-updates/{tournamentId}")]
+        public async Task<IActionResult> CheckForPendingUpdates(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized access attempt: Missing user ID.");
+                    return Unauthorized("User ID not found in claims.");
+                }
+
+                var updatedTournament = await _tournamentService.CheckForPendingUpdatesAsync(tournamentId, userId);
+
+                if (updatedTournament == null)
+                {
+                    return NotFound(new { Message = $"Custom tournament with ID {tournamentId} not found or no updates available." });
+                }
+
+                return Ok(updatedTournament);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while checking updates for custom tournament ID {tournamentId}.");
+                return StatusCode(500, new { Message = "An error occurred while checking for tournament updates." });
+            }
+        }
     }
 }

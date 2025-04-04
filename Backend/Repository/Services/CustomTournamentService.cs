@@ -495,7 +495,12 @@ namespace Backend.Repository.Services
 
                 foreach (var team in newTeams)
                 {
-                    tournament.Teams.Add(new CustomTeam { TeamName = team.TeamName, TournamentId = tournament.TournamentId });
+                    tournament.Teams.Add(new CustomTeam
+                    {
+                        TeamName = team.TeamName,
+                        TournamentId = tournament.TournamentId,
+                        PredefinedTeamId = team.PredefinedTeamId // This can be null or a valid ID
+                    });
                 }
 
                 await _context.SaveChangesAsync();
@@ -528,7 +533,13 @@ namespace Backend.Repository.Services
 
                 foreach (var stage in newStages)
                 {
-                    tournament.Stages.Add(new CustomMatchStage { StageName = stage.StageName, TournamentId = tournament.TournamentId, Order = stage.Order });
+                    tournament.Stages.Add(new CustomMatchStage
+                    {
+                        StageName = stage.StageName,
+                        TournamentId = tournament.TournamentId,
+                        Order = stage.Order,
+                        PredefinedStageId = stage.PredefinedStageId
+                    });
                 }
 
                 await _context.SaveChangesAsync();
@@ -597,7 +608,8 @@ namespace Backend.Repository.Services
                         AwayWinOdds = newMatch.AwayWinOdds,
                         HomeQualifies = newMatch.HomeQualifies,
                         AwayQualifies = newMatch.AwayQualifies,
-                        IsVisible = newMatch.IsVisible
+                        IsVisible = newMatch.IsVisible,
+                        PredefinedMatchId = newMatch.PredefinedMatchId
                     });
                 }
 
@@ -703,11 +715,16 @@ namespace Backend.Repository.Services
                 _logger.LogInformation($"Fetching custom tournament with ID: {tournamentId} for user {userId}");
 
                 var tournament = await _context.CustomTournaments
-                    .Include(t => t.Teams)
                     .Include(t => t.Matches)
+                        .ThenInclude(m => m.Stage)
+                    .Include(t => t.Matches)
+                        .ThenInclude(m => m.HomeTeam)
+                    .Include(t => t.Matches)
+                        .ThenInclude(m => m.AwayTeam)
+                    .Include(t => t.Teams)
                     .Include(t => t.Stages)
                     .Include(t => t.Participants)
-                        .ThenInclude(p => p.User) // Include User Details
+                        .ThenInclude(p => p.User)
                     .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
 
                 if (tournament == null)
@@ -1799,6 +1816,237 @@ namespace Backend.Repository.Services
                     Message = "An error occurred while requesting to join the tournament. Please try again."
                 };
             }
+        }
+
+        public async Task<CustomTournamentDto?> CheckForPendingUpdatesAsync(int tournamentId, string userId)
+        {
+            _logger.LogInformation($"Checking for pending updates in custom tournament {tournamentId} for user {userId}");
+
+            var tournament = await _context.CustomTournaments
+                .Include(t => t.Teams)
+                .Include(t => t.Stages)
+                .Include(t => t.Matches)
+                .Include(t => t.Participants)
+                    .ThenInclude(p => p.User)
+                .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+            if (tournament == null)
+            {
+                _logger.LogWarning($"Tournament {tournamentId} not found");
+                return null;
+            }
+
+            bool isAdmin = tournament.Participants.Any(p => p.UserId == userId && p.Role == UserTournamentRole.Admin);
+            if (!isAdmin)
+            {
+                _logger.LogWarning($"Unauthorized update check attempt by user {userId}");
+                return null;
+            }
+
+            var dto = new CustomTournamentDto
+            {
+                TournamentId = tournament.TournamentId,
+                PredefinedTournamentId = tournament.PredefinedTournamentId,
+                TournamentName = tournament.Name,
+                CreatedBy = tournament.CreatedByUserId,
+                CreatedAt = tournament.CreatedAt,
+                TournamentVisibility = tournament.Visibility.ToString(),
+                UpdateMethod = tournament.Update.ToString(),
+                IsActive = tournament.IsActive,
+                Users = new(),
+                Settings = null
+            };
+
+            var predefinedTournamentId = tournament.PredefinedTournamentId;
+
+            // === TEAMS ===
+            var predefinedTeams = await _context.PredefinedTeams
+                .Where(pt => pt.PredefinedTournamentId == predefinedTournamentId)
+                .ToListAsync();
+            var predefinedTeamDict = predefinedTeams.ToDictionary(pt => pt.TeamId);
+
+            foreach (var team in tournament.Teams)
+            {
+                var teamDto = new CustomTeamDto
+                {
+                    TeamId = team.TeamId,
+                    PredefinedTeamId = team.PredefinedTeamId,
+                    TeamName = team.TeamName,
+                    RecordStatus = "Uploaded"
+                };
+
+                if (team.PredefinedTeamId == null || !predefinedTeamDict.ContainsKey(team.PredefinedTeamId.Value))
+                {
+                    teamDto.RecordStatus = "Delete";
+                }
+                else
+                {
+                    var predefined = predefinedTeamDict[team.PredefinedTeamId.Value];
+                    if (predefined.UpdatedAt > (team.UpdatedAt ?? team.CreatedAt))
+                    {
+                        teamDto.TeamName = predefined.TeamName;
+                        teamDto.RecordStatus = "Update";
+                    }
+                }
+
+                dto.Teams.Add(teamDto);
+            }
+
+            foreach (var predefined in predefinedTeams)
+            {
+                if (!tournament.Teams.Any(t => t.PredefinedTeamId == predefined.TeamId))
+                {
+                    dto.Teams.Add(new CustomTeamDto
+                    {
+                        TeamId = null,
+                        PredefinedTeamId = predefined.TeamId,
+                        TeamName = predefined.TeamName,
+                        RecordStatus = "New"
+                    });
+                }
+            }
+
+            // === STAGES ===
+            var predefinedStages = await _context.PredefinedMatchStages
+                .Where(ps => ps.TournamentId == predefinedTournamentId)
+                .ToListAsync();
+            var predefinedStageDict = predefinedStages.ToDictionary(ps => ps.StageId);
+
+            foreach (var stage in tournament.Stages)
+            {
+                var stageDto = new CustomStageDto
+                {
+                    StageId = stage.StageId,
+                    PredefinedStageId = stage.PredefinedStageId,
+                    StageName = stage.StageName,
+                    Order = stage.Order,
+                    RecordStatus = "Uploaded"
+                };
+
+                if (stage.PredefinedStageId == null || !predefinedStageDict.ContainsKey(stage.PredefinedStageId.Value))
+                {
+                    stageDto.RecordStatus = "Delete";
+                }
+                else
+                {
+                    var predefined = predefinedStageDict[stage.PredefinedStageId.Value];
+                    if (predefined.UpdatedAt > (stage.UpdatedAt ?? stage.CreatedAt))
+                    {
+                        stageDto.StageName = predefined.StageName;
+                        stageDto.Order = predefined.Order;
+                        stageDto.RecordStatus = "Update";
+                    }
+                }
+
+                dto.Stages.Add(stageDto);
+            }
+
+            foreach (var predefined in predefinedStages)
+            {
+                if (!tournament.Stages.Any(s => s.PredefinedStageId == predefined.StageId))
+                {
+                    dto.Stages.Add(new CustomStageDto
+                    {
+                        StageId = null,
+                        PredefinedStageId = predefined.StageId,
+                        StageName = predefined.StageName,
+                        Order = predefined.Order,
+                        RecordStatus = "New"
+                    });
+                }
+            }
+
+            // === MATCHES ===
+            var predefinedMatches = await _context.PredefinedMatches
+                .Include(pm => pm.PredefinedStage)
+                .Include(pm => pm.HomeTeam)
+                .Include(pm => pm.AwayTeam)
+                .Where(pm => pm.PredefinedTournament.TournamentId == predefinedTournamentId)
+                .ToListAsync();
+            var predefinedMatchDict = predefinedMatches.ToDictionary(pm => pm.MatchId);
+
+            foreach (var match in tournament.Matches)
+            {
+                var matchDto = new CustomMatchDto
+                {
+                    MatchId = match.MatchId,
+                    PredefinedMatchId = match.PredefinedMatchId,
+                    StageId = match.StageId,
+                    StageName = match.Stage?.StageName ?? "Unknown",
+                    HomeTeamId = match.HomeTeamId,
+                    AwayTeamId = match.AwayTeamId,
+                    HomeTeam = match.HomeTeam?.TeamName ?? "Unknown",
+                    AwayTeam = match.AwayTeam?.TeamName ?? "Unknown",
+                    MatchType = match.Type.ToString(),
+                    MatchStart = match.MatchStart,
+                    HomeWinOdds = match.HomeWinOdds,
+                    DrawOdds = match.DrawOdds,
+                    AwayWinOdds = match.AwayWinOdds,
+                    HomeQualifies = match.HomeQualifies,
+                    AwayQualifies = match.AwayQualifies,
+                    IsVisible = match.IsVisible,
+                    RecordStatus = "Uploaded"
+                };
+
+                if (match.PredefinedMatchId == null || !predefinedMatchDict.ContainsKey(match.PredefinedMatchId.Value))
+                {
+                    matchDto.RecordStatus = "Delete";
+                }
+                else
+                {
+                    var predefined = predefinedMatchDict[match.PredefinedMatchId.Value];
+                    if (predefined.UpdatedAt > (match.UpdatedAt ?? match.CreatedAt))
+                    {
+                        matchDto.StageId = predefined.StageId;
+                        matchDto.StageName = predefined.PredefinedStage?.StageName ?? "Unknown";
+                        matchDto.HomeTeamId = predefined.HomeTeamId;
+                        matchDto.AwayTeamId = predefined.AwayTeamId;
+                        matchDto.HomeTeam = predefined.HomeTeam?.TeamName ?? "Unknown";
+                        matchDto.AwayTeam = predefined.AwayTeam?.TeamName ?? "Unknown";
+                        matchDto.MatchStart = predefined.MatchStart;
+                        matchDto.MatchType = predefined.Type.ToString();
+                        matchDto.HomeWinOdds = predefined.HomeWinOdds;
+                        matchDto.DrawOdds = predefined.DrawOdds;
+                        matchDto.AwayWinOdds = predefined.AwayWinOdds;
+                        matchDto.HomeQualifies = predefined.HomeQualifies;
+                        matchDto.AwayQualifies = predefined.AwayQualifies;
+                        matchDto.IsVisible = predefined.IsVisible;
+                        matchDto.RecordStatus = "Update";
+                    }
+                }
+
+                dto.Matches.Add(matchDto);
+            }
+
+            foreach (var predefined in predefinedMatches)
+            {
+                if (!tournament.Matches.Any(m => m.PredefinedMatchId == predefined.MatchId))
+                {
+                    dto.Matches.Add(new CustomMatchDto
+                    {
+                        MatchId = null,
+                        PredefinedMatchId = predefined.MatchId,
+                        StageId = predefined.StageId,
+                        StageName = predefined.PredefinedStage?.StageName ?? "Unknown",
+                        HomeTeamId = predefined.HomeTeamId,
+                        HomeTeam = predefined.HomeTeam?.TeamName ?? "Unknown",
+                        AwayTeamId = predefined.AwayTeamId,
+                        AwayTeam = predefined.AwayTeam?.TeamName ?? "Unknown",
+                        MatchStart = predefined.MatchStart,
+                        MatchType = predefined.Type.ToString(),
+                        HomeWinOdds = predefined.HomeWinOdds,
+                        DrawOdds = predefined.DrawOdds,
+                        AwayWinOdds = predefined.AwayWinOdds,
+                        HomeQualifies = predefined.HomeQualifies,
+                        AwayQualifies = predefined.AwayQualifies,
+                        IsVisible = predefined.IsVisible,
+                        RecordStatus = "New"
+                    });
+                }
+            }
+
+            _logger.LogInformation($"Finished checking updates for tournament {tournamentId}");
+            return dto;
         }
     }
 }

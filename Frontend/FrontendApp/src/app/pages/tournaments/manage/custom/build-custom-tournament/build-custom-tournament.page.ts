@@ -816,7 +816,72 @@ export class BuildCustomTournamentPage implements OnInit {
       },
     });
   }
-           
+
+  async handleTournamentUpdate(): Promise<void> {
+    const loading = await this.loadingController.create({
+      message: 'Refreshing data...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+  
+    try {
+      const tournamentId = this.tournamentForm.value.tournamentId;
+      if (!tournamentId) {
+        this.showToast('Tournament ID is missing.', 'danger');
+        await loading.dismiss();
+        return;
+      }
+  
+      // Call backend refresh endpoint
+      const updatedTournament: Tournament = await firstValueFrom(
+        this.tournamentService.checkForTournamentUpdates(tournamentId)
+      );
+  
+      console.log('[Tournament Update] Backend returned updated records:', updatedTournament);
+  
+      // Merge logic — compare existing FormArray with backend and patch
+      this.mergeUpdatedEntities(this.teamsArray, updatedTournament.teams, 'teamId');
+      this.mergeUpdatedEntities(this.stagesArray, updatedTournament.stages, 'stageId');
+      this.mergeUpdatedEntities(this.matchesArray, updatedTournament.matches, 'matchId');
+  
+      this.showToast('Tournament updated from source!', 'success');
+    } catch (error) {
+      console.error('[Tournament Update] Failed:', error);
+      this.showToast('Failed to refresh tournament!', 'danger');
+    } finally {
+      await loading.dismiss();
+    }
+  }
+
+  mergeUpdatedEntities(formArray: FormArray, updatedList: any[], key: string): void {
+    const currentMap = new Map(formArray.value.map((item: any) => [item[key], item]));
+    const updatedMap = new Map(updatedList.map((item: any) => [item[key], item]));
+  
+    // === 1. Update or delete existing items ===
+    formArray.controls.forEach((control: AbstractControl) => {
+      const formValue = control.value;
+      const match = updatedMap.get(formValue[key]);
+  
+      if (match) {
+        const changed = Object.entries(match).some(([k, v]) => formValue[k] !== v);
+        if (changed) {
+          // Update everything from backend, including recordStatus and backend ID
+          (control as FormGroup).patchValue({ ...match });
+        }
+      } else {
+        // Backend did not return this record => mark as "Delete"
+        (control as FormGroup).patchValue({ recordStatus: 'Delete' });
+      }
+    });
+  
+    // === 2. Add new records ===
+    updatedList.forEach(item => {
+      if (!currentMap.has(item[key])) {
+        formArray.push(this.fb.group(item));
+      }
+    });
+  }   
+               
   async nextStep(): Promise<void> {
     const canProceed = await this.canProceed();
     if (canProceed && this.step < 7) {
