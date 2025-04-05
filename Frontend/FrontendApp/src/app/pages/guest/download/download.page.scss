@@ -1,0 +1,63 @@
+.page-container {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 14px;
+  color: #2f3640;
+  line-height: 1.6;
+  border-radius: 10px;
+  transition: background 0.3s ease-in-out;
+  padding-bottom: 50px;
+}
+
+.download-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 70px;
+}
+
+.download-card {
+  flex: 1 1 30%;
+  text-align: center;
+  padding: 20px;
+}
+
+.icon-wrapper {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  color: white;
+}
+
+.icon-wrapper.excel {
+  background-color: #217346;
+}
+
+.icon-wrapper.apple {
+  background-color: #b0b0b0;
+}
+
+.icon-wrapper.android {
+  background-color: #3ddc84;
+}
+
+.download-text h3 {
+  margin: 10px 0 5px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.download-text p {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+ion-button {
+  margin-bottom: 8px;
+}

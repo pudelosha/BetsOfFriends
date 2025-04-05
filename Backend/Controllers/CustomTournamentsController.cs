@@ -303,7 +303,7 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPost("recalculate/{tournamentId}")]
         public async Task<IActionResult> RecalculateTournamentBets(int tournamentId)
         {

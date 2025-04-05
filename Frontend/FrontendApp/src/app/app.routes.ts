@@ -91,7 +91,10 @@ export const routes: Routes = [
 
   // 📄 Publicly available pages
   { path: 'terms', loadComponent: () => import('./pages/guest/terms/terms.page').then(m => m.TermsPage) },
+  { path: 'download', loadComponent: () => import('./pages/guest/download/download.page').then( m => m.DownloadPage) },
+
 
   // 🛑 Wildcard route
-  { path: '**', redirectTo: 'welcome' }
+  { path: '**', redirectTo: 'welcome' },
+
 ];

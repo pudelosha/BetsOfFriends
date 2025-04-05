@@ -699,10 +699,10 @@ export class BuildCustomTournamentPage implements OnInit {
       return;
     }
   
-    if (this.usersArray.length < 1) {
-      this.showToast('At least 1 user is required!', 'danger');
-      return;
-    }
+    //if (this.usersArray.length < 1) {
+    //  this.showToast('At least 1 user is required!', 'danger');
+    //  return;
+    //}
   
     const loading = await this.loadingController.create({
       message: 'Submitting tournament...',
@@ -957,10 +957,10 @@ export class BuildCustomTournamentPage implements OnInit {
         return true;
   
       case 6:
-        if (this.usersArray.length === 0) {
-          await this.showToast('At least 1 user is required!', 'danger');
-          return false;
-        }
+        //if (this.usersArray.length === 0) {
+        //  await this.showToast('At least 1 user is required!', 'danger');
+        //  return false;
+        //}
         return true;
     }
   
