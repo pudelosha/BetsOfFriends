@@ -90,9 +90,11 @@ export const routes: Routes = [
   },
 
   // 📄 Publicly available pages
-  { path: 'terms', loadComponent: () => import('./pages/guest/terms/terms.page').then(m => m.TermsPage) },
-  { path: 'download', loadComponent: () => import('./pages/guest/download/download.page').then( m => m.DownloadPage) },
-
+  { path: 'terms', loadComponent: () => import('./pages/info/terms/terms.page').then(m => m.TermsPage) },
+  { path: 'download', loadComponent: () => import('./pages/info/download/download.page').then( m => m.DownloadPage) },
+  { path: 'support', loadComponent: () => import('./pages/info/support/support.page').then( m => m.SupportPage) },
+  { path: 'policy', loadComponent: () => import('./pages/info/policy/policy.page').then( m => m.PolicyPage) },
+  { path: 'info-and-support', loadComponent: () => import('./pages/info/info-and-support/info-and-support.page').then( m => m.InfoAndSupportPage) },
 
   // 🛑 Wildcard route
   { path: '**', redirectTo: 'welcome' },
