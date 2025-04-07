@@ -522,6 +522,7 @@
     "IMPORT_TEMPLATE": "Use a predefined tournament as a template",
     "CLEAR_FORM": "Clear all form data and start from scratch",
     "IMPORT_FROM_FILE": "Import from file",
+    "IMPORT_FROM_API": "Import from API",   
     "IMPORT_TOURNAMENT": "Import tournament",
     "UPDATE_TOURNAMENT": "Update tournament",
     "ERASE_FORM": "Erase All Form Data"
@@ -579,5 +580,15 @@
     },
     "INFO": {
       "TITLE": "Info & Support"
+    },
+    "SELECT_COMPETITION": {
+      "TITLE": "Select Competition",
+      "CLOSE": "Close",
+      "CONFIRM": "Confirm",
+      "COMPETITION_CODE": "Competition Code",
+      "SEASON": "Season",
+      "INVALID_COMPETITION": "Competition code is required.",
+      "INVALID_SEASON": "Season is required."
     }
+
 }

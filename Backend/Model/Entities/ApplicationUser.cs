@@ -15,6 +15,8 @@ namespace Backend.Model.Entities
         public Language? Language { get; set; }
         public string? Nickname { get; set; }
 
+        public bool HintsVisible { get; set; } = true;  // Show page hints/descriptions
+
         public bool AcceptedRegulations { get; set; }
         public bool AcceptedMarketingConsent { get; set; }
 

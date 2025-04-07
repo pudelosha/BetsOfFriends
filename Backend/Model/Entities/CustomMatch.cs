@@ -32,10 +32,16 @@ namespace Backend.Model.Entities
 
         public DateTime MatchStart { get; set; }
 
+        // Live result
+        public int? HomeScoreLive { get; set; }
+        public int? AwayScoreLive { get; set; }
+        public string? LiveStatus { get; set; }
+        public int? ExternalMatchId { get; set; }
+
+        // Final match result
         public int? HomeScore { get; set; }
         public int? AwayScore { get; set; }
         public TeamQualified? Qualified { get; set; }
-
 
         // Betting Odds
         public decimal HomeWinOdds { get; set; }

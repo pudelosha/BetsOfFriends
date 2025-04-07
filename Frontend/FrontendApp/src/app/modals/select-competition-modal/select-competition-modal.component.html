@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'SELECT_COMPETITION.TITLE' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">{{ 'SELECT_COMPETITION.CLOSE' | translate }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form">
+
+    <!-- Competition Code -->
+    <ion-item>
+      <ion-label position="floating">{{ 'SELECT_COMPETITION.COMPETITION' | translate }}</ion-label>
+      <ion-select formControlName="competitionCode" interface="alert">
+        <ion-select-option *ngFor="let comp of competitions" [value]="comp.code">
+          {{ comp.name }} ({{ comp.region }} | {{ comp.type }})
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <div class="error-message" *ngIf="form.get('competitionCode')?.invalid && form.get('competitionCode')?.touched">
+      {{ 'SELECT_COMPETITION.INVALID_COMPETITION' | translate }}
+    </div>
+    
+    <!-- Season -->
+    <ion-item>
+      <ion-label position="floating">{{ 'SELECT_COMPETITION.SEASON' | translate }}</ion-label>
+      <ion-input type="number" formControlName="seasonCode"></ion-input>
+    </ion-item>
+    <div class="error-message" *ngIf="form.get('seasonCode')?.invalid && form.get('seasonCode')?.touched">
+      {{ 'SELECT_COMPETITION.INVALID_SEASON' | translate }}
+    </div>
+
+    <!-- Confirm Button -->
+    <ion-button expand="block" color="primary" (click)="submit()" [disabled]="form.invalid">
+      {{ 'SELECT_COMPETITION.CONFIRM' | translate }}
+    </ion-button>
+    
+  </form>
+</ion-content>

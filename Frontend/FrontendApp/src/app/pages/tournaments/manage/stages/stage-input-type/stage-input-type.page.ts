@@ -10,6 +10,8 @@ import { ModalController } from '@ionic/angular';
 import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-selection-modal/tournament-selection.modal';
 import { TranslateModule } from '@ngx-translate/core';
 import { AlertController } from '@ionic/angular';
+import { SelectCompetitionModalComponent } from 'src/app/modals/select-competition-modal/select-competition-modal.component';
+import { ExternalDataService } from 'src/app/services/external-data.service';
 
 
 @Component({
@@ -33,12 +35,14 @@ export class StageInputTypePage implements OnInit {
   file: File | null = null;
   predefinedTournaments: Tournament[] = [];
   selectedTournamentId: number | null = null;
+  isLoading: boolean = false;
 
   constructor(
     private toastController: ToastController, 
     private tournamentService: PredefinedTournamentService, 
     private modalController: ModalController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private externalDataService: ExternalDataService
   ) {}
 
   ngOnInit(): void {
@@ -156,6 +160,103 @@ export class StageInputTypePage implements OnInit {
     this.fileInput.nativeElement.click();
   }
 
+  async openAPISelection() {
+    const modal = await this.modalController.create({
+      component: SelectCompetitionModalComponent,
+      breakpoints: [0, 0.5, 1],
+      initialBreakpoint: 0.5,
+    });
+  
+    await modal.present();
+  
+    const { data } = await modal.onWillDismiss();
+  
+    if (data?.competitionCode && data?.seasonCode) {
+      const competitionCode = data.competitionCode;
+      const seasonCode = data.seasonCode;
+  
+      console.log(`Importing matches for competition ${competitionCode}, season ${seasonCode}`);
+  
+      this.isLoading = true;
+  
+      this.externalDataService.getCompetitionMatches(competitionCode, seasonCode).subscribe({
+        next: (tournament) => {
+          console.log('Fetched Tournament DTO:', tournament);
+  
+          const teams: Team[] = tournament.teams.map(t => ({
+            teamFrontendId: this.generateFrontendId(),
+            teamId: null,
+            predefinedTeamId: t.teamId,
+            teamName: t.teamName,
+            recordStatus: 'New'
+          }));
+  
+          const stages: Stage[] = tournament.stages.map((s, index) => ({
+            stageFrontendId: this.generateFrontendId(),
+            stageId: null,
+            predefinedStageId: s.stageId,
+            stageName: s.stageName,
+            order: index + 1,
+            recordStatus: 'New'
+          }));
+  
+          const stageMap = new Map(stages.map(s => [s.stageName.toLowerCase(), s]));
+          const teamMap = new Map(teams.map(t => [t.teamName.toLowerCase(), t]));
+  
+          const matches: Match[] = tournament.matches.map(m => {
+            const stage = stageMap.get(m.stageName.toLowerCase());
+            const home = teamMap.get(m.homeTeam.toLowerCase());
+            const away = teamMap.get(m.awayTeam.toLowerCase());
+  
+            return {
+              matchFrontendId: this.generateFrontendId(),
+              matchId: null,
+              predefinedMatchId: m.matchId,
+  
+              stageFrontendId: stage?.stageFrontendId ?? this.generateFrontendId(),
+              stageId: stage?.stageId ?? null,
+              stageName: m.stageName,
+  
+              homeTeamId: home?.teamId ?? null,
+              homeTeamFrontendId: home?.teamFrontendId ?? this.generateFrontendId(),
+              homeTeam: m.homeTeam,
+  
+              awayTeamId: away?.teamId ?? null,
+              awayTeamFrontendId: away?.teamFrontendId ?? this.generateFrontendId(),
+              awayTeam: m.awayTeam,
+  
+              matchStart: new Date(m.matchStart).toISOString(),
+              matchType: m.matchType,
+              homeWinOdds: m.homeWinOdds,
+              drawOdds: m.drawOdds,
+              awayWinOdds: m.awayWinOdds,
+              homeQualifies: m.homeQualifies,
+              awayQualifies: m.awayQualifies,
+              isVisible: m.isVisible,
+              recordStatus: 'New'
+            };
+          });
+  
+          this.teamsExtracted.emit(teams);
+          this.stagesExtracted.emit(stages);
+          this.matchesExtracted.emit(matches);
+  
+          this.showToast('Competition matches loaded successfully!', 'success');
+        },
+        error: (err) => {
+          console.error('Error fetching competition matches:', err);
+          this.showToast('Failed to load competition data.', 'danger');
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
+  
+    } else {
+      this.showToast('No competition selected.', 'warning');
+    }
+  }  
+  
   async triggerTournamentUpdate(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Confirm Update',

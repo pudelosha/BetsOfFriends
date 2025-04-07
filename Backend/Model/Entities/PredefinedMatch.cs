@@ -18,8 +18,6 @@ namespace Backend.Model.Entities
         [ForeignKey("TournamentId")]
         public PredefinedTournament PredefinedTournament { get; set; }
 
-        public int? matchUpdateId { get; set; } // TODO future development - to monitor match results via external API
-
         [Required]
         public int HomeTeamId { get; set; }
         [ForeignKey("HomeTeamId")]
@@ -33,6 +31,13 @@ namespace Backend.Model.Entities
         [Required]
         public DateTime MatchStart { get; set; }
 
+        // Live result
+        public int? HomeScoreLive { get; set; }
+        public int? AwayScoreLive { get; set; }
+        public string? LiveStatus { get; set; }
+        public int? ExternalMatchId { get; set; }
+
+        // Final match result
         public int? HomeScore { get; set; }
         public int? AwayScore { get; set; }
         public TeamQualified? Qualified { get; set; }

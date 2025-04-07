@@ -1,6 +1,5 @@
+using Backend.DTOs;
 using Backend.Extensions;
-using Backend.Model.Database;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +22,7 @@ builder.Services
 
 // Register Services
 builder.Services.AddApplicationServices();
+builder.Services.Configure<FootballDataConfig>(config.GetSection("FootballData"));
 
 // Swagger Configuration
 builder.Services.AddControllers();

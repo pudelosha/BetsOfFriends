@@ -116,6 +116,16 @@
       class="hidden-file-input"
       (change)="handleFileInput($event)">
 
+    
+    <!-- Import from API -->
+    <ion-button
+      *ngIf="isPredefinedTournament"
+      expand="full"
+      color="medium"
+      (click)="openAPISelection()">
+      {{ 'STAGE_INPUT_TYPE.IMPORT_FROM_API' | translate }}
+    </ion-button>
+
     <!-- Import tournament -->
     <ion-button
       *ngIf="isCustomTournamentCreateMode"
