@@ -1,0 +1,63 @@
+.social-page-container {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-size: 14px;
+    color: #2f3640;
+    line-height: 1.6;
+    height: 100vh;
+  }
+  
+  .social-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+  
+  .social-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+  
+    &:hover {
+      transform: translateY(-5px);
+    }
+  
+    h3 {
+      font-size: 16px;
+      margin: 12px 0 6px;
+      color: #2c3e50;
+    }
+  
+    p {
+      font-size: 13px;
+      color: #555;
+      margin: 0;
+    }
+  
+    .icon-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: white;
+    }
+  }
+  
+  /* Individual platform colors */
+  .youtube .icon-circle { background-color: #ff0000; }
+  .instagram .icon-circle { background: radial-gradient(circle at 30% 30%, #fdf497, #fd5949, #d6249f, #285AEB); }
+  .facebook .icon-circle { background-color: #3b5998; }
+  .x .icon-circle { background-color: #000000; }
+  .tiktok .icon-circle { background-color: #010101; }
+  .discord .icon-circle { background-color: #7289da; }
+  

@@ -1,0 +1,49 @@
+<ion-content class="ion-padding page-with-header">
+  <div class="page-container">
+
+    <!-- Spinner (if needed in future) -->
+    <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+
+    <!-- No FAQs fallback -->
+    <div *ngIf="!isLoading && faqs.length === 0" class="no-notifications">
+      <p>No FAQs available at the moment.</p>
+    </div>
+
+    <!-- FAQ Accordion List -->
+    <ion-list *ngIf="!isLoading && faqs.length > 0" class="notification-list">
+      <ion-accordion-group [value]="expandedQuestionId">
+        <ion-accordion *ngFor="let faq of faqs" [value]="faq.id">
+          
+          <!-- Header Row: Question + Optional Info -->
+          <ion-item 
+            slot="header"
+            class="notification-item"
+            (click)="toggleFaq(faq)"
+          >
+            <div class="notification-grid">
+              <!-- Question -->
+              <div class="notification-title">
+                <span>{{ faq.question }}</span>
+              </div>
+
+              <!-- Static Column: e.g. Category or Hint -->
+              <div class="notification-date">
+                <span class="date">{{ faq.category || 'FAQ' }}</span>
+              </div>
+
+              <!-- Optional Empty Third Column -->
+              <div class="notification-button-container"></div>
+            </div>
+          </ion-item>
+
+          <!-- Expanded Answer -->
+          <div slot="content" class="notification-content">
+            <p>{{ faq.answer }}</p>
+          </div>
+
+        </ion-accordion>
+      </ion-accordion-group>
+    </ion-list>
+
+  </div>
+</ion-content>

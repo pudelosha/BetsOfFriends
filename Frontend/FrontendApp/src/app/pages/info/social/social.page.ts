@@ -1,34 +1,31 @@
-
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { Router } from '@angular/router';
 import { TitleService } from 'src/app/services/title.service';
 
-
 @Component({
-  selector: 'app-info-and-support',
-  templateUrl: './info-and-support.page.html',
-  styleUrls: ['./info-and-support.page.scss'],
+  selector: 'app-social',
+  templateUrl: './social.page.html',
+  styleUrls: ['./social.page.scss'],
   standalone: true,
   imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
 })
-export class InfoAndSupportPage implements OnInit {
+export class SocialPage implements OnInit {
 
-  constructor(private router: Router, private titleService: TitleService) {}
+  constructor(private titleService: TitleService) { }
 
   ngOnInit() {
-    this.titleService.setTitle('INFO.TITLE');
+    this.titleService.setTitle('SOCIAL.TITLE');
   }
 
   ionViewWillEnter() {
-    this.titleService.setTitle('INFO.TITLE');
+    this.titleService.setTitle('SOCIAL.TITLE');
   }
 
-  navigateTo(route: string): void {
-    this.router.navigate([route]);
+  openLink(url: string): void {
+    window.open(url, '_blank');
   }
 
 }

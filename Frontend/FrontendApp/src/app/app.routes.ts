@@ -95,6 +95,8 @@ export const routes: Routes = [
   { path: 'support', loadComponent: () => import('./pages/info/support/support.page').then( m => m.SupportPage) },
   { path: 'policy', loadComponent: () => import('./pages/info/policy/policy.page').then( m => m.PolicyPage) },
   { path: 'info-and-support', loadComponent: () => import('./pages/info/info-and-support/info-and-support.page').then( m => m.InfoAndSupportPage) },
+  { path: 'faq', loadComponent: () => import('./pages/info/faq/faq.page').then( m => m.FaqPage) },
+  { path: 'social', loadComponent: () => import('./pages/info/social/social.page').then( m => m.SocialPage) },
 
   // 🛑 Wildcard route
   { path: '**', redirectTo: 'welcome' },

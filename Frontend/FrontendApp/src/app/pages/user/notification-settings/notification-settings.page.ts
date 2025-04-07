@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 
 
 @Component({
@@ -15,7 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 export class NotificationSettingsPage implements OnInit {
   notificationForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private toastCtrl: ToastController) {
+  constructor(private fb: FormBuilder, private toastCtrl: ToastController, private titleService: TitleService) {
     this.notificationForm = this.fb.group({
       receiveEmailMatchClosed: [false],
       receivePushMatchClosed: [false],
@@ -32,7 +33,13 @@ export class NotificationSettingsPage implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.titleService.setTitle('NOTIFICATIONS.TITLE');
+  }
+
+  ionViewWillEnter() {
+    this.titleService.setTitle('NOTIFICATIONS.TITLE');
+  }
 
   async onSubmit() {
     console.log('Updated Notification Settings:', this.notificationForm.value);

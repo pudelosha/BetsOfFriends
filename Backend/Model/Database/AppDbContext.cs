@@ -31,6 +31,8 @@ namespace Backend.Model.Database
         // Other
         public DbSet<Location> Locations { get; set; }
         public DbSet<Language> Languages { get; set; }
+        public DbSet<SupportMessage> SupportMessages { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -45,6 +47,7 @@ namespace Backend.Model.Database
             ConfigureNotificationRelationships(builder);
             ConfigurePredefinedReferencesInCustomEntities(builder);
             ConfigureUserRelationship(builder);
+            ConfigureSupportRelationships(builder);
             SeedRoles(builder);
             SeedCountries(builder);
             SeedLanguages(builder);
@@ -264,6 +267,15 @@ namespace Backend.Model.Database
                 .HasOne(u => u.Language)
                 .WithMany(l => l.Users)
                 .HasForeignKey(u => u.LanguageId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
+
+        private void ConfigureSupportRelationships(ModelBuilder builder)
+        {
+            builder.Entity<SupportMessage>()
+                .HasOne(m => m.Language)
+                .WithMany()
+                .HasForeignKey(m => m.LanguageId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
 

@@ -220,6 +220,43 @@ public class NotificationService : INotificationService
         );
     }
 
+    public async Task NotifySuperAdminsAboutSupportMessageAsync(SupportMessage message)
+    {
+        // Step 1: Get all users with the "SuperAdmin" role
+        var superAdminRole = "SuperAdmin";
+        var superAdmins = await (from user in _dbContext.Users
+                                 join userRole in _dbContext.UserRoles on user.Id equals userRole.UserId
+                                 join role in _dbContext.Roles on userRole.RoleId equals role.Id
+                                 where role.Name == superAdminRole
+                                 select user)
+                                 .Distinct()
+                                 .ToListAsync();
+
+        if (!superAdmins.Any())
+        {
+            _logger.LogWarning("No SuperAdmin users found to notify about support message.");
+            return;
+        }
+
+        _logger.LogInformation($"Sending support notification to {superAdmins.Count} SuperAdmins.");
+
+        var subjectPreview = message.Subject.Length > 40
+            ? message.Subject.Substring(0, 40) + "..."
+            : message.Subject;
+
+        var notificationTitle = $"New Support Message from {message.Email}";
+        var notificationBody = $"Subject: {subjectPreview}";
+
+        // Step 2: Notify super admins
+        await ProcessNotificationsAsync(
+            superAdmins,
+            notificationTitle,
+            notificationBody,
+            "/admin/support-messages",
+            u => (true, false)
+        );
+    }
+
     public async Task<bool> MarkNotificationAsReadAsync(int notificationId, string userId)
     {
         var notificationRecipient = await _dbContext.NotificationRecipients

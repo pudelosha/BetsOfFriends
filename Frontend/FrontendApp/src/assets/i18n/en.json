@@ -86,6 +86,7 @@
     "SETTINGS": "Settings",
     "PROFILE": "Profile",
     "NOTIFICATIONS": "Notifications",
+    "INFOANDSUPPORT": "Info & Support",
     "ADMIN": "Admin",
     "CREATE_TOURNAMENT": "Create Tournament",
     "MANAGE_TOURNAMENTS": "Manage Tournaments",
@@ -114,6 +115,7 @@
     "DELETE_ACCOUNT": "Delete Account"
   },
   "NOTIFICATIONS": {
+    "TITLE": "Notifications",
     "TOURNAMENT_UPDATES": "Tournament Updates",
     "MATCH_CLOSED": "Tournament results recalculated",
     "DAILY_UPDATES": "Daily tournament updates",
@@ -546,5 +548,36 @@
   },
   "MANAGE_PARTICIPANTS": {
     "TITLE": "Manage Participants"
-  }
+  },
+    "SUPPORT": {
+      "TITLE": "Contact Support",
+      "DESCRIPTION": "If you have any questions, issues, or suggestions, please fill out the form below. We'll get back to you as soon as possible.",
+      "EMAIL": "Your Email",
+      "EMAIL_ERROR": "Please enter a valid email address.",
+      "SUBJECT": "Subject",
+      "SUBJECT_ERROR": "Please enter a subject.",
+      "MESSAGE": "Message",
+      "MESSAGE_ERROR": "Please enter your message.",
+      "SEND": "Send Message",
+      "SUCCESS": "Your message has been sent successfully!",
+      "ERROR": "Failed to send message. Please try again later."
+    },
+      "TERMS": {
+        "TITLE": "Terms & Conditions"
+      },
+    "POLICY": {
+        "TITLE": "Privacy Policy"
+      },
+      "DOWNLOAD": {
+        "TITLE": "Download"
+      },
+      "FAQ": {
+        "TITLE": "FAQ"
+      },
+    "SOCIAL": {
+      "TITLE": "Social Media"
+    },
+    "INFO": {
+      "TITLE": "Info & Support"
+    }
 }

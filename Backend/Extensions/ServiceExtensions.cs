@@ -28,6 +28,7 @@ namespace Backend.Extensions
             services.AddScoped<IPredefinedTournamentService, PredefinedTournamentService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IPushNotificationService, PushNotificationService>();
+            services.AddScoped<ISupportService, SupportService>();
 
             services.AddHostedService<MatchUpdateHostedService>();
             services.AddHostedService<BetUpdateHostedService>();

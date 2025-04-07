@@ -106,6 +106,11 @@ export class AppComponent {
     this.router.navigate(['/notification-settings']);
   }
 
+  navigateToInfoAndSupport(){
+    console.log('Navigating to info-and-support...');
+    this.router.navigate(['/info-and-support']);
+  }
+
   navigateToMyBets() {
     console.log('Navigating to my-bets...');
     this.router.navigate(['/my-bets']);

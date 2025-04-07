@@ -135,4 +135,18 @@ export class AuthService {
       .map((messages) => messages.join(', '))
       .join(' ');
   }
+
+  getEmailFromToken(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+  
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const emailClaim = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
+      return decodedToken[emailClaim] || null;
+    } catch (err) {
+      console.error('Failed to decode JWT and extract email:', err);
+      return null;
+    }
+  }  
 }

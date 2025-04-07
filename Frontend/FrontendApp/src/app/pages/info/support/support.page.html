@@ -1,13 +1,53 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>support</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content fullscreen class="page-with-header">
+  <div class="page-container">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">support</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <form [formGroup]="supportForm" (ngSubmit)="submitSupportRequest()">
+      <div class="support-frame">
+
+        <!-- Title -->
+        <p class="support-description">{{ 'SUPPORT.DESCRIPTION' | translate }}</p>
+
+        <!-- Email -->
+        <ion-item>
+          <ion-label position="floating">{{ 'SUPPORT.EMAIL' | translate }}</ion-label>
+          <ion-input formControlName="email" type="email"></ion-input>
+        </ion-item>
+        <div class="validation-message">
+          <p class="error" *ngIf="f['email'].invalid && f['email'].touched">
+            {{ 'SUPPORT.EMAIL_ERROR' | translate }}
+          </p>
+        </div>
+
+        <!-- Subject -->
+        <ion-item>
+          <ion-label position="floating">{{ 'SUPPORT.SUBJECT' | translate }}</ion-label>
+          <ion-input formControlName="subject" type="text"></ion-input>
+        </ion-item>
+        <div class="validation-message">
+          <p class="error" *ngIf="f['subject'].invalid && f['subject'].touched">
+            {{ 'SUPPORT.SUBJECT_ERROR' | translate }}
+          </p>
+        </div>
+
+        <!-- Message -->
+        <ion-item lines="none">
+          <ion-label position="floating">{{ 'SUPPORT.MESSAGE' | translate }}</ion-label>
+          <ion-textarea formControlName="message" auto-grow="true"></ion-textarea>
+        </ion-item>
+        <div class="validation-message">
+          <p class="error" *ngIf="f['message'].invalid && f['message'].touched">
+            {{ 'SUPPORT.MESSAGE_ERROR' | translate }}
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <ion-button expand="block" color="medium" type="submit" [disabled]="supportForm.invalid">
+          {{ 'SUPPORT.SEND' | translate }}
+        </ion-button>
+
+      </div>
+    </form>
+
+    <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+  </div>
 </ion-content>

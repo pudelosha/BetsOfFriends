@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { TitleService } from 'src/app/services/title.service'; // adjust path if needed
+
 
 @Component({
   selector: 'app-terms',
@@ -12,9 +14,14 @@ import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/stan
 })
 export class TermsPage implements OnInit {
 
-  constructor() { }
+  constructor(private titleService: TitleService) {}
 
   ngOnInit() {
+    this.titleService.setTitle('TERMS.TITLE'); // sets title when component initializes
+  }
+
+  ionViewWillEnter() {
+    this.titleService.setTitle('TERMS.TITLE'); // ensures it's re-set when navigating back
   }
 
 }
