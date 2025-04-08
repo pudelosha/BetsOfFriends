@@ -217,6 +217,10 @@
     "AWAY_QUAL": "Away Qualifies",
     "VISIBILITY": "Match Visibility",
     "VISIBLE": "Visible",
+    "STATUS_AND_SCORE": "Status & Score",
+    "STATUS": "Status",
+    "HOME_SCORE": "Home Score",
+    "AWAY_SCORE": "Away Score",
     "HIDDEN": "Hidden",
     "SAVE": "Save"
   },

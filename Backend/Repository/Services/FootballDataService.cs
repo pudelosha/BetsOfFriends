@@ -36,60 +36,108 @@ namespace Backend.Repository.Services
             var root = doc.RootElement;
 
             var matchesJson = root.GetProperty("matches");
+            var competitionJson = root.GetProperty("competition");
 
             var matches = new List<PredefinedMatchDto>();
             var teams = new Dictionary<string, PredefinedTeamDto>(StringComparer.OrdinalIgnoreCase);
-            var stageMap = new Dictionary<int, string>(); // matchday -> stage name
+            var stageMap = new List<KeyValuePair<string, string>>();
 
             const string placeholderTeamName = "TBD";
 
-            // Ensure placeholder is always added
+            // Always include placeholder
             teams[placeholderTeamName] = new PredefinedTeamDto
             {
                 TeamName = placeholderTeamName,
+                ExternalTeamId = null,
                 RecordStatus = "New"
             };
 
             foreach (var match in matchesJson.EnumerateArray())
             {
-                var homeTeam = match.GetProperty("homeTeam").GetProperty("name").GetString() ?? placeholderTeamName;
-                var awayTeam = match.GetProperty("awayTeam").GetProperty("name").GetString() ?? placeholderTeamName;
+                var externalMatchId = match.GetProperty("id").GetInt32();
                 var utcDate = match.GetProperty("utcDate").GetDateTime();
+                var matchStatus = match.TryGetProperty("status", out var statusProp)
+                    ? statusProp.GetString()
+                    : null;
+
                 var matchday = match.TryGetProperty("matchday", out var mdProp) && mdProp.ValueKind == JsonValueKind.Number
                     ? mdProp.GetInt32()
                     : 0;
 
-                var stageName = matchday > 0 ? $"Matchday {matchday}" : match.GetProperty("stage").GetString() ?? "Unknown Stage";
+                var stageCode = match.TryGetProperty("stage", out var stgProp) && stgProp.ValueKind == JsonValueKind.String
+                    ? stgProp.GetString()
+                    : "UNKNOWN";
 
-                // Register unique teams if not already in dictionary
-                if (!teams.ContainsKey(homeTeam))
+                var stageName = stageCode != null && matchday > 0
+                    ? $"{ToTitleCase(stageCode.Replace("_", " "))} {matchday}"
+                    : (stageCode ?? "Unknown Stage");
+
+                var homeTeamJson = match.GetProperty("homeTeam");
+                var awayTeamJson = match.GetProperty("awayTeam");
+
+                var homeTeamName = homeTeamJson.GetProperty("name").GetString() ?? placeholderTeamName;
+                var awayTeamName = awayTeamJson.GetProperty("name").GetString() ?? placeholderTeamName;
+
+                var homeTeamId = homeTeamJson.TryGetProperty("id", out var homeIdProp) && homeIdProp.ValueKind == JsonValueKind.Number
+                    ? homeIdProp.GetInt32()
+                    : (int?)null;
+
+                var awayTeamId = awayTeamJson.TryGetProperty("id", out var awayIdProp) && awayIdProp.ValueKind == JsonValueKind.Number
+                    ? awayIdProp.GetInt32()
+                    : (int?)null;
+
+                // Register unique teams
+                if (!teams.ContainsKey(homeTeamName))
                 {
-                    teams[homeTeam] = new PredefinedTeamDto
+                    teams[homeTeamName] = new PredefinedTeamDto
                     {
-                        TeamName = homeTeam,
+                        TeamName = homeTeamName,
+                        ExternalTeamId = homeTeamId,
                         RecordStatus = "New"
                     };
                 }
 
-                if (!teams.ContainsKey(awayTeam))
+                if (!teams.ContainsKey(awayTeamName))
                 {
-                    teams[awayTeam] = new PredefinedTeamDto
+                    teams[awayTeamName] = new PredefinedTeamDto
                     {
-                        TeamName = awayTeam,
+                        TeamName = awayTeamName,
+                        ExternalTeamId = awayTeamId,
                         RecordStatus = "New"
                     };
                 }
 
                 // Track stage
-                if (!stageMap.ContainsKey(matchday))
-                    stageMap[matchday] = stageName;
+                var stageKey = $"{stageCode}_{matchday}";
+                if (!stageMap.Any(kv => kv.Key == stageKey))
+                    stageMap.Add(new KeyValuePair<string, string>(stageKey, stageName));
+
+                // Scores
+                int? scoreHome = null;
+                int? scoreAway = null;
+
+                if (match.TryGetProperty("score", out var scoreProp) &&
+                    scoreProp.TryGetProperty("fullTime", out var fullTimeProp))
+                {
+                    if (fullTimeProp.TryGetProperty("home", out var homeScoreProp) && homeScoreProp.ValueKind == JsonValueKind.Number)
+                        scoreHome = homeScoreProp.GetInt32();
+
+                    if (fullTimeProp.TryGetProperty("away", out var awayScoreProp) && awayScoreProp.ValueKind == JsonValueKind.Number)
+                        scoreAway = awayScoreProp.GetInt32();
+                }
 
                 matches.Add(new PredefinedMatchDto
                 {
-                    HomeTeam = homeTeam,
-                    AwayTeam = awayTeam,
+                    ExternalMatchId = externalMatchId,
                     MatchStart = utcDate,
+                    MatchStatus = ToTitleCase(matchStatus),
+                    ScoreHome = scoreHome,
+                    ScoreAway = scoreAway,
+
+                    HomeTeam = homeTeamName,
+                    AwayTeam = awayTeamName,
                     StageName = stageName,
+
                     MatchType = "Regular90Min",
                     RecordStatus = "New",
                     HomeWinOdds = 1,
@@ -98,10 +146,12 @@ namespace Backend.Repository.Services
                 });
             }
 
-            var tournamentName = root.GetProperty("competition").GetProperty("name").GetString() ?? "Unnamed Tournament";
+            var tournamentName = competitionJson.GetProperty("name").GetString() ?? "Unnamed Tournament";
+            var tournamentId = competitionJson.TryGetProperty("id", out var compIdProp) && compIdProp.ValueKind == JsonValueKind.Number
+                ? compIdProp.GetInt32()
+                : (int?)null;
 
             var stages = stageMap
-                .OrderBy(kv => kv.Key)
                 .Select((kv, index) => new PredefinedStageDto
                 {
                     StageName = kv.Value,
@@ -114,6 +164,7 @@ namespace Backend.Repository.Services
             {
                 TournamentName = tournamentName,
                 PublicTournamentName = tournamentName,
+                ExternalTournamentId = tournamentId,
                 IsActive = true,
                 TournamentVisibility = "Private",
                 UpdateMethod = "Auto",
@@ -122,6 +173,12 @@ namespace Backend.Repository.Services
                 Matches = matches,
                 Stages = stages
             };
+        }
+
+        // Helper
+        private static string ToTitleCase(string input)
+        {
+            return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input.ToLower());
         }
     }
 }

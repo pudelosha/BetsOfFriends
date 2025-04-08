@@ -186,6 +186,7 @@ export class StageInputTypePage implements OnInit {
           const teams: Team[] = tournament.teams.map(t => ({
             teamFrontendId: this.generateFrontendId(),
             teamId: null,
+            externalTeamId: t.externalTeamId,
             predefinedTeamId: t.teamId,
             teamName: t.teamName,
             recordStatus: 'New'
@@ -211,6 +212,7 @@ export class StageInputTypePage implements OnInit {
             return {
               matchFrontendId: this.generateFrontendId(),
               matchId: null,
+              externalMatchId: m.externalMatchId,
               predefinedMatchId: m.matchId,
   
               stageFrontendId: stage?.stageFrontendId ?? this.generateFrontendId(),
@@ -233,7 +235,12 @@ export class StageInputTypePage implements OnInit {
               homeQualifies: m.homeQualifies,
               awayQualifies: m.awayQualifies,
               isVisible: m.isVisible,
-              recordStatus: 'New'
+
+              matchStatus: m.matchStatus,
+              scoreHome: m.scoreHome,
+              scoreAway: m.scoreAway,
+
+              recordStatus: m.matchStatus?.toLowerCase() === 'finished' ? 'Finalised' : 'New'
             };
           });
   

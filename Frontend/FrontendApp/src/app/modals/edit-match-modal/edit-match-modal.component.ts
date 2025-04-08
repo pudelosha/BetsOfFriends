@@ -28,7 +28,8 @@ export class EditMatchModalComponent implements OnInit {
   ) {
     this.matchForm = this.fb.group({
       matchFrontendId: [null],  
-      matchId: [null],    
+      matchId: [null],
+      externalMatchId: [null],  
 
       stageFrontendId: [null, Validators.required], // Use frontendId for validation
       stageId: [null],
@@ -50,6 +51,10 @@ export class EditMatchModalComponent implements OnInit {
       homeQualifies: [null],  
       awayQualifies: [null],  
 
+      matchStatus: ['Timed'],      // NEW
+      scoreHome: [null],           // NEW
+      scoreAway: [null],           // NEW
+
       isVisible: [true],
 
       recordStatus: ['New'], // Default to "New"
@@ -68,14 +73,19 @@ export class EditMatchModalComponent implements OnInit {
         matchFrontendId: this.match.matchFrontendId || this.generateFrontendId(),
         homeTeamFrontendId: this.match.homeTeamFrontendId || null,
         awayTeamFrontendId: this.match.awayTeamFrontendId || null,
+        externalMatchId: this.match.externalMatchId || null,
         stageFrontendId: this.match.stageFrontendId || null,
         recordStatus: this.match.recordStatus ?? 'Uploaded',
+        scoreHome: this.match?.scoreHome ?? null,
+        scoreAway: this.match?.scoreAway ?? null,
+        matchStatus: this.match?.matchStatus ?? 'Timed',
         isVisible: this.match.isVisible ?? true,
       });
     } else {
       this.matchForm.patchValue({
         matchFrontendId: this.generateFrontendId(),
         recordStatus: 'New',
+        matchStatus: 'Timed',
         isVisible: true
       });
     }
@@ -149,6 +159,7 @@ export class EditMatchModalComponent implements OnInit {
     const matchData = {
       matchFrontendId: this.matchForm.value.matchFrontendId,
       matchId: this.match?.matchId || null,
+      externalMatchId: this.matchForm.value.externalMatchId || null,
 
       stageFrontendId: selectedStage.stageFrontendId,
       stageId: selectedStage.stageId || null,
@@ -171,6 +182,10 @@ export class EditMatchModalComponent implements OnInit {
       awayQualifies: this.matchForm.value.awayQualifies || null,
 
       isVisible: this.matchForm.value.isVisible ?? true,
+
+      matchStatus: this.matchForm.value.matchStatus || 'Timed',
+      scoreHome: this.matchForm.value.scoreHome ?? null,
+      scoreAway: this.matchForm.value.scoreAway ?? null,
 
       recordStatus: this.index !== undefined
         ? (isUpdated ? 'Update' : this.matchForm.value.recordStatus) 

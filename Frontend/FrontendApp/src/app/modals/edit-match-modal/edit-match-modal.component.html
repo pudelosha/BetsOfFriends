@@ -103,6 +103,38 @@
       </ion-item>
     </div>
 
+    <div class="divider"></div>
+
+    <!-- Match Status & Score -->
+    <div class="section-title">{{ 'MATCH_MODAL.STATUS_AND_SCORE' | translate }}</div>
+    
+    <!-- Match Status -->
+    <div class="match-row">
+      <div class="center-select">
+        <ion-select formControlName="matchStatus" class="center-select">
+          <ion-select-option value="Scheduled">Scheduled</ion-select-option>
+          <ion-select-option value="Timed">Timed</ion-select-option>
+          <ion-select-option value="In_Play">In Play</ion-select-option>
+          <ion-select-option value="Paused">Paused</ion-select-option>
+          <ion-select-option value="Finished">Finished</ion-select-option>
+          <ion-select-option value="Postponed">Postponed</ion-select-option>
+          <ion-select-option value="Suspended">Suspended</ion-select-option>
+          <ion-select-option value="Canceled">Canceled</ion-select-option>
+        </ion-select>
+      </div>
+    </div>
+ 
+    <!-- Home/Away Score -->
+    <div class="match-row">
+      <ion-label class="match-label center-align">{{ 'MATCH_MODAL.HOME_SCORE' | translate }}</ion-label>
+      <ion-label class="match-label center-align">{{ 'MATCH_MODAL.AWAY_SCORE' | translate }}</ion-label>
+    </div>
+    
+    <div class="match-row">
+      <ion-input type="number" formControlName="scoreHome" class="half-width odds-input"></ion-input>
+      <ion-input type="number" formControlName="scoreAway" class="half-width odds-input"></ion-input>
+    </div>
+
     <!-- Save Button -->
     <div class="save-button-container">
       <ion-button expand="full" color="medium" (click)="saveMatch()">{{ 'MATCH_MODAL.SAVE' | translate }}</ion-button>

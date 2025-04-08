@@ -5,6 +5,7 @@ namespace Backend.DTOs
     public class PredefinedTournamentDto
     {
         public int? TournamentId { get; set; } // Nullable for new tournaments
+        public int? ExternalTournamentId { get; set; }  // To track API data
 
         [Required, MaxLength(100)]
         public string TournamentName { get; set; } = string.Empty;
@@ -34,6 +35,7 @@ namespace Backend.DTOs
     public class PredefinedTeamDto
     {
         public int? TeamId { get; set; } // Nullable for new teams
+        public int? ExternalTeamId { get; set; }  // To track API data
 
         [Required, MaxLength(50)]
         public string TeamName { get; set; } = string.Empty;
@@ -55,6 +57,7 @@ namespace Backend.DTOs
     public class PredefinedMatchDto
     {
         public int? MatchId { get; set; } // Nullable for new matches
+        public int? ExternalMatchId { get; set; }  // To track API data
 
         public int? StageId { get; set; } // Nullable for new matches
         [Required]
@@ -90,7 +93,12 @@ namespace Backend.DTOs
         }
 
         public bool IsVisible { get; set; } = true;
-    }
+
+        // Properties to handle closed match
+        public string? MatchStatus { get; set; }
+        public int? ScoreHome { get; set; }
+        public int? ScoreAway { get; set; }
+}
 
     public class PredefinedTournamentListDto
     {

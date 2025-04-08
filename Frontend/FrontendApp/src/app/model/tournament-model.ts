@@ -1,5 +1,7 @@
 export interface Team {
   teamFrontendId: string;  // Unique identifier for frontend tracking
+  externalTeamId?: number | null; // To track API data
+
   teamId: number | null;
   predefinedTeamId?: number | null;
   teamName: string;
@@ -9,6 +11,8 @@ export interface Team {
 export interface Match {
   matchFrontendId: string; // Unique frontend match identifier
   matchId: number | null; // Backend match identifier (null for new matches)
+  externalMatchId?: number | null;  // To track API data
+
   predefinedMatchId?: number | null;
 
   stageId: number | null; // Backend ID (if available)
@@ -32,6 +36,10 @@ export interface Match {
   awayQualifies: number | null;
 
   isVisible: boolean;
+
+  matchStatus?: 'Scheduled' | 'Timed' | 'In_Play' | 'Paused' | 'Finished' | 'Postponed' | 'Suspended' | 'Canceled' | null;
+  scoreHome?: number | null;
+  scoreAway?: number | null;
 
   recordStatus: RecordStatus;
 }
@@ -60,6 +68,8 @@ export interface Stage{
 
 export interface Tournament {
   tournamentId?: number | null;
+  externalTournamentId?: number | null; // To track API data
+
   predefinedTournamentId?: number | null;
   tournamentName: string;
   publicTournamentName?: string;
@@ -176,7 +186,7 @@ export interface TournamentParticipant {
   role: string;
 }
 
-export type RecordStatus = 'New' | 'Uploaded' | 'Update' | 'Delete';
+export type RecordStatus = 'New' | 'Uploaded' | 'Update' | 'Delete' | 'Finalised';
 
 
 

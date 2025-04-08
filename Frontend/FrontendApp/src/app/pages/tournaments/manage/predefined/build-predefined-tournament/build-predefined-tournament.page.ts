@@ -185,6 +185,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
           this.fb.group({
             teamFrontendId: [team.teamFrontendId], // Ensure we store frontendId
             teamId: [team.teamId], // Backend ID
+            externalTeamId: [team.externalTeamId || null],
             teamName: [team.teamName, Validators.required],
             recordStatus: ['Uploaded', Validators.required]
           })
@@ -228,6 +229,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
           this.fb.group({
             matchFrontendId: [match.matchFrontendId || this.generateFrontendId()], // Ensure unique frontendId
             matchId: [match.matchId], // Backend ID
+            externalMatchId: [match.externalMatchId || null],
   
             stageFrontendId: [stage.stageFrontendId], // Ensure frontend ID
             stageId: [stage.stageId], // Backend ID
@@ -250,6 +252,10 @@ export class BuildPredefinedTournamentPage implements OnInit {
             awayQualifies: [match.awayQualifies],
             recordStatus: ['Uploaded', Validators.required],
 
+            matchStatus: [match.matchStatus || null],    
+            scoreHome: [match.scoreHome ?? null],       
+            scoreAway: [match.scoreAway ?? null],        
+
             isVisible: [match.isVisible ?? true],
           })
         );
@@ -267,6 +273,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
     return this.fb.group({
       matchFrontendId: [match.matchFrontendId],
       matchId: [match.matchId],
+      externalMatchId: [match.externalMatchId],
   
       stageFrontendId: [match.stageFrontendId],
       stageId: [match.stageId],
@@ -290,6 +297,10 @@ export class BuildPredefinedTournamentPage implements OnInit {
 
       isVisible: [match.isVisible ?? true],
 
+      matchStatus: [match.matchStatus || null],
+      scoreHome: [match.scoreHome ?? null],
+      scoreAway: [match.scoreAway ?? null],
+
       recordStatus: [match.recordStatus ?? 'New'],
     });
   }
@@ -302,6 +313,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
         this.fb.group({
           teamFrontendId: [team.teamFrontendId || this.generateFrontendId()],
           teamId: [team.teamId],
+          externalTeamId: [team.externalTeamId || null],
           teamName: [team.teamName, Validators.required],
           recordStatus: [team.recordStatus || 'New']
         })
@@ -523,12 +535,16 @@ export class BuildPredefinedTournamentPage implements OnInit {
         previousMatch.drawOdds !== match.drawOdds ||
         previousMatch.awayWinOdds !== match.awayWinOdds ||
         previousMatch.homeQualifies !== match.homeQualifies ||
-        previousMatch.awayQualifies !== match.awayQualifies
+        previousMatch.awayQualifies !== match.awayQualifies ||
+        previousMatch.matchStatus !== match.matchStatus ||             
+        previousMatch.scoreHome !== match.scoreHome ||              
+        previousMatch.scoreAway !== match.scoreAway             
       );
   
       this.matchesArray.push(this.fb.group({
         matchFrontendId: [match.matchFrontendId],
         matchId: [match.matchId],
+        externalMatchId: [match.externalMatchId],
         stageFrontendId: [match.stageFrontendId],
         stageId: [match.stageId],
         stageName: [match.stageName],
@@ -546,6 +562,9 @@ export class BuildPredefinedTournamentPage implements OnInit {
         homeQualifies: [match.homeQualifies ?? null],
         awayQualifies: [match.awayQualifies ?? null],
         isVisible: [match.isVisible ?? true],
+        matchStatus: [match.matchStatus || null],
+        scoreHome: [match.scoreHome ?? null],
+        scoreAway: [match.scoreAway ?? null],
         recordStatus: [isUpdated ? 'Update' : match.recordStatus || 'New']
       }));
     });
@@ -619,6 +638,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
 
       teams: this.teamsArray.value.map((team: Team) => ({
         teamId: isEditing ? team.teamId || null : null,
+        externalTeamId: team.externalTeamId || null, // 👈
         teamName: team.teamName,
         recordStatus: team.recordStatus || 'New'
       })),
@@ -632,6 +652,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
       
       matches: this.matchesArray.value.map((match: any) => ({
         matchId: isEditing ? match.matchId || null : null,
+        externalMatchId: match.externalMatchId || null,
         stageId: isEditing ? match.stageId || null : null,
         stageName: match.stageName,
         homeTeamId: isEditing ? match.homeTeamId || null : null,
@@ -645,6 +666,9 @@ export class BuildPredefinedTournamentPage implements OnInit {
         awayWinOdds: match.awayWinOdds,
         homeQualifies: match.homeQualifies,
         awayQualifies: match.awayQualifies,
+        matchStatus: match.matchStatus || null,   
+        scoreHome: match.scoreHome ?? null,        
+        scoreAway: match.scoreAway ?? null,     
         isVisible: match.isVisible ?? true,
         recordStatus: match.recordStatus || 'New'
       })),

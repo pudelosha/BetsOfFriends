@@ -128,6 +128,7 @@ export class StageMatchesManagementPage implements OnInit {
         const updatedMatch: Match = {
           matchFrontendId: result.data.matchFrontendId,
           matchId: result.data.matchId ?? null,
+          externalMatchId: result.data.externalMatchId ?? null,
   
           stageId: selectedStage?.stageId ?? null,
           stageFrontendId: selectedStage?.stageFrontendId ?? '',
@@ -150,6 +151,10 @@ export class StageMatchesManagementPage implements OnInit {
           awayQualifies: result.data.awayQualifies ?? null,
 
           isVisible: result.data.isVisible ?? true,
+
+          matchStatus: result.data.matchStatus ?? null, 
+          scoreHome: result.data.scoreHome ?? null,   
+          scoreAway: result.data.scoreAway ?? null,   
   
           recordStatus: index !== undefined
             ? (JSON.stringify(existingMatch) !== JSON.stringify(result.data) ? 'Update' : existingMatch.recordStatus)
@@ -220,6 +225,7 @@ export class StageMatchesManagementPage implements OnInit {
     const updatedMatches: Match[] = this.matchesArray.value.map((match: any) => ({
       matchFrontendId: match.matchFrontendId,
       matchId: match.matchId,
+      externalMatchId: match.externalMatchId ?? null,
 
       stageId: match.stageId,
       stageFrontendId: match.stageFrontendId, // Ensure frontendId is preserved
@@ -243,6 +249,10 @@ export class StageMatchesManagementPage implements OnInit {
 
       isVisible: match.isVisible ?? true,
 
+      matchStatus: match.matchStatus ?? null,  
+      scoreHome: match.scoreHome ?? null,     
+      scoreAway: match.scoreAway ?? null,    
+
       recordStatus: match.recordStatus ?? 'Update'
     }));
 
@@ -256,6 +266,7 @@ export class StageMatchesManagementPage implements OnInit {
       case 'Update': return 'match-status-update';
       case 'Delete': return 'match-status-delete';
       case 'Uploaded': return 'match-status-uploaded';
+      case 'Finalised': return 'match-status-finalised';
       default: return '';
     }
   }
