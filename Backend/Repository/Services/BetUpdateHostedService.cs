@@ -41,9 +41,10 @@ public class BetUpdateHostedService : BackgroundService
             _logger.LogInformation("Starting automatic update of bet statuses...");
 
             // Step 1: Get all matches that are in the past AND are not Upcoming
+            //TODO review this logic !!!!!!!!!!
             var finalisedMatchIds = await dbContext.CustomMatches
-                .Where(m => m.Status == CustomMatch.MatchStatus.Finalised ||
-                            (m.MatchStart < DateTime.UtcNow && m.Status != CustomMatch.MatchStatus.Upcoming))
+                .Where(m => m.Status == CustomMatch.MatchStatus.Finished ||
+                            (m.MatchStart < DateTime.UtcNow && m.Status != CustomMatch.MatchStatus.Timed))
                 .Select(m => m.MatchId)
                 .ToListAsync(cancellationToken);
 

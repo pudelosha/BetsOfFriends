@@ -95,7 +95,7 @@ namespace Backend.Repository.Services
                     QualifiedTeam = m.Qualified.HasValue ? m.Qualified.ToString() : null,
                     Status = m.Status.ToString(),
                     MatchType = m.Type.ToString(),
-                    IsFinished = m.Status == MatchStatus.Finalised
+                    IsFinished = m.Status == MatchStatus.Finished
                 }).ToList();
             }
             catch (Exception ex)
@@ -172,19 +172,19 @@ namespace Backend.Repository.Services
                         }
                     }
 
-                    // Set match as Finalised
-                    match.Status = MatchStatus.Finalised;
+                    // Set match as Finished
+                    match.Status = MatchStatus.Finished;
                     matchWasFinalised = true;
                 }
                 else
                 {
                     // Reset match details if it's not finished
-                    _logger.LogInformation($"Resetting match ID {match.MatchId} to Upcoming");
+                    _logger.LogInformation($"Resetting match ID {match.MatchId} to Timed");
 
                     match.HomeScore = null;
                     match.AwayScore = null;
                     match.Qualified = null;
-                    match.Status = MatchStatus.Upcoming;
+                    match.Status = MatchStatus.Timed;
                 }
 
                 await _context.SaveChangesAsync();
@@ -234,13 +234,13 @@ namespace Backend.Repository.Services
                     return new List<MatchDto>();
                 }
 
-                // Step 2: Fetch matches with Status = InProgress
+                // Step 2: Fetch matches with Status = In_Play
                 var matches = await _context.CustomMatches
                     .Include(m => m.Stage)
                     .Include(m => m.HomeTeam)
                     .Include(m => m.AwayTeam)
                     .Where(m => m.TournamentId == tournamentId &&
-                                m.Status == MatchStatus.InProgress)
+                                m.Status == MatchStatus.In_Play)
                     .OrderBy(m => m.MatchStart)
                     .ToListAsync();
 
@@ -263,7 +263,7 @@ namespace Backend.Repository.Services
                     QualifiedTeam = m.Qualified.HasValue ? m.Qualified.ToString() : null,
                     Status = m.Status.ToString(),
                     MatchType = m.Type.ToString(),
-                    IsFinished = m.Status == MatchStatus.Finalised
+                    IsFinished = m.Status == MatchStatus.Finished
                 }).ToList();
             }
             catch (Exception ex)

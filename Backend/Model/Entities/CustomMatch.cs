@@ -50,7 +50,7 @@ namespace Backend.Model.Entities
         public decimal? HomeQualifies { get; set; }
         public decimal? AwayQualifies { get; set; }
 
-        public MatchStatus Status { get; set; } = MatchStatus.Upcoming;
+        public MatchStatus Status { get; set; } = MatchStatus.Timed;
         public MatchType Type { get; set; } = MatchType.Regular90Min;
 
         public bool IsVisible { get; set; } = true;
@@ -63,9 +63,14 @@ namespace Backend.Model.Entities
 
         public enum MatchStatus
         {
-            Upcoming,
-            InProgress,
-            Finalised
+            Scheduled,
+            Timed,
+            In_Play,
+            Paused,
+            Finished,
+            Postponed,
+            Suspended,
+            Canceled
         }
 
         public enum MatchType

@@ -73,7 +73,7 @@ namespace Backend.Repository.Services
                     QualifiedTeam = m.Qualified.HasValue ? m.Qualified.ToString() : null,
                     Status = m.Status.ToString(),
                     MatchType = m.Type.ToString(),
-                    IsFinished = m.Status == MatchStatus.Finalised
+                    IsFinished = m.Status == MatchStatus.Finished
                 }).ToList();
             }
             catch (Exception ex)
@@ -128,7 +128,7 @@ namespace Backend.Repository.Services
                         }
                     }
 
-                    match.Status = MatchStatus.Finalised;
+                    match.Status = MatchStatus.Finished;
                 }
                 else
                 {
@@ -137,7 +137,7 @@ namespace Backend.Repository.Services
                     match.HomeScore = null;
                     match.AwayScore = null;
                     match.Qualified = null;
-                    match.Status = MatchStatus.Upcoming;
+                    match.Status = MatchStatus.Timed;
                 }
 
                 await _context.SaveChangesAsync();
@@ -187,7 +187,7 @@ namespace Backend.Repository.Services
                     {
                         customMatch.HomeScore = match.HomeScore;
                         customMatch.AwayScore = match.AwayScore;
-                        customMatch.Status = MatchStatus.Finalised;
+                        customMatch.Status = MatchStatus.Finished;
 
                         if (customMatch.Type == CustomMatch.MatchType.ExtendedWithQualification)
                         {
@@ -204,7 +204,7 @@ namespace Backend.Repository.Services
                         customMatch.HomeScore = null;
                         customMatch.AwayScore = null;
                         customMatch.Qualified = null;
-                        customMatch.Status = MatchStatus.Upcoming;
+                        customMatch.Status = MatchStatus.Timed;
 
                         await _context.SaveChangesAsync();
                     }
@@ -230,7 +230,7 @@ namespace Backend.Repository.Services
                     .Include(m => m.PredefinedStage)
                     .Include(m => m.HomeTeam)
                     .Include(m => m.AwayTeam)
-                    .Where(m => m.Status == MatchStatus.InProgress)
+                    .Where(m => m.Status == MatchStatus.In_Play)
                     .OrderBy(m => m.MatchStart)
                     .ToListAsync();
 
@@ -253,7 +253,7 @@ namespace Backend.Repository.Services
                     QualifiedTeam = m.Qualified.HasValue ? m.Qualified.ToString() : null,
                     Status = m.Status.ToString(),
                     MatchType = m.Type.ToString(),
-                    IsFinished = m.Status == MatchStatus.Finalised
+                    IsFinished = m.Status == MatchStatus.Finished
                 }).ToList();
             }
             catch (Exception ex)

@@ -279,9 +279,9 @@ namespace Backend.Repository.Services
                 return;
             }
 
-            if (match.Status != CustomMatch.MatchStatus.Finalised)
+            if (match.Status != CustomMatch.MatchStatus.Finished)
             {
-                _logger.LogWarning($"Match {matchId} is not finalised. Cannot recalculate bets.");
+                _logger.LogWarning($"Match {matchId} is not finished. Cannot recalculate bets.");
                 return;
             }
 
@@ -410,7 +410,7 @@ namespace Backend.Repository.Services
                 return false;
             }
 
-            foreach (var match in tournament.Matches.Where(m => m.Status == CustomMatch.MatchStatus.Finalised))
+            foreach (var match in tournament.Matches.Where(m => m.Status == CustomMatch.MatchStatus.Finished))
             {
                 await RecalculateBetsForMatchAsync(match.MatchId);
             }
@@ -561,7 +561,7 @@ namespace Backend.Repository.Services
                     Percent2Q = totalQualificationBets > 0 ? Math.Round((decimal)qualificationBets.Count(b => b.Qualified == CustomMatch.TeamQualified.Away) / totalQualificationBets * 100, 2) : null,
 
                     // User Bets
-                    UserBets = match.Status == CustomMatch.MatchStatus.Finalised ? match.Bets
+                    UserBets = match.Status == CustomMatch.MatchStatus.Finished ? match.Bets
                         .Where(b => b.Status == Bet.BetStatus.Finalised)
                         .Select(b => new UserBetDto
                         {

@@ -59,7 +59,7 @@ namespace Backend.Repository.Services
                 .Where(m =>
                     m.MatchStart > now &&
                     m.MatchStart <= upperBound &&
-                    m.Status == CustomMatch.MatchStatus.Upcoming &&
+                    m.Status == CustomMatch.MatchStatus.Timed &&
                     ((is1Hour && !m.Notifications1Sent) || (is24Hours && !m.Notifications24Sent)))
                 .ToListAsync();
 

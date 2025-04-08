@@ -91,8 +91,11 @@ namespace Backend.Repository.Services
                         AwayWinOdds = m.AwayWinOdds,
                         HomeQualifies = m.HomeQualifies ?? 0,
                         AwayQualifies = m.AwayQualifies ?? 0,
-                        Status = MatchStatus.Upcoming,
-                        IsVisible = m.IsVisible
+                        Status = Enum.Parse<CustomMatch.MatchStatus>(m.MatchStatus),
+                        IsVisible = m.IsVisible,
+                        ExternalMatchId = m.ExternalMatchId,
+                        HomeScore = m.ScoreHome,
+                        AwayScore = m.ScoreAway
                     };
                 }).ToList();
 
@@ -368,6 +371,7 @@ namespace Backend.Repository.Services
                     Matches = tournament.PredefinedMatches.Select(match => new PredefinedMatchDto
                     {
                         MatchId = match.MatchId,
+                        ExternalMatchId = match.ExternalMatchId,
                         StageId = match.StageId,
                         StageName = match.PredefinedStage.StageName,
                         HomeTeamId = match.HomeTeamId,
@@ -381,7 +385,10 @@ namespace Backend.Repository.Services
                         AwayWinOdds = match.AwayWinOdds,
                         HomeQualifies = match.HomeQualifies,
                         AwayQualifies = match.AwayQualifies,
-                        IsVisible = match.IsVisible
+                        IsVisible = match.IsVisible,
+                        MatchStatus = match.Status.ToString(),
+                        ScoreHome = match.HomeScore,
+                        ScoreAway = match.AwayScore
                     }).ToList()
                 };
 

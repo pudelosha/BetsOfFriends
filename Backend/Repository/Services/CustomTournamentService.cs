@@ -148,7 +148,7 @@ namespace Backend.Repository.Services
                     AwayWinOdds = m.AwayWinOdds,
                     HomeQualifies = m.HomeQualifies ?? 0,
                     AwayQualifies = m.AwayQualifies ?? 0,
-                    Status = MatchStatus.Upcoming,
+                    Status = Enum.Parse<CustomMatch.MatchStatus>(m.MatchStatus),
                     IsVisible = m.IsVisible,
                     PredefinedMatchId = m.PredefinedMatchId
                 }).ToList();
@@ -995,7 +995,7 @@ namespace Backend.Repository.Services
                     .ToListAsync();
 
                 int matchesCount = matches.Count;
-                int finalisedMatchesCount = matches.Count(m => m.Status == CustomMatch.MatchStatus.Finalised);
+                int finalisedMatchesCount = matches.Count(m => m.Status == CustomMatch.MatchStatus.Finished);
 
                 // Fetch bets
                 var tournamentBets = await _context.Bets
@@ -1130,7 +1130,7 @@ namespace Backend.Repository.Services
 
                 var bettingStats = tournamentMatches.Select(match =>
                 {
-                    var isFinalised = match.Status == CustomMatch.MatchStatus.Finalised;
+                    var isFinalised = match.Status == CustomMatch.MatchStatus.Finished;
                     var userBet = match.Bets.FirstOrDefault();
 
                     string? matchResult = isFinalised && match.HomeScore.HasValue && match.AwayScore.HasValue

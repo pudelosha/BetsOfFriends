@@ -130,6 +130,11 @@ namespace Backend.DTOs
         [Required]
         public string RecordStatus { get; set; } = "New";
         public bool IsVisible { get; set; } = true;
+
+        // Properties to handle closed match
+        public string? MatchStatus { get; set; }
+        public int? ScoreHome { get; set; }
+        public int? ScoreAway { get; set; }
     }
 
     public class CustomUserDto

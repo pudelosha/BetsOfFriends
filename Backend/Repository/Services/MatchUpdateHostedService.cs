@@ -42,7 +42,7 @@ public class MatchUpdateHostedService : BackgroundService
             _logger.LogInformation("Checking for CUSTOM matches that need status updates...");
 
             var matches = await dbContext.CustomMatches
-                .Where(m => m.MatchStart <= DateTime.UtcNow && m.Status == MatchStatus.Upcoming)
+                .Where(m => m.MatchStart <= DateTime.UtcNow && m.Status == MatchStatus.Timed)
                 .ToListAsync(cancellationToken);
 
             if (!matches.Any())
@@ -53,12 +53,12 @@ public class MatchUpdateHostedService : BackgroundService
 
             foreach (var match in matches)
             {
-                match.Status = MatchStatus.InProgress;
-                _logger.LogInformation($"Custom Match {match.MatchId} status updated to InProgress.");
+                match.Status = MatchStatus.In_Play;
+                _logger.LogInformation($"Custom Match {match.MatchId} status updated to In_Play.");
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
-            _logger.LogInformation($"{matches.Count} CUSTOM matches were updated to InProgress.");
+            _logger.LogInformation($"{matches.Count} CUSTOM matches were updated to In_Play.");
         }
         catch (Exception ex)
         {
@@ -73,7 +73,7 @@ public class MatchUpdateHostedService : BackgroundService
             _logger.LogInformation("Checking for PREDEFINED matches that need status updates...");
 
             var matches = await dbContext.PredefinedMatches
-                .Where(m => m.MatchStart <= DateTime.UtcNow && m.Status == MatchStatus.Upcoming)
+                .Where(m => m.MatchStart <= DateTime.UtcNow && m.Status == MatchStatus.Timed)
                 .ToListAsync(cancellationToken);
 
             if (!matches.Any())
@@ -84,12 +84,12 @@ public class MatchUpdateHostedService : BackgroundService
 
             foreach (var match in matches)
             {
-                match.Status = MatchStatus.InProgress;
-                _logger.LogInformation($"Predefined Match {match.MatchId} status updated to InProgress.");
+                match.Status = MatchStatus.In_Play;
+                _logger.LogInformation($"Predefined Match {match.MatchId} status updated to In_Play.");
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
-            _logger.LogInformation($"{matches.Count} PREDEFINED matches were updated to InProgress.");
+            _logger.LogInformation($"{matches.Count} PREDEFINED matches were updated to In_Play.");
         }
         catch (Exception ex)
         {

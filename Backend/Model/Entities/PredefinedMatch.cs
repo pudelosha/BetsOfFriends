@@ -43,7 +43,7 @@ namespace Backend.Model.Entities
         public TeamQualified? Qualified { get; set; }
 
         [Required]
-        public MatchStatus Status { get; set; } = MatchStatus.Upcoming;
+        public MatchStatus Status { get; set; } = MatchStatus.Timed;
         [Required]
         public CustomMatch.MatchType Type { get; set; } = CustomMatch.MatchType.Regular90Min;
 
