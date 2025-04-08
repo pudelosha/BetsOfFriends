@@ -34,19 +34,19 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    console.log('Loading started matches page...');
+    //console.log('Loading started matches page...');
     this.loadMatches(); 
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stage'] && !changes['stage'].firstChange) {
-      console.log(`Stage changed to: ${this.stage}, reloading matches.`);
+      //console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadMatches();
     }
   }  
   
   ionViewWillEnter() {
-    console.log('Reloading started matches...');
+    //console.log('Reloading started matches...');
     this.loadMatches(); 
   }
   
@@ -64,7 +64,7 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
     const startTime = Date.now();
   
     if (!this.tournamentId) {
-      console.warn("No tournamentId received.");
+      //console.warn("No tournamentId received.");
       this.errorMessage = "No tournament ID provided.";
       this.isLoading = false;
       await loading.dismiss();
@@ -80,7 +80,7 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
         this.errorMessage = "No matches available for this stage.";
       }
     } catch (error: unknown) {
-      console.error("API error:", error);
+      //console.error("API error:", error);
       if (error instanceof HttpErrorResponse) {
         this.errorMessage = `An error occurred: ${error.message}`;
       } else {
@@ -98,7 +98,7 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
      
   async editMatchResult(match: Match, event: Event) {
     event.stopPropagation();
-    console.log("Opening Edit Match Result Modal:", match);
+    //console.log("Opening Edit Match Result Modal:", match);
   
     const modal = await this.modalCtrl.create({
       component: EditMatchResultModalComponent,
@@ -111,7 +111,7 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
   
     const { data } = await modal.onWillDismiss();
     if (data) {
-      console.log("Updated Match Result Data:", data);
+      //console.log("Updated Match Result Data:", data);
   
       try {
         await firstValueFrom(this.matchService.updateMatchResult(match.matchId, data));
@@ -121,7 +121,7 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
   
         this.showToast("Match result updated successfully!", "success");
       } catch (error) {
-        console.error("Error updating match result:", error);
+        //console.error("Error updating match result:", error);
         this.showToast("Failed to update match result. Please try again.", "danger");
       }
     }

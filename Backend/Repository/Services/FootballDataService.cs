@@ -130,7 +130,7 @@ namespace Backend.Repository.Services
                 {
                     ExternalMatchId = externalMatchId,
                     MatchStart = utcDate,
-                    MatchStatus = ToTitleCase(matchStatus),
+                    MatchStatus = MapMatchStatus(matchStatus),
                     ScoreHome = scoreHome,
                     ScoreAway = scoreAway,
 
@@ -179,6 +179,22 @@ namespace Backend.Repository.Services
         private static string ToTitleCase(string input)
         {
             return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input.ToLower());
+        }
+
+        private static string MapMatchStatus(string? rawStatus)
+        {
+            return rawStatus?.ToUpperInvariant() switch
+            {
+                "SCHEDULED" => "Timed",
+                "TIMED" => "Timed",
+                "IN_PLAY" => "In_Play",
+                "PAUSED" => "In_Play",
+                "FINISHED" => "Finished",
+                "POSTPONED" => "Canceled",
+                "SUSPENDED" => "Canceled",
+                "CANCELED" => "Canceled",
+                _ => "Timed" // fallback default
+            };
         }
     }
 }

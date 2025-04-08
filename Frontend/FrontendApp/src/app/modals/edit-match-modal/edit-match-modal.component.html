@@ -52,7 +52,7 @@
     <div class="divider"></div>
 
     <!-- Match Date -->
-    <div class="section-title">{{ 'MATCH_MODAL.DATETIME' | translate }}</div>
+    <div class="section-title">{{ 'MATCH_MODAL.DATETIME' | translate }} (UTC)</div>
     <div class="match-row">
       <ion-datetime displayFormat="YYYY-MM-DD HH:mm" formControlName="matchStart" class="full-width"></ion-datetime>
     </div>
@@ -112,13 +112,9 @@
     <div class="match-row">
       <div class="center-select">
         <ion-select formControlName="matchStatus" class="center-select">
-          <ion-select-option value="Scheduled">Scheduled</ion-select-option>
           <ion-select-option value="Timed">Timed</ion-select-option>
           <ion-select-option value="In_Play">In Play</ion-select-option>
-          <ion-select-option value="Paused">Paused</ion-select-option>
           <ion-select-option value="Finished">Finished</ion-select-option>
-          <ion-select-option value="Postponed">Postponed</ion-select-option>
-          <ion-select-option value="Suspended">Suspended</ion-select-option>
           <ion-select-option value="Canceled">Canceled</ion-select-option>
         </ion-select>
       </div>
