@@ -73,7 +73,7 @@ export class ManagePredefinedFinalisedPage implements OnInit, OnChanges {
   
     try {
       this.matches = await firstValueFrom(
-        this.matchService.getMatchesByTournamentStage(this.tournamentId, 'Finalised', this.stage)
+        this.matchService.getMatchesByTournamentStage(this.tournamentId, 'Finished', this.stage)
       );
   
       if (!this.matches.length) {

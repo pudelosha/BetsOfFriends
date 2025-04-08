@@ -73,7 +73,7 @@ export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
   
     try {
       this.matches = await firstValueFrom(
-        this.matchService.getMatchesByTournamentStage(this.tournamentId, 'Upcoming', this.stage)
+        this.matchService.getMatchesByTournamentStage(this.tournamentId, 'Timed', this.stage)
       );
   
       if (!this.matches.length) {

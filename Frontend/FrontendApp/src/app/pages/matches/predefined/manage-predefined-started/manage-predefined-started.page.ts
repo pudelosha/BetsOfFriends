@@ -73,7 +73,7 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
   
     try {
       this.matches = await firstValueFrom(
-        this.matchService.getMatchesByTournamentStage(this.tournamentId, 'InProgress', this.stage)
+        this.matchService.getMatchesByTournamentStage(this.tournamentId, 'In_Play', this.stage)
       );
   
       if (!this.matches.length) {
