@@ -20,9 +20,6 @@ namespace Backend.Controllers
         //Files are expected in wwwroot/downloads/ (ensure this folder exists).
         //IWebHostEnvironment.WebRootPath gives you access to wwwroot.
 
-        /// <summary>
-        /// Serves downloadable files (.apk, .ipa, .xlsx).
-        /// </summary>
         [AllowAnonymous]
         [HttpGet("{fileName}")]
         public IActionResult DownloadFile(string fileName)
