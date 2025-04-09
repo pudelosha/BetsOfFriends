@@ -74,7 +74,7 @@ export class StageUsersManagementPage {
           })
         );
     
-        console.log('Added New User:', newUser);
+        //console.log('Added New User:', newUser);
         this.emitUsers();
       }
     });    
@@ -115,7 +115,7 @@ export class StageUsersManagementPage {
           recordStatus: isUpdated ? 'Update' : existingUser.recordStatus,
         });
     
-        console.log('Updated User:', updatedUser);
+        //console.log('Updated User:', updatedUser);
         this.emitUsers();
       }
     });
@@ -149,7 +149,7 @@ export class StageUsersManagementPage {
             }
   
             this.emitUsers();
-            console.log('Removed User:', userToRemove);
+            //console.log('Removed User:', userToRemove);
             await this.showToast(`User "${userToRemove.userName}" removed successfully!`, 'success');
           },
         },
@@ -172,7 +172,7 @@ export class StageUsersManagementPage {
     }));
   
     this.usersUpdated.emit(updatedUsers);
-    console.log('Emitted Updated Users:', updatedUsers);
+    //console.log('Emitted Updated Users:', updatedUsers);
   }  
 
 // Determines Delete vs Undo button text

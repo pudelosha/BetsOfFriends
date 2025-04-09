@@ -66,12 +66,16 @@ namespace Backend.Migrations
                 {
                     TournamentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ExternalTournamentId = table.Column<int>(type: "int", nullable: true),
+                    ExternalSeasonId = table.Column<int>(type: "int", nullable: true),
+                    Season = table.Column<int>(type: "int", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TournamentName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Update = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -203,6 +207,7 @@ namespace Backend.Migrations
                 {
                     TeamId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ExternalTeamId = table.Column<int>(type: "int", nullable: true),
                     TeamName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     PredefinedTournamentId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -249,6 +254,8 @@ namespace Backend.Migrations
                     TournamentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PredefinedTournamentId = table.Column<int>(type: "int", nullable: true),
+                    Season = table.Column<int>(type: "int", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PublicName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),

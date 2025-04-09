@@ -423,6 +423,7 @@
   },
   "BUILD_CUSTOM": {
     "TITLE": "Create Tournament",
+    "EDIT_TITLE": "Edit Tournament",
     "PREVIOUS": "Previous",
     "NEXT": "Next",
     "ADD": "Add",
@@ -441,6 +442,7 @@
   },
   "BUILD_PREDEFINED": {
     "TITLE": "Create Tournament",
+    "EDIT_TITLE": "Edit Tournament",
     "PREVIOUS": "Previous",
     "ADD": "Add",
     "SUBMIT": "Submit",
@@ -504,6 +506,10 @@
     "UNDO": "Undo"
   },
   "STAGE_INPUT_TYPE": {
+    "SEASON": "Season",
+    "END_DATE": "End Date (optional)",
+    "END_DATE_INFO": "If an end date is provided, the tournament will automatically close on that date.",
+    "SELECT_DATE": "Select date",
     "DESCRIPTION": "Manage tournaments by creating new ones or updating existing ones, with options to customize teams, games, and details.",
     "DETAILS": "Set basic details, import data from file or templates, and configure match handling.",
     "TOURNAMENT_VISIBILITY": "Tournament Visibility",
@@ -527,6 +533,7 @@
     "CLEAR_FORM": "Clear all form data and start from scratch",
     "IMPORT_FROM_FILE": "Import from file",
     "IMPORT_FROM_API": "Import from API",   
+    "UPDATE_FROM_API": "Update from API",
     "IMPORT_TOURNAMENT": "Import tournament",
     "UPDATE_TOURNAMENT": "Update tournament",
     "ERASE_FORM": "Erase All Form Data"

@@ -82,7 +82,7 @@ export class LoginPage {
           await loading.dismiss();
           this.isLoading = false;
   
-          console.log('Login response:', response);
+          //console.log('Login response:', response);
   
           if (response.success) {
             this.showToast(response.message, 'success');

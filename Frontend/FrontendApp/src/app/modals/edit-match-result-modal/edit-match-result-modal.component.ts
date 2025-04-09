@@ -73,13 +73,13 @@ export class EditMatchResultModalComponent implements AfterViewInit {
       this.qualifySelection === 'away' ? 'Away' :
       null;  
 
-    console.log("Match Result Saved:", {
-      matchId: this.matchId,
-      newMatchStart: this.matchStart,
-      finalScore: this.isFinished ? `${this.homeScore}-${this.awayScore}` : 'Match not finished',
-      qualifies: this.isFinished ? qualifiedTeam : null,
-      isFinished: this.isFinished
-    });
+    //console.log("Match Result Saved:", {
+    //  matchId: this.matchId,
+    //  newMatchStart: this.matchStart,
+    // finalScore: this.isFinished ? `${this.homeScore}-${this.awayScore}` : 'Match not finished',
+    //  qualifies: this.isFinished ? qualifiedTeam : null,
+    //  isFinished: this.isFinished
+    //});
 
     this.modalCtrl.dismiss({
       matchId: this.matchId,

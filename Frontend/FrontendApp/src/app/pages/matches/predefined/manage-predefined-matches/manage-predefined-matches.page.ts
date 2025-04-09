@@ -89,7 +89,7 @@ export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
     if (index !== -1) {
       this.selectedStageIndex = index;
       this.selectedStage = selected;
-      console.log(`Stage changed to: ${selected}`);
+      //console.log(`Stage changed to: ${selected}`);
     }
   }
     
@@ -101,7 +101,7 @@ export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
   scrollToTop() {
     if (this.content) {
       this.content.scrollToTop(300);
-      console.log('Scrolled to top');
+      //console.log('Scrolled to top');
     }
   }
 }

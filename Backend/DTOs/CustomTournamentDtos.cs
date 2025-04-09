@@ -7,6 +7,8 @@ namespace Backend.DTOs
         public int? TournamentId { get; set; } // Nullable for new tournaments
 
         public int? PredefinedTournamentId { get; set; } // Nullable as not mandatory
+        public int? Season { get; set; }                // From "filters.season"
+        public DateTime? TournamentEnd { get; set; }    // From "matches.season.endDate"
 
         [Required, MaxLength(100)]
         public string TournamentName { get; set; } = string.Empty;

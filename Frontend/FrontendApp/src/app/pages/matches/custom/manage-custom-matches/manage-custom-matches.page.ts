@@ -60,7 +60,7 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
   }
 
   forceTabReload() {
-    console.log(`Force reloading tab: ${this.selectedTab}`);
+    //console.log(`Force reloading tab: ${this.selectedTab}`);
     const currentTab = this.selectedTab;
     this.selectedTab = ''; // Force reset
     setTimeout(() => {
@@ -106,7 +106,7 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
     if (index !== -1) {
       this.selectedStageIndex = index;
       this.selectedStage = selected;
-      console.log(`Stage changed to: ${selected}`);
+      //console.log(`Stage changed to: ${selected}`);
     }
   }  
   
@@ -118,7 +118,7 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
   scrollToTop() {
     if (this.content) {
       this.content.scrollToTop(300);
-      console.log('Scrolled to top');
+      //console.log('Scrolled to top');
     }
   }
 }

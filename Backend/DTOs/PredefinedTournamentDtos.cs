@@ -4,8 +4,12 @@ namespace Backend.DTOs
 {
     public class PredefinedTournamentDto
     {
-        public int? TournamentId { get; set; } // Nullable for new tournaments
-        public int? ExternalTournamentId { get; set; }  // To track API data
+        public int? TournamentId { get; set; }          // Nullable for new tournaments
+        public int? ExternalTournamentId { get; set; }  // From "competition.id"
+        public int? Season { get; set; }                // From "filters.season"
+        public int? SeasonId { get; set; }              // From "matches.season.id"
+        public DateTime? TournamentStart { get; set; }  // From "matches.season.startDate"
+        public DateTime? TournamentEnd { get; set; }    // From "matches.season.endDate"
 
         [Required, MaxLength(100)]
         public string TournamentName { get; set; } = string.Empty;

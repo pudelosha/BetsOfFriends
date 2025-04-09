@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250408141810_Initial")]
+    [Migration("20250409102026_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -438,6 +438,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("ExactResultBonus")
                         .HasColumnType("int");
 
@@ -464,6 +467,9 @@ namespace Backend.Migrations
                     b.Property<string>("PublicName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("Season")
+                        .HasColumnType("int");
 
                     b.Property<int?>("TotalBoosterPool")
                         .HasColumnType("int");
@@ -2432,6 +2438,9 @@ namespace Backend.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ExternalTeamId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PredefinedTournamentId")
                         .HasColumnType("int");
 
@@ -2465,11 +2474,22 @@ namespace Backend.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ExternalSeasonId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ExternalTournamentId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("Season")
+                        .HasColumnType("int");
 
                     b.Property<string>("TournamentName")
                         .IsRequired()

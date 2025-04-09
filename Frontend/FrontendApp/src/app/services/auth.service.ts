@@ -23,13 +23,13 @@ export class AuthService {
   login(email: string, password: string): Observable<{ success: boolean; message: string }> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       map((response) => {
-        console.log('Backend response:', response);
+        //console.log('Backend response:', response);
         if (response.success && response.token) {
           localStorage.setItem(this.authTokenKey, response.token);
   
           try {
             const decodedToken: any = jwtDecode(response.token);
-            console.log('language' + decodedToken['preferred_language']);
+            //console.log('language' + decodedToken['preferred_language']);
             const language = decodedToken['preferred_language'] || 'en';
             localStorage.setItem('lang', language); // store for persistence
             this.languageService.useLanguage(language);
@@ -62,7 +62,7 @@ export class AuthService {
     if (token) {
         try {
             const decodedToken: any = jwtDecode(token);
-            console.log("Decoded Token:", decodedToken); // Debugging step
+            //console.log("Decoded Token:", decodedToken); // Debugging step
 
             // Extract roles correctly from claim URL
             const roleClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
@@ -80,11 +80,11 @@ export class AuthService {
   }
 
   async logout(message?: string, redirectPath: string = '/welcome'): Promise<void> {
-    console.log('Clearing auth tokens...');
+    //console.log('Clearing auth tokens...');
     localStorage.removeItem(this.authTokenKey);
     localStorage.removeItem(this.storageKey);
     sessionStorage.removeItem(this.authTokenKey);
-    console.log('Updating authentication state...');
+    //console.log('Updating authentication state...');
     this.isAuthenticatedSubject.next(false);
   
     if (message) {
@@ -97,7 +97,7 @@ export class AuthService {
       await toast.present();
     }
   
-    console.log(`Redirecting to ${redirectPath}...`);
+    //console.log(`Redirecting to ${redirectPath}...`);
     setTimeout(() => {
       this.router.navigate([redirectPath]);
     }, 3000);

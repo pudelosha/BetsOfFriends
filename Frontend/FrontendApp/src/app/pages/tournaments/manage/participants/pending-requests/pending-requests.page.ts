@@ -117,7 +117,7 @@ export class PendingRequestsPage implements OnInit {
   }
     
   rejectRequest(userEmail: string) {
-    console.log('Confirming exclusion for:', userEmail);
+    //console.log('Confirming exclusion for:', userEmail);
   
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
   

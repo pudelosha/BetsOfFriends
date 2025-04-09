@@ -93,7 +93,7 @@ export class StageMatchesManagementPage implements OnInit {
   
         this.matchesArray.push(buildMatchFormGroup(this.fb, newMatch));
         this.emitMatches();
-        console.log('Added New Match:', newMatch);
+        //console.log('Added New Match:', newMatch);
       }
     });
   
@@ -169,7 +169,7 @@ export class StageMatchesManagementPage implements OnInit {
         }
   
         this.emitMatches();
-        console.log('Updated Match:', updatedMatch);
+        //console.log('Updated Match:', updatedMatch);
       }
     });
   
@@ -257,7 +257,7 @@ export class StageMatchesManagementPage implements OnInit {
     }));
 
     this.matchesUpdated.emit(updatedMatches);
-    console.log('Emitted Updated Matches:', updatedMatches);
+    //console.log('Emitted Updated Matches:', updatedMatches);
   }
 
   getRecordStatusClass(recordStatus: string | null): string {

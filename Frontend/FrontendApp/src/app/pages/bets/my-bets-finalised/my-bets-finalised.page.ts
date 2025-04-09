@@ -39,7 +39,7 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stage'] && !changes['stage'].firstChange) {
-      console.log(`Stage changed to: ${this.stage}, reloading matches.`);
+      //console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadBets();
     }
   }
@@ -150,11 +150,11 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
   }
 
   async openBetsOverview(bet: Bet) {
-    console.log("Fetching bet overview data for matchId:", bet.matchId);
+    //console.log("Fetching bet overview data for matchId:", bet.matchId);
   
     try {
       const betStats: BetStats = await firstValueFrom(this.betService.getBetStatsByMatchId(bet.matchId));
-      console.log("Received bet overview data:", betStats);
+      //console.log("Received bet overview data:", betStats);
   
       const modal = await this.modalCtrl.create({
         component: BetsOverviewModalComponent,

@@ -6,12 +6,12 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    console.log('AuthInterceptor: Intercepting request:', req.url);
+    //console.log('AuthInterceptor: Intercepting request:', req.url);
 
     const token = localStorage.getItem('authToken'); // Ensure token is stored correctly
 
     if (token) {
-      console.log('AuthInterceptor: Adding Authorization header');
+      //console.log('AuthInterceptor: Adding Authorization header');
       req = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`

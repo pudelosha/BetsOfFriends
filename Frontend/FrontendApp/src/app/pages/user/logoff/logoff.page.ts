@@ -20,16 +20,16 @@ export class LogoffPage {
   constructor(private router: Router, private toastController: ToastController) {}
 
   async ionViewWillEnter() {
-    console.log('Logoff page entered. Showing toast message...');
+    //console.log('Logoff page entered. Showing toast message...');
     
     // Show toast message
     await this.presentToast('You have been logged out.', 'success');
 
-    console.log('Waiting 3 seconds before redirecting...');
+    //console.log('Waiting 3 seconds before redirecting...');
     
     // Wait 3 seconds before redirecting
     setTimeout(() => {
-      console.log('Navigating to login page...');
+      //console.log('Navigating to login page...');
       this.router.navigate(['/welcome']);
     }, 3000);
   }

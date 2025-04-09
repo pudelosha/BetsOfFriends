@@ -34,19 +34,19 @@ export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
   ) {}
 
   ngOnInit() {
-    //console.log('Loading upcoming matches page...');
+    ////console.log('Loading upcoming matches page...');
     this.loadMatches(); 
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stage'] && !changes['stage'].firstChange) {
-      //console.log(`Stage changed to: ${this.stage}, reloading matches.`);
+      ////console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadMatches();
     }
   }
 
   ionViewWillEnter() {
-    //console.log('Reloading upcoming matches...');
+    ////console.log('Reloading upcoming matches...');
     this.loadMatches(); 
   }
 
@@ -98,7 +98,7 @@ export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
       
   async editMatchResult(match: Match, event: Event) {
     event.stopPropagation();
-    //console.log("Opening Edit Match Result Modal:", match);
+    ////console.log("Opening Edit Match Result Modal:", match);
   
     const modal = await this.modalCtrl.create({
       component: EditMatchResultModalComponent,
@@ -111,7 +111,7 @@ export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
   
     const { data } = await modal.onWillDismiss();
     if (data) {
-      //console.log("Updated Match Result Data:", data);
+      ////console.log("Updated Match Result Data:", data);
   
       try {
         await firstValueFrom(this.matchService.updateMatchResult(match.matchId, data));

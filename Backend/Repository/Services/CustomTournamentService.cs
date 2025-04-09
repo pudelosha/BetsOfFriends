@@ -60,6 +60,8 @@ namespace Backend.Repository.Services
                 var tournament = new CustomTournament
                 {
                     Name = tournamentDto.TournamentName,
+                    Season = tournamentDto.Season,
+                    EndDate = tournamentDto.TournamentEnd,
                     IsActive = tournamentDto.IsActive,
                     CreatedByUserId = tournamentDto.CreatedBy,
                     CreatedAt = DateTime.UtcNow,
@@ -135,22 +137,50 @@ namespace Backend.Repository.Services
                     .ToDictionaryAsync(t => t.StageName, t => t.StageId);
 
                 // Step 5: Insert Matches
-                var matches = tournamentDto.Matches.Select(m => new CustomMatch
+                var matches = tournamentDto.Matches.Select(m =>
                 {
-                    TournamentId = tournament.TournamentId,
-                    StageId = stageMap.TryGetValue(m.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{m.StageName}' not found."),
-                    HomeTeamId = teamMap.TryGetValue(m.HomeTeam, out var homeId) ? homeId : throw new Exception($"Home team '{m.HomeTeam}' not found."),
-                    AwayTeamId = teamMap.TryGetValue(m.AwayTeam, out var awayId) ? awayId : throw new Exception($"Away team '{m.AwayTeam}' not found."),
-                    MatchStart = DateTime.SpecifyKind(m.MatchStart, DateTimeKind.Utc),
-                    Type = Enum.Parse<CustomMatch.MatchType>(m.MatchType),
-                    HomeWinOdds = m.HomeWinOdds,
-                    DrawOdds = m.DrawOdds,
-                    AwayWinOdds = m.AwayWinOdds,
-                    HomeQualifies = m.HomeQualifies ?? 0,
-                    AwayQualifies = m.AwayQualifies ?? 0,
-                    Status = Enum.Parse<CustomMatch.MatchStatus>(m.MatchStatus),
-                    IsVisible = m.IsVisible,
-                    PredefinedMatchId = m.PredefinedMatchId
+                    if (!teamMap.TryGetValue(m.HomeTeam, out var homeId))
+                        throw new Exception($"Home team '{m.HomeTeam}' not found.");
+
+                    if (!teamMap.TryGetValue(m.AwayTeam, out var awayId))
+                        throw new Exception($"Away team '{m.AwayTeam}' not found.");
+
+                    if (!stageMap.TryGetValue(m.StageName, out var stageId))
+                        throw new Exception($"Stage '{m.StageName}' not found.");
+
+                    // Safely parse MatchType
+                    if (!Enum.TryParse<CustomMatch.MatchType>(m.MatchType, true, out var parsedType))
+                    {
+                        parsedType = CustomMatch.MatchType.Regular90Min;
+                        _logger.LogWarning($"Unknown MatchType '{m.MatchType}' - defaulting to Regular90Min");
+                    }
+
+                    // Safely parse MatchStatus
+                    if (!Enum.TryParse<CustomMatch.MatchStatus>(m.MatchStatus, true, out var parsedStatus))
+                    {
+                        parsedStatus = CustomMatch.MatchStatus.Timed;
+                        _logger.LogWarning($"Unknown MatchStatus '{m.MatchStatus}' - defaulting to Timed");
+                    }
+
+                    return new CustomMatch
+                    {
+                        TournamentId = tournament.TournamentId,
+                        StageId = stageId,
+                        HomeTeamId = homeId,
+                        AwayTeamId = awayId,
+                        MatchStart = DateTime.SpecifyKind(m.MatchStart, DateTimeKind.Utc),
+                        Type = parsedType,
+                        Status = parsedStatus,
+                        HomeWinOdds = m.HomeWinOdds,
+                        DrawOdds = m.DrawOdds,
+                        AwayWinOdds = m.AwayWinOdds,
+                        HomeQualifies = m.HomeQualifies ?? 0,
+                        AwayQualifies = m.AwayQualifies ?? 0,
+                        IsVisible = m.IsVisible,
+                        PredefinedMatchId = m.PredefinedMatchId,
+                        HomeScore = m.ScoreHome,
+                        AwayScore = m.ScoreAway
+                    };
                 }).ToList();
 
                 _context.CustomMatches.AddRange(matches);
@@ -447,6 +477,8 @@ namespace Backend.Repository.Services
 
                 // Step 3: Update Tournament Details & Settings
                 tournament.Name = tournamentDto.TournamentName;
+                tournament.Season = tournamentDto.Season;
+                tournament.EndDate = tournamentDto.TournamentEnd;
                 tournament.IsActive = tournamentDto.IsActive;
                 tournament.Visibility = Enum.TryParse<TournamentVisibility>(tournamentDto.TournamentVisibility, true, out var visibilityEnum)
                     ? visibilityEnum
@@ -745,6 +777,8 @@ namespace Backend.Repository.Services
                 {
                     TournamentId = tournament.TournamentId,
                     TournamentName = tournament.Name,
+                    Season = tournament.Season,
+                    TournamentEnd = tournament.EndDate,
                     CreatedBy = tournament.CreatedByUserId,
                     CreatedAt = tournament.CreatedAt,
                     TournamentVisibility = tournament.Visibility.ToString(),
@@ -780,6 +814,9 @@ namespace Backend.Repository.Services
                         AwayWinOdds = match.AwayWinOdds,
                         HomeQualifies = match.HomeQualifies,
                         AwayQualifies = match.AwayQualifies,
+                        MatchStatus = match.Status.ToString(),
+                        ScoreHome = match.HomeScore,
+                        ScoreAway = match.AwayScore,
                         IsVisible = match.IsVisible
                     }).ToList(),
                     Users = tournament.Participants.Select(p => new CustomUserDto
@@ -2011,6 +2048,9 @@ namespace Backend.Repository.Services
                         matchDto.HomeQualifies = predefined.HomeQualifies;
                         matchDto.AwayQualifies = predefined.AwayQualifies;
                         matchDto.IsVisible = predefined.IsVisible;
+                        matchDto.ScoreHome = predefined.HomeScore;
+                        matchDto.ScoreAway = predefined.AwayScore;
+                        matchDto.MatchStatus = predefined.Status.ToString();
                         matchDto.RecordStatus = "Update";
                     }
                 }
@@ -2040,6 +2080,9 @@ namespace Backend.Repository.Services
                         HomeQualifies = predefined.HomeQualifies,
                         AwayQualifies = predefined.AwayQualifies,
                         IsVisible = predefined.IsVisible,
+                        ScoreHome = predefined.HomeScore,
+                        ScoreAway = predefined.AwayScore,
+                        MatchStatus = predefined.Status.ToString(),
                         RecordStatus = "New"
                     });
                 }

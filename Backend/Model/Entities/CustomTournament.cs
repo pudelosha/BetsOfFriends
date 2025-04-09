@@ -11,10 +11,12 @@ namespace Backend.Model.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TournamentId { get; set; }
-
         public int? PredefinedTournamentId { get; set; }
         [ForeignKey("PredefinedTournamentId")]
         public PredefinedTournament? PredefinedSource { get; set; }
+
+        public int? Season { get; set; }
+        public DateTime? EndDate { get; set; }
 
         [Required]
         [MaxLength(100)]

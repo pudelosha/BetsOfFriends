@@ -95,7 +95,7 @@ export class UserListPage implements OnInit {
   }
 
   async excludeParticipant(userEmail: string) {
-    console.log('Confirming exclusion for:', userEmail);
+    //console.log('Confirming exclusion for:', userEmail);
   
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
   

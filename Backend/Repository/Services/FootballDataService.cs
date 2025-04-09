@@ -38,6 +38,33 @@ namespace Backend.Repository.Services
             var matchesJson = root.GetProperty("matches");
             var competitionJson = root.GetProperty("competition");
 
+            // Extract season (e.g. 2024) from filters
+            int? season = root.TryGetProperty("filters", out var filtersJson) &&
+                          filtersJson.TryGetProperty("season", out var seasonProp) &&
+                          seasonProp.ValueKind == JsonValueKind.Number
+                          ? seasonProp.GetInt32()
+                          : null;
+
+            // Extract seasonId, start and end date from the first match
+            int? seasonId = null;
+            DateTime? seasonStart = null;
+            DateTime? seasonEnd = null;
+
+            if (matchesJson.GetArrayLength() > 0 &&
+                matchesJson[0].TryGetProperty("season", out var seasonJson))
+            {
+                if (seasonJson.TryGetProperty("id", out var seasonIdProp) && seasonIdProp.ValueKind == JsonValueKind.Number)
+                    seasonId = seasonIdProp.GetInt32();
+
+                if (seasonJson.TryGetProperty("startDate", out var startDateProp) &&
+                    DateTime.TryParse(startDateProp.GetString(), out var parsedStart))
+                    seasonStart = DateTime.SpecifyKind(parsedStart, DateTimeKind.Utc);
+
+                if (seasonJson.TryGetProperty("endDate", out var endDateProp) &&
+                    DateTime.TryParse(endDateProp.GetString(), out var parsedEnd))
+                    seasonEnd = DateTime.SpecifyKind(parsedEnd, DateTimeKind.Utc);
+            }
+
             var matches = new List<PredefinedMatchDto>();
             var teams = new Dictionary<string, PredefinedTeamDto>(StringComparer.OrdinalIgnoreCase);
             var stageMap = new List<KeyValuePair<string, string>>();
@@ -165,6 +192,10 @@ namespace Backend.Repository.Services
                 TournamentName = tournamentName,
                 PublicTournamentName = tournamentName,
                 ExternalTournamentId = tournamentId,
+                Season = season,
+                SeasonId = seasonId,
+                TournamentStart = seasonStart,
+                TournamentEnd = seasonEnd,
                 IsActive = true,
                 TournamentVisibility = "Private",
                 UpdateMethod = "Auto",

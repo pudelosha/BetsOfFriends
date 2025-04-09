@@ -21,9 +21,9 @@ export function buildMatchFormGroup(fb: FormBuilder, match: any): FormGroup {
     matchStart: [match.matchStart || '', Validators.required],
     matchType: [match.matchType || 'Regular90Min', Validators.required],
 
-    homeWinOdds: [match.homeWinOdds, Validators.required],
-    drawOdds: [match.drawOdds, Validators.required],
-    awayWinOdds: [match.awayWinOdds, Validators.required],
+    homeWinOdds: [match.homeWinOdds ?? 1, Validators.required],
+    drawOdds: [match.drawOdds ?? 1, Validators.required],
+    awayWinOdds: [match.awayWinOdds ?? 1, Validators.required],
 
     homeQualifies: [match.homeQualifies ?? null],
     awayQualifies: [match.awayQualifies ?? null],

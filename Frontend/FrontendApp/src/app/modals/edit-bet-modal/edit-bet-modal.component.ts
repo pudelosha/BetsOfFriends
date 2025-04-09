@@ -57,7 +57,7 @@ export class EditBetModalComponent implements AfterViewInit {
     }
   
     // Log the original bet data before modification
-    console.log("Original Bet Data Before Saving:", JSON.parse(JSON.stringify(this._bet)));
+    //console.log("Original Bet Data Before Saving:", JSON.parse(JSON.stringify(this._bet)));
   
     // Check if qualification is required (only for ExtendedWithQualification)
     const qualificationRequired = this._bet.showWhoQualifies &&
@@ -79,7 +79,7 @@ export class EditBetModalComponent implements AfterViewInit {
     };
   
     // Log the emitted bet data
-    console.log("Emitting Bet Data:", emittedBet);
+    //console.log("Emitting Bet Data:", emittedBet);
   
     this.modalCtrl.dismiss(emittedBet);
   }

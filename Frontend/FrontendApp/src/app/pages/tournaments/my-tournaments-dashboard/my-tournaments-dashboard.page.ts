@@ -65,7 +65,7 @@ export class MyTournamentsDashboardPage implements OnInit {
           ...t,
           isVisible: !!t.isVisible // Ensure it's always a boolean
         }));
-        console.log("Loaded tournaments:", this.tournaments); // 🔍 Debug log
+        //console.log("Loaded tournaments:", this.tournaments); // 🔍 Debug log
       },
       error: (error) => {
         this.showToast('Failed to load tournaments. Please try again later.', 'danger');
@@ -115,7 +115,7 @@ export class MyTournamentsDashboardPage implements OnInit {
       next: (updatedVisibility: boolean) => {
         tournament.isVisible = updatedVisibility; // Update the UI immediately
         this.cdRef.detectChanges(); // Force UI refresh
-        console.log(`Tournament ${tournament.tournamentName} visibility: ${tournament.isVisible}`); // 🔍 Debug log
+        //console.log(`Tournament ${tournament.tournamentName} visibility: ${tournament.isVisible}`); // 🔍 Debug log
         this.showToast(`Tournament visibility updated!`, 'success');
       },
       error: (error) => {

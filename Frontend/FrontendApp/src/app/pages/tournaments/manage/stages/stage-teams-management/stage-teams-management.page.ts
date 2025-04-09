@@ -63,7 +63,7 @@ export class StageTeamsManagementPage {
 
         this.teamsArray.push(this.fb.group(newTeam));
 
-        console.log('Added New Team:', newTeam);
+        //console.log('Added New Team:', newTeam);
         this.emitTeams();
       }
     });
@@ -103,7 +103,7 @@ export class StageTeamsManagementPage {
           });
         }
 
-        console.log('Updated Team:', updatedTeam);
+        //console.log('Updated Team:', updatedTeam);
         this.emitTeams(previousTeamsArray);
       }
     });
@@ -120,7 +120,7 @@ export class StageTeamsManagementPage {
     if (currentStatus === 'Delete') {
       // If already marked "Delete", undo by setting it to "Updated"
       teamControl.patchValue({ recordStatus: 'Update' });
-      console.log(`Undo delete action for team: ${teamToRemove.teamName}`);
+      //console.log(`Undo delete action for team: ${teamToRemove.teamName}`);
       this.emitTeams();
       await this.showToast(`Team "${teamToRemove.teamName}" restored successfully!`, 'success');
     } else {
@@ -145,7 +145,7 @@ export class StageTeamsManagementPage {
                 teamControl.patchValue({ recordStatus: 'Delete' });
               }
   
-              console.log('Updated team after removal action:', teamToRemove);
+              //console.log('Updated team after removal action:', teamToRemove);
               this.emitTeams();
               await this.showToast(`Team "${teamToRemove.teamName}" removed successfully!`, 'success');
             },
@@ -181,8 +181,8 @@ export class StageTeamsManagementPage {
       updatedTeams,
     });
 
-    console.log('Emitted Previous Teams:', previousTeams);
-    console.log('Emitted Updated Teams:', updatedTeams);
+    //console.log('Emitted Previous Teams:', previousTeams);
+    //console.log('Emitted Updated Teams:', updatedTeams);
   }
 
   getRecordStatusClass(recordStatus: string | null): string {

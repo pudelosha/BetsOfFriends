@@ -52,11 +52,14 @@ export class BuildCustomTournamentPage implements OnInit {
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
+      externalTournamentId: [null],
       predefinedTournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       publicTournamentName: [null],
       tournamentVisibility: ['Private', Validators.required], // or 'Public' depending on default
       updateMethod: ['Manual', Validators.required], 
+      season: [null],              
+      tournamentEnd: [null],      
       teams: this.fb.array([], Validators.required),
       stages: this.fb.array([], Validators.required),
       matches: this.fb.array([], Validators.required),
@@ -78,23 +81,31 @@ export class BuildCustomTournamentPage implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
-      if (id && !isNaN(+id)) {
-        this.tournamentId = +id; // Convert the id to a number
+      this.tournamentId = id && !isNaN(+id) ? +id : null;
+  
+      const titleKey = this.isEditMode
+        ? 'BUILD_CUSTOM.EDIT_TITLE'
+        : 'BUILD_CUSTOM.TITLE';
+      this.titleService.setTitle(titleKey);
+  
+      if (this.isEditMode) {
         this.loadTournament();
-      } else {
-        this.tournamentId = null;
       }
     });
-    this.titleService.setTitle('BUILD_CUSTOM.TITLE');
   }
 
   ionViewWillEnter(): void {
-    this.titleService.setTitle('BUILD_CUSTOM.TITLE');
-    this.resetFormData();
+    const titleKey = this.isEditMode
+      ? 'BUILD_CUSTOM.EDIT_TITLE'
+      : 'BUILD_CUSTOM.TITLE';
+    this.titleService.setTitle(titleKey);
+  
     this.scrollToTop();
     this.step = 1;
   
     if (!this.isEditMode && !this.isPredefinedTournament) {
+      this.resetFormData();
+  
       this.tournamentForm.patchValue({
         tournamentVisibility: 'Private',
         updateMethod: 'Manual',
@@ -105,7 +116,7 @@ export class BuildCustomTournamentPage implements OnInit {
         this.stageInputTypePage?.loadPredefinedTournaments?.();
       });
     }
-  }
+  }  
 
   get isEditMode(): boolean {
     return !!this.tournamentId;
@@ -196,11 +207,14 @@ export class BuildCustomTournamentPage implements OnInit {
   populateForm(tournament: Tournament): void {  
     this.tournamentForm.patchValue({
       tournamentId: tournament.tournamentId,
+      externalTournamentId: tournament.externalTournamentId || null,
       predefinedTournamentId: tournament.predefinedTournamentId || null,
       tournamentName: tournament.tournamentName,
       tournamentVisibility: tournament.tournamentVisibility || 'Private',
       publicTournamentName: tournament.publicTournamentName || '',
       updateMethod: tournament.updateMethod || 'Manual',
+      season: tournament.season || null,                   
+      tournamentEnd: tournament.tournamentEnd || null        
     });
 
     if (tournament.settings) {
@@ -231,6 +245,7 @@ export class BuildCustomTournamentPage implements OnInit {
       this.teamsArray.push(
         this.fb.group({
           teamFrontendId: [team.teamFrontendId], // Ensure we store frontendId
+          externalTeamId: [team.externalTeamId || null],
           teamId: [team.teamId], // Backend ID
           predefinedTeamId: [team.predefinedTeamId || null],
           teamName: [team.teamName, Validators.required],
@@ -277,6 +292,7 @@ export class BuildCustomTournamentPage implements OnInit {
         this.fb.group({
           matchFrontendId: [match.matchFrontendId || this.generateFrontendId()], // Ensure unique frontendId
           matchId: [match.matchId],
+          externalMatchId: [match.externalMatchId || null],
           predefinedMatchId: [match.predefinedMatchId || null],
 
           stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
@@ -298,7 +314,15 @@ export class BuildCustomTournamentPage implements OnInit {
           awayWinOdds: [match.awayWinOdds],
           homeQualifies: [match.homeQualifies],
           awayQualifies: [match.awayQualifies],
-          recordStatus: ['Uploaded', Validators.required],
+          
+          recordStatus: [
+            match.matchStatus?.toLowerCase() === 'finished' ? 'Finalised' : 'Uploaded',
+            Validators.required
+          ],
+
+          matchStatus: [match.matchStatus || null],
+          scoreHome: [match.scoreHome ?? null],
+          scoreAway: [match.scoreAway ?? null],
 
           isVisible: [match.isVisible ?? true],
         })
@@ -327,6 +351,7 @@ export class BuildCustomTournamentPage implements OnInit {
     return this.fb.group({
       matchFrontendId: [match.matchFrontendId],
       matchId: [match.matchId],
+      externalMatchId: [match.externalMatchId || null],
       predefinedMatchId: [match.predefinedMatchId || null],
       stageFrontendId: [match.stageFrontendId],
       stageId: [match.stageId],
@@ -346,6 +371,9 @@ export class BuildCustomTournamentPage implements OnInit {
       awayQualifies: [match.awayQualifies],
       recordStatus: [match.recordStatus ?? 'New'],
       isVisible: [match.isVisible ?? true],
+      matchStatus: [match.matchStatus || null],
+      scoreHome: [match.scoreHome ?? null],
+      scoreAway: [match.scoreAway ?? null],
     });
   }
          
@@ -356,6 +384,7 @@ export class BuildCustomTournamentPage implements OnInit {
       this.teamsArray.push(
         this.fb.group({
           teamFrontendId: [team.teamFrontendId || this.generateFrontendId()],
+          externalTeamId: [team.externalTeamId || null],
           teamId: [team.teamId],
           teamName: [team.teamName, Validators.required],
           recordStatus: [team.recordStatus || 'New']
@@ -698,12 +727,7 @@ export class BuildCustomTournamentPage implements OnInit {
       this.showToast('At least 1 match is required!', 'danger');
       return;
     }
-  
-    //if (this.usersArray.length < 1) {
-    //  this.showToast('At least 1 user is required!', 'danger');
-    //  return;
-    //}
-  
+    
     const loading = await this.loadingController.create({
       message: 'Submitting tournament...',
       spinner: 'crescent',
@@ -717,16 +741,20 @@ export class BuildCustomTournamentPage implements OnInit {
     const tournamentData: Tournament = {
       tournamentId: isEditing ? this.tournamentId : null,
       predefinedTournamentId: this.tournamentForm.value.predefinedTournamentId || null,
+      externalTournamentId: this.tournamentForm.value.externalTournamentId || null,
       tournamentName: this.tournamentForm.value.tournamentName,
       publicTournamentName: this.tournamentForm.value.publicTournamentName?.trim() || undefined,
       tournamentVisibility: this.tournamentForm.value.tournamentVisibility || 'Private',
       updateMethod: this.tournamentForm.value.updateMethod || 'Manual',
+      season: this.tournamentForm.value.season || null,
+      tournamentEnd: this.tournamentForm.value.tournamentEnd || null,
       isActive: true,
       createdBy: this.tournamentForm.value.createdBy || 'Admin',
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
 
       teams: this.teamsArray.value.map((team: Team) => ({
         teamId: isEditing ? team.teamId || null : null, // Use `null` for new teams
+        externalTeamId: team.externalTeamId || null,
         predefinedTeamId: team.predefinedTeamId || null,
         teamName: team.teamName,
         recordStatus: team.recordStatus || 'New'
@@ -742,6 +770,7 @@ export class BuildCustomTournamentPage implements OnInit {
 
       matches: this.matchesArray.value.map((match: any) => ({
         matchId: isEditing ? match.matchId || null : null,
+        externalMatchId: match.externalMatchId || null,
         predefinedMatchId: match.predefinedMatchId || null,
         stageId: isEditing ? match.stageId || null : null,
         stageName: match.stageName,
@@ -758,6 +787,9 @@ export class BuildCustomTournamentPage implements OnInit {
         awayQualifies: match.awayQualifies,
         recordStatus: match.recordStatus || 'New',
         isVisible: match.isVisible ?? true,
+        matchStatus: match.matchStatus || null,
+        scoreHome: match.scoreHome ?? null,
+        scoreAway: match.scoreAway ?? null,
       })),
 
       users: this.usersArray.value.map((user: User) => ({

@@ -61,12 +61,12 @@ export class MyBetsPage implements OnInit, AfterViewInit {
   }  
   
   triggerRefresh() {
-    console.log('Triggering tab refresh...');
+    //console.log('Triggering tab refresh...');
     this.changeTab(this.selectedTab);
   }
 
   changeTab(tab: string) {
-    console.log(`Switching to tab: ${tab}`);
+    //console.log(`Switching to tab: ${tab}`);
     this.selectedTab = ''; // Force unmount
     setTimeout(() => {
       this.selectedTab = tab; // Remount child
@@ -74,7 +74,7 @@ export class MyBetsPage implements OnInit, AfterViewInit {
   }
 
   forceTabReload() {
-    console.log(`Force reloading tab: ${this.selectedTab}`);
+    //console.log(`Force reloading tab: ${this.selectedTab}`);
     const currentTab = this.selectedTab;
     this.selectedTab = ''; // Force reset
     setTimeout(() => {
@@ -101,7 +101,7 @@ export class MyBetsPage implements OnInit, AfterViewInit {
     if (index !== -1) {
       this.selectedStageIndex = index;
       this.selectedStage = selected;
-      console.log(`Stage changed to: ${selected}`);
+      //console.log(`Stage changed to: ${selected}`);
     }
   }
   
@@ -135,7 +135,7 @@ export class MyBetsPage implements OnInit, AfterViewInit {
   scrollToTop() {
     if (this.content) {
       this.content.scrollToTop(300); // Smooth scroll to top
-      console.log('Scrolled to top');
+      //console.log('Scrolled to top');
     }
   }
 }

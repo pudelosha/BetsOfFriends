@@ -126,7 +126,7 @@ export class PendingInvitesPage implements OnInit {
   }
     
   excludeInvite(userEmail: string) {
-    console.log('Confirming exclusion for:', userEmail);
+    //console.log('Confirming exclusion for:', userEmail);
   
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
   

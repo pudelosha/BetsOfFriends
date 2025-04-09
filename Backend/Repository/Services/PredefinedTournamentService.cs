@@ -28,6 +28,10 @@ namespace Backend.Repository.Services
                 var tournament = new PredefinedTournament
                 {
                     TournamentName = tournamentDto.TournamentName,
+                    ExternalTournamentId = tournamentDto.ExternalTournamentId,
+                    Season = tournamentDto.Season,
+                    ExternalSeasonId = tournamentDto.SeasonId,
+                    EndDate = tournamentDto.TournamentEnd,
                     IsActive = tournamentDto.IsActive,
                     CreatedBy = tournamentDto.CreatedBy,
                     CreatedAt = DateTime.UtcNow,
@@ -41,6 +45,7 @@ namespace Backend.Repository.Services
                 var teams = tournamentDto.Teams.Select(t => new PredefinedTeam
                 {
                     TeamName = t.TeamName,
+                    //ExternalTeamId = t.ExternalTeamId,    //TODO model change later
                     PredefinedTournamentId = tournament.TournamentId
                 }).ToList();
 
@@ -78,6 +83,12 @@ namespace Backend.Repository.Services
                     if (!stageMap.TryGetValue(m.StageName, out var stageId))
                         throw new Exception($"Stage '{m.StageName}' not found.");
 
+                    if (!Enum.TryParse(m.MatchType, out CustomMatch.MatchType parsedType))
+                        parsedType = CustomMatch.MatchType.Regular90Min;
+
+                    if (!Enum.TryParse(m.MatchStatus, out CustomMatch.MatchStatus parsedStatus))
+                        parsedStatus = CustomMatch.MatchStatus.Timed;
+
                     return new PredefinedMatch
                     {
                         TournamentId = tournament.TournamentId,
@@ -85,13 +96,13 @@ namespace Backend.Repository.Services
                         HomeTeamId = homeId,
                         AwayTeamId = awayId,
                         MatchStart = DateTime.SpecifyKind(m.MatchStart, DateTimeKind.Utc),
-                        Type = Enum.Parse<CustomMatch.MatchType>(m.MatchType),
+                        Type = parsedType,
                         HomeWinOdds = m.HomeWinOdds,
                         DrawOdds = m.DrawOdds,
                         AwayWinOdds = m.AwayWinOdds,
                         HomeQualifies = m.HomeQualifies ?? 0,
                         AwayQualifies = m.AwayQualifies ?? 0,
-                        Status = Enum.Parse<CustomMatch.MatchStatus>(m.MatchStatus),
+                        Status = parsedStatus,
                         IsVisible = m.IsVisible,
                         ExternalMatchId = m.ExternalMatchId,
                         HomeScore = m.ScoreHome,
@@ -133,7 +144,10 @@ namespace Backend.Repository.Services
 
                 // Step 2: Update tournament details
                 tournament.TournamentName = tournamentDto.TournamentName;
-                tournament.IsActive = tournamentDto.IsActive;
+                tournament.ExternalTournamentId = tournamentDto.ExternalTournamentId;
+                tournament.Season = tournamentDto.Season;
+                tournament.ExternalSeasonId = tournamentDto.SeasonId;
+                tournament.EndDate = tournamentDto.TournamentEnd; tournament.IsActive = tournamentDto.IsActive;
                 tournament.CreatedBy = tournamentDto.CreatedBy;
                 tournament.Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var updateEnum) ? updateEnum : TournamentUpdate.Manual;
 
@@ -163,6 +177,7 @@ namespace Backend.Repository.Services
                     if (team.TeamId.HasValue && existingTeams.TryGetValue(team.TeamId.Value, out var existingTeam))
                     {
                         existingTeam.TeamName = team.TeamName;
+                        //existingTeam.ExternalTeamId = team.ExternalTeamId; // TODO model change later
                     }
                 }
 
@@ -261,6 +276,9 @@ namespace Backend.Repository.Services
                         existingMatch.AwayWinOdds = match.AwayWinOdds;
                         existingMatch.HomeQualifies = match.HomeQualifies;
                         existingMatch.AwayQualifies = match.AwayQualifies;
+                        existingMatch.HomeScore = match.ScoreHome;
+                        existingMatch.AwayScore = match.ScoreAway;
+                        existingMatch.Status = Enum.Parse<CustomMatch.MatchStatus>(match.MatchStatus);
                         existingMatch.IsVisible = match.IsVisible;
                     }
                 }
@@ -352,6 +370,10 @@ namespace Backend.Repository.Services
                 var dto = new PredefinedTournamentDto
                 {
                     TournamentId = tournament.TournamentId,
+                    ExternalTournamentId = tournament.ExternalTournamentId,
+                    Season = tournament.Season,
+                    SeasonId = tournament.ExternalSeasonId,
+                    TournamentEnd = tournament.EndDate,
                     TournamentName = tournament.TournamentName,
                     CreatedBy = tournament.CreatedBy,
                     CreatedAt = tournament.CreatedAt,

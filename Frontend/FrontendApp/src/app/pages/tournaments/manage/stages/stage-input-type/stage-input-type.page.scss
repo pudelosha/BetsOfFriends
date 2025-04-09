@@ -133,3 +133,13 @@ ion-button {
   text-align: left !important;
 }
 
+ion-datetime-button::part(native) {
+  border: 0px solid var(--ion-color-medium);
+  border-radius: 4px;
+  padding: 8px;
+  min-height: 38px;
+  font-size: 14px;
+  background: transparent;
+
+}
+

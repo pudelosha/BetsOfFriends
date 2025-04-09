@@ -118,7 +118,7 @@ export class EditMatchModalComponent implements OnInit {
   async saveMatch() {
     if (this.matchForm.invalid) {
       this.showToast('Please fill in all required fields!', 'danger');
-      console.log(this.matchForm);
+      //console.log(this.matchForm);
       return;
     }
 
@@ -192,7 +192,7 @@ export class EditMatchModalComponent implements OnInit {
         : 'New'
     };
 
-    console.log('Saving Match:', matchData);
+    //console.log('Saving Match:', matchData);
 
     await this.modalController.dismiss(matchData);
     this.showToast(this.index !== undefined ? 'Match updated!' : 'New match added!', 'success');

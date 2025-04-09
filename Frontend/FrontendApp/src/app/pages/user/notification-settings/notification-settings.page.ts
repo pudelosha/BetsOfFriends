@@ -42,7 +42,7 @@ export class NotificationSettingsPage implements OnInit {
   }
 
   async onSubmit() {
-    console.log('Updated Notification Settings:', this.notificationForm.value);
+    //console.log('Updated Notification Settings:', this.notificationForm.value);
     const toast = await this.toastCtrl.create({
       message: 'Notification settings saved.',
       duration: 3000,

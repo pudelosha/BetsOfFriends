@@ -9,17 +9,14 @@ namespace Backend.Model.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TournamentId { get; set; }
+        public int? ExternalTournamentId { get; set; }
+        public int? ExternalSeasonId { get; set; }
+        public int? Season { get; set; }
+        public DateTime? EndDate { get; set; }
 
         [Required, MaxLength(100)]
         public string TournamentName { get; set; } = string.Empty;
-
         public bool IsActive { get; set; } = true;
-
-        [Required]
-        public string CreatedBy { get; set; } = string.Empty;
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
         public TournamentUpdate Update { get; set; } = TournamentUpdate.Manual;
 
         public ICollection<PredefinedTeam> PredefinedTeams { get; set; } = new List<PredefinedTeam>();

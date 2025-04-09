@@ -9,6 +9,8 @@ namespace Backend.Model.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TeamId { get; set; }
 
+        public int? ExternalTeamId { get; set; }
+
         [Required, MaxLength(50)]
         public string TeamName { get; set; } = string.Empty;
 

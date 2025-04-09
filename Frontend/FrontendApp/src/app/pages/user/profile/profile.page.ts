@@ -238,7 +238,7 @@ export class ProfilePage implements OnInit {
   }
     
   async loadUserProfile() {
-    console.log('Attempting to load user profile');
+    //console.log('Attempting to load user profile');
     this.isLoading = true;
   
     const loading = await this.loadingController.create({
@@ -251,7 +251,7 @@ export class ProfilePage implements OnInit {
   
     this.userService.getUserProfile().subscribe({
       next: (profile: UserProfile) => {
-        console.log('User profile loaded:', profile);
+        //console.log('User profile loaded:', profile);
   
         this.profileForm.patchValue({
           email: profile.email,
@@ -307,7 +307,7 @@ export class ProfilePage implements OnInit {
       darkMode: this.f['darkMode'].value
     };
   
-    console.log('Updating profile:', updatedProfile);
+    //console.log('Updating profile:', updatedProfile);
   
     const loading = await this.loadingController.create({
       message: 'Updating profile...',

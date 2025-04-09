@@ -37,19 +37,19 @@ export class MyBetsToPlacePage implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('ngOnInit - Child Page');
+    //console.log('ngOnInit - Child Page');
     this.loadBets();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stage'] && !changes['stage'].firstChange) {
-      console.log(`Stage changed to: ${this.stage}, reloading matches.`);
+      //console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadBets();
     }
   }   
   
   ionViewDidEnter() {
-    console.log('ionViewDidEnter - Child Page, refreshing bets...');
+    //console.log('ionViewDidEnter - Child Page, refreshing bets...');
     this.loadBets();
   }
   
@@ -109,7 +109,7 @@ export class MyBetsToPlacePage implements OnInit {
     
   async editBet(bet: Bet, event: Event) {
     event.stopPropagation();
-    console.log("Opening Edit Bet Modal:", bet);
+    //console.log("Opening Edit Bet Modal:", bet);
   
     const modal = await this.modalCtrl.create({
       component: EditBetModalComponent,
@@ -122,7 +122,7 @@ export class MyBetsToPlacePage implements OnInit {
   
     const { data } = await modal.onWillDismiss();
     if (data) {
-      console.log("Updated Bet Data:", data);
+      //console.log("Updated Bet Data:", data);
   
       const betUpdate: BetUpdateDto = {
         baseAmount: 1,
@@ -147,11 +147,11 @@ export class MyBetsToPlacePage implements OnInit {
   }   
 
   async openBetsOverview(bet: Bet) {
-    console.log("Fetching bet overview data for matchId:", bet.matchId);
+    //console.log("Fetching bet overview data for matchId:", bet.matchId);
   
     try {
       const betStats: BetStats = await firstValueFrom(this.betService.getBetStatsByMatchId(bet.matchId));
-      console.log("Received bet overview data:", betStats);
+      //console.log("Received bet overview data:", betStats);
   
       const modal = await this.modalCtrl.create({
         component: BetsOverviewModalComponent,

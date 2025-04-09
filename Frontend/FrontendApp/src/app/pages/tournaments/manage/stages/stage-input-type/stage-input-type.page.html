@@ -44,6 +44,74 @@
     <ion-input formControlName="tournamentName" placeholder="{{ 'STAGE_INPUT_TYPE.ENTER_NAME' | translate }}"></ion-input>
   </div>
 
+<!-- Season and End Date -->
+<div class="grid-frame">
+  <ion-grid class="settings-grid">
+    
+    <!-- Label row (5:5:2 layout) -->
+    <ion-row class="align-center">
+      <ion-col size="5" class="left-align">
+        <ion-label class="section-header">{{ 'STAGE_INPUT_TYPE.SEASON' | translate }}</ion-label>
+      </ion-col>
+      <ion-col size="5" class="left-align">
+        <ion-label class="section-header">{{ 'STAGE_INPUT_TYPE.END_DATE' | translate }}</ion-label>
+      </ion-col>
+      <ion-col size="2" class="right-align">
+        <ion-button fill="clear" size="small" id="endDateInfo">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </ion-button>
+        <ion-popover [keepContentsMounted]="true" trigger="endDateInfo">
+          <ng-template>
+            <ion-content class="ion-padding">
+              <p>{{ 'STAGE_INPUT_TYPE.END_DATE_INFO' | translate }}</p>
+            </ion-content>
+          </ng-template>
+        </ion-popover>
+      </ion-col>
+    </ion-row>
+
+    <!-- Input row -->
+    <ion-row class="align-center">
+      <!-- Season Selector -->
+      <ion-col size="5">
+        <ion-select formControlName="season" interface="popover">
+          <ion-select-option *ngFor="let year of [2024,2025,2026,2027,2028,2029,2030]" [value]="year">
+            {{ year }}
+          </ion-select-option>
+        </ion-select>
+      </ion-col>
+
+      <!-- End Date Picker -->
+      <ion-col size="5">
+        <ion-datetime-button datetime="endDateSelector" class="ion-text-start">
+          <span slot="date-target" *ngIf="!tournamentForm.get('tournamentEnd')?.value">
+            {{ 'STAGE_INPUT_TYPE.SELECT_DATE' | translate }}
+          </span>
+        </ion-datetime-button>
+
+        <ion-modal keepContentsMounted="true">
+          <ng-template>
+            <ion-datetime
+              id="endDateSelector"
+              formControlName="tournamentEnd"
+              presentation="date"
+              show-default-buttons="true"
+              done-text="OK"
+              cancel-text="Cancel">
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ion-col>
+
+
+      <!-- Spacer or empty col (optional, for consistent layout) -->
+      <ion-col size="2"></ion-col>
+    </ion-row>
+
+  </ion-grid>
+</div>
+
+
   <!-- Match Update Method -->
   <div class="grid-frame">
     <ion-grid class="settings-grid">
@@ -102,55 +170,64 @@
       </ion-row>
     </ion-grid>
 
-    <!-- Import from file -->
-    <ion-button
-      *ngIf="isPredefinedTournament || isCustomTournamentCreateMode"
-      expand="full"
-      color="medium"
-      (click)="triggerFileInput()">
-      {{ 'STAGE_INPUT_TYPE.IMPORT_FROM_FILE' | translate }}
-    </ion-button>
-    <input
-      #fileInput
-      type="file"
-      class="hidden-file-input"
-      (change)="handleFileInput($event)">
+<!-- Import from file -->
+<ion-button
+  *ngIf="isCreatePredefined || isEditPredefined || isCustomTournamentCreateMode"
+  expand="full"
+  color="medium"
+  (click)="triggerFileInput()">
+  {{ 'STAGE_INPUT_TYPE.IMPORT_FROM_FILE' | translate }}
+</ion-button>
+<input
+  #fileInput
+  type="file"
+  class="hidden-file-input"
+  (change)="handleFileInput($event)">
 
-    
-    <!-- Import from API -->
-    <ion-button
-      *ngIf="isPredefinedTournament"
-      expand="full"
-      color="medium"
-      (click)="openAPISelection()">
-      {{ 'STAGE_INPUT_TYPE.IMPORT_FROM_API' | translate }}
-    </ion-button>
+<!-- Import from API -->
+<ion-button
+  *ngIf="isCreatePredefined"
+  expand="full"
+  color="medium"
+  (click)="openAPISelection()">
+  {{ 'STAGE_INPUT_TYPE.IMPORT_FROM_API' | translate }}
+</ion-button>
 
-    <!-- Import tournament -->
-    <ion-button
-      *ngIf="isCustomTournamentCreateMode"
-      expand="full"
-      color="medium"
-      (click)="openTournamentSelection()">
-      {{ 'STAGE_INPUT_TYPE.IMPORT_TOURNAMENT' | translate }}
-    </ion-button>
+<!-- Update from API -->
+<ion-button
+  *ngIf="isEditPredefined"
+  expand="full"
+  color="medium"
+  (click)="triggerAPIUpdate()">
+  {{ 'STAGE_INPUT_TYPE.UPDATE_FROM_API' | translate }}
+</ion-button>
 
-    <!-- Update tournament -->
-    <ion-button
-      *ngIf="isCustomTournamentEditMode"
-      expand="full"
-      color="medium"
-      (click)="triggerTournamentUpdate()">
-      {{ 'STAGE_INPUT_TYPE.UPDATE_TOURNAMENT' | translate }}
-    </ion-button>
+<!-- Import tournament -->
+<ion-button
+  *ngIf="isCustomTournamentCreateMode"
+  expand="full"
+  color="medium"
+  (click)="openTournamentSelection()">
+  {{ 'STAGE_INPUT_TYPE.IMPORT_TOURNAMENT' | translate }}
+</ion-button>
 
-    <!-- Erase form -->
-    <ion-button
-      color="danger"
-      expand="full"
-      (click)="confirmEraseForm()">
-      {{ 'STAGE_INPUT_TYPE.ERASE_FORM' | translate }}
-    </ion-button>
+<!-- Update tournament -->
+<ion-button
+  *ngIf="isCustomTournamentEditMode"
+  expand="full"
+  color="medium"
+  (click)="triggerTournamentUpdate()">
+  {{ 'STAGE_INPUT_TYPE.UPDATE_TOURNAMENT' | translate }}
+</ion-button>
+
+<!-- Erase form (always visible) -->
+<ion-button
+  color="danger"
+  expand="full"
+  (click)="confirmEraseForm()">
+  {{ 'STAGE_INPUT_TYPE.ERASE_FORM' | translate }}
+</ion-button>
+
   </div>
 
 </form>

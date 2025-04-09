@@ -2,16 +2,15 @@ import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit }
 import * as XLSX from 'xlsx';
 import { FormGroup, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { Tournament, Team, Match, Stage } from 'src/app/model/tournament-model';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { ModalController } from '@ionic/angular';
 import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-selection-modal/tournament-selection.modal';
 import { TranslateModule } from '@ngx-translate/core';
-import { AlertController } from '@ionic/angular';
 import { SelectCompetitionModalComponent } from 'src/app/modals/select-competition-modal/select-competition-modal.component';
 import { ExternalDataService } from 'src/app/services/external-data.service';
+import { ToastController, AlertController, LoadingController, IonicModule } from '@ionic/angular';
 
 
 @Component({
@@ -42,16 +41,11 @@ export class StageInputTypePage implements OnInit {
     private tournamentService: PredefinedTournamentService, 
     private modalController: ModalController,
     private alertController: AlertController,
+    private loadingController: LoadingController,
     private externalDataService: ExternalDataService
   ) {}
 
-  ngOnInit(): void {
-    console.log('[StageInputType] ngOnInit');
-    console.log('isEditMode:', this.isEditMode);
-    console.log('isPredefinedTournament:', this.isPredefinedTournament);
-    console.log('isCustomTournamentCreateMode:', this.isCustomTournamentCreateMode);
-    console.log('isCustomTournamentEditMode:', this.isCustomTournamentEditMode);
-  
+  ngOnInit(): void {  
     if (this.isCustomTournamentCreateMode) {
       console.log('Setting defaults for Custom - Create');
       this.tournamentForm.patchValue({
@@ -90,7 +84,15 @@ export class StageInputTypePage implements OnInit {
   get isCustomTournamentEditMode(): boolean {
     return this.isEditMode && !this.isPredefinedTournament;
   }
+
+  get isCreatePredefined(): boolean {
+    return !this.isEditMode && this.isPredefinedTournament;
+  }
   
+  get isEditPredefined(): boolean {
+    return this.isEditMode && this.isPredefinedTournament;
+  }
+    
   async openTournamentSelection(): Promise<void> {
     const modal = await this.modalController.create({
       component: TournamentSelectionModalComponent,
@@ -98,57 +100,68 @@ export class StageInputTypePage implements OnInit {
       breakpoints: [0, 0.5, 1],
       initialBreakpoint: 0.5,
     });
-
+  
     await modal.present();
-
+  
     const { data } = await modal.onWillDismiss();
     this.selectedTournamentId = data?.selectedTournamentId ?? null;
-
+  
     if (this.selectedTournamentId !== null) {
+      const loading = await this.loadingController.create({
+        message: 'Loading tournament...',
+        spinner: 'crescent',
+      });
+      await loading.present();
+  
+      const startTime = Date.now();
+  
       this.tournamentService.getPredefinedTournamentById(this.selectedTournamentId).subscribe({
-        next: (tournament) => {
-          console.log('Fetched Tournament:', tournament);
-
-          // set tournamentId as predefinedTournamentId
+        next: async (tournament) => {
+          // Apply predefined ID
           tournament.predefinedTournamentId = tournament?.tournamentId ?? null;
-
-          // Ensure all entities are marked as "Uploaded"
+  
+          // Set recordStatus and predefined IDs
           tournament.teams = tournament.teams.map(team => ({
             ...team,
-            recordStatus: 'Uploaded',
+            recordStatus: 'New',
             predefinedTeamId: team.teamId,
           }));
-          
           tournament.stages = tournament.stages.map(stage => ({
             ...stage,
-            recordStatus: 'Uploaded',
+            recordStatus: 'New',
             predefinedStageId: stage.stageId,
           }));
-          
           tournament.matches = tournament.matches.map(match => ({
             ...match,
-            recordStatus: 'Uploaded',
+            recordStatus: 'New',
             predefinedMatchId: match.matchId,
           }));
-          
-          tournament.users = tournament.users
-            ? tournament.users.map(user => ({ ...user, recordStatus: 'Uploaded' }))
-            : []; // Default to an empty array if null
-
+  
           this.tournamentSelected.emit(tournament);
+
+          this.tournamentForm.patchValue({
+            updateMethod: 'Auto',
+          });
+
           this.showToast('Tournament loaded successfully!', 'success');
         },
-        error: (err) => {
+        error: async (err) => {
           console.error('Error fetching tournament:', err);
           this.showToast('Failed to load tournament data!', 'danger');
         },
+        complete: async () => {
+          const elapsedTime = Date.now() - startTime;
+          const delay = Math.max(0, 1000 - elapsedTime);
+          setTimeout(async () => {
+            await loading.dismiss();
+          }, delay);
+        }
       });
     } else {
-      console.error('Selected Tournament ID is null.');
       this.showToast('No tournament selected!', 'warning');
     }
   }
-
+  
   handleFileInput(event: any) {
     this.file = event.target.files[0];
     if (this.file) {
@@ -177,7 +190,13 @@ export class StageInputTypePage implements OnInit {
   
       console.log(`Importing matches for competition ${competitionCode}, season ${seasonCode}`);
   
-      this.isLoading = true;
+      const loading = await this.loadingController.create({
+        message: 'Importing competition data...',
+        spinner: 'crescent',
+      });
+      await loading.present();
+  
+      const startTime = Date.now();
   
       this.externalDataService.getCompetitionMatches(competitionCode, seasonCode).subscribe({
         next: (tournament) => {
@@ -235,11 +254,11 @@ export class StageInputTypePage implements OnInit {
               homeQualifies: m.homeQualifies,
               awayQualifies: m.awayQualifies,
               isVisible: m.isVisible,
-
+  
               matchStatus: m.matchStatus,
               scoreHome: m.scoreHome,
               scoreAway: m.scoreAway,
-
+  
               recordStatus: m.matchStatus?.toLowerCase() === 'finished' ? 'Finalised' : 'New'
             };
           });
@@ -248,14 +267,28 @@ export class StageInputTypePage implements OnInit {
           this.stagesExtracted.emit(stages);
           this.matchesExtracted.emit(matches);
   
+          this.tournamentForm.patchValue({
+            updateMethod: 'Auto',
+            tournamentName: tournament.tournamentName ?? null,
+            externalTournamentId: tournament.externalTournamentId ?? null,
+            season: tournament.season ?? null,
+            seasonId: tournament.seasonId ?? null,
+            tournamentStart: tournament.tournamentStart ?? null,
+            tournamentEnd: tournament.tournamentEnd ?? null
+          });
+  
           this.showToast('Competition matches loaded successfully!', 'success');
         },
         error: (err) => {
           console.error('Error fetching competition matches:', err);
           this.showToast('Failed to load competition data.', 'danger');
         },
-        complete: () => {
-          this.isLoading = false;
+        complete: async () => {
+          const elapsedTime = Date.now() - startTime;
+          const delay = Math.max(0, 800 - elapsedTime); // Minimum spinner time
+          setTimeout(async () => {
+            await loading.dismiss();
+          }, delay);
         }
       });
   
@@ -285,6 +318,11 @@ export class StageInputTypePage implements OnInit {
     await alert.present();
   }
 
+  async triggerAPIUpdate(): Promise<void> {
+    //TODO introduce later
+    //call backend external data to call API and get the latest tournament data
+  }
+
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary' = 'primary') {
     const toast = await this.toastController.create({
       message,
@@ -310,6 +348,8 @@ export class StageInputTypePage implements OnInit {
         this.teamsExtracted.emit(teams);
         this.stagesExtracted.emit(stages);
         this.matchesExtracted.emit(matches);
+
+        this.tournamentForm.patchValue({ updateMethod: 'Manual'});
 
         this.showToast('Excel file read successfully!', 'success');
       } catch (error) {

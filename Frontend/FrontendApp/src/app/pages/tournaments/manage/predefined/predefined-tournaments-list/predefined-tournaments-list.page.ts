@@ -78,7 +78,7 @@ export class PredefinedTournamentsListPage implements OnInit {
       return;
     }
 
-    console.log('Navigating to edit tournament with ID:', tournament.tournamentId);
+    //console.log('Navigating to edit tournament with ID:', tournament.tournamentId);
 
     this.router.navigate([`/tournaments/update-predefined/${tournament.tournamentId}`]).catch((error) => {
       console.error('Navigation to edit tournament failed:', error);

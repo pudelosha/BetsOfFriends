@@ -68,8 +68,11 @@ export interface Stage{
 
 export interface Tournament {
   tournamentId?: number | null;
-  externalTournamentId?: number | null; // To track API data
-
+  externalTournamentId?: number | null;  // To track API data
+  season?: number | null;                // e.g. 2024
+  seasonId?: number | null;              // API-specific season ID
+  tournamentStart?: string | null;       // ISO string of start date
+  tournamentEnd?: string | null;         // ISO string of end date
   predefinedTournamentId?: number | null;
   tournamentName: string;
   publicTournamentName?: string;
