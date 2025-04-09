@@ -312,10 +312,10 @@
     "TITLE": "My Bets",
     "TO_PLACE": "To Place",
     "PLACED": "Placed",
-    "FINALISED": "Finalised"
+    "FINALISED": "Closed"
   },
   "MY_BETS_FINALISED": {
-    "NO_MATCHES": "No finalised matches found."
+    "NO_MATCHES": "No closed matches found."
   },
   "MY_BETS_PLACED": {
     "NO_MATCHES": "No placed bets found.",

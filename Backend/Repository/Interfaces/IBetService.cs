@@ -1,5 +1,4 @@
 ﻿using Backend.DTOs;
-using Backend.Model.Entities;
 
 namespace Backend.Services.Interfaces
 {

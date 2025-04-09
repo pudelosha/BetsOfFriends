@@ -1,6 +1,7 @@
 ﻿using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
+using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,9 +35,10 @@ public class FootballDataHostedService : BackgroundService
                 using var scope = _serviceProvider.CreateScope();
                 var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 var footballDataService = scope.ServiceProvider.GetRequiredService<IFootballDataService>();
+                var betService = scope.ServiceProvider.GetRequiredService<IBetService>();
 
                 // Always run every minute
-                await CheckTournamentChangesAsync(dbContext, footballDataService, stoppingToken);
+                await CheckTournamentChangesAsync(dbContext, footballDataService, betService, stoppingToken);
 
                 // Run hourly
                 if (DateTime.UtcNow - _lastTournamentCheck >= _tournamentCheckInterval)
@@ -54,7 +56,11 @@ public class FootballDataHostedService : BackgroundService
         }
     }
 
-    private async Task CheckTournamentChangesAsync(AppDbContext dbContext, IFootballDataService footballDataService, CancellationToken cancellationToken)
+    private async Task CheckTournamentChangesAsync(
+        AppDbContext dbContext,
+        IFootballDataService footballDataService,
+        IBetService betService,
+        CancellationToken cancellationToken)
     {
         _logger.LogInformation("Checking predefined tournament changes...");
 
@@ -66,7 +72,7 @@ public class FootballDataHostedService : BackgroundService
         {
             try
             {
-                var externalId = tournament.ExternalTournamentId.Value;
+                var externalId = tournament.ExternalTournamentId!.Value;
                 var season = tournament.Season ?? 2024;
 
                 var rawJson = await footballDataService.GetCompetitionMatchesAsync(externalId, season);
@@ -91,8 +97,12 @@ public class FootballDataHostedService : BackgroundService
 
                     if (hasChanges)
                     {
-                        _logger.LogInformation($"Updating match {existingMatch.MatchId} based on external match {updatedMatch.ExternalMatchId}");
+                        _logger.LogInformation($"Updating predefined match {existingMatch.MatchId} from external match {updatedMatch.ExternalMatchId}");
 
+                        // Capture original status before update
+                        var previousStatus = existingMatch.Status;
+
+                        // Apply updates
                         existingMatch.Status = Enum.TryParse(updatedMatch.MatchStatus, out CustomMatch.MatchStatus parsedStatus)
                             ? parsedStatus
                             : existingMatch.Status;
@@ -101,7 +111,7 @@ public class FootballDataHostedService : BackgroundService
                         existingMatch.HomeScore = updatedMatch.ScoreHome;
                         existingMatch.AwayScore = updatedMatch.ScoreAway;
 
-                        // Update all custom matches referencing this predefined match
+                        // Find and update all custom matches linked to this predefined match
                         var relatedCustomMatches = await dbContext.CustomMatches
                             .Where(m => m.PredefinedMatchId == existingMatch.MatchId &&
                                         m.Tournament.Update == CustomTournament.TournamentUpdate.Auto)
@@ -110,12 +120,26 @@ public class FootballDataHostedService : BackgroundService
 
                         foreach (var customMatch in relatedCustomMatches)
                         {
-                            _logger.LogInformation($"Propagating update to custom match {customMatch.MatchId}");
+                            _logger.LogInformation($"Propagating updates to custom match {customMatch.MatchId}");
 
                             customMatch.MatchStart = existingMatch.MatchStart;
                             customMatch.HomeScore = existingMatch.HomeScore;
                             customMatch.AwayScore = existingMatch.AwayScore;
                             customMatch.Status = existingMatch.Status;
+
+                            if (existingMatch.Status == CustomMatch.MatchStatus.Finished)
+                            {
+                                _logger.LogInformation($"Triggering bet recalculation for custom match {customMatch.MatchId}");
+
+                                try
+                                {
+                                    await betService.RecalculateBetsForMatchAsync(customMatch.MatchId);
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogError(ex, $"Failed to recalculate bets for match {customMatch.MatchId}");
+                                }
+                            }
                         }
                     }
                 }
@@ -124,7 +148,7 @@ public class FootballDataHostedService : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error processing tournament ID {tournament.TournamentId}");
+                _logger.LogError(ex, $"Error processing predefined tournament ID {tournament.TournamentId}");
             }
         }
 

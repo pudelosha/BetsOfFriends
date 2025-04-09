@@ -76,7 +76,7 @@ export class ManageCustomFinalisedPage implements OnInit, OnChanges {
   
     try {
       this.matches = await firstValueFrom(
-        this.matchService.getMatchesByTournamentStage(tournamentId, 'Finalised', this.stage)
+        this.matchService.getMatchesByTournamentStage(tournamentId, 'Finished', this.stage)
       );
   
       if (!this.matches.length) {
