@@ -56,7 +56,7 @@ public class BetUpdateHostedService : BackgroundService
 
             // Step 2: Get all bets related to those matches that are NOT already Finalised
             var betsToUpdate = await dbContext.Bets
-                .Where(b => finalisedMatchIds.Contains(b.MatchId) && b.Status != Bet.BetStatus.Finalised)
+                .Where(b => finalisedMatchIds.Contains(b.MatchId) && b.Status != Bet.BetStatus.Closed)
                 .ToListAsync(cancellationToken);
 
             if (!betsToUpdate.Any())
@@ -68,7 +68,7 @@ public class BetUpdateHostedService : BackgroundService
             // Step 3: Update the status of those bets to Finalised
             foreach (var bet in betsToUpdate)
             {
-                bet.Status = Bet.BetStatus.Finalised;
+                bet.Status = Bet.BetStatus.Closed;
             }
 
             // Step 4: Save changes

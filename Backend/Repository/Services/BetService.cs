@@ -77,7 +77,7 @@ namespace Backend.Repository.Services
                                 Qualified = null, // No qualification prediction yet
                                 Status = Bet.BetStatus.ToPlace, // New Status: Bet must be placed
                                 Result = Bet.BetResult.Pending, // Bet starts as "Pending"
-                                Submitted = false, // Bet is unsubmitted initially
+                                Calculated = false,
                                 BasePayout = null, // No payout calculated yet
                                 QualificationPayout = null,
                                 ExactScorePayout = null
@@ -134,7 +134,7 @@ namespace Backend.Repository.Services
                 bet.BonusAmount = betUpdateDto.BonusAmount;
                 bet.HomeGoals = betUpdateDto.HomeGoals;
                 bet.AwayGoals = betUpdateDto.AwayGoals;
-                bet.Submitted = true; // TODO: Confirm if necessary
+                bet.Calculated = false;
                 bet.Status = Bet.BetStatus.Placed; // Status update after submission
 
                 // Convert string to enum if provided
@@ -250,6 +250,7 @@ namespace Backend.Repository.Services
                     QualifyHomeOdds = b.Match.HomeQualifies,
                     QualifyAwayOdds = b.Match.AwayQualifies,
 
+                    MatchStatus = b.Match.Status.ToString(),
                     Status = b.Status.ToString(),
                     Result = b.Result.ToString(),
                     Type = b.Match.Type.ToString(),
@@ -381,15 +382,15 @@ namespace Backend.Repository.Services
                 }
 
                 // Penalty for not submitting
-                if (tournamentSettings.AllowNonSubmittedBetsPenalty &&
-                    !bet.Submitted && tournamentSettings.NonSubmittedBetPenalty.HasValue)
+                if (tournamentSettings.AllowNonSubmittedBetsPenalty && tournamentSettings.NonSubmittedBetPenalty.HasValue)
                 {
                     var penalty = tournamentSettings.NonSubmittedBetPenalty.Value;
                     bet.BasePayout -= penalty;
                 }
 
                 // Finalize Bet Status
-                bet.Status = Bet.BetStatus.Finalised;
+                bet.Status = Bet.BetStatus.Closed;
+                bet.Calculated = true;
                 bet.Result = won ? Bet.BetResult.Won : Bet.BetResult.Lost;
             }
 
@@ -457,7 +458,7 @@ namespace Backend.Repository.Services
                         Qualified = null,
                         Status = Bet.BetStatus.ToPlace,
                         Result = Bet.BetResult.Pending,
-                        Submitted = false
+                        Calculated = false
                     }).ToList();
 
                 // Step 4: Save new bets if any
@@ -562,7 +563,7 @@ namespace Backend.Repository.Services
 
                     // User Bets
                     UserBets = match.Status == CustomMatch.MatchStatus.Finished ? match.Bets
-                        .Where(b => b.Status == Bet.BetStatus.Finalised)
+                        .Where(b => b.Status == Bet.BetStatus.Closed)
                         .Select(b => new UserBetDto
                         {
                             Username = b.User.UserName,
@@ -635,6 +636,37 @@ namespace Backend.Repository.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error fetching upcoming bets for tournament {tournamentId} and user {userId}");
+                throw;
+            }
+        }
+
+        public async Task MarkBetsAsCompletedForMatchAsync(int matchId)
+        {
+            try
+            {
+                var betsToClose = await _context.Bets
+                    .Where(b => b.MatchId == matchId &&
+                                (b.Status == Bet.BetStatus.ToPlace || b.Status == Bet.BetStatus.Placed))
+                    .ToListAsync();
+
+                if (!betsToClose.Any())
+                {
+                    _logger.LogInformation($"No bets to mark as completed for match {matchId}.");
+                    return;
+                }
+
+                foreach (var bet in betsToClose)
+                {
+                    bet.Status = Bet.BetStatus.Closed;
+                }
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Successfully marked {betsToClose.Count} bets as completed for match {matchId}.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error marking bets as completed for match {matchId}.");
                 throw;
             }
         }

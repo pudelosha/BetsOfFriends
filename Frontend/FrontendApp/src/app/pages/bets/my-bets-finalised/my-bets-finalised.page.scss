@@ -96,3 +96,16 @@
   color: gray;
   margin-top: 20px;
 }
+
+.in-progress-blink {
+  color: #32cd32;
+  font-weight: bold;
+  animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+

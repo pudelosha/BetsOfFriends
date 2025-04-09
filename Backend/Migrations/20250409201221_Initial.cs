@@ -654,7 +654,7 @@ namespace Backend.Migrations
                     Qualified = table.Column<int>(type: "int", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Result = table.Column<int>(type: "int", nullable: false),
-                    Submitted = table.Column<bool>(type: "bit", nullable: false),
+                    Calculated = table.Column<bool>(type: "bit", nullable: false),
                     BasePayout = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     QualificationPayout = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     ExactScorePayout = table.Column<decimal>(type: "decimal(18,2)", nullable: true),

@@ -122,6 +122,8 @@ public class FootballDataHostedService : BackgroundService
                         {
                             _logger.LogInformation($"Propagating updates to custom match {customMatch.MatchId}");
 
+                            var previousCustomStatus = customMatch.Status;
+
                             customMatch.MatchStart = existingMatch.MatchStart;
                             customMatch.HomeScore = existingMatch.HomeScore;
                             customMatch.AwayScore = existingMatch.AwayScore;
@@ -138,6 +140,19 @@ public class FootballDataHostedService : BackgroundService
                                 catch (Exception ex)
                                 {
                                     _logger.LogError(ex, $"Failed to recalculate bets for match {customMatch.MatchId}");
+                                }
+                            }
+                            else if (existingMatch.Status == CustomMatch.MatchStatus.In_Play && previousCustomStatus != CustomMatch.MatchStatus.In_Play)
+                            {
+                                _logger.LogInformation($"Marking bets as completed for in-play match {customMatch.MatchId}");
+
+                                try
+                                {
+                                    await betService.MarkBetsAsCompletedForMatchAsync(customMatch.MatchId);
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogError(ex, $"Failed to mark bets as completed for match {customMatch.MatchId}");
                                 }
                             }
                         }

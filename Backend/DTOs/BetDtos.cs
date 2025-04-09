@@ -40,6 +40,7 @@ namespace Backend.DTOs
         public decimal? QualifyAwayOdds { get; set; }
 
 
+        public string MatchStatus { get; set; }
         public string Status { get; set; }
         public string Result { get; set; }
         public string Type { get; set; }

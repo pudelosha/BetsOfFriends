@@ -21,7 +21,8 @@ export interface Bet {
   qualifyHomeOdds?: number | null;
   qualifyAwayOdds?: number | null;
 
-  status: 'ToPlace' | 'Placed' | 'Finalised';
+  matchStatus: string;
+  status: 'ToPlace' | 'Placed' | 'Closed';
   result: 'Pending' | 'Won' | 'Lost';
   type: 'Regular90Min' | 'ExtendedWithQualification'
 

@@ -26,7 +26,7 @@ namespace Backend.Model.Entities
 
         public BetStatus Status { get; set; }
         public BetResult Result { get; set; }
-        public bool Submitted { get; set; } = false;
+        public bool Calculated { get; set; } = false;
 
         public decimal? BasePayout { get; set; }            // 1x2 outcome
         public decimal? QualificationPayout { get; set; }   // Correct qualifier
@@ -36,7 +36,7 @@ namespace Backend.Model.Entities
         {
             ToPlace,
             Placed,
-            Finalised
+            Closed
         }
 
         public enum BetResult

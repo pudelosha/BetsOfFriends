@@ -77,7 +77,7 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
   
     try {
       this.bets = await firstValueFrom(
-        this.betService.getBetsByTournamentStage(tournamentId, 'Finalised', this.stage)
+        this.betService.getBetsByTournamentStage(tournamentId, 'Closed', this.stage)
       );
   
       if (!this.bets.length) {
@@ -103,52 +103,39 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
   }  
   
   getBetStatus(bet: Bet): string {
-    if (
-      bet.playerHomeGoals === null || bet.playerHomeGoals === undefined ||
-      bet.playerAwayGoals === null || bet.playerAwayGoals === undefined
-    ) {
+    const ph = bet.playerHomeGoals;
+    const pa = bet.playerAwayGoals;
+    const ah = bet.actualHomeGoals;
+    const aa = bet.actualAwayGoals;
+    const status = bet.matchStatus?.toLowerCase();
+  
+    // 1. Game is in progress (based on match status from backend)
+    if (bet.status === 'Closed' && status === 'in_play') {
+      return 'In Progress';
+    }
+  
+    // 2. Prediction not made
+    if (ph == null || pa == null) {
       return 'Not Predicted';
     }
   
-    if (
-      bet.actualHomeGoals === null || bet.actualHomeGoals === undefined ||
-      bet.actualAwayGoals === null || bet.actualAwayGoals === undefined
-    ) {
+    // 3. Final result not yet available
+    if (ah == null || aa == null) {
       return 'Not Finalized';
     }
   
-    if (bet.playerHomeGoals === bet.actualHomeGoals && bet.playerAwayGoals === bet.actualAwayGoals) {
+    // 4. Exact match predicted
+    if (ph === ah && pa === aa) {
       return 'Exact Match';
     }
   
-    let playerBetWinner: string;
-    let actualMatchWinner: string;
+    // 5. Determine outcome
+    const predicted = ph > pa ? 'home' : ph < pa ? 'away' : 'draw';
+    const actual = ah > aa ? 'home' : ah < aa ? 'away' : 'draw';
   
-    // Determine Player's Bet Outcome
-    if (bet.playerHomeGoals > bet.playerAwayGoals) {
-      playerBetWinner = 'home';
-    } else if (bet.playerHomeGoals < bet.playerAwayGoals) {
-      playerBetWinner = 'away';
-    } else {
-      playerBetWinner = 'draw';
-    }
-  
-    // Determine Actual Match Outcome
-    if (bet.actualHomeGoals !== null && bet.actualAwayGoals !== null) {
-      if (bet.actualHomeGoals > bet.actualAwayGoals) {
-        actualMatchWinner = 'home';
-      } else if (bet.actualHomeGoals < bet.actualAwayGoals) {
-        actualMatchWinner = 'away';
-      } else {
-        actualMatchWinner = 'draw';
-      }
-    } else {
-      return 'Not Finalized';
-    }
-  
-    return playerBetWinner === actualMatchWinner ? 'Won' : 'Lost';
+    return predicted === actual ? 'Won' : 'Lost';
   }
-
+      
   async openBetsOverview(bet: Bet) {
     //console.log("Fetching bet overview data for matchId:", bet.matchId);
   

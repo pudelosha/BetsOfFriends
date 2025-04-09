@@ -1062,8 +1062,8 @@ namespace Backend.Repository.Services
 
                         int totalBetsPlaced = bets.Count;
 
-                        int finalisedBets = bets.Count(b => b.Status == Bet.BetStatus.Finalised);
-                        int wonBets = bets.Count(b => b.Status == Bet.BetStatus.Finalised && b.Result == Bet.BetResult.Won);
+                        int finalisedBets = bets.Count(b => b.Status == Bet.BetStatus.Closed);
+                        int wonBets = bets.Count(b => b.Status == Bet.BetStatus.Closed && b.Result == Bet.BetResult.Won);
                         decimal betSuccessRate = finalisedBets > 0
                             ? Math.Round((decimal)wonBets / finalisedBets * 100, 2)
                             : 0;
@@ -1071,17 +1071,17 @@ namespace Backend.Repository.Services
                         int successful1X2 = wonBets;
 
                         int successfulQualification = bets.Count(b =>
-                            b.Status == Bet.BetStatus.Finalised &&
+                            b.Status == Bet.BetStatus.Closed &&
                             b.Match.Type == CustomMatch.MatchType.ExtendedWithQualification &&
                             b.Qualified == b.Match.Qualified);
 
                         int successfulExactResults = bets.Count(b =>
-                            b.Status == Bet.BetStatus.Finalised &&
+                            b.Status == Bet.BetStatus.Closed &&
                             b.HomeGoals == b.Match.HomeScore &&
                             b.AwayGoals == b.Match.AwayScore);
 
                         decimal totalPayout = bets
-                            .Where(b => b.Status == Bet.BetStatus.Finalised)
+                            .Where(b => b.Status == Bet.BetStatus.Closed)
                             .Sum(b =>
                                 (b.BasePayout ?? 0) +
                                 (showQualified ? (b.QualificationPayout ?? 0) : 0) +
@@ -1271,7 +1271,7 @@ namespace Backend.Repository.Services
                     {
                         var user = group.Key;
                         var totalPayout = group
-                            .Where(b => b.Status == Bet.BetStatus.Finalised)
+                            .Where(b => b.Status == Bet.BetStatus.Closed)
                             .Sum(b => (b.BasePayout ?? 0) + (b.QualificationPayout ?? 0) + (b.ExactScorePayout ?? 0));
 
 

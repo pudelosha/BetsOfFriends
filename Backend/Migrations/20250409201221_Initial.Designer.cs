@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250409102026_Initial")]
+    [Migration("20250409201221_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -171,6 +171,9 @@ namespace Backend.Migrations
                     b.Property<decimal?>("BonusAmount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<bool>("Calculated")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -197,9 +200,6 @@ namespace Backend.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Submitted")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");

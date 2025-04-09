@@ -45,7 +45,7 @@ namespace Backend.Repository.Services
                 var teams = tournamentDto.Teams.Select(t => new PredefinedTeam
                 {
                     TeamName = t.TeamName,
-                    //ExternalTeamId = t.ExternalTeamId,    //TODO model change later
+                    ExternalTeamId = t.ExternalTeamId,
                     PredefinedTournamentId = tournament.TournamentId
                 }).ToList();
 
@@ -177,7 +177,7 @@ namespace Backend.Repository.Services
                     if (team.TeamId.HasValue && existingTeams.TryGetValue(team.TeamId.Value, out var existingTeam))
                     {
                         existingTeam.TeamName = team.TeamName;
-                        //existingTeam.ExternalTeamId = team.ExternalTeamId; // TODO model change later
+                        existingTeam.ExternalTeamId = team.ExternalTeamId;
                     }
                 }
 
