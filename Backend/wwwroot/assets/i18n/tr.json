@@ -1,0 +1,528 @@
+{
+    "WELCOME": {
+      "TITLE": "Arkadaşların Bahisleri",
+      "SLOGAN": "En iyi arkadaşlarınla bahis yap!",
+      "DESCRIPTION": "Arkadaşlarınla futbol maçlarına bahis yap — sadece eğlence için! Turnuvalar oluştur, sonuçları tahmin et ve liderlik tablosunda yüksel.",
+      "LOGIN": "Giriş",
+      "REGISTER": "Kaydol"
+    },
+    "LOGIN": {
+      "TITLE": "Giriş Yap",
+      "DESCRIPTION": "Hesabınıza erişim sağlamak için kimlik bilgilerinizi girin.",
+      "EMAIL": "E-posta",
+      "PASSWORD": "Şifre",
+      "EMAIL_ERROR": "Lütfen geçerli bir e-posta girin.",
+      "PASSWORD_ERROR": "Şifre gereklidir.",
+      "FORGOT_PASSWORD": "Şifrenizi mi unuttunuz?",
+      "RESEND_ACTIVATION": "Aktivasyon e-postasını almadınız mı?",
+      "SUBMIT": "Giriş Yap",
+      "NO_ACCOUNT": "Hesabınız yok mu?",
+      "SIGN_UP": "Kaydol"
+    },
+    "REGISTER": {
+      "TITLE": "Kaydol",
+      "DESCRIPTION": "Turnuvalara katılmak ve bahis yapmak için bir hesap oluşturun.",
+      "EMAIL": "E-posta",
+      "EMAIL_ERROR": "Lütfen geçerli bir e-posta girin.",
+      "PASSWORD": "Şifre",
+      "PASSWORD_ERROR": "Şifre gereklidir (en az 8 karakter).",
+      "CONFIRM_PASSWORD": "Şifreyi Onayla",
+      "CONFIRM_PASSWORD_ERROR": "Şifreler eşleşmelidir.",
+      "CONSENT_TEXT": "Şartları kabul ediyorum",
+      "TERMS_LINK": "Şartlar ve Koşullar",
+      "CONSENT_ERROR": "Kaydolmak için şartları kabul etmeniz gerekmektedir.",
+      "SUBMIT": "Kaydol",
+      "ALREADY_ACCOUNT": "Hesabınız var mı?",
+      "LOGIN_LINK": "Giriş Yap"
+    },
+    "FORGOT": {
+      "TITLE": "Şifreyi Unuttum",
+      "DESCRIPTION": "E-posta adresinizi girin ve şifrenizi sıfırlamak için bir bağlantı gönderelim.",
+      "EMAIL": "E-posta",
+      "EMAIL_ERROR": "Lütfen geçerli bir e-posta girin.",
+      "SUBMIT": "Sıfırlama Bağlantısını Gönder",
+      "BACK": "Giriş Sayfasına Dön"
+    },
+    "CONFIRM": {
+      "SUCCESS_TITLE": "Hesap Aktivasyonu Başarılı!",
+      "FAILURE_TITLE": "E-posta Doğrulaması Başarısız ❌",
+      "PROCESSING": "İsteğiniz işleniyor...",
+      "GO_TO_LOGIN": "Giriş Yap"
+    },
+    "LOGOUT": {
+      "TITLE": "Hoşça Kal!",
+      "MESSAGE": "Hesabınızdan çıkış yaptınız.",
+      "GO_TO_LOGIN": "Giriş Yap"
+    },
+    "RESEND": {
+      "TITLE": "Aktivasyon E-postasını Yeniden Gönder",
+      "DESCRIPTION": "E-posta adresinizi girin ve yeni bir aktivasyon bağlantısı gönderelim.",
+      "EMAIL": "E-posta",
+      "EMAIL_ERROR": "Lütfen geçerli bir e-posta girin.",
+      "BUTTON": "E-posta Gönder",
+      "BACK": "Giriş Sayfasına Dön"
+    },
+    "RESET": {
+      "TITLE": "Şifreyi Sıfırla",
+      "DESCRIPTION": "Yeni şifrenizi aşağıya girin.",
+      "NEW_PASSWORD": "Yeni Şifre",
+      "CONFIRM_PASSWORD": "Şifreyi Onayla",
+      "PASSWORD_ERROR": "Şifre en az 8 karakter olmalıdır.",
+      "CONFIRM_ERROR": "Şifreler eşleşmelidir.",
+      "BUTTON": "Şifreyi Sıfırla",
+      "BACK": "Giriş Sayfasına Dön"
+    },
+    "APP": {
+      "MENU": "Menü",
+      "TITLE": "Arkadaşların Bahisleri",
+      "HOME": "Ana Sayfa",
+      "MESSAGES": "Mesajlar",
+      "TOURNAMENTS": "Turnuvalar",
+      "MY_TOURNAMENTS": "Turnuvalarım",
+      "SUMMARY": "Özet",
+      "FIND_TOURNAMENT": "Turnuva Ara",
+      "BETTING": "Bahis",
+      "MY_BETS": "Bahislerim",
+      "SETTINGS": "Ayarlar",
+      "PROFILE": "Profil",
+      "NOTIFICATIONS": "Bildirimler",
+      "ADMIN": "Yönetici",
+      "CREATE_TOURNAMENT": "Turnuva Oluştur",
+      "MANAGE_TOURNAMENTS": "Turnuva Yönet",
+      "MANAGE_MATCHES": "Maçları Yönet",
+      "MANAGE_PARTICIPANTS": "Katılımcıları Yönet",
+      "SUPER_ADMIN": "Süper Yönetici",
+      "CREATE_PREDEFINED": "Önceden Tanımlı Turnuva Oluştur",
+      "MANAGE_PREDEFINED": "Önceden Tanımlı Turnuvaları Yönet",
+      "MANAGE_USERS": "Kullanıcıları Yönet",
+      "LOGOUT": "Çıkış"
+    },
+    "PROFILE": {
+      "TITLE": "Profil Bilgileri",
+      "MANAGEMENT": "Profil Yönetimi",
+      "MEMBER_SINCE": "Üye Olunan Tarih",
+      "EMAIL": "E-posta",
+      "NICKNAME": "Takma Ad (isteğe bağlı)",
+      "NICKNAME_PLACEHOLDER": "Takma adınızı girin",
+      "LANGUAGE": "Dil",
+      "LOCATION": "Konum (isteğe bağlı)",
+      "SELECT_LOCATION": "Konumunuzu seçin",
+      "DARK_MODE": "Karanlık Mod",
+      "SAVE": "Profili Kaydet",
+      "CHANGE_EMAIL": "E-postayı Değiştir",
+      "UPDATE_PASSWORD": "Şifreyi Güncelle",
+      "DELETE_ACCOUNT": "Hesabı Sil"
+    },
+    "NOTIFICATIONS": {
+      "TOURNAMENT_UPDATES": "Turnuva Güncellemeleri",
+      "MATCH_CLOSED": "Turnuva sonuçları yeniden hesaplandı",
+      "DAILY_UPDATES": "Günlük turnuva güncellemeleri",
+      "TOURNAMENT_INVITES": "Turnuva davetleri",
+      "BETTING_REMINDERS": "Bahis Hatırlatmaları",
+      "PENDING_BETS": "Bekleyen bahis hatırlatması",
+      "NEW_GAMES": "Yeni bahis yapılacak oyunlar",
+      "PROMOTIONS": "Promosyonlar",
+      "SPECIAL_OFFERS": "Özel teklifler",
+      "SAVE": "Ayarları Kaydet"
+    },
+    "SETUP": {
+      "TITLE": "Hesabınızı Ayarlayın",
+      "DESCRIPTION": "Hesabınızı tamamlamak için bir şifre oluşturun.",
+      "NEW_PASSWORD": "Yeni Şifre",
+      "CONFIRM_PASSWORD": "Şifreyi Onayla",
+      "PASSWORD_ERROR": "Şifre en az 8 karakter olmalıdır.",
+      "CONFIRM_ERROR": "Şifreler eşleşmelidir.",
+      "CONSENT_TEXT": "Şartları kabul ediyorum",
+      "TERMS_LINK": "Şartlar ve Koşullar",
+      "CONSENT_ERROR": "Devam etmek için şartları kabul etmeniz gerekmektedir.",
+      "SUBMIT": "Kurulumu Tamamla"
+    },
+    "USER_MANAGER": {
+      "DESCRIPTION": "Sistemdeki tüm kullanıcıları görüntüleyin. Kullanıcıları aramak için arama çubuğunu kullanabilir veya hesapları askıya alabilir ve silebilirsiniz.",
+      "SEARCH_PLACEHOLDER": "Kullanıcıları ara...",
+      "NO_RESULTS": "Kullanıcı bulunamadı.",
+      "SINCE": "Beridir",
+      "STATUS": "Durum",
+      "ROLE": "Rol",
+      "ADMIN_OF": "Yönetici",
+      "PARTICIPANT_IN": "Katılımcı",
+      "SUSPEND": "Askıya Al",
+      "UNSUSPEND": "Askıya Almayı Kaldır",
+      "DELETE": "Sil"
+    },
+        "INVITE": {
+          "TITLE": "Davetiyeyi Kabul Et",
+          "CLOSE": "Kapat",
+          "MESSAGE": "<strong>{{ name }}</strong> turnuvasına katılmak için davet edildiniz.",
+          "NICKNAME_PROMPT": "Lütfen katılmak için bir takma ad girin.",
+          "NICKNAME_LABEL": "Takma Ad",
+          "NICKNAME_PLACEHOLDER": "Takma adınızı girin",
+          "ERROR_REQUIRED": "Takma ad gereklidir.",
+          "ERROR_MAXLENGTH": "Takma ad 20 karakteri geçemez.",
+          "ACCEPT": "Kabul Et"
+        },
+        "BETS_OVERVIEW": {
+          "TITLE": "Bahis Özeti",
+          "HOME_WIN": "Ev Sahibi Kazanır",
+          "DRAW": "Beraberlik",
+          "AWAY_WIN": "Deplasman Kazanır",
+          "HOME_QUALIFIES": "Ev Sahibi Kalır",
+          "AWAY_QUALIFIES": "Deplasman Kalır",
+          "USER_BETS": "Kullanıcı Bahisleri",
+          "PLAYER": "Oyuncu",
+          "BET": "Bahis",
+          "HW": "HW",
+          "D": "D",
+          "AW": "AW",
+          "HQ": "HQ",
+          "AQ": "AQ",
+          "RESULT": "Sonuç"
+        },
+        "BET_MODAL": {
+          "EDIT_TITLE": "Bahisi Düzenle",
+          "PLACE_TITLE": "Bahis Yap",
+          "CLOSE": "Kapat",
+          "MATCH_ODDS": "90 Dakika Maç Oranları",
+          "HOME_WIN": "Ev Sahibi Kazanır",
+          "DRAW": "Beraberlik",
+          "AWAY_WIN": "Deplasman Kazanır",
+          "PREDICT_SCORE": "90 Dakika Sonucunu Tahmin Et",
+          "QUALIFY_ODDS": "Kim Kalır? Oranlar",
+          "QUALIFY_PREDICTION": "Kalma Tahmininiz",
+          "SAVE": "Kaydet"
+        },
+        "MATCH_MODAL": {
+          "ADD_TITLE": "Maç Ekle",
+          "EDIT_TITLE": "Maç Düzenle",
+          "CLOSE": "Kapat",
+          "STAGE": "Aşama",
+          "HOME_TEAM": "Ev Sahibi Takım",
+          "AWAY_TEAM": "Deplasman Takımı",
+          "TYPE": "Maç Türü",
+          "TYPE_REGULAR": "Normal 90 Dakika",
+          "TYPE_EXTENDED": "90 Dakika + Eleme",
+          "DATETIME": "Maç Tarihi & Saati",
+          "ODDS_1X2": "1X2 Bahis Oranları",
+          "HOME_WIN": "Ev Sahibi Kazanır",
+          "DRAW": "Beraberlik",
+          "AWAY_WIN": "Deplasman Kazanır",
+          "ODDS_QUALIFICATION": "Eleme Oranları",
+          "HOME_QUAL": "Ev Sahibi Kalır",
+          "AWAY_QUAL": "Deplasman Kalır",
+          "VISIBILITY": "Maç Görünürlüğü",
+          "VISIBLE": "Görünür",
+          "HIDDEN": "Gizli",
+          "SAVE": "Kaydet"
+        },
+        "MATCH_RESULT_MODAL": {
+          "TITLE": "Maç Sonucunu Düzenle",
+          "CLOSE": "Kapat",
+          "DATETIME": "Maç Tarihi & Saati",
+          "FINISHED_LABEL": "Maç tamamlandı mı?",
+          "FINAL_SCORE": "Son Skor",
+          "QUALIFY_LABEL": "Eleme Takımını Seç",
+          "SAVE": "Kaydet"
+        },
+        "STAGE_MODAL": {
+          "ADD_TITLE": "Yeni Aşama Ekle",
+          "EDIT_TITLE": "Aşama Düzenle",
+          "CLOSE": "Kapat",
+          "STAGE_NAME_LABEL": "Aşama Adı",
+          "STAGE_NAME_PLACEHOLDER": "Aşama adını girin",
+          "STAGE_NAME_REQUIRED": "Aşama adı gereklidir.",
+          "STAGE_NAME_MAXLENGTH": "Aşama adı 50 karakteri geçemez.",
+          "STAGE_ORDER_LABEL": "Aşama Sırası",
+          "STAGE_ORDER_PLACEHOLDER": "Aşama sırasını girin",
+          "STAGE_ORDER_REQUIRED": "Sıra gereklidir.",
+          "STAGE_ORDER_MIN": "Sıra 1 veya daha yüksek olmalıdır.",
+          "SAVE": "Kaydet"
+        },
+        "TEAM_MODAL": {
+          "ADD_TITLE": "Yeni Takım Ekle",
+          "EDIT_TITLE": "Takım Düzenle",
+          "CLOSE": "Kapat",
+          "TEAM_NAME_LABEL": "Takım Adı",
+          "TEAM_NAME_PLACEHOLDER": "Takım adını girin",
+          "TEAM_NAME_REQUIRED": "Takım adı gereklidir.",
+          "TEAM_NAME_MAXLENGTH": "Takım adı 50 karakteri geçemez.",
+          "SAVE": "Kaydet"
+        },
+        "USER_MODAL": {
+          "ADD_TITLE": "Yeni Kullanıcı Ekle",
+          "EDIT_TITLE": "Kullanıcı Düzenle",
+          "CLOSE": "Kapat",
+          "USER_NAME": "Kullanıcı Adı",
+          "ADMIN_NAME": "Yönetici Adı",
+          "ADMIN_NAME_PLACEHOLDER": "Yönetici adını girin",
+          "ADMIN_NAME_REQUIRED": "Yönetici adı gereklidir.",
+          "EMAIL": "Kullanıcı E-posta",
+          "EMAIL_PLACEHOLDER": "Kullanıcı e-postasını girin",
+          "EMAIL_REQUIRED": "Kullanıcı e-postası gereklidir.",
+          "EMAIL_INVALID": "Lütfen geçerli bir e-posta adresi girin.",
+          "ROLE": "Kullanıcı Rolü",
+          "ROLE_PLAYER": "Oyuncu",
+          "ROLE_ADMIN": "Yönetici",
+          "STATUS": "Durum",
+          "SAVE": "Kaydet"
+        },
+        "JOIN_MODAL": {
+          "TITLE": "Turnuvaya Katıl",
+          "CLOSE": "Kapat",
+          "DESCRIPTION_1": "Şuna katılmak istiyorsunuz: ",
+          "DESCRIPTION_2": "Bir takma ad girin ve isteğe bağlı olarak yöneticiye bir mesaj bırakın.",
+          "NICKNAME_LABEL": "Takma Ad",
+          "NICKNAME_PLACEHOLDER": "Takma adınızı girin",
+          "MESSAGE_LABEL": "Yöneticiye Mesaj",
+          "MESSAGE_PLACEHOLDER": "İsteğe bağlı mesaj",
+          "NICKNAME_REQUIRED": "Takma ad gereklidir.",
+          "NICKNAME_MAXLENGTH": "Takma ad 20 karakteri geçemez.",
+          "SUBMIT": "İstek Gönder"
+        },
+        "SELECT_MODAL": {
+          "TITLE": "Turnuva Seç",
+          "CLOSE": "Kapat",
+          "PARTICIPANTS": "Katılımcılar",
+          "ROLE": "Rol",
+          "SELECT": "Seç",
+          "SELECTED": "Seçildi"
+        },
+        "PLAYER_STATS": {
+          "TITLE": "Oyuncu İstatistikleri",
+          "CLOSE": "Kapat",
+          "NO_STATS": "İstatistik bulunamadı.",
+          "BET": "Bahis",
+          "EXACT": "Tam",
+          "QUALIFY": "Kalma"
+        },
+        "TOURNAMENT_SELECTION": {
+          "TITLE": "Turnuva Seçin",
+          "CANCEL": "İptal"
+        },
+            "MY_BETS": {
+              "TO_PLACE": "Yapılacak",
+              "PLACED": "Yapıldı",
+              "FINALISED": "Tamamlandı"
+            },
+            "MY_BETS_FINALISED": {
+              "NO_MATCHES": "Tamamlanmış maç bulunamadı."
+            },
+            "MY_BETS_PLACED": {
+              "NO_MATCHES": "Yerleştirilmiş bahis bulunamadı.",
+              "EDIT_BUTTON": "Bahisi Düzenle"
+            },
+            "MY_BETS_TO_PLACE": {
+              "NO_MATCHES": "Bahis yapılacak yaklaşan maç bulunamadı.",
+              "PLACE_BUTTON": "Bahis Yap"
+            },
+            "MESSAGES": {
+              "NO_NOTIFICATIONS": "Bildirim bulunamadı."
+            },
+            "LATEST_MESSAGES": {
+              "TITLE": "Son Mesajlar",
+              "NO_MESSAGES": "Mesaj bulunamadı."
+            },
+            "STARTED_MATCHES": {
+              "TITLE": "Başlayan Özel Maçlar"
+            },
+            "STARTED_MATCHES_PREDEFINED": {
+              "TITLE": "Başlayan Önceden Tanımlı Maçlar"
+            },
+            "TOURNAMENT_INVITES": {
+              "TITLE": "Turnuva Davetleri",
+              "PARTICIPANTS": "katılımcılar"
+            },
+            "TOURNAMENT_SUMMARY": {
+              "TITLE": "Turnuva Özeti",
+              "YOU": "sen",
+              "NO_DATA": "Turnuva verisi bulunamadı."
+            },
+            "UPCOMING_BETS": {
+              "TITLE": "Yaklaşan Bahisler",
+              "NO_BETS": "Yaklaşan bahis bulunamadı."
+            },
+            "MANAGE_CUSTOM_FINALISED": {
+              "NO_MATCHES": "Maç bulunamadı.",
+              "EDIT_BUTTON": "Düzenle"
+            },
+            "MANAGE_CUSTOM_MATCHES": {
+              "TAB_UPCOMING": "Yaklaşan",
+              "TAB_STARTED": "Başlayan",
+              "TAB_FINALISED": "Tamamlanmış",
+              "EDIT_BUTTON": "Düzenle",
+              "NO_MATCHES": "Maç bulunamadı.",
+              "DATE": "Tarih",
+              "TIME": "Saat"
+            },
+            "MANAGE_CUSTOM_STARTED": {
+              "NO_MATCHES": "Maç bulunamadı.",
+              "EDIT_BUTTON": "Düzenle"
+            },
+            "MANAGE_CUSTOM_UPCOMING": {
+              "NO_MATCHES": "Maç bulunamadı.",
+              "EDIT_BUTTON": "Düzenle"
+            },
+            "MANAGE_PREDEFINED_FINALISED": {
+              "NO_MATCHES": "Maç bulunamadı.",
+              "EDIT_BUTTON": "Düzenle"
+            },
+            "MANAGE_PREDEFINED_MATCHES": {
+              "TAB_UPCOMING": "Yaklaşan",
+              "TAB_STARTED": "Başlayan",
+              "TAB_FINALISED": "Tamamlanmış"
+            },
+            "MANAGE_PREDEFINED_STARTED": {
+              "NO_MATCHES": "Maç bulunamadı.",
+              "EDIT_BUTTON": "Düzenle"
+            },
+            "MANAGE_PREDEFINED_UPCOMING": {
+              "NO_MATCHES": "Maç bulunamadı.",
+              "EDIT_BUTTON": "Düzenle"
+            },
+            "FIND_TOURNAMENT": {
+              "DESCRIPTION": "Katılmaya açık kamu turnuvalarını gözden geçirin. Arama kutusunu kullanarak bir turnuva arayın ve katılmak için istek gönderin.",
+              "SEARCH_PLACEHOLDER": "Turnuva ara...",
+              "NO_RESULTS": "Turnuva bulunamadı",
+              "PARTICIPANTS": "katılımcılar",
+              "CREATED": "Oluşturuldu",
+              "REQUESTED": "İstekli",
+              "JOIN": "Katıl"
+            },
+            "SUMMARY": {
+              "DESCRIPTION": "Bu özet, turnuvaya katılan oyuncuların performansını gösterir. Tablo, sıralamayı, farklı bahis kategorilerindeki başarılı tahminleri ve toplam ödemeyi içerir.",
+              "PLAYER": "Oyuncu",
+              "W": "W",
+              "Q": "Q",
+              "P": "P",
+              "RESULT": "Sonuç"
+            },
+            "MY_TOURNAMENTS": {
+              "DESCRIPTION": "Katıldığınız turnuvaları görüntüleyin ve yönetin. Davetleri kabul edin veya aktif turnuvalara devam edin.",
+              "PARTICIPANTS": "Katılımcılar",
+              "ROLE": "Rol",
+              "ACCEPT": "Kabul Et",
+              "SELECT": "Seç",
+              "QUIT": "Çık"
+            },
+            "BUILD_CUSTOM": {
+              "PREVIOUS": "Önceki",
+              "NEXT": "Sonraki",
+              "ADD": "Ekle",
+              "SUBMIT": "Gönder"
+            },
+            "CUSTOM_TOURNAMENTS": {
+              "DESCRIPTION": "Özel turnuvalarınızı yönetin. Her bir turnuva için düzenle, geçiş veya silme işlemlerini yapabilirsiniz.",
+              "CREATED": "Oluşturuldu",
+              "ACTIVE": "Aktif",
+              "INACTIVE": "Pasif",
+              "EDIT": "Turnuva Düzenle",
+              "RECALCULATE": "Bahisleri Yeniden Hesapla",
+              "TOGGLE": "Turnuva Görünürlüğünü Değiştir",
+              "DELETE": "Turnuvayı Sil"
+            },
+            "BUILD_PREDEFINED": {
+              "PREVIOUS": "Önceki",
+              "ADD": "Ekle",
+              "SUBMIT": "Gönder",
+              "NEXT": "Sonraki"
+            },
+            "PREDEFINED_TOURNAMENTS": {
+              "DESCRIPTION": "Turnuvalarınızı yönetin. Her bir turnuva için düzenle, geçiş veya silme işlemlerini yapabilirsiniz.",
+              "CREATED": "Oluşturuldu",
+              "ACTIVE": "Aktif",
+              "INACTIVE": "Pasif",
+              "EDIT_TOURNAMENT": "Turnuva Düzenle",
+              "EDIT_MATCHES": "Maçları Düzenle",
+              "TOGGLE_VISIBILITY": "Turnuva Görünürlüğünü Değiştir",
+              "DELETE_TOURNAMENT": "Turnuvayı Sil"
+            },
+                "STAGE_USERS_MANAGEMENT": {
+                  "DESCRIPTION": "Turnuva kullanıcılarını yönetin. Hesabı olmayan kullanıcılara davet gönderilir, kaydolup kabul etmeleri gerekir.",
+                  "NO_USERS": "Henüz kullanıcı eklenmedi.",
+                  "EDIT": "Düzenle"
+                },
+                "STAGE_TEAMS_MANAGEMENT": {
+                  "DESCRIPTION": "Turnuvaya katılan takımları düzenleyin. Yeni bir takım eklemek için listenin altına kaydırın. Bir takımı listeden çıkarmak için silme butonuna tıklayın.",
+                  "EDIT": "Düzenle"
+                },
+                "STAGE_SUMMARY": {
+                  "DESCRIPTION1": "Turnuvayı tamamlamadan önce seçilen takımları ve maçları gözden geçirin. Aşağıda turnuva adı, katılan takımlar ve planlanan maçları görebilirsiniz.",
+                  "DESCRIPTION2": "Değişiklik yapmak isterseniz, önceki adımlara geri dönün. Onayladıktan sonra, turnuvayı kaydetmek için Gönder butonuna tıklayın.",
+                  "TOURNAMENT_NAME": "Turnuva Adı",
+                  "NOT_PROVIDED": "Sağlanmadı",
+                  "TEAMS": "Takımlar",
+                  "MATCHES": "Maçlar",
+                  "USERS": "Kullanıcılar"
+                },
+                "STAGE_STAGES_MANAGEMENT": {
+                  "DESCRIPTION": "Turnuva aşamalarını düzenleyin. Yeni bir aşama eklemek için listenin altına kaydırın. Bir aşamayı silmek için silme butonuna tıklayın.",
+                  "EDIT": "Düzenle"
+                },
+                "STAGE_SETTINGS": {
+                  "DESCRIPTION": "Turnuva ayarlarını yapılandırın, kesin sonuç bonusları, eleme bahis kuralları ve ceza kuralları dahil.",
+                  "EXACT_RESULT_BONUS_TITLE": "Kesin Sonuç Bonusuna İzin Ver",
+                  "EXACT_RESULT_BONUS_INFO": "Eğer etkinleştirilirse, kullanıcılar kesin maç sonuçları için bonus puan kazanır.",
+                  "BONUS_CALCULATION_TYPE": "Bonus Hesaplama Türü",
+                  "EXACT_RESULT_BONUS_VALUE": "Kesin Sonuç Bonus Değeri",
+                  "ALLOW_WHO_QUALIFIES_BETS": "Kim Kalır Bahislerine İzin Ver",
+                  "WHO_QUALIFIES_BETS_INFO": "Eleme turlarında hangi takımın kalacağına bahis yapılmasını sağlar.",
+                  "ALLOW_BETS_WITH_BOOSTER": "Booster ile Bahislere İzin Ver",
+                  "BETS_WITH_BOOSTER_INFO": "Kullanıcılar, ek booster puanları ile temel oranları artırabilir.",
+                  "MAX_BET_BOOSTER": "Maksimum Bahis Booster",
+                  "TOTAL_BOOSTER_POOL": "Toplam Booster Havuzu",
+                  "ENTER_BOOSTER_POOL_SIZE": "Booster havuzu boyutunu girin",
+                  "APPLY_PENALTY_NO_BET": "Bahis Yapmayanlar İçin Ceza Uygula",
+                  "PENALTY_INFO": "Eğer etkinleştirilirse, bahis yapılmayanlar cezalandırılır.",
+                  "PENALTY_POINTS": "Ceza Puanları",
+                  "ENTER_PENALTY_VALUE": "Ceza değerini girin"
+                },
+                "STAGE_MATCHES_MANAGEMENT": {
+                  "DESCRIPTION": "Turnuva maçlarını görüntüleyin ve düzenleyin. Maç detaylarını değiştirmek için Düzenle'ye tıklayın veya bir maçı silmek için Sil'e tıklayın. Yeni bir maç eklemek için Aşağıya Maç Ekle'ye tıklayın.",
+                  "EDIT": "Düzenle",
+                  "DELETE": "Sil",
+                  "UNDO": "Geri Al"
+                },
+                "STAGE_INPUT_TYPE": {
+                  "DESCRIPTION": "Turnuvaları oluşturun veya mevcut olanları güncelleyin, takımlar, oyunlar ve detaylar üzerinde özelleştirme seçenekleriyle.",
+                  "DETAILS": "Temel bilgileri ayarlayın, dosya veya şablonlardan veri içe aktarın, maç işlemesini yapılandırın.",
+                  "TOURNAMENT_VISIBILITY": "Turnuva Görünürlüğü",
+                  "PRIVATE": "Özel",
+                  "PUBLIC": "Açık",
+                  "PRIVATE_DESC": "Sadece yönetici katılımcı davet edebilir.",
+                  "PUBLIC_DESC": "Herkes katılmak için başvurabilir.",
+                  "TOURNAMENT_NAME": "Turnuva Adı",
+                  "ENTER_NAME": "Turnuva adını girin",
+                  "MATCH_UPDATE_METHOD": "Maç Güncelleme Yöntemi",
+                  "MANUAL": "Manuel",
+                  "SEMI": "Yarı",
+                  "AUTO": "Otomatik",
+                  "MANUAL_DESC": "Yönetici, maçları manuel olarak ekler veya günceller.",
+                  "SEMI_DESC": "Yönetici, önceden tanımlı turnuvalardan güncellemeleri tetikler.",
+                  "AUTO_DESC": "Maçlar, önceden tanımlı turnuvalara göre otomatik olarak güncellenir.",
+                  "IMPORT_DATA": "Veri İçe Aktar",
+                  "IMPORT_DESC": "Şunları yapabilirsiniz:",
+                  "IMPORT_EXCEL": "Excel dosyasından veri içe aktarın",
+                  "IMPORT_TEMPLATE": "Önceden tanımlı bir turnuva şablonunu kullanın",
+                  "CLEAR_FORM": "Tüm form verilerini sil ve sıfırdan başla",
+                  "IMPORT_FROM_FILE": "Dosyadan içe aktar",
+                  "IMPORT_TOURNAMENT": "Turnuva içe aktar",
+                  "UPDATE_TOURNAMENT": "Turnuvayı güncelle",
+                  "ERASE_FORM": "Tüm Form Verilerini Sil"
+                },
+                "USERS_LIST": {
+                  "ACTIVE_PARTICIPANTS": "Aktif Katılımcılar",
+                  "EXCLUDE": "Hariç Tut",
+                  "NO_PARTICIPANTS": "Katılımcı bulunamadı."
+                },
+                "PENDING_REQUESTS": {
+                  "JOIN_REQUESTS": "Katılım İstekleri",
+                  "ACCEPT": "Kabul Et",
+                  "REJECT": "Reddet",
+                  "NO_REQUESTS": "Katılım isteği bulunamadı."
+                },
+                "PENDING_INVITES": {
+                  "PENDING_INVITATIONS": "Bekleyen Davetler",
+                  "RESEND": "Yeniden Gönder",
+                  "EXCLUDE": "Hariç Tut",
+                  "NO_INVITATIONS": "Bekleyen davet bulunamadı."
+                }    
+  }

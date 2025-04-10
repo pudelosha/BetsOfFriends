@@ -1,0 +1,606 @@
+{
+  "WELCOME": {
+    "TITLE": "Bets of Friends",
+    "SLOGAN": "Place bets with your best of friends!",
+    "DESCRIPTION": "Bet on football matches with friends — just for fun! Create tournaments, predict results, and climb the leaderboard.",
+    "LOGIN": "Login",
+    "REGISTER": "Sign Up"
+  },
+  "LOGIN": {
+    "TITLE": "Login",
+    "DESCRIPTION": "Enter your credentials to access your account.",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "EMAIL_ERROR": "Please enter a valid email.",
+    "PASSWORD_ERROR": "Password is required.",
+    "FORGOT_PASSWORD": "Forgot Password?",
+    "RESEND_ACTIVATION": "Didn't receive an activation email?",
+    "SUBMIT": "Login",
+    "NO_ACCOUNT": "Don't have an account?",
+    "SIGN_UP": "Sign Up"
+  },
+  "REGISTER": {
+    "TITLE": "Register",
+    "DESCRIPTION": "Create an account to join tournaments and place bets.",
+    "EMAIL": "Email",
+    "EMAIL_ERROR": "Please enter a valid email.",
+    "PASSWORD": "Password",
+    "PASSWORD_ERROR": "Password is required (min 8 characters).",
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "CONFIRM_PASSWORD_ERROR": "Passwords must match.",
+    "CONSENT_TEXT": "I agree to the",
+    "TERMS_LINK": "Terms & Conditions",
+    "CONSENT_ERROR": "You must accept the terms to register.",
+    "SUBMIT": "Register",
+    "ALREADY_ACCOUNT": "Already have an account?",
+    "LOGIN_LINK": "Login"
+  },
+  "FORGOT": {
+    "TITLE": "Forgot Password",
+    "DESCRIPTION": "Enter your email address and we'll send you a link to reset your password.",
+    "EMAIL": "Email",
+    "EMAIL_ERROR": "Please enter a valid email.",
+    "SUBMIT": "Send Reset Link",
+    "BACK": "Back to Login"
+  },
+  "CONFIRM": {
+    "SUCCESS_TITLE": "Account Activated!",
+    "FAILURE_TITLE": "Email Confirmation Failed ❌",
+    "PROCESSING": "Processing your request...",
+    "GO_TO_LOGIN": "Go to Login"
+  },
+  "LOGOUT": {
+    "TITLE": "Goodbye!",
+    "MESSAGE": "You have been logged out.",
+    "GO_TO_LOGIN": "Go to Login"
+  },
+  "RESEND": {
+    "TITLE": "Resend Activation Email",
+    "DESCRIPTION": "Enter your email address and we'll send a new activation link.",
+    "EMAIL": "Email",
+    "EMAIL_ERROR": "Please enter a valid email.",
+    "BUTTON": "Send Email",
+    "BACK": "Back to Login"
+  },
+  "RESET": {
+    "TITLE": "Reset Password",
+    "DESCRIPTION": "Enter your new password below.",
+    "NEW_PASSWORD": "New Password",
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "PASSWORD_ERROR": "Password must be at least 8 characters.",
+    "CONFIRM_ERROR": "Passwords must match.",
+    "BUTTON": "Reset Password",
+    "BACK": "Back to Login"
+  },
+  "APP": {
+    "MENU": "Menu",
+    "TITLE": "Bets of Friends",
+    "HOME": "Home",
+    "MESSAGES": "Messages",
+    "TOURNAMENTS": "Tournaments",
+    "MY_TOURNAMENTS": "My Tournaments",
+    "SUMMARY": "Summary",
+    "FIND_TOURNAMENT": "Find Tournament",
+    "BETTING": "Betting",
+    "MY_BETS": "My Bets",
+    "SETTINGS": "Settings",
+    "PROFILE": "Profile",
+    "NOTIFICATIONS": "Notifications",
+    "INFOANDSUPPORT": "Info & Support",
+    "ADMIN": "Admin",
+    "CREATE_TOURNAMENT": "Create Tournament",
+    "MANAGE_TOURNAMENTS": "Manage Tournaments",
+    "MANAGE_MATCHES": "Manage Matches",
+    "MANAGE_PARTICIPANTS": "Manage Participants",
+    "SUPER_ADMIN": "Super Admin",
+    "CREATE_PREDEFINED": "Create Predefined Tournament",
+    "MANAGE_PREDEFINED": "Manage Predefined Tournaments",
+    "MANAGE_USERS": "Manage Users",
+    "LOGOUT": "Logout"
+  },
+  "PROFILE": {
+    "TITLE": "Profile",
+    "MANAGEMENT": "Profile management",
+    "MEMBER_SINCE": "Member Since",
+    "EMAIL": "Email",
+    "NICKNAME": "Nickname (optional)",
+    "NICKNAME_PLACEHOLDER": "Enter nickname",
+    "LANGUAGE": "Language",
+    "LOCATION": "Location (optional)",
+    "SELECT_LOCATION": "Select your location",
+    "DARK_MODE": "Dark Mode",
+    "SAVE": "Save Profile",
+    "CHANGE_EMAIL": "Change Email",
+    "UPDATE_PASSWORD": "Update Password",
+    "DELETE_ACCOUNT": "Delete Account"
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notifications",
+    "TOURNAMENT_UPDATES": "Tournament Updates",
+    "MATCH_CLOSED": "Tournament results recalculated",
+    "DAILY_UPDATES": "Daily tournament updates",
+    "TOURNAMENT_INVITES": "Tournament invitations",
+    "BETTING_REMINDERS": "Betting Reminders",
+    "PENDING_BETS": "Pending bets reminder",
+    "NEW_GAMES": "New games to bet",
+    "PROMOTIONS": "Promotions",
+    "SPECIAL_OFFERS": "Special offers",
+    "SAVE": "Save Settings"
+  },
+  "SETUP": {
+    "TITLE": "Setup Your Account",
+    "DESCRIPTION": "Create a password to complete your account setup.",
+    "NEW_PASSWORD": "New Password",
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "PASSWORD_ERROR": "Password must be at least 8 characters long.",
+    "CONFIRM_ERROR": "Passwords do not match.",
+    "CONSENT_TEXT": "I agree to the",
+    "TERMS_LINK": "Terms & Conditions",
+    "CONSENT_ERROR": "You must accept the terms to continue.",
+    "SUBMIT": "Complete Setup"
+  },
+  "USER_MANAGER": {
+    "TITLE": "Manage Users",
+    "DESCRIPTION": "Browse all users in the system. Use the search bar to find users, or take action to suspend or delete accounts.",
+    "SEARCH_PLACEHOLDER": "Search users...",
+    "NO_RESULTS": "No users found.",
+    "SINCE": "Since",
+    "STATUS": "Status",
+    "ROLE": "Role",
+    "ADMIN_OF": "Admin of",
+    "PARTICIPANT_IN": "Participant in",
+    "SUSPEND": "Suspend",
+    "UNSUSPEND": "Unsuspend",
+    "DELETE": "Delete"
+  },
+  "INVITE": {
+    "TITLE": "Tournament Assignment",
+    "CLOSE": "Close",
+    "MESSAGE": "You have been invited to join {{name}}!",
+    "NICKNAME_PROMPT": "Please choose your nickname:",
+    "NICKNAME_LABEL": "Nickname",
+    "NICKNAME_PLACEHOLDER": "Enter nickname",
+    "ERROR_REQUIRED": "Nickname is required.",
+    "ERROR_MAXLENGTH": "Nickname must be at most 20 characters.",
+    "ACCEPT": "Accept Invitation",
+    "REJECT": "Reject Invitation",
+    "QUIT": "Leave Tournament",
+    "UPDATE": "Update Nickname"
+  },
+  "BETS_OVERVIEW": {
+    "TITLE": "Bets Overview",
+    "HOME_WIN": "Home Win",
+    "DRAW": "Draw",
+    "AWAY_WIN": "Away Win",
+    "HOME_QUALIFIES": "Home Qualifies",
+    "AWAY_QUALIFIES": "Away Qualifies",
+    "USER_BETS": "User Bets",
+    "PLAYER": "Player",
+    "BET": "Bet",
+    "HW": "HW",
+    "D": "D",
+    "AW": "AW",
+    "HQ": "HQ",
+    "AQ": "AQ",
+    "RESULT": "R"
+  },
+  "BET_MODAL": {
+    "EDIT_TITLE": "Edit Bet",
+    "PLACE_TITLE": "Place Bet",
+    "CLOSE": "Close",
+    "MATCH_ODDS": "90-Min Match Odds",
+    "HOME_WIN": "Home Win",
+    "DRAW": "Draw",
+    "AWAY_WIN": "Away Win",
+    "PREDICT_SCORE": "Predict the 90-Min Result",
+    "QUALIFY_ODDS": "Who Qualifies? Odds",
+    "QUALIFY_PREDICTION": "Your Qualification Prediction",
+    "SAVE": "Save"
+  },
+  "MATCH_MODAL": {
+    "ADD_TITLE": "Add Match",
+    "EDIT_TITLE": "Edit Match",
+    "CLOSE": "Close",
+    "STAGE": "Stage",
+    "HOME_TEAM": "Home Team",
+    "AWAY_TEAM": "Away Team",
+    "TYPE": "Match Type",
+    "TYPE_REGULAR": "Regular 90min",
+    "TYPE_EXTENDED": "90min with qualification",
+    "DATETIME": "Match Date & Time",
+    "ODDS_1X2": "1X2 Betting Odds",
+    "HOME_WIN": "Home Win",
+    "DRAW": "Draw",
+    "AWAY_WIN": "Away Win",
+    "ODDS_QUALIFICATION": "Qualification Odds",
+    "HOME_QUAL": "Home Qualifies",
+    "AWAY_QUAL": "Away Qualifies",
+    "VISIBILITY": "Match Visibility",
+    "VISIBLE": "Visible",
+    "STATUS_AND_SCORE": "Status & Score",
+    "STATUS": "Status",
+    "HOME_SCORE": "Home Score",
+    "AWAY_SCORE": "Away Score",
+    "HIDDEN": "Hidden",
+    "SAVE": "Save"
+  },
+  "MATCH_RESULT_MODAL": {
+    "TITLE": "Edit Match Result",
+    "CLOSE": "Close",
+    "DATETIME": "Match Date & Time",
+    "FINISHED_LABEL": "Did the match finish?",
+    "FINAL_SCORE": "Final Score",
+    "QUALIFY_LABEL": "Select the Qualifying Team",
+    "SAVE": "Save"
+  },
+  "STAGE_MODAL": {
+    "ADD_TITLE": "Add New Stage",
+    "EDIT_TITLE": "Edit Stage",
+    "CLOSE": "Close",
+    "STAGE_NAME_LABEL": "Stage Name",
+    "STAGE_NAME_PLACEHOLDER": "Enter stage name",
+    "STAGE_NAME_REQUIRED": "Stage name is required.",
+    "STAGE_NAME_MAXLENGTH": "Stage name cannot exceed 50 characters.",
+    "STAGE_ORDER_LABEL": "Stage Order",
+    "STAGE_ORDER_PLACEHOLDER": "Enter stage order",
+    "STAGE_ORDER_REQUIRED": "Order is required.",
+    "STAGE_ORDER_MIN": "Order must be 1 or higher.",
+    "SAVE": "Save"
+  },
+  "TEAM_MODAL": {
+    "ADD_TITLE": "Add New Team",
+    "EDIT_TITLE": "Edit Team",
+    "CLOSE": "Close",
+    "TEAM_NAME_LABEL": "Team Name",
+    "TEAM_NAME_PLACEHOLDER": "Enter team name",
+    "TEAM_NAME_REQUIRED": "Team name is required.",
+    "TEAM_NAME_MAXLENGTH": "Team name cannot exceed 50 characters.",
+    "SAVE": "Save"
+  },
+  "USER_MODAL": {
+    "ADD_TITLE": "Add New User",
+    "EDIT_TITLE": "Edit User",
+    "CLOSE": "Close",
+    "USER_NAME": "User-Defined Name",
+    "ADMIN_NAME": "Admin-Defined Name",
+    "ADMIN_NAME_PLACEHOLDER": "Enter admin-defined name",
+    "ADMIN_NAME_REQUIRED": "Admin-defined name is required.",
+    "EMAIL": "User Email",
+    "EMAIL_PLACEHOLDER": "Enter user email",
+    "EMAIL_REQUIRED": "User email is required.",
+    "EMAIL_INVALID": "Please enter a valid email address.",
+    "ROLE": "User Role",
+    "ROLE_PLAYER": "Player",
+    "ROLE_ADMIN": "Admin",
+    "STATUS": "Status",
+    "SAVE": "Save"
+  },
+  "JOIN_MODAL": {
+    "TITLE": "Join Tournament",
+    "CLOSE": "Close",
+    "DESCRIPTION_1": "You are requesting to join",
+    "DESCRIPTION_2": "Please enter a nickname and optionally a message for the admin.",
+    "NICKNAME_LABEL": "Nickname",
+    "NICKNAME_PLACEHOLDER": "Enter nickname",
+    "MESSAGE_LABEL": "Message for Admin",
+    "MESSAGE_PLACEHOLDER": "Optional message",
+    "NICKNAME_REQUIRED": "Nickname is required.",
+    "NICKNAME_MAXLENGTH": "Nickname cannot exceed 20 characters.",
+    "SUBMIT": "Submit Request"
+  },
+  "SELECT_MODAL": {
+    "TITLE": "Select Tournament",
+    "CLOSE": "Close",
+    "PARTICIPANTS": "Participants",
+    "ROLE": "Role",
+    "SELECT": "Select",
+    "SELECTED": "Selected"
+  },
+  "PLAYER_STATS": {
+    "TITLE": "Player Stats",
+    "STAGE": "Stage",
+    "CLOSE": "Close",
+    "NO_STATS": "No stats available.",
+    "BET": "Bet",
+    "EXACT": "Exact",
+    "QUALIFY": "Qualify"
+  },
+  "TOURNAMENT_SELECTION": {
+    "TITLE": "Select a Tournament",
+    "CANCEL": "Cancel"
+  },
+  "MY_BETS": {
+    "TITLE": "My Bets",
+    "TO_PLACE": "To Place",
+    "PLACED": "Placed",
+    "FINALISED": "Closed"
+  },
+  "MY_BETS_FINALISED": {
+    "NO_MATCHES": "No closed matches found."
+  },
+  "MY_BETS_PLACED": {
+    "NO_MATCHES": "No placed bets found.",
+    "EDIT_BUTTON": "Edit Bet"
+  },
+  "MY_BETS_TO_PLACE": {
+    "NO_MATCHES": "No upcoming matches to bet on.",
+    "PLACE_BUTTON": "Place Bet"
+  },
+  "MESSAGES": {
+    "TITLE": "Messages",
+    "NO_NOTIFICATIONS": "No notifications found."
+  },
+  "LATEST_MESSAGES": {
+    "TITLE": "Latest Messages",
+    "NO_MESSAGES": "No messages found."
+  },
+  "STARTED_MATCHES": {
+    "TITLE": "Started Custom Matches"
+  },
+  "STARTED_MATCHES_PREDEFINED": {
+    "TITLE": "Started Predefined Matches"
+  },
+  "TOURNAMENT_INVITES": {
+    "TITLE": "Tournament Invites",
+    "PARTICIPANTS": "participants"
+  },
+  "TOURNAMENT_SUMMARY": {
+    "TITLE": "Tournament Summary",
+    "YOU": "you",
+    "NO_DATA": "No tournament data available."
+  },
+  "UPCOMING_BETS": {
+    "TITLE": "Upcoming Bets",
+    "NO_BETS": "No upcoming bets found."
+  },
+  "MANAGE_CUSTOM_FINALISED": {
+    "NO_MATCHES": "No matches found.",
+    "EDIT_BUTTON": "Edit"
+  },
+  "MANAGE_CUSTOM_MATCHES": {
+    "TITLE": "Manage Matches",
+    "TAB_UPCOMING": "Upcoming",
+    "TAB_STARTED": "Started",
+    "TAB_FINALISED": "Finalised",
+    "EDIT_BUTTON": "Edit",
+    "NO_MATCHES": "No matches found.",
+    "DATE": "Date",
+    "TIME": "Time"
+  },
+  "MANAGE_CUSTOM_STARTED": {
+    "NO_MATCHES": "No matches found.",
+    "EDIT_BUTTON": "Edit"
+  },
+  "MANAGE_CUSTOM_UPCOMING": {
+    "NO_MATCHES": "No matches found.",
+    "EDIT_BUTTON": "Edit"
+  },
+  "MANAGE_PREDEFINED_FINALISED": {
+    "NO_MATCHES": "No matches found.",
+    "EDIT_BUTTON": "Edit"
+  },
+  "MANAGE_PREDEFINED_MATCHES": {
+    "TITLE": "Manage Matches",
+    "TAB_UPCOMING": "Upcoming",
+    "TAB_STARTED": "Started",
+    "TAB_FINALISED": "Finalised"
+  },
+  "MANAGE_PREDEFINED_STARTED": {
+    "NO_MATCHES": "No matches found.",
+    "EDIT_BUTTON": "Edit"
+  },
+  "MANAGE_PREDEFINED_UPCOMING": {
+    "NO_MATCHES": "No matches found.",
+    "EDIT_BUTTON": "Edit"
+  },
+  "FIND_TOURNAMENT": {
+    "TITLE": "Find Tournament",
+    "DESCRIPTION": "Browse public tournaments open for participation. Use the search box to find a tournament by name and request to join.",
+    "SEARCH_PLACEHOLDER": "Search tournaments...",
+    "NO_RESULTS": "No tournaments found",
+    "PARTICIPANTS": "participants",
+    "CREATED": "Created",
+    "REQUESTED": "Requested",
+    "JOIN": "Join",
+    "WITHDRAW": "Withdraw"
+  },
+  "SUMMARY": {
+    "TITLE": "Summary",
+    "DESCRIPTION": "This summary provides an overview of participants' performance in the tournament. The table includes ranking, successful predictions in different bet categories, and total payout.",
+    "MATCH_PROGRESS": "Match Completion",
+    "PLAYER": "Player",
+    "W": "W",
+    "Q": "Q",
+    "P": "P",
+    "RESULT": "Result"
+  },
+  "MY_TOURNAMENTS": {
+    "TITLE": "My Tournaments",
+    "DESCRIPTION": "View and manage tournaments you are participating in. Accept invitations or proceed with active tournaments.",
+    "PARTICIPANTS": "Participants",
+    "ROLE": "Role",
+    "ACCEPT": "Accept",
+    "EDIT": "Edit"
+  },
+  "BUILD_CUSTOM": {
+    "TITLE": "Create Tournament",
+    "EDIT_TITLE": "Edit Tournament",
+    "PREVIOUS": "Previous",
+    "NEXT": "Next",
+    "ADD": "Add",
+    "SUBMIT": "Submit"
+  },
+  "CUSTOM_TOURNAMENTS": {
+    "TITLE": "Manage Tournaments",
+    "DESCRIPTION": "Manage your custom tournaments. Use the edit, toggle, or delete actions for each tournament below.",
+    "CREATED": "Created",
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "EDIT": "Edit Tournament",
+    "RECALCULATE": "Recalculate Bets",
+    "TOGGLE": "Change Tournament Visibility",
+    "DELETE": "Delete Tournament"
+  },
+  "BUILD_PREDEFINED": {
+    "TITLE": "Create Tournament",
+    "EDIT_TITLE": "Edit Tournament",
+    "PREVIOUS": "Previous",
+    "ADD": "Add",
+    "SUBMIT": "Submit",
+    "NEXT": "Next"
+  },
+  "PREDEFINED_TOURNAMENTS": {
+    "TITLE": "Manage Tournaments",
+    "DESCRIPTION": "Manage your tournaments. Use the edit, toggle, or delete actions for each tournament below.",
+    "CREATED": "Created",
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "EDIT_TOURNAMENT": "Edit Tournament",
+    "EDIT_MATCHES": "Edit Matches",
+    "TOGGLE_VISIBILITY": "Change Tournament Visibility",
+    "DELETE_TOURNAMENT": "Delete Tournament"
+  },
+  "STAGE_USERS_MANAGEMENT": {
+    "DESCRIPTION": "Manage tournament users. Invitations are sent to users without accounts, they must sign up and accept to join.",
+    "NO_USERS": "No users added yet.",
+    "EDIT": "Edit"
+  },
+  "STAGE_TEAMS_MANAGEMENT": {
+    "DESCRIPTION": "Edit the teams participating in the tournament. Scroll down to the bottom of the list to add a new team. Click the delete button to remove a team from the list.",
+    "EDIT": "Edit"
+  },
+  "STAGE_SUMMARY": {
+    "DESCRIPTION1": "Review the selected teams and matches before finalizing the tournament. Below, you can see the tournament name, teams participating, and the scheduled matches with corresponding odds.",
+    "DESCRIPTION2": "If you need to make changes, go back to the previous steps. Once confirmed, click the Submit button to save the tournament.",
+    "TOURNAMENT_NAME": "Tournament Name",
+    "NOT_PROVIDED": "Not provided",
+    "TEAMS": "Teams",
+    "MATCHES": "Matches",
+    "USERS": "Users"
+  },
+  "STAGE_STAGES_MANAGEMENT": {
+    "DESCRIPTION": "Edit the stages for the tournament. Scroll down to the bottom of the list to add a new stage. Click the delete button to remove a stage.",
+    "EDIT": "Edit"
+  },
+  "STAGE_SETTINGS": {
+    "DESCRIPTION": "Configure additional tournament settings, including exact result bonuses, qualification bet rules, and penalties.",
+    "EXACT_RESULT_BONUS_TITLE": "Allow Exact Result Bonus",
+    "EXACT_RESULT_BONUS_INFO": "If enabled, users get bonus points for exact match results.",
+    "BONUS_CALCULATION_TYPE": "Bonus Calculation Type",
+    "EXACT_RESULT_BONUS_VALUE": "Exact Result Bonus Value",
+    "ALLOW_WHO_QUALIFIES_BETS": "Allow Who Qualifies Bets",
+    "WHO_QUALIFIES_BETS_INFO": "Allows betting on which team qualifies in knockout rounds.",
+    "ALLOW_BETS_WITH_BOOSTER": "Allow Bets with Booster",
+    "BETS_WITH_BOOSTER_INFO": "Users can increase base odds using additional booster points.",
+    "MAX_BET_BOOSTER": "Max Bet Booster",
+    "TOTAL_BOOSTER_POOL": "Total Booster Pool",
+    "ENTER_BOOSTER_POOL_SIZE": "Enter booster pool size",
+    "APPLY_PENALTY_NO_BET": "Apply Penalty for No Bet",
+    "PENALTY_INFO": "If enabled, missing bets will incur a penalty.",
+    "PENALTY_POINTS": "Penalty Points",
+    "ENTER_PENALTY_VALUE": "Enter penalty value"
+  },
+  "STAGE_MATCHES_MANAGEMENT": {
+    "DESCRIPTION": "View and modify tournament matches. Click Edit to change match details, or Delete to remove a match. To add a new match, click Add New Match below.",
+    "EDIT": "Edit",
+    "DELETE": "Delete",
+    "UNDO": "Undo"
+  },
+  "STAGE_INPUT_TYPE": {
+    "SEASON": "Season",
+    "END_DATE": "End Date (optional)",
+    "END_DATE_INFO": "If an end date is provided, the tournament will automatically close on that date.",
+    "SELECT_DATE": "Select date",
+    "DESCRIPTION": "Manage tournaments by creating new ones or updating existing ones, with options to customize teams, games, and details.",
+    "DETAILS": "Set basic details, import data from file or templates, and configure match handling.",
+    "TOURNAMENT_VISIBILITY": "Tournament Visibility",
+    "PRIVATE": "Private",
+    "PUBLIC": "Public",
+    "PRIVATE_DESC": "Only admin can invite participants.",
+    "PUBLIC_DESC": "Anyone can request to join.",
+    "TOURNAMENT_NAME": "Tournament Name",
+    "ENTER_NAME": "Enter tournament name",
+    "MATCH_UPDATE_METHOD": "Match Update Method",
+    "MANUAL": "Manual",
+    "SEMI": "Semi",
+    "AUTO": "Auto",
+    "MANUAL_DESC": "Admin manually adds or updates matches.",
+    "SEMI_DESC": "Admin triggers updates from predefined tournaments.",
+    "AUTO_DESC": "Matches update automatically based on predefined tournaments.",
+    "IMPORT_DATA": "Import Data",
+    "IMPORT_DESC": "You can:",
+    "IMPORT_EXCEL": "Import data from an Excel file",
+    "IMPORT_TEMPLATE": "Use a predefined tournament as a template",
+    "CLEAR_FORM": "Clear all form data and start from scratch",
+    "IMPORT_FROM_FILE": "Import from file",
+    "IMPORT_FROM_API": "Import from API",   
+    "UPDATE_FROM_API": "Update from API",
+    "IMPORT_TOURNAMENT": "Import tournament",
+    "UPDATE_TOURNAMENT": "Update tournament",
+    "ERASE_FORM": "Erase All Form Data"
+  },
+  "USERS_LIST": {
+    "ACTIVE_PARTICIPANTS": "Active Participants",
+    "EXCLUDE": "Exclude",
+    "NO_PARTICIPANTS": "No participants found."
+  },
+  "PENDING_REQUESTS": {
+    "JOIN_REQUESTS": "Join Requests",
+    "ACCEPT": "Accept",
+    "REJECT": "Reject",
+    "NO_REQUESTS": "No join requests found."
+  },
+  "PENDING_INVITES": {
+    "PENDING_INVITATIONS": "Pending Invitations",
+    "RESEND": "Resend",
+    "EXCLUDE": "Exclude",
+    "NO_INVITATIONS": "No pending invitations found."
+  },
+  "HOME": {
+    "TITLE": "Home"
+  },
+  "MANAGE_PARTICIPANTS": {
+    "TITLE": "Manage Participants"
+  },
+    "SUPPORT": {
+      "TITLE": "Contact Support",
+      "DESCRIPTION": "If you have any questions, issues, or suggestions, please fill out the form below. We'll get back to you as soon as possible.",
+      "EMAIL": "Your Email",
+      "EMAIL_ERROR": "Please enter a valid email address.",
+      "SUBJECT": "Subject",
+      "SUBJECT_ERROR": "Please enter a subject.",
+      "MESSAGE": "Message",
+      "MESSAGE_ERROR": "Please enter your message.",
+      "SEND": "Send Message",
+      "SUCCESS": "Your message has been sent successfully!",
+      "ERROR": "Failed to send message. Please try again later."
+    },
+      "TERMS": {
+        "TITLE": "Terms & Conditions"
+      },
+    "POLICY": {
+        "TITLE": "Privacy Policy"
+      },
+      "DOWNLOAD": {
+        "TITLE": "Download"
+      },
+      "FAQ": {
+        "TITLE": "FAQ"
+      },
+    "SOCIAL": {
+      "TITLE": "Social Media"
+    },
+    "INFO": {
+      "TITLE": "Info & Support"
+    },
+    "SELECT_COMPETITION": {
+      "TITLE": "Select Competition",
+      "CLOSE": "Close",
+      "CONFIRM": "Confirm",
+      "COMPETITION_CODE": "Competition Code",
+      "SEASON": "Season",
+      "INVALID_COMPETITION": "Competition code is required.",
+      "INVALID_SEASON": "Season is required."
+    }
+
+}

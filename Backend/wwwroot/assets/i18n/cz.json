@@ -1,0 +1,528 @@
+{
+    "WELCOME": {
+      "TITLE": "Sázky s přáteli",
+      "SLOGAN": "Sázejte s vašimi nejlepšími přáteli!",
+      "DESCRIPTION": "Sázejte na fotbalové zápasy s přáteli — jen pro zábavu! Vytvářejte turnaje, předpovězte výsledky a vyšplhejte se na žebříček.",
+      "LOGIN": "Přihlásit se",
+      "REGISTER": "Registrovat"
+    },
+    "LOGIN": {
+      "TITLE": "Přihlášení",
+      "DESCRIPTION": "Zadejte své přihlašovací údaje pro přístup k vašemu účtu.",
+      "EMAIL": "E-mail",
+      "PASSWORD": "Heslo",
+      "EMAIL_ERROR": "Zadejte platnou e-mailovou adresu.",
+      "PASSWORD_ERROR": "Heslo je povinné.",
+      "FORGOT_PASSWORD": "Zapomněli jste heslo?",
+      "RESEND_ACTIVATION": "Neobdrželi jste aktivační e-mail?",
+      "SUBMIT": "Přihlásit se",
+      "NO_ACCOUNT": "Nemáte účet?",
+      "SIGN_UP": "Registrovat"
+    },
+    "REGISTER": {
+      "TITLE": "Registrace",
+      "DESCRIPTION": "Vytvořte si účet pro účast na turnajích a sázení.",
+      "EMAIL": "E-mail",
+      "EMAIL_ERROR": "Zadejte platnou e-mailovou adresu.",
+      "PASSWORD": "Heslo",
+      "PASSWORD_ERROR": "Heslo je požadováno (minimálně 8 znaků).",
+      "CONFIRM_PASSWORD": "Potvrďte heslo",
+      "CONFIRM_PASSWORD_ERROR": "Hesla se musí shodovat.",
+      "CONSENT_TEXT": "Souhlasím s",
+      "TERMS_LINK": "Podmínkami",
+      "CONSENT_ERROR": "Musíte souhlasit s podmínkami pro registraci.",
+      "SUBMIT": "Registrovat",
+      "ALREADY_ACCOUNT": "Máte již účet?",
+      "LOGIN_LINK": "Přihlásit se"
+    },
+    "FORGOT": {
+      "TITLE": "Zapomenuté heslo",
+      "DESCRIPTION": "Zadejte svou e-mailovou adresu a pošleme vám odkaz pro obnovení hesla.",
+      "EMAIL": "E-mail",
+      "EMAIL_ERROR": "Zadejte platnou e-mailovou adresu.",
+      "SUBMIT": "Poslat odkaz na obnovení",
+      "BACK": "Zpět na přihlášení"
+    },
+    "CONFIRM": {
+      "SUCCESS_TITLE": "Účet aktivován!",
+      "FAILURE_TITLE": "E-mailová potvrzení selhala ❌",
+      "PROCESSING": "Zpracováváme vaši žádost...",
+      "GO_TO_LOGIN": "Přejít na přihlášení"
+    },
+    "LOGOUT": {
+      "TITLE": "Sbohem!",
+      "MESSAGE": "Byli jste odhlášeni.",
+      "GO_TO_LOGIN": "Přejít na přihlášení"
+    },
+    "RESEND": {
+      "TITLE": "Znovu odeslat aktivační e-mail",
+      "DESCRIPTION": "Zadejte svou e-mailovou adresu a pošleme vám nový aktivační odkaz.",
+      "EMAIL": "E-mail",
+      "EMAIL_ERROR": "Zadejte platnou e-mailovou adresu.",
+      "BUTTON": "Odeslat e-mail",
+      "BACK": "Zpět na přihlášení"
+    },
+    "RESET": {
+      "TITLE": "Obnovení hesla",
+      "DESCRIPTION": "Zadejte své nové heslo níže.",
+      "NEW_PASSWORD": "Nové heslo",
+      "CONFIRM_PASSWORD": "Potvrďte heslo",
+      "PASSWORD_ERROR": "Heslo musí obsahovat alespoň 8 znaků.",
+      "CONFIRM_ERROR": "Hesla se musí shodovat.",
+      "BUTTON": "Obnovit heslo",
+      "BACK": "Zpět na přihlášení"
+    },
+    "APP": {
+      "MENU": "Menu",
+      "TITLE": "Sázky s přáteli",
+      "HOME": "Domů",
+      "MESSAGES": "Zprávy",
+      "TOURNAMENTS": "Turnaje",
+      "MY_TOURNAMENTS": "Mé turnaje",
+      "SUMMARY": "Souhrn",
+      "FIND_TOURNAMENT": "Najít turnaj",
+      "BETTING": "Sázení",
+      "MY_BETS": "Mé sázky",
+      "SETTINGS": "Nastavení",
+      "PROFILE": "Profil",
+      "NOTIFICATIONS": "Oznámení",
+      "ADMIN": "Admin",
+      "CREATE_TOURNAMENT": "Vytvořit turnaj",
+      "MANAGE_TOURNAMENTS": "Spravovat turnaje",
+      "MANAGE_MATCHES": "Spravovat zápasy",
+      "MANAGE_PARTICIPANTS": "Spravovat účastníky",
+      "SUPER_ADMIN": "Super admin",
+      "CREATE_PREDEFINED": "Vytvořit předdefinovaný turnaj",
+      "MANAGE_PREDEFINED": "Spravovat předdefinované turnaje",
+      "MANAGE_USERS": "Spravovat uživatele",
+      "LOGOUT": "Odhlásit se"
+    },
+    "PROFILE": {
+      "TITLE": "Profilové údaje",
+      "MANAGEMENT": "Správa profilu",
+      "MEMBER_SINCE": "Člen od",
+      "EMAIL": "E-mail",
+      "NICKNAME": "Přezdívka (volitelné)",
+      "NICKNAME_PLACEHOLDER": "Zadejte přezdívku",
+      "LANGUAGE": "Jazyk",
+      "LOCATION": "Lokalita (volitelné)",
+      "SELECT_LOCATION": "Vyberte svou lokalitu",
+      "DARK_MODE": "Tmavý režim",
+      "SAVE": "Uložit profil",
+      "CHANGE_EMAIL": "Změnit e-mail",
+      "UPDATE_PASSWORD": "Aktualizovat heslo",
+      "DELETE_ACCOUNT": "Smazat účet"
+    },
+    "NOTIFICATIONS": {
+      "TOURNAMENT_UPDATES": "Aktualizace turnaje",
+      "MATCH_CLOSED": "Výsledky turnaje přepočítány",
+      "DAILY_UPDATES": "Denní aktualizace turnajů",
+      "TOURNAMENT_INVITES": "Pozvánky na turnaje",
+      "BETTING_REMINDERS": "Připomenutí sázek",
+      "PENDING_BETS": "Připomenutí o nevyřízených sázkách",
+      "NEW_GAMES": "Nové hry na sázky",
+      "PROMOTIONS": "Akce",
+      "SPECIAL_OFFERS": "Speciální nabídky",
+      "SAVE": "Uložit nastavení"
+    },
+    "SETUP": {
+      "TITLE": "Nastavení účtu",
+      "DESCRIPTION": "Vytvořte si heslo pro dokončení nastavení účtu.",
+      "NEW_PASSWORD": "Nové heslo",
+      "CONFIRM_PASSWORD": "Potvrďte heslo",
+      "PASSWORD_ERROR": "Heslo musí být dlouhé alespoň 8 znaků.",
+      "CONFIRM_ERROR": "Hesla se musí shodovat.",
+      "CONSENT_TEXT": "Souhlasím s",
+      "TERMS_LINK": "Podmínkami",
+      "CONSENT_ERROR": "Musíte souhlasit s podmínkami pro pokračování.",
+      "SUBMIT": "Dokončit nastavení"
+    },
+    "USER_MANAGER": {
+      "DESCRIPTION": "Prohlédněte si všechny uživatele v systému. Použijte vyhledávací lištu pro hledání uživatelů nebo proveďte akce k pozastavení nebo odstranění účtů.",
+      "SEARCH_PLACEHOLDER": "Hledat uživatele...",
+      "NO_RESULTS": "Žádní uživatelé nenalezeni.",
+      "SINCE": "Od",
+      "STATUS": "Stav",
+      "ROLE": "Role",
+      "ADMIN_OF": "Admin pro",
+      "PARTICIPANT_IN": "Účastník v",
+      "SUSPEND": "Pozastavit",
+      "UNSUSPEND": "Obnovit",
+      "DELETE": "Smazat"
+    },
+        "INVITE": {
+          "TITLE": "Přijmout pozvání",
+          "CLOSE": "Zavřít",
+          "MESSAGE": "Byli jste pozváni k účasti v <strong>{{ name }}</strong>.",
+          "NICKNAME_PROMPT": "Zadejte přezdívku pro účast.",
+          "NICKNAME_LABEL": "Přezdívka",
+          "NICKNAME_PLACEHOLDER": "Zadejte přezdívku",
+          "ERROR_REQUIRED": "Přezdívka je povinná.",
+          "ERROR_MAXLENGTH": "Přezdívka nesmí přesáhnout 20 znaků.",
+          "ACCEPT": "Přijmout"
+        },
+        "BETS_OVERVIEW": {
+          "TITLE": "Přehled sázek",
+          "HOME_WIN": "Výhra domácího týmu",
+          "DRAW": "Remíza",
+          "AWAY_WIN": "Výhra hostujícího týmu",
+          "HOME_QUALIFIES": "Domácí tým postupuje",
+          "AWAY_QUALIFIES": "Hostující tým postupuje",
+          "USER_BETS": "Sázky uživatele",
+          "PLAYER": "Hráč",
+          "BET": "Sázka",
+          "HW": "HW",
+          "D": "D",
+          "AW": "AW",
+          "HQ": "HQ",
+          "AQ": "AQ",
+          "RESULT": "Výsledek"
+        },
+        "BET_MODAL": {
+          "EDIT_TITLE": "Upravit sázku",
+          "PLACE_TITLE": "Uložit sázku",
+          "CLOSE": "Zavřít",
+          "MATCH_ODDS": "90 minutové kurzy na zápas",
+          "HOME_WIN": "Výhra domácího týmu",
+          "DRAW": "Remíza",
+          "AWAY_WIN": "Výhra hostujícího týmu",
+          "PREDICT_SCORE": "Předpovědět výsledek po 90 minutách",
+          "QUALIFY_ODDS": "Kurzy na postup",
+          "QUALIFY_PREDICTION": "Vaše předpověď postupu",
+          "SAVE": "Uložit"
+        },
+        "MATCH_MODAL": {
+          "ADD_TITLE": "Přidat zápas",
+          "EDIT_TITLE": "Upravit zápas",
+          "CLOSE": "Zavřít",
+          "STAGE": "Fáze",
+          "HOME_TEAM": "Domácí tým",
+          "AWAY_TEAM": "Hostující tým",
+          "TYPE": "Typ zápasu",
+          "TYPE_REGULAR": "Běžných 90 minut",
+          "TYPE_EXTENDED": "90 minut s kvalifikací",
+          "DATETIME": "Datum a čas zápasu",
+          "ODDS_1X2": "1X2 kurzy na sázení",
+          "HOME_WIN": "Výhra domácího týmu",
+          "DRAW": "Remíza",
+          "AWAY_WIN": "Výhra hostujícího týmu",
+          "ODDS_QUALIFICATION": "Kurzy na kvalifikaci",
+          "HOME_QUAL": "Domácí tým postupuje",
+          "AWAY_QUAL": "Hostující tým postupuje",
+          "VISIBILITY": "Viditelnost zápasu",
+          "VISIBLE": "Viditelné",
+          "HIDDEN": "Skryté",
+          "SAVE": "Uložit"
+        },
+        "MATCH_RESULT_MODAL": {
+          "TITLE": "Upravit výsledek zápasu",
+          "CLOSE": "Zavřít",
+          "DATETIME": "Datum a čas zápasu",
+          "FINISHED_LABEL": "Zápas skončil?",
+          "FINAL_SCORE": "Konečný výsledek",
+          "QUALIFY_LABEL": "Vyberte postupující tým",
+          "SAVE": "Uložit"
+        },
+        "STAGE_MODAL": {
+          "ADD_TITLE": "Přidat novou fázi",
+          "EDIT_TITLE": "Upravit fázi",
+          "CLOSE": "Zavřít",
+          "STAGE_NAME_LABEL": "Název fáze",
+          "STAGE_NAME_PLACEHOLDER": "Zadejte název fáze",
+          "STAGE_NAME_REQUIRED": "Název fáze je povinný.",
+          "STAGE_NAME_MAXLENGTH": "Název fáze nesmí přesáhnout 50 znaků.",
+          "STAGE_ORDER_LABEL": "Pořadí fáze",
+          "STAGE_ORDER_PLACEHOLDER": "Zadejte pořadí fáze",
+          "STAGE_ORDER_REQUIRED": "Pořadí je povinné.",
+          "STAGE_ORDER_MIN": "Pořadí musí být 1 nebo vyšší.",
+          "SAVE": "Uložit"
+        },
+        "TEAM_MODAL": {
+          "ADD_TITLE": "Přidat nový tým",
+          "EDIT_TITLE": "Upravit tým",
+          "CLOSE": "Zavřít",
+          "TEAM_NAME_LABEL": "Název týmu",
+          "TEAM_NAME_PLACEHOLDER": "Zadejte název týmu",
+          "TEAM_NAME_REQUIRED": "Název týmu je povinný.",
+          "TEAM_NAME_MAXLENGTH": "Název týmu nesmí přesáhnout 50 znaků.",
+          "SAVE": "Uložit"
+        },
+        "USER_MODAL": {
+          "ADD_TITLE": "Přidat nového uživatele",
+          "EDIT_TITLE": "Upravit uživatele",
+          "CLOSE": "Zavřít",
+          "USER_NAME": "Uživatelské jméno",
+          "ADMIN_NAME": "Jméno administrátora",
+          "ADMIN_NAME_PLACEHOLDER": "Zadejte jméno administrátora",
+          "ADMIN_NAME_REQUIRED": "Jméno administrátora je povinné.",
+          "EMAIL": "E-mail uživatele",
+          "EMAIL_PLACEHOLDER": "Zadejte e-mail uživatele",
+          "EMAIL_REQUIRED": "E-mail uživatele je povinný.",
+          "EMAIL_INVALID": "Zadejte platnou e-mailovou adresu.",
+          "ROLE": "Role uživatele",
+          "ROLE_PLAYER": "Hráč",
+          "ROLE_ADMIN": "Administrátor",
+          "STATUS": "Stav",
+          "SAVE": "Uložit"
+        },
+        "JOIN_MODAL": {
+          "TITLE": "Připojit se k turnaji",
+          "CLOSE": "Zavřít",
+          "DESCRIPTION_1": "Žádáte o účast v",
+          "DESCRIPTION_2": "Zadejte přezdívku a volitelně zprávu pro administrátora.",
+          "NICKNAME_LABEL": "Přezdívka",
+          "NICKNAME_PLACEHOLDER": "Zadejte přezdívku",
+          "MESSAGE_LABEL": "Zpráva pro administrátora",
+          "MESSAGE_PLACEHOLDER": "Volitelná zpráva",
+          "NICKNAME_REQUIRED": "Přezdívka je povinná.",
+          "NICKNAME_MAXLENGTH": "Přezdívka nesmí přesáhnout 20 znaků.",
+          "SUBMIT": "Odeslat žádost"
+        },
+        "SELECT_MODAL": {
+          "TITLE": "Vybrat turnaj",
+          "CLOSE": "Zavřít",
+          "PARTICIPANTS": "Účastníci",
+          "ROLE": "Role",
+          "SELECT": "Vybrat",
+          "SELECTED": "Vybráno"
+        },
+        "PLAYER_STATS": {
+          "TITLE": "Statistiky hráče",
+          "CLOSE": "Zavřít",
+          "NO_STATS": "Žádné statistiky k dispozici.",
+          "BET": "Sázka",
+          "EXACT": "Přesně",
+          "QUALIFY": "Postup"
+        },
+        "TOURNAMENT_SELECTION": {
+          "TITLE": "Vyberte turnaj",
+          "CANCEL": "Zrušit"
+        },
+            "MY_BETS": {
+              "TO_PLACE": "K vložení",
+              "PLACED": "Vloženo",
+              "FINALISED": "Ukončeno"
+            },
+            "MY_BETS_FINALISED": {
+              "NO_MATCHES": "Žádné ukončené zápasy nebyly nalezeny."
+            },
+            "MY_BETS_PLACED": {
+              "NO_MATCHES": "Žádné vložené sázky nebyly nalezeny.",
+              "EDIT_BUTTON": "Upravit sázku"
+            },
+            "MY_BETS_TO_PLACE": {
+              "NO_MATCHES": "Žádné nadcházející zápasy, na které byste mohli vsadit.",
+              "PLACE_BUTTON": "Vložit sázku"
+            },
+            "MESSAGES": {
+              "NO_NOTIFICATIONS": "Žádné notifikace nebyly nalezeny."
+            },
+            "LATEST_MESSAGES": {
+              "TITLE": "Poslední zprávy",
+              "NO_MESSAGES": "Žádné zprávy nebyly nalezeny."
+            },
+            "STARTED_MATCHES": {
+              "TITLE": "Začaté vlastní zápasy"
+            },
+            "STARTED_MATCHES_PREDEFINED": {
+              "TITLE": "Začaté předdefinované zápasy"
+            },
+            "TOURNAMENT_INVITES": {
+              "TITLE": "Pozvánky na turnaje",
+              "PARTICIPANTS": "účastníci"
+            },
+            "TOURNAMENT_SUMMARY": {
+              "TITLE": "Souhrn turnaje",
+              "YOU": "vy",
+              "NO_DATA": "Žádná data o turnaji nejsou k dispozici."
+            },
+            "UPCOMING_BETS": {
+              "TITLE": "Nadcházející sázky",
+              "NO_BETS": "Žádné nadcházející sázky nebyly nalezeny."
+            },
+            "MANAGE_CUSTOM_FINALISED": {
+              "NO_MATCHES": "Žádné zápasy nebyly nalezeny.",
+              "EDIT_BUTTON": "Upravit"
+            },
+            "MANAGE_CUSTOM_MATCHES": {
+              "TAB_UPCOMING": "Nadcházející",
+              "TAB_STARTED": "Začaté",
+              "TAB_FINALISED": "Ukončené",
+              "EDIT_BUTTON": "Upravit",
+              "NO_MATCHES": "Žádné zápasy nebyly nalezeny.",
+              "DATE": "Datum",
+              "TIME": "Čas"
+            },
+            "MANAGE_CUSTOM_STARTED": {
+              "NO_MATCHES": "Žádné zápasy nebyly nalezeny.",
+              "EDIT_BUTTON": "Upravit"
+            },
+            "MANAGE_CUSTOM_UPCOMING": {
+              "NO_MATCHES": "Žádné zápasy nebyly nalezeny.",
+              "EDIT_BUTTON": "Upravit"
+            },
+            "MANAGE_PREDEFINED_FINALISED": {
+              "NO_MATCHES": "Žádné zápasy nebyly nalezeny.",
+              "EDIT_BUTTON": "Upravit"
+            },
+            "MANAGE_PREDEFINED_MATCHES": {
+              "TAB_UPCOMING": "Nadcházející",
+              "TAB_STARTED": "Začaté",
+              "TAB_FINALISED": "Ukončené"
+            },
+            "MANAGE_PREDEFINED_STARTED": {
+              "NO_MATCHES": "Žádné zápasy nebyly nalezeny.",
+              "EDIT_BUTTON": "Upravit"
+            },
+            "MANAGE_PREDEFINED_UPCOMING": {
+              "NO_MATCHES": "Žádné zápasy nebyly nalezeny.",
+              "EDIT_BUTTON": "Upravit"
+            },
+            "FIND_TOURNAMENT": {
+              "DESCRIPTION": "Procházejte veřejné turnaje, které jsou otevřeny pro účast. Použijte vyhledávací pole pro nalezení turnaje podle názvu a požádejte o účast.",
+              "SEARCH_PLACEHOLDER": "Hledat turnaje...",
+              "NO_RESULTS": "Žádné turnaje nebyly nalezeny",
+              "PARTICIPANTS": "účastníci",
+              "CREATED": "Vytvořeno",
+              "REQUESTED": "Požadováno",
+              "JOIN": "Připojit se"
+            },
+            "SUMMARY": {
+              "DESCRIPTION": "Tato souhrnná zpráva poskytuje přehled výkonu účastníků v turnaji. Tabulka obsahuje pořadí, úspěšné předpovědi v různých kategoriích sázek a celkové výplaty.",
+              "PLAYER": "Hráč",
+              "W": "V",
+              "Q": "P",
+              "P": "P",
+              "RESULT": "Výsledek"
+            },
+            "MY_TOURNAMENTS": {
+              "DESCRIPTION": "Zobrazte a spravujte turnaje, kterých se účastníte. Přijměte pozvánky nebo pokračujte v aktivních turnajích.",
+              "PARTICIPANTS": "Účastníci",
+              "ROLE": "Role",
+              "ACCEPT": "Přijmout",
+              "SELECT": "Vybrat",
+              "QUIT": "Opustit"
+            },
+            "BUILD_CUSTOM": {
+              "PREVIOUS": "Předchozí",
+              "NEXT": "Další",
+              "ADD": "Přidat",
+              "SUBMIT": "Odeslat"
+            },
+            "CUSTOM_TOURNAMENTS": {
+              "DESCRIPTION": "Spravujte své vlastní turnaje. Použijte akce pro úpravu, přepnutí nebo odstranění každého turnaje níže.",
+              "CREATED": "Vytvořeno",
+              "ACTIVE": "Aktivní",
+              "INACTIVE": "Neaktivní",
+              "EDIT": "Upravit turnaj",
+              "RECALCULATE": "Přepočítat sázky",
+              "TOGGLE": "Přepnout viditelnost turnaje",
+              "DELETE": "Smazat turnaj"
+            },
+            "BUILD_PREDEFINED": {
+              "PREVIOUS": "Předchozí",
+              "ADD": "Přidat",
+              "SUBMIT": "Odeslat",
+              "NEXT": "Další"
+            },
+            "PREDEFINED_TOURNAMENTS": {
+              "DESCRIPTION": "Spravujte své turnaje. Použijte akce pro úpravu, přepnutí nebo odstranění každého turnaje níže.",
+              "CREATED": "Vytvořeno",
+              "ACTIVE": "Aktivní",
+              "INACTIVE": "Neaktivní",
+              "EDIT_TOURNAMENT": "Upravit turnaj",
+              "EDIT_MATCHES": "Upravit zápasy",
+              "TOGGLE_VISIBILITY": "Přepnout viditelnost turnaje",
+              "DELETE_TOURNAMENT": "Smazat turnaj"
+            },
+                "STAGE_USERS_MANAGEMENT": {
+                  "DESCRIPTION": "Spravujte uživatele turnaje. Pozvánky jsou odesílány uživatelům, kteří nemají účet, musí se zaregistrovat a přijmout, aby se zúčastnili.",
+                  "NO_USERS": "Zatím nebyli přidáni žádní uživatelé.",
+                  "EDIT": "Upravit"
+                },
+                "STAGE_TEAMS_MANAGEMENT": {
+                  "DESCRIPTION": "Upravit týmy účastnící se turnaje. Přejděte dolů pro přidání nového týmu. Klikněte na tlačítko pro smazání, aby se tým odstranil ze seznamu.",
+                  "EDIT": "Upravit"
+                },
+                "STAGE_SUMMARY": {
+                  "DESCRIPTION1": "Přezkoumejte vybrané týmy a zápasy před dokončením turnaje. Níže můžete vidět název turnaje, týmy účastnící se a naplánované zápasy s odpovídajícími kurzy.",
+                  "DESCRIPTION2": "Pokud potřebujete provést změny, vraťte se zpět k předchozím krokům. Jakmile bude vše potvrzeno, klikněte na tlačítko Odeslat pro uložení turnaje.",
+                  "TOURNAMENT_NAME": "Název turnaje",
+                  "NOT_PROVIDED": "Nezadané",
+                  "TEAMS": "Týmy",
+                  "MATCHES": "Zápasy",
+                  "USERS": "Uživatelé"
+                },
+                "STAGE_STAGES_MANAGEMENT": {
+                  "DESCRIPTION": "Upravit fáze turnaje. Přejděte dolů pro přidání nové fáze. Klikněte na tlačítko pro smazání fáze.",
+                  "EDIT": "Upravit"
+                },
+                "STAGE_SETTINGS": {
+                  "DESCRIPTION": "Nastavte další možnosti turnaje, včetně bonusu za přesné výsledky, pravidel pro kvalifikaci a penalizací.",
+                  "EXACT_RESULT_BONUS_TITLE": "Povolit bonus za přesný výsledek",
+                  "EXACT_RESULT_BONUS_INFO": "Pokud je povoleno, uživatelé dostanou bonusové body za přesné předpovědi výsledků zápasů.",
+                  "BONUS_CALCULATION_TYPE": "Typ výpočtu bonusu",
+                  "EXACT_RESULT_BONUS_VALUE": "Hodnota bonusu za přesný výsledek",
+                  "ALLOW_WHO_QUALIFIES_BETS": "Povolit sázky na kvalifikaci",
+                  "WHO_QUALIFIES_BETS_INFO": "Umožňuje sázet na to, který tým postoupí v knockout kolech.",
+                  "ALLOW_BETS_WITH_BOOSTER": "Povolit sázky s boosterem",
+                  "BETS_WITH_BOOSTER_INFO": "Uživatelé mohou zvýšit základní kurzy pomocí dodatečných booster bodů.",
+                  "MAX_BET_BOOSTER": "Maximální bet booster",
+                  "TOTAL_BOOSTER_POOL": "Celkový booster pool",
+                  "ENTER_BOOSTER_POOL_SIZE": "Zadejte velikost booster poolu",
+                  "APPLY_PENALTY_NO_BET": "Aplikovat penalizaci za žádnou sázku",
+                  "PENALTY_INFO": "Pokud je povoleno, chybějící sázky budou penalizovány.",
+                  "PENALTY_POINTS": "Penalizační body",
+                  "ENTER_PENALTY_VALUE": "Zadejte hodnotu penalizace"
+                },
+                "STAGE_MATCHES_MANAGEMENT": {
+                  "DESCRIPTION": "Zobrazte a upravte zápasy turnaje. Klikněte na Upravit pro změnu detailů zápasu nebo na Smazat pro odstranění zápasu. Klikněte na Přidat nový zápas pro přidání nového zápasu.",
+                  "EDIT": "Upravit",
+                  "DELETE": "Smazat",
+                  "UNDO": "Vrátit zpět"
+                },
+                "STAGE_INPUT_TYPE": {
+                  "DESCRIPTION": "Spravujte turnaje vytvořením nových nebo úpravou stávajících, s možností přizpůsobení týmů, zápasů a detailů.",
+                  "DETAILS": "Nastavte základní detaily, importujte data ze souboru nebo šablony a nakonfigurujte zpracování zápasů.",
+                  "TOURNAMENT_VISIBILITY": "Viditelnost turnaje",
+                  "PRIVATE": "Privátní",
+                  "PUBLIC": "Veřejné",
+                  "PRIVATE_DESC": "Pouze administrátor může pozvat účastníky.",
+                  "PUBLIC_DESC": "Kdokoli se může přihlásit a požádat o účast.",
+                  "TOURNAMENT_NAME": "Název turnaje",
+                  "ENTER_NAME": "Zadejte název turnaje",
+                  "MATCH_UPDATE_METHOD": "Metoda aktualizace zápasu",
+                  "MANUAL": "Manuální",
+                  "SEMI": "Polotová",
+                  "AUTO": "Automatické",
+                  "MANUAL_DESC": "Administrátor přidává nebo upravuje zápasy manuálně.",
+                  "SEMI_DESC": "Administrátor aktivuje aktualizace z předdefinovaných turnajů.",
+                  "AUTO_DESC": "Zápasy se aktualizují automaticky na základě předdefinovaných turnajů.",
+                  "IMPORT_DATA": "Importovat data",
+                  "IMPORT_DESC": "Můžete:",
+                  "IMPORT_EXCEL": "Importovat data z Excel souboru",
+                  "IMPORT_TEMPLATE": "Použít předdefinovaný turnaj jako šablonu",
+                  "CLEAR_FORM": "Vymazat všechna data formuláře a začít znovu",
+                  "IMPORT_FROM_FILE": "Importovat ze souboru",
+                  "IMPORT_TOURNAMENT": "Importovat turnaj",
+                  "UPDATE_TOURNAMENT": "Aktualizovat turnaj",
+                  "ERASE_FORM": "Smazat všechna data formuláře"
+                },
+                "USERS_LIST": {
+                  "ACTIVE_PARTICIPANTS": "Aktivní účastníci",
+                  "EXCLUDE": "Vyloučit",
+                  "NO_PARTICIPANTS": "Nebyl nalezen žádný účastník."
+                },
+                "PENDING_REQUESTS": {
+                  "JOIN_REQUESTS": "Požadavky na účast",
+                  "ACCEPT": "Přijmout",
+                  "REJECT": "Odmítnout",
+                  "NO_REQUESTS": "Nebyl nalezen žádný požadavek na účast."
+                },
+                "PENDING_INVITES": {
+                  "PENDING_INVITATIONS": "Čekající pozvánky",
+                  "RESEND": "Poslat znovu",
+                  "EXCLUDE": "Vyloučit",
+                  "NO_INVITATIONS": "Žádné čekající pozvánky nebyly nalezeny."
+                }
+  }

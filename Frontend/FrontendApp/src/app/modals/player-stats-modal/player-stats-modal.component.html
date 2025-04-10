@@ -29,7 +29,7 @@
 
   <!-- Stats Accordion -->
   <ion-accordion-group *ngIf="!isLoading && filteredStats.length > 0" (ionChange)="onAccordionChange($event)">
-    <ion-accordion *ngFor="let stat of filteredStats" [value]="stat.matchId" [disabled]="stat.matchStatus !== 'Finalised'">
+    <ion-accordion *ngFor="let stat of filteredStats" [value]="stat.matchId" [disabled]="stat.matchStatus !== 'Finished'">
       
       <!-- Accordion Header -->
       <ion-item slot="header" class="accordion-header" [class.expanded-header]="expandedMatchId === stat.matchId">

@@ -102,7 +102,8 @@ namespace Backend.DTOs
         public string? MatchStatus { get; set; }
         public int? ScoreHome { get; set; }
         public int? ScoreAway { get; set; }
-}
+        public string? Qualified { get; set; }
+    }
 
     public class PredefinedTournamentListDto
     {

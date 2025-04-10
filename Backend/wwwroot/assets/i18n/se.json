@@ -1,0 +1,528 @@
+{
+    "WELCOME": {
+      "TITLE": "Vadhållning med vänner",
+      "SLOGAN": "Sätt vadhållning med dina bästa vänner!",
+      "DESCRIPTION": "Vadhåll på fotbollsmatcher med vänner – bara för skojs skull! Skapa turneringar, förutsäg resultat och klättra på topplistan.",
+      "LOGIN": "Logga in",
+      "REGISTER": "Registrera"
+    },
+    "LOGIN": {
+      "TITLE": "Logga in",
+      "DESCRIPTION": "Ange dina inloggningsuppgifter för att få åtkomst till ditt konto.",
+      "EMAIL": "E-post",
+      "PASSWORD": "Lösenord",
+      "EMAIL_ERROR": "Ange en giltig e-postadress.",
+      "PASSWORD_ERROR": "Lösenord krävs.",
+      "FORGOT_PASSWORD": "Glömt lösenord?",
+      "RESEND_ACTIVATION": "Fick du inte aktiveringsmail?",
+      "SUBMIT": "Logga in",
+      "NO_ACCOUNT": "Har du inget konto?",
+      "SIGN_UP": "Registrera"
+    },
+    "REGISTER": {
+      "TITLE": "Registrera",
+      "DESCRIPTION": "Skapa ett konto för att delta i turneringar och sätta vadhållningar.",
+      "EMAIL": "E-post",
+      "EMAIL_ERROR": "Ange en giltig e-postadress.",
+      "PASSWORD": "Lösenord",
+      "PASSWORD_ERROR": "Lösenord krävs (minst 8 tecken).",
+      "CONFIRM_PASSWORD": "Bekräfta lösenord",
+      "CONFIRM_PASSWORD_ERROR": "Lösenord måste matcha.",
+      "CONSENT_TEXT": "Jag godkänner",
+      "TERMS_LINK": "Villkor",
+      "CONSENT_ERROR": "Du måste acceptera villkoren för att registrera dig.",
+      "SUBMIT": "Registrera",
+      "ALREADY_ACCOUNT": "Har du redan ett konto?",
+      "LOGIN_LINK": "Logga in"
+    },
+    "FORGOT": {
+      "TITLE": "Glömt lösenord",
+      "DESCRIPTION": "Ange din e-postadress och vi skickar en länk för att återställa ditt lösenord.",
+      "EMAIL": "E-post",
+      "EMAIL_ERROR": "Ange en giltig e-postadress.",
+      "SUBMIT": "Skicka återställningslänk",
+      "BACK": "Tillbaka till inloggning"
+    },
+    "CONFIRM": {
+      "SUCCESS_TITLE": "Konto aktiverat!",
+      "FAILURE_TITLE": "E-postbekräftelse misslyckades ❌",
+      "PROCESSING": "Bearbetar din begäran...",
+      "GO_TO_LOGIN": "Gå till inloggning"
+    },
+    "LOGOUT": {
+      "TITLE": "Hej då!",
+      "MESSAGE": "Du har loggats ut.",
+      "GO_TO_LOGIN": "Gå till inloggning"
+    },
+    "RESEND": {
+      "TITLE": "Skicka aktiveringsmail igen",
+      "DESCRIPTION": "Ange din e-postadress och vi skickar en ny aktiveringslänk.",
+      "EMAIL": "E-post",
+      "EMAIL_ERROR": "Ange en giltig e-postadress.",
+      "BUTTON": "Skicka e-post",
+      "BACK": "Tillbaka till inloggning"
+    },
+    "RESET": {
+      "TITLE": "Återställ lösenord",
+      "DESCRIPTION": "Ange ditt nya lösenord nedan.",
+      "NEW_PASSWORD": "Nytt lösenord",
+      "CONFIRM_PASSWORD": "Bekräfta lösenord",
+      "PASSWORD_ERROR": "Lösenord måste vara minst 8 tecken.",
+      "CONFIRM_ERROR": "Lösenord måste matcha.",
+      "BUTTON": "Återställ lösenord",
+      "BACK": "Tillbaka till inloggning"
+    },
+    "APP": {
+      "MENU": "Meny",
+      "TITLE": "Vadhållning med vänner",
+      "HOME": "Hem",
+      "MESSAGES": "Meddelanden",
+      "TOURNAMENTS": "Turneringar",
+      "MY_TOURNAMENTS": "Mina turneringar",
+      "SUMMARY": "Sammanfattning",
+      "FIND_TOURNAMENT": "Hitta turnering",
+      "BETTING": "Vadhållning",
+      "MY_BETS": "Mina vadhållningar",
+      "SETTINGS": "Inställningar",
+      "PROFILE": "Profil",
+      "NOTIFICATIONS": "Notifikationer",
+      "ADMIN": "Admin",
+      "CREATE_TOURNAMENT": "Skapa turnering",
+      "MANAGE_TOURNAMENTS": "Hantera turneringar",
+      "MANAGE_MATCHES": "Hantera matcher",
+      "MANAGE_PARTICIPANTS": "Hantera deltagare",
+      "SUPER_ADMIN": "Super Admin",
+      "CREATE_PREDEFINED": "Skapa fördefinierad turnering",
+      "MANAGE_PREDEFINED": "Hantera fördefinierade turneringar",
+      "MANAGE_USERS": "Hantera användare",
+      "LOGOUT": "Logga ut"
+    },
+    "PROFILE": {
+      "TITLE": "Profiluppgifter",
+      "MANAGEMENT": "Profilhantering",
+      "MEMBER_SINCE": "Medlem sedan",
+      "EMAIL": "E-post",
+      "NICKNAME": "Smeknamn (valfritt)",
+      "NICKNAME_PLACEHOLDER": "Ange smeknamn",
+      "LANGUAGE": "Språk",
+      "LOCATION": "Plats (valfritt)",
+      "SELECT_LOCATION": "Välj din plats",
+      "DARK_MODE": "Mörkt läge",
+      "SAVE": "Spara profil",
+      "CHANGE_EMAIL": "Ändra e-post",
+      "UPDATE_PASSWORD": "Uppdatera lösenord",
+      "DELETE_ACCOUNT": "Radera konto"
+    },
+    "NOTIFICATIONS": {
+      "TOURNAMENT_UPDATES": "Turneringsuppdateringar",
+      "MATCH_CLOSED": "Turneringsresultat omberäknade",
+      "DAILY_UPDATES": "Dagliga turneringsuppdateringar",
+      "TOURNAMENT_INVITES": "Turneringsinbjudningar",
+      "BETTING_REMINDERS": "Påminnelser om vadhållning",
+      "PENDING_BETS": "Påminnelse om utestående vadhållningar",
+      "NEW_GAMES": "Nya spel att satsa på",
+      "PROMOTIONS": "Erbjudanden",
+      "SPECIAL_OFFERS": "Specialerbjudanden",
+      "SAVE": "Spara inställningar"
+    },
+    "SETUP": {
+      "TITLE": "Ställ in ditt konto",
+      "DESCRIPTION": "Skapa ett lösenord för att slutföra kontoinställningen.",
+      "NEW_PASSWORD": "Nytt lösenord",
+      "CONFIRM_PASSWORD": "Bekräfta lösenord",
+      "PASSWORD_ERROR": "Lösenord måste vara minst 8 tecken.",
+      "CONFIRM_ERROR": "Lösenord måste matcha.",
+      "CONSENT_TEXT": "Jag godkänner",
+      "TERMS_LINK": "Villkor",
+      "CONSENT_ERROR": "Du måste acceptera villkoren för att fortsätta.",
+      "SUBMIT": "Slutför inställning"
+    },
+    "USER_MANAGER": {
+      "DESCRIPTION": "Bläddra bland alla användare i systemet. Använd sökfältet för att hitta användare eller vidta åtgärder för att avstänga eller ta bort konton.",
+      "SEARCH_PLACEHOLDER": "Sök användare...",
+      "NO_RESULTS": "Inga användare hittades.",
+      "SINCE": "Sedan",
+      "STATUS": "Status",
+      "ROLE": "Roll",
+      "ADMIN_OF": "Admin för",
+      "PARTICIPANT_IN": "Deltagare i",
+      "SUSPEND": "Avstänga",
+      "UNSUSPEND": "Återaktivera",
+      "DELETE": "Radera"
+    },
+        "INVITE": {
+          "TITLE": "Acceptera inbjudan",
+          "CLOSE": "Stäng",
+          "MESSAGE": "Du har blivit inbjuden att delta i <strong>{{ name }}</strong>.",
+          "NICKNAME_PROMPT": "Ange ett smeknamn för att delta.",
+          "NICKNAME_LABEL": "Smeknamn",
+          "NICKNAME_PLACEHOLDER": "Ange smeknamn",
+          "ERROR_REQUIRED": "Smeknamn krävs.",
+          "ERROR_MAXLENGTH": "Smeknamnet får inte vara längre än 20 tecken.",
+          "ACCEPT": "Acceptera"
+        },
+        "BETS_OVERVIEW": {
+          "TITLE": "Översikt av vadhållningar",
+          "HOME_WIN": "Hemmavinst",
+          "DRAW": "Oavgjort",
+          "AWAY_WIN": "Bortavinst",
+          "HOME_QUALIFIES": "Hemmalaget kvalificerar sig",
+          "AWAY_QUALIFIES": "Bortalaget kvalificerar sig",
+          "USER_BETS": "Användarens vadhållningar",
+          "PLAYER": "Spelare",
+          "BET": "Vadhållning",
+          "HW": "HW",
+          "D": "D",
+          "AW": "AW",
+          "HQ": "HQ",
+          "AQ": "AQ",
+          "RESULT": "Resultat"
+        },
+        "BET_MODAL": {
+          "EDIT_TITLE": "Redigera vadhållning",
+          "PLACE_TITLE": "Placera vadhållning",
+          "CLOSE": "Stäng",
+          "MATCH_ODDS": "90-minuters vadhållningsodds",
+          "HOME_WIN": "Hemmavinst",
+          "DRAW": "Oavgjort",
+          "AWAY_WIN": "Bortavinst",
+          "PREDICT_SCORE": "Förutsäg resultatet efter 90 minuter",
+          "QUALIFY_ODDS": "Vilket lag kvalificerar sig? Odds",
+          "QUALIFY_PREDICTION": "Din kvalificeringsprognos",
+          "SAVE": "Spara"
+        },
+        "MATCH_MODAL": {
+          "ADD_TITLE": "Lägg till match",
+          "EDIT_TITLE": "Redigera match",
+          "CLOSE": "Stäng",
+          "STAGE": "Steg",
+          "HOME_TEAM": "Hemmablag",
+          "AWAY_TEAM": "Bortalag",
+          "TYPE": "Matchtyp",
+          "TYPE_REGULAR": "Reguljära 90 minuter",
+          "TYPE_EXTENDED": "90 minuter med kvalificering",
+          "DATETIME": "Matchdatum och tid",
+          "ODDS_1X2": "1X2 vadhållningsodds",
+          "HOME_WIN": "Hemmavinst",
+          "DRAW": "Oavgjort",
+          "AWAY_WIN": "Bortavinst",
+          "ODDS_QUALIFICATION": "Kvalificeringsodds",
+          "HOME_QUAL": "Hemmablag kvalificerar sig",
+          "AWAY_QUAL": "Bortalag kvalificerar sig",
+          "VISIBILITY": "Matchsynlighet",
+          "VISIBLE": "Synlig",
+          "HIDDEN": "Dold",
+          "SAVE": "Spara"
+        },
+        "MATCH_RESULT_MODAL": {
+          "TITLE": "Redigera matchresultat",
+          "CLOSE": "Stäng",
+          "DATETIME": "Matchdatum och tid",
+          "FINISHED_LABEL": "Har matchen avslutats?",
+          "FINAL_SCORE": "Slutresultat",
+          "QUALIFY_LABEL": "Välj kvalificerat lag",
+          "SAVE": "Spara"
+        },
+        "STAGE_MODAL": {
+          "ADD_TITLE": "Lägg till nytt steg",
+          "EDIT_TITLE": "Redigera steg",
+          "CLOSE": "Stäng",
+          "STAGE_NAME_LABEL": "Stegnamn",
+          "STAGE_NAME_PLACEHOLDER": "Ange stegnamn",
+          "STAGE_NAME_REQUIRED": "Stegnamn krävs.",
+          "STAGE_NAME_MAXLENGTH": "Stegnamn får inte vara längre än 50 tecken.",
+          "STAGE_ORDER_LABEL": "Stegordning",
+          "STAGE_ORDER_PLACEHOLDER": "Ange stegordning",
+          "STAGE_ORDER_REQUIRED": "Ordning krävs.",
+          "STAGE_ORDER_MIN": "Ordningen måste vara 1 eller högre.",
+          "SAVE": "Spara"
+        },
+        "TEAM_MODAL": {
+          "ADD_TITLE": "Lägg till nytt lag",
+          "EDIT_TITLE": "Redigera lag",
+          "CLOSE": "Stäng",
+          "TEAM_NAME_LABEL": "Lag namn",
+          "TEAM_NAME_PLACEHOLDER": "Ange lag namn",
+          "TEAM_NAME_REQUIRED": "Lag namn krävs.",
+          "TEAM_NAME_MAXLENGTH": "Lag namn får inte vara längre än 50 tecken.",
+          "SAVE": "Spara"
+        },
+        "USER_MODAL": {
+          "ADD_TITLE": "Lägg till ny användare",
+          "EDIT_TITLE": "Redigera användare",
+          "CLOSE": "Stäng",
+          "USER_NAME": "Användarnamn",
+          "ADMIN_NAME": "Administratörsnamn",
+          "ADMIN_NAME_PLACEHOLDER": "Ange administratörsnamn",
+          "ADMIN_NAME_REQUIRED": "Administratörsnamn krävs.",
+          "EMAIL": "Användarens e-post",
+          "EMAIL_PLACEHOLDER": "Ange användarens e-post",
+          "EMAIL_REQUIRED": "Användarens e-post krävs.",
+          "EMAIL_INVALID": "Ange en giltig e-postadress.",
+          "ROLE": "Användarroll",
+          "ROLE_PLAYER": "Spelare",
+          "ROLE_ADMIN": "Admin",
+          "STATUS": "Status",
+          "SAVE": "Spara"
+        },
+        "JOIN_MODAL": {
+          "TITLE": "Gå med i turnering",
+          "CLOSE": "Stäng",
+          "DESCRIPTION_1": "Du begär att gå med i",
+          "DESCRIPTION_2": "Ange ett smeknamn och valfritt meddelande för administratören.",
+          "NICKNAME_LABEL": "Smeknamn",
+          "NICKNAME_PLACEHOLDER": "Ange smeknamn",
+          "MESSAGE_LABEL": "Meddelande till administratören",
+          "MESSAGE_PLACEHOLDER": "Valfritt meddelande",
+          "NICKNAME_REQUIRED": "Smeknamn krävs.",
+          "NICKNAME_MAXLENGTH": "Smeknamn får inte vara längre än 20 tecken.",
+          "SUBMIT": "Skicka begäran"
+        },
+        "SELECT_MODAL": {
+          "TITLE": "Välj turnering",
+          "CLOSE": "Stäng",
+          "PARTICIPANTS": "Deltagare",
+          "ROLE": "Roll",
+          "SELECT": "Välj",
+          "SELECTED": "Vald"
+        },
+        "PLAYER_STATS": {
+          "TITLE": "Spelarstatistik",
+          "CLOSE": "Stäng",
+          "NO_STATS": "Inga statistik tillgängliga.",
+          "BET": "Vadhållning",
+          "EXACT": "Exakt",
+          "QUALIFY": "Kvalificera"
+        },
+        "TOURNAMENT_SELECTION": {
+          "TITLE": "Välj ett turnering",
+          "CANCEL": "Avbryt"
+        },
+            "MY_BETS": {
+              "TO_PLACE": "Att placera",
+              "PLACED": "Placerad",
+              "FINALISED": "Slutförd"
+            },
+            "MY_BETS_FINALISED": {
+              "NO_MATCHES": "Inga slutförda matcher hittades."
+            },
+            "MY_BETS_PLACED": {
+              "NO_MATCHES": "Inga placerade vadhållningar hittades.",
+              "EDIT_BUTTON": "Redigera vadhållning"
+            },
+            "MY_BETS_TO_PLACE": {
+              "NO_MATCHES": "Inga kommande matcher att satsa på.",
+              "PLACE_BUTTON": "Placera vadhållning"
+            },
+            "MESSAGES": {
+              "NO_NOTIFICATIONS": "Inga notifikationer hittades."
+            },
+            "LATEST_MESSAGES": {
+              "TITLE": "Senaste meddelanden",
+              "NO_MESSAGES": "Inga meddelanden hittades."
+            },
+            "STARTED_MATCHES": {
+              "TITLE": "Startade anpassade matcher"
+            },
+            "STARTED_MATCHES_PREDEFINED": {
+              "TITLE": "Startade fördefinierade matcher"
+            },
+            "TOURNAMENT_INVITES": {
+              "TITLE": "Turneringsinbjudningar",
+              "PARTICIPANTS": "deltagare"
+            },
+            "TOURNAMENT_SUMMARY": {
+              "TITLE": "Turneringssammanfattning",
+              "YOU": "du",
+              "NO_DATA": "Ingen turneringsdata tillgänglig."
+            },
+            "UPCOMING_BETS": {
+              "TITLE": "Kommande vadhållningar",
+              "NO_BETS": "Inga kommande vadhållningar hittades."
+            },
+            "MANAGE_CUSTOM_FINALISED": {
+              "NO_MATCHES": "Inga matcher hittades.",
+              "EDIT_BUTTON": "Redigera"
+            },
+            "MANAGE_CUSTOM_MATCHES": {
+              "TAB_UPCOMING": "Kommande",
+              "TAB_STARTED": "Startade",
+              "TAB_FINALISED": "Slutförda",
+              "EDIT_BUTTON": "Redigera",
+              "NO_MATCHES": "Inga matcher hittades.",
+              "DATE": "Datum",
+              "TIME": "Tid"
+            },
+            "MANAGE_CUSTOM_STARTED": {
+              "NO_MATCHES": "Inga matcher hittades.",
+              "EDIT_BUTTON": "Redigera"
+            },
+            "MANAGE_CUSTOM_UPCOMING": {
+              "NO_MATCHES": "Inga matcher hittades.",
+              "EDIT_BUTTON": "Redigera"
+            },
+            "MANAGE_PREDEFINED_FINALISED": {
+              "NO_MATCHES": "Inga matcher hittades.",
+              "EDIT_BUTTON": "Redigera"
+            },
+            "MANAGE_PREDEFINED_MATCHES": {
+              "TAB_UPCOMING": "Kommande",
+              "TAB_STARTED": "Startade",
+              "TAB_FINALISED": "Slutförda"
+            },
+            "MANAGE_PREDEFINED_STARTED": {
+              "NO_MATCHES": "Inga matcher hittades.",
+              "EDIT_BUTTON": "Redigera"
+            },
+            "MANAGE_PREDEFINED_UPCOMING": {
+              "NO_MATCHES": "Inga matcher hittades.",
+              "EDIT_BUTTON": "Redigera"
+            },
+            "FIND_TOURNAMENT": {
+              "DESCRIPTION": "Bläddra bland offentliga turneringar som är öppna för deltagande. Använd sökfältet för att hitta en turnering efter namn och begär att gå med.",
+              "SEARCH_PLACEHOLDER": "Sök turneringar...",
+              "NO_RESULTS": "Inga turneringar hittades",
+              "PARTICIPANTS": "deltagare",
+              "CREATED": "Skapad",
+              "REQUESTED": "Begärd",
+              "JOIN": "Gå med"
+            },
+            "SUMMARY": {
+              "DESCRIPTION": "Denna sammanfattning ger en översikt över deltagarnas prestationer i turneringen. Tabellen innehåller ranking, framgångsrika förutsägelser i olika vadhållningskategorier och total utbetalning.",
+              "PLAYER": "Spelare",
+              "W": "V",
+              "Q": "Q",
+              "P": "P",
+              "RESULT": "Resultat"
+            },
+            "MY_TOURNAMENTS": {
+              "DESCRIPTION": "Visa och hantera de turneringar du deltar i. Acceptera inbjudningar eller fortsätt med aktiva turneringar.",
+              "PARTICIPANTS": "Deltagare",
+              "ROLE": "Roll",
+              "ACCEPT": "Acceptera",
+              "SELECT": "Välj",
+              "QUIT": "Lämna"
+            },
+            "BUILD_CUSTOM": {
+              "PREVIOUS": "Föregående",
+              "NEXT": "Nästa",
+              "ADD": "Lägg till",
+              "SUBMIT": "Skicka"
+            },
+            "CUSTOM_TOURNAMENTS": {
+              "DESCRIPTION": "Hantera dina anpassade turneringar. Använd redigerings-, växla- eller raderaåtgärder för varje turnering nedan.",
+              "CREATED": "Skapad",
+              "ACTIVE": "Aktiv",
+              "INACTIVE": "Inaktiv",
+              "EDIT": "Redigera turnering",
+              "RECALCULATE": "Beräkna vadhållningar på nytt",
+              "TOGGLE": "Växla turneringssynlighet",
+              "DELETE": "Radera turnering"
+            },
+            "BUILD_PREDEFINED": {
+              "PREVIOUS": "Föregående",
+              "ADD": "Lägg till",
+              "SUBMIT": "Skicka",
+              "NEXT": "Nästa"
+            },
+            "PREDEFINED_TOURNAMENTS": {
+              "DESCRIPTION": "Hantera dina turneringar. Använd redigerings-, växla- eller raderaåtgärder för varje turnering nedan.",
+              "CREATED": "Skapad",
+              "ACTIVE": "Aktiv",
+              "INACTIVE": "Inaktiv",
+              "EDIT_TOURNAMENT": "Redigera turnering",
+              "EDIT_MATCHES": "Redigera matcher",
+              "TOGGLE_VISIBILITY": "Växla turneringssynlighet",
+              "DELETE_TOURNAMENT": "Radera turnering"
+            },
+            "STAGE_USERS_MANAGEMENT": {
+              "DESCRIPTION": "Hantera turneringsanvändare. Inbjudningar skickas till användare utan konton, de måste registrera sig och acceptera för att delta.",
+              "NO_USERS": "Inga användare har lagts till än.",
+              "EDIT": "Redigera"
+            },
+            "STAGE_TEAMS_MANAGEMENT": {
+              "DESCRIPTION": "Redigera de lag som deltar i turneringen. Bläddra ned för att lägga till ett nytt lag. Klicka på radera för att ta bort ett lag från listan.",
+              "EDIT": "Redigera"
+            },
+                "STAGE_SUMMARY": {
+                  "DESCRIPTION1": "Granska de valda lagen och matcherna innan du slutför turneringen. Nedan ser du turneringens namn, deltagande lag och planerade matcher med motsvarande odds.",
+                  "DESCRIPTION2": "Om du behöver göra ändringar, gå tillbaka till föregående steg. När du har bekräftat, klicka på 'Skicka' för att spara turneringen.",
+                  "TOURNAMENT_NAME": "Turneringsnamn",
+                  "NOT_PROVIDED": "Ej angivet",
+                  "TEAMS": "Lag",
+                  "MATCHES": "Matcher",
+                  "USERS": "Användare"
+                },
+                "STAGE_STAGES_MANAGEMENT": {
+                  "DESCRIPTION": "Redigera turneringens faser. Bläddra ner för att lägga till en ny fas. Klicka på radera för att ta bort en fas.",
+                  "EDIT": "Redigera"
+                },
+                "STAGE_SETTINGS": {
+                  "DESCRIPTION": "Konfigurera ytterligare turneringsinställningar, inklusive bonus för exakta resultat, kvalificeringsvadhållningsregler och straffar.",
+                  "EXACT_RESULT_BONUS_TITLE": "Tillåt bonus för exakt resultat",
+                  "EXACT_RESULT_BONUS_INFO": "Om aktiverat får användare bonuspoäng för att korrekt förutsäga exakta matchresultat.",
+                  "BONUS_CALCULATION_TYPE": "Bonusberäkningsmetod",
+                  "EXACT_RESULT_BONUS_VALUE": "Exakt resultat bonusvärde",
+                  "ALLOW_WHO_QUALIFIES_BETS": "Tillåt vadhållningar för kvalificering",
+                  "WHO_QUALIFIES_BETS_INFO": "Tillåter vadhållningar om vilket lag som kvalificerar sig i utslagsspel.",
+                  "ALLOW_BETS_WITH_BOOSTER": "Tillåt vadhållningar med booster",
+                  "BETS_WITH_BOOSTER_INFO": "Användare kan öka sina grundodds med extra boosterpoäng.",
+                  "MAX_BET_BOOSTER": "Maximal vadhållningsbooster",
+                  "TOTAL_BOOSTER_POOL": "Total boosterpool",
+                  "ENTER_BOOSTER_POOL_SIZE": "Ange storleken på boosterpoolen",
+                  "APPLY_PENALTY_NO_BET": "Tillämplig straff för ingen vadhållning",
+                  "PENALTY_INFO": "Om aktiverat, kommer användare som saknar vadhållningar att få en straff.",
+                  "PENALTY_POINTS": "Straffpoäng",
+                  "ENTER_PENALTY_VALUE": "Ange straffvärde"
+                },
+                "STAGE_MATCHES_MANAGEMENT": {
+                  "DESCRIPTION": "Visa och redigera turneringens matcher. Klicka på Redigera för att ändra matchdetaljer eller på Radera för att ta bort en match. För att lägga till en ny match, klicka på Lägg till ny match.",
+                  "EDIT": "Redigera",
+                  "DELETE": "Radera",
+                  "UNDO": "Ångra"
+                },
+                "STAGE_INPUT_TYPE": {
+                  "DESCRIPTION": "Hantera turneringar genom att skapa nya eller uppdatera befintliga, med alternativ för att anpassa lag, matcher och detaljer.",
+                  "DETAILS": "Ställ in grundläggande detaljer, importera data från en fil eller mall och konfigurera matchhantering.",
+                  "TOURNAMENT_VISIBILITY": "Turneringssynlighet",
+                  "PRIVATE": "Privat",
+                  "PUBLIC": "Offentlig",
+                  "PRIVATE_DESC": "Endast administratören kan bjuda in deltagare.",
+                  "PUBLIC_DESC": "Alla kan ansöka om att delta.",
+                  "TOURNAMENT_NAME": "Turneringsnamn",
+                  "ENTER_NAME": "Ange turneringsnamn",
+                  "MATCH_UPDATE_METHOD": "Matchuppdateringsmetod",
+                  "MANUAL": "Manuell",
+                  "SEMI": "Semi",
+                  "AUTO": "Automatisk",
+                  "MANUAL_DESC": "Administratören lägger manuellt till eller uppdaterar matcher.",
+                  "SEMI_DESC": "Administratören aktiverar uppdateringar från fördefinierade turneringar.",
+                  "AUTO_DESC": "Matcher uppdateras automatiskt baserat på fördefinierade turneringar.",
+                  "IMPORT_DATA": "Importera data",
+                  "IMPORT_DESC": "Du kan:",
+                  "IMPORT_EXCEL": "Importera data från en Excel-fil",
+                  "IMPORT_TEMPLATE": "Använd en fördefinierad turnering som mall",
+                  "CLEAR_FORM": "Rensa alla formulärdata och börja om från början",
+                  "IMPORT_FROM_FILE": "Importera från fil",
+                  "IMPORT_TOURNAMENT": "Importera turnering",
+                  "UPDATE_TOURNAMENT": "Uppdatera turnering",
+                  "ERASE_FORM": "Radera alla formulärdata"
+                },
+                "USERS_LIST": {
+                  "ACTIVE_PARTICIPANTS": "Aktiva deltagare",
+                  "EXCLUDE": "Exkludera",
+                  "NO_PARTICIPANTS": "Inga deltagare hittades."
+                },
+                "PENDING_REQUESTS": {
+                  "JOIN_REQUESTS": "Join-förfrågningar",
+                  "ACCEPT": "Acceptera",
+                  "REJECT": "Avvisa",
+                  "NO_REQUESTS": "Inga join-förfrågningar hittades."
+                },
+                "PENDING_INVITES": {
+                  "PENDING_INVITATIONS": "Väntande inbjudningar",
+                  "RESEND": "Skicka igen",
+                  "EXCLUDE": "Exkludera",
+                  "NO_INVITATIONS": "Inga väntande inbjudningar hittades."
+                }
+  }

@@ -3,12 +3,6 @@ using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 public class FootballDataHostedService : BackgroundService
 {

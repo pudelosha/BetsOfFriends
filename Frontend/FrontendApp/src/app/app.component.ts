@@ -9,6 +9,7 @@ import { ToastController, ModalController } from '@ionic/angular';
 import { ParticipantTournamentsModalComponent } from './modals/participant-tournaments-modal/participant-tournaments-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from './services/title.service';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ import { TitleService } from './services/title.service';
   imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
 })
 export class AppComponent {
+  isMonetizedMode = false; // default: false if app is free and ad-supported
   isLoggedIn = false;
   isSuperAdmin = false;
   isAdmin = false;
@@ -27,6 +29,7 @@ export class AppComponent {
               private router: Router, 
               private toastController: ToastController, 
               private titleService: TitleService,
+              private platform: Platform,
               private modalController: ModalController) {}
 
   ngOnInit() {
@@ -49,6 +52,10 @@ export class AppComponent {
       this.isLoggedIn = this.authService.isLoggedIn();
       this.updateUserRoles();
     });
+  }
+
+  get isNative(): boolean {
+    return this.platform.is('android') || this.platform.is('ios');
   }
 
   updateUserRoles() {

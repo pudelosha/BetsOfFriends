@@ -38,14 +38,12 @@ namespace Backend.Repository.Services
             var matchesJson = root.GetProperty("matches");
             var competitionJson = root.GetProperty("competition");
 
-            // Extract season (e.g. 2024) from filters
             int? season = root.TryGetProperty("filters", out var filtersJson) &&
                           filtersJson.TryGetProperty("season", out var seasonProp) &&
                           seasonProp.ValueKind == JsonValueKind.Number
                           ? seasonProp.GetInt32()
                           : null;
 
-            // Extract seasonId, start and end date from the first match
             int? seasonId = null;
             DateTime? seasonStart = null;
             DateTime? seasonEnd = null;
@@ -71,7 +69,6 @@ namespace Backend.Repository.Services
 
             const string placeholderTeamName = "TBD";
 
-            // Always include placeholder
             teams[placeholderTeamName] = new PredefinedTeamDto
             {
                 TeamName = placeholderTeamName,
@@ -113,7 +110,6 @@ namespace Backend.Repository.Services
                     ? awayIdProp.GetInt32()
                     : (int?)null;
 
-                // Register unique teams
                 if (!teams.ContainsKey(homeTeamName))
                 {
                     teams[homeTeamName] = new PredefinedTeamDto
@@ -134,23 +130,48 @@ namespace Backend.Repository.Services
                     };
                 }
 
-                // Track stage
                 var stageKey = $"{stageCode}_{matchday}";
                 if (!stageMap.Any(kv => kv.Key == stageKey))
                     stageMap.Add(new KeyValuePair<string, string>(stageKey, stageName));
 
-                // Scores
+                // Score logic (regularTime preferred over fullTime)
                 int? scoreHome = null;
                 int? scoreAway = null;
+                string? qualified = null;
 
-                if (match.TryGetProperty("score", out var scoreProp) &&
-                    scoreProp.TryGetProperty("fullTime", out var fullTimeProp))
+                if (match.TryGetProperty("score", out var scoreProp))
                 {
-                    if (fullTimeProp.TryGetProperty("home", out var homeScoreProp) && homeScoreProp.ValueKind == JsonValueKind.Number)
-                        scoreHome = homeScoreProp.GetInt32();
+                    JsonElement regularScore, fullScore;
 
-                    if (fullTimeProp.TryGetProperty("away", out var awayScoreProp) && awayScoreProp.ValueKind == JsonValueKind.Number)
-                        scoreAway = awayScoreProp.GetInt32();
+                    if (scoreProp.TryGetProperty("regularTime", out regularScore) &&
+                        regularScore.TryGetProperty("home", out var homeReg) &&
+                        regularScore.TryGetProperty("away", out var awayReg) &&
+                        homeReg.ValueKind == JsonValueKind.Number &&
+                        awayReg.ValueKind == JsonValueKind.Number)
+                    {
+                        scoreHome = homeReg.GetInt32();
+                        scoreAway = awayReg.GetInt32();
+                    }
+                    else if (scoreProp.TryGetProperty("fullTime", out fullScore) &&
+                             fullScore.TryGetProperty("home", out var homeFull) &&
+                             fullScore.TryGetProperty("away", out var awayFull) &&
+                             homeFull.ValueKind == JsonValueKind.Number &&
+                             awayFull.ValueKind == JsonValueKind.Number)
+                    {
+                        scoreHome = homeFull.GetInt32();
+                        scoreAway = awayFull.GetInt32();
+                    }
+
+                    if (scoreProp.TryGetProperty("winner", out var winnerProp))
+                    {
+                        var winnerStr = winnerProp.GetString()?.ToUpperInvariant();
+                        qualified = winnerStr switch
+                        {
+                            "HOME_TEAM" => "Home",
+                            "AWAY_TEAM" => "Away",
+                            _ => null
+                        };
+                    }
                 }
 
                 matches.Add(new PredefinedMatchDto
@@ -160,6 +181,7 @@ namespace Backend.Repository.Services
                     MatchStatus = MapMatchStatus(matchStatus),
                     ScoreHome = scoreHome,
                     ScoreAway = scoreAway,
+                    Qualified = qualified,
 
                     HomeTeam = homeTeamName,
                     AwayTeam = awayTeamName,
@@ -206,7 +228,7 @@ namespace Backend.Repository.Services
             };
         }
 
-        // Helper
+        // Helpers
         private static string ToTitleCase(string input)
         {
             return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input.ToLower());
@@ -224,7 +246,7 @@ namespace Backend.Repository.Services
                 "POSTPONED" => "Canceled",
                 "SUSPENDED" => "Canceled",
                 "CANCELED" => "Canceled",
-                _ => "Timed" // fallback default
+                _ => "Timed"
             };
         }
     }
