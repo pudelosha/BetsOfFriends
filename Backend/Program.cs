@@ -56,22 +56,22 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Add static files from wwwroot
-app.UseDefaultFiles();
-app.UseStaticFiles();
+//app.UseDefaultFiles();
+//app.UseStaticFiles();
 
-// Fallback to index.html for Angular Routing
-app.Use(async (context, next) =>
-{
-    await next();
+//// Fallback to index.html for Angular Routing
+//app.Use(async (context, next) =>
+//{
+//    await next();
 
-    if (context.Response.StatusCode == 404 &&
-        !Path.HasExtension(context.Request.Path.Value) &&
-        !context.Request.Path.Value.StartsWith("/api"))
-    {
-        context.Request.Path = "/index.html";
-        await next();
-    }
-});
+//    if (context.Response.StatusCode == 404 &&
+//        !Path.HasExtension(context.Request.Path.Value) &&
+//        !context.Request.Path.Value.StartsWith("/api"))
+//    {
+//        context.Request.Path = "/index.html";
+//        await next();
+//    }
+//});
 
 app.MapControllers();
 app.Run();
