@@ -78,6 +78,7 @@ export interface UpcomingBet {
   homeTeam: string;
   awayTeam: string;
   matchTime: string; // ISO date string
+  stage: string
 }
 
 

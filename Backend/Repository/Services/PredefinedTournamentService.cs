@@ -335,7 +335,7 @@ namespace Backend.Repository.Services
                     {
                         TournamentId = t.TournamentId,
                         TournamentName = t.TournamentName,
-                        CreatedAt = t.CreatedAt,
+                        CreatedAt = DateTime.SpecifyKind(t.CreatedAt, DateTimeKind.Utc),
                         IsActive = t.IsActive
                     })
                     .ToListAsync();
@@ -376,7 +376,7 @@ namespace Backend.Repository.Services
                     TournamentEnd = tournament.EndDate,
                     TournamentName = tournament.TournamentName,
                     CreatedBy = tournament.CreatedBy,
-                    CreatedAt = tournament.CreatedAt,
+                    CreatedAt = DateTime.SpecifyKind(tournament.CreatedAt, DateTimeKind.Utc),
                     UpdateMethod = tournament.Update.ToString(),
                     IsActive = tournament.IsActive,
                     Teams = tournament.PredefinedTeams.Select(team => new PredefinedTeamDto
@@ -401,7 +401,7 @@ namespace Backend.Repository.Services
                         AwayTeamId = match.AwayTeamId,
                         AwayTeam = match.AwayTeam.TeamName,
                         MatchType = match.Type.ToString(),
-                        MatchStart = match.MatchStart,
+                        MatchStart = DateTime.SpecifyKind(match.MatchStart, DateTimeKind.Utc),
                         HomeWinOdds = match.HomeWinOdds,
                         DrawOdds = match.DrawOdds,
                         AwayWinOdds = match.AwayWinOdds,
@@ -507,7 +507,7 @@ namespace Backend.Repository.Services
                     {
                         TournamentId = t.TournamentId,
                         TournamentName = t.TournamentName,
-                        CreatedAt = t.CreatedAt,
+                        CreatedAt = DateTime.SpecifyKind(t.CreatedAt, DateTimeKind.Utc),
                         IsActive = t.IsActive
                     })
                     .ToListAsync();

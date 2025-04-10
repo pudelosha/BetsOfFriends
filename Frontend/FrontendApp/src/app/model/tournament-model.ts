@@ -150,6 +150,7 @@ export interface UserBettingStats {
 
   matchId: number;
   matchStatus: string;
+  stage: string;
   homeTeam: string;
   awayTeam: string;
 

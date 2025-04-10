@@ -25,6 +25,7 @@ export class UpcomingBetsPage implements OnInit {
   upcomingGames: UpcomingBet[] = [];
   isLoading = true;
   errorMessage: string | null = null;
+  firstStage: string | null = null;
 
   constructor(
     private betService: BetService,
@@ -66,23 +67,35 @@ export class UpcomingBetsPage implements OnInit {
       console.error('Tournament ID is null, cannot fetch upcoming bets.');
       return;
     }
-
+  
     try {
       this.upcomingGames = await firstValueFrom(this.betService.getUpcomingBets(this.tournamentId));
+  
+      // Store the stage from the first item if available
+      if (this.upcomingGames.length > 0) {
+        this.firstStage = this.upcomingGames[0].stage;
+      }
+  
     } catch (error) {
       console.error('Error fetching upcoming bets:', error);
       this.errorMessage = 'Failed to load upcoming bets.';
     } finally {
       this.isLoading = false;
     }
-  }
+  }  
 
   goToMyBets() {
+    const queryParams: any = { tab: 'to-place' };
+  
+    if (this.firstStage) {
+      queryParams.stage = this.firstStage;
+    }
+  
     this.router.navigate(['/my-bets'], {
-      queryParams: { tab: 'to-place' }
+      queryParams
     });
   }
-
+  
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary') {
     const toast = await this.toastController.create({
       message,

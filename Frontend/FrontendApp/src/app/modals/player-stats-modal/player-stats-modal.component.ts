@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { UserBettingStats } from 'src/app/model/tournament-model';
 import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
@@ -11,7 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './player-stats-modal.component.html',
   styleUrls: ['./player-stats-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule],
+  imports: [CommonModule, IonicModule, TranslateModule, FormsModule],
 })
 export class PlayerStatsModalComponent implements OnInit {
   @Input() tournamentId!: number;
@@ -20,6 +21,8 @@ export class PlayerStatsModalComponent implements OnInit {
   isLoading = true;
   stats: UserBettingStats[] = [];
   expandedMatchId: number | null = null;
+  selectedStage: string | null = null;
+  availableStages: string[] = [];
 
   constructor(
     private modalController: ModalController,
@@ -40,6 +43,12 @@ export class PlayerStatsModalComponent implements OnInit {
     this.tournamentService.getUserBettingStats(this.tournamentId, this.userId).subscribe({
       next: (data) => {
         this.stats = data;
+  
+        // Extract unique stages
+        const uniqueStages = [...new Set(data.map(s => s.stage))];
+        this.availableStages = uniqueStages;
+        this.selectedStage = uniqueStages[0] ?? null;
+  
         this.isLoading = false;
       },
       error: (error) => {
@@ -48,7 +57,13 @@ export class PlayerStatsModalComponent implements OnInit {
       }
     });
   }
-
+  
+  get filteredStats(): UserBettingStats[] {
+    return this.selectedStage
+      ? this.stats.filter(s => s.stage === this.selectedStage)
+      : this.stats;
+  }
+  
   closeModal() {
     this.modalController.dismiss();
   }

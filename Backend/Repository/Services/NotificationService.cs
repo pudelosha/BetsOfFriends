@@ -146,7 +146,7 @@ public class NotificationService : INotificationService
                     Title = nr.Notification.Title,
                     Message = nr.Notification.Message,
                     Route = nr.Notification.Route,
-                    CreatedAt = nr.Notification.CreatedAt,
+                    CreatedAt = DateTime.SpecifyKind(nr.Notification.CreatedAt, DateTimeKind.Utc),
                     IsRead = nr.IsRead
                 })
                 .ToListAsync();
@@ -321,7 +321,7 @@ public class NotificationService : INotificationService
             Title = title,
             Message = message,
             Route = route,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
         };
 
         _dbContext.Notifications.Add(notification);

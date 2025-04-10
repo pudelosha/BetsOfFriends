@@ -247,7 +247,7 @@ namespace Backend.Repository.Services
                     Stage = m.PredefinedStage.StageName,
                     HomeTeam = m.HomeTeam.TeamName,
                     AwayTeam = m.AwayTeam.TeamName,
-                    MatchStart = m.MatchStart,
+                    MatchStart = DateTime.SpecifyKind(m.MatchStart, DateTimeKind.Utc), 
                     HomeScore = m.HomeScore,
                     AwayScore = m.AwayScore,
                     QualifiedTeam = m.Qualified.HasValue ? m.Qualified.ToString() : null,

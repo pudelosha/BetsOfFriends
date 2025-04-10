@@ -96,6 +96,7 @@ namespace Backend.DTOs
         public string HomeTeam { get; set; } = string.Empty;
         public string AwayTeam { get; set; } = string.Empty;
         public DateTime MatchTime { get; set; }
+        public string Stage { get; set; }
     }
 
     public class UserBettingStatsDto
@@ -105,6 +106,7 @@ namespace Backend.DTOs
 
         public int MatchId { get; set; }
         public string MatchStatus { get; set; } = string.Empty;
+        public string Stage { get; set; }
         public string HomeTeam { get; set; } = string.Empty;
         public string AwayTeam { get; set; } = string.Empty;
 

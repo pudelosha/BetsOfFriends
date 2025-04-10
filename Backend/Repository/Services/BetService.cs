@@ -231,7 +231,8 @@ namespace Backend.Repository.Services
                     MatchId = b.MatchId,
                     TeamHome = b.Match.HomeTeam.TeamName,
                     TeamAway = b.Match.AwayTeam.TeamName,
-                    StartTime = b.Match.MatchStart,
+
+                    StartTime = DateTime.SpecifyKind(b.Match.MatchStart, DateTimeKind.Utc),
 
                     BaseAmount = b.BaseAmount,
                     BonusAmount = b.BonusAmount,
@@ -627,7 +628,8 @@ namespace Backend.Repository.Services
                         MatchId = b.Match.MatchId,
                         HomeTeam = b.Match.HomeTeam.TeamName,
                         AwayTeam = b.Match.AwayTeam.TeamName,
-                        MatchTime = b.Match.MatchStart
+                        MatchTime = DateTime.SpecifyKind(b.Match.MatchStart, DateTimeKind.Utc),
+                        Stage = b.Match.Stage.StageName
                     })
                     .ToListAsync();
 

@@ -298,6 +298,7 @@
   },
   "PLAYER_STATS": {
     "TITLE": "Player Stats",
+    "STAGE": "Stage",
     "CLOSE": "Close",
     "NO_STATS": "No stats available.",
     "BET": "Bet",
