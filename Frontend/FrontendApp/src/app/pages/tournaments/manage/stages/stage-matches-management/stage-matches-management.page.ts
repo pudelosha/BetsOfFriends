@@ -1,20 +1,20 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { ModalController, AlertController } from '@ionic/angular';
 import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
 import { buildMatchFormGroup } from '../../../shared/form-utils';
 import { Match, Team, Stage } from 'src/app/model/tournament-model';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonList, IonItem, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-stage-matches-management',
   templateUrl: './stage-matches-management.page.html',
   styleUrls: ['./stage-matches-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
 })
 export class StageMatchesManagementPage implements OnInit {
   @Input() matchesArray!: FormArray; // FormArray for matches

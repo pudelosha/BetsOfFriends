@@ -8,7 +8,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/stan
   templateUrl: './dummy-redirect.page.html',
   styleUrls: ['./dummy-redirect.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, IonContent]
 })
 export class DummyRedirectPage implements OnInit {
 

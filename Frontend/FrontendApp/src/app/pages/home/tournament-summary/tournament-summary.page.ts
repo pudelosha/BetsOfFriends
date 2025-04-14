@@ -4,15 +4,15 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentPlayerResult } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-tournament-summary',
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IonList, IonItem],
   templateUrl: './tournament-summary.page.html',
   styleUrls: ['./tournament-summary.page.scss']
 })

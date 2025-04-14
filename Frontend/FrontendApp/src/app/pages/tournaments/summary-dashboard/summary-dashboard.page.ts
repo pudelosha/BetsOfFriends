@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { ToastController, LoadingController } from '@ionic/angular';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { TournamentSummary } from 'src/app/model/tournament-model';
@@ -8,14 +8,14 @@ import { ModalController } from '@ionic/angular';
 import { PlayerStatsModalComponent } from 'src/app/modals/player-stats-modal/player-stats-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonContent, IonGrid, IonRow, IonCol, IonProgressBar, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-summary-dashboard',
   templateUrl: './summary-dashboard.page.html',
   styleUrls: ['./summary-dashboard.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IonContent, IonGrid, IonRow, IonCol, IonProgressBar, IonSpinner],
 })
 export class SummaryDashboardPage implements OnInit {
   tournamentId: number | null = null;

@@ -1,17 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Team, Stage } from 'src/app/model/tournament-model';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ModalController, ToastController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSelect, IonSelectOption, IonDatetime, IonItem, IonToggle } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { Team, Stage } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-edit-match-modal',
   templateUrl: './edit-match-modal.component.html',
   styleUrls: ['./edit-match-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSelect, IonSelectOption, IonDatetime, IonItem, IonToggle],
 })
 export class EditMatchModalComponent implements OnInit {
   @Input() match: any; // Existing match (if editing), otherwise null

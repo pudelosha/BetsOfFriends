@@ -1,20 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, AlertController, LoadingController } from '@ionic/angular';
+import { ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { UserService } from 'src/app/services/user.service';
 import { ApplicationUser } from 'src/app/model/user-profile';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonContent, IonSearchbar, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-user-manager',
   templateUrl: './user-manager.page.html',
   styleUrls: ['./user-manager.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, IonContent, IonSearchbar, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonSpinner]
 })
 export class UserManagerPage implements OnInit {
   users: ApplicationUser[] = [];

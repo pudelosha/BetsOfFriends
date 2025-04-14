@@ -1,18 +1,18 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ModalController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonSpinner, IonItem, IonLabel, IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { UserBettingStats } from 'src/app/model/tournament-model';
-import { TranslateModule } from '@ngx-translate/core';
-import { FormsModule } from '@angular/forms';
-
 
 @Component({
   selector: 'app-player-stats-modal',
   templateUrl: './player-stats-modal.component.html',
   styleUrls: ['./player-stats-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonSpinner, IonItem, IonLabel, IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonGrid, IonRow, IonCol],
 })
 export class PlayerStatsModalComponent implements OnInit {
   @Input() tournamentId!: number;

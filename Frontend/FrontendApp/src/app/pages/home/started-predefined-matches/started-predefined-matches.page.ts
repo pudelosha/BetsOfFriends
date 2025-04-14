@@ -1,17 +1,17 @@
 import { Component, Input, OnInit, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Match } from 'src/app/model/match';
 import { PredefinedMatchService } from 'src/app/services/predefined-match.service';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonSpinner, IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-started-predefined-matches',
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IonSpinner, IonList, IonItem],
   templateUrl: './started-predefined-matches.page.html',
   styleUrls: ['./started-predefined-matches.page.scss']
 })

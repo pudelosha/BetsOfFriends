@@ -1,17 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Team } from 'src/app/model/tournament-model';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ModalController, ToastController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { Team } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-edit-team-modal',
   templateUrl: './edit-team-modal.component.html',
   styleUrls: ['./edit-team-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput],
 })
 export class EditTeamModalComponent implements OnInit {
   @Input() team: Team | null = null; // Input to receive team details

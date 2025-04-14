@@ -1,9 +1,9 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { IonContent, IonPicker, IonButton } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LanguageService } from 'src/app/services/language.service';
 import { Language } from 'src/app/model/language';
+import { IonContent, IonPicker, IonPickerColumn, IonPickerColumnOption, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-language',
@@ -11,7 +11,7 @@ import { Language } from 'src/app/model/language';
   styleUrls: ['./language.page.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [CommonModule, IonContent, IonPicker, IonButton]
+  imports: [CommonModule, IonContent, IonPicker, IonPickerColumn, IonPickerColumnOption, IonButton]
 })
 export class LanguagePage {
   parallaxOffset = 0;

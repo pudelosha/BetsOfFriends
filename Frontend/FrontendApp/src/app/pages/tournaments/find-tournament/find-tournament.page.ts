@@ -1,21 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, LoadingController, AlertController, ModalController  } from '@ionic/angular';
+import { ToastController, ModalController  } from '@ionic/angular';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { PublicTournament } from 'src/app/model/tournament-model';
 import { JoinRequestModalComponent } from 'src/app/modals/join-request-modal/join-request-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonContent, IonSearchbar, IonList, IonItem, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-find-tournament',
   templateUrl: './find-tournament.page.html',
   styleUrls: ['./find-tournament.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, IonContent, IonSearchbar, IonList, IonItem, IonButton]
 })
 export class FindTournamentPage implements OnInit {
   searchTerm = '';

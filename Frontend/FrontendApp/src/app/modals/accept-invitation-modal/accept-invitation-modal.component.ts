@@ -1,18 +1,19 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, ModalController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ModalController, ToastController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSpinner, IonIcon } from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-accept-invitation-modal',
   templateUrl: './accept-invitation-modal.component.html',
   styleUrls: ['./accept-invitation-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSpinner, IonIcon],
 })
 export class AcceptInvitationModalComponent implements OnInit {
   @Input() tournamentName!: string;

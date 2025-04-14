@@ -2,18 +2,18 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { RegisterService } from '../../../services/register.service';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonContent, IonItem, IonLabel, IonInput, IonButton, IonCheckbox } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-setup-account',
   templateUrl: './setup-account.page.html',
   styleUrls: ['./setup-account.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, LanguageFabComponent, IonContent, IonItem, IonLabel, IonInput, IonButton, IonCheckbox]
 })
 export class SetupAccountPage {
   setupForm: FormGroup;

@@ -1,12 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { LanguageService } from 'src/app/services/language.service';
+import { IonFab, IonFabButton, IonFabList } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-language-fab',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonFab, IonFabButton, IonFabList],
   template: `
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button size="small">🌐</ion-fab-button>

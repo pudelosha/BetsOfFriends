@@ -2,21 +2,20 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges  } from '@angular/co
 import { ModalController, ToastController, LoadingController } from '@ionic/angular';
 import { EditMatchResultModalComponent } from 'src/app/modals/edit-match-result-modal/edit-match-result-modal.component';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { PredefinedMatchService } from 'src/app/services/predefined-match.service';
 import { Match } from 'src/app/model/match';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonSpinner, IonList, IonItem, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-manage-predefined-upcoming',
   templateUrl: './manage-predefined-upcoming.page.html',
   styleUrls: ['./manage-predefined-upcoming.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonSpinner, IonList, IonItem, IonButton],
 })
 export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
   @Input() stage!: string;

@@ -1,18 +1,18 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ModalController, AlertController } from '@ionic/angular';
 import { EditUserModalComponent } from 'src/app/modals/edit-user-modal/edit-user-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonList, IonItem, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-stage-users-management',
   templateUrl: './stage-users-management.page.html',
   styleUrls: ['./stage-users-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
 })
 export class StageUsersManagementPage {
   @Input() usersArray!: FormArray; // Input from parent for users FormArray

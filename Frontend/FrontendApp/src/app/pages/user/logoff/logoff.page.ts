@@ -1,18 +1,17 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonContent, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-logoff',
   templateUrl: './logoff.page.html',
   styleUrls: ['./logoff.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonContent, IonButton]
 })
 export class LogoffPage {
   parallaxOffset = 0;

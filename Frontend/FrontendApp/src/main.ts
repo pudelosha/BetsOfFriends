@@ -6,7 +6,7 @@ import { importProvidersFrom } from '@angular/core';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './app/interceptors/auth.interceptor';
 import { provideTranslation } from './app/config/translation.config';
-
+import { ModalController } from '@ionic/angular';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 
@@ -16,10 +16,11 @@ import { logOutOutline, homeOutline, logoAndroid, logoX, logoTiktok, logoApple, 
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular(),
+    provideIonicAngular({ animated: true }),
     provideTranslation(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(withInterceptorsFromDi()),
+    ModalController,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
 });

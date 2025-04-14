@@ -1,18 +1,18 @@
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { CustomMatchService } from 'src/app/services/custom-match.service';
 import { firstValueFrom } from 'rxjs';
 import { Match } from 'src/app/model/match'; // or your custom match model
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonSpinner, IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-started-custom-matches',
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IonSpinner, IonList, IonItem],
   templateUrl: './started-custom-matches.page.html',
   styleUrls: ['./started-custom-matches.page.scss']
 })

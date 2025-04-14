@@ -1,22 +1,20 @@
-import { Component, OnInit, } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ModalController, ToastController, NavController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonSpinner, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
-import { ModalController, IonicModule } from '@ionic/angular';
 import { UserActiveTournament } from 'src/app/model/tournament-model';
-import { Router } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { ToastController } from '@ionic/angular';
-import { NavController } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
-
 
 @Component({
   selector: 'app-participant-tournaments-modal',
   templateUrl: './participant-tournaments-modal.component.html',
   styleUrls: ['./participant-tournaments-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonSpinner, IonGrid, IonRow, IonCol],
 })
 export class ParticipantTournamentsModalComponent implements OnInit {
   tournaments: UserActiveTournament[] = [];

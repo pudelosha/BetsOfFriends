@@ -2,16 +2,16 @@ import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@
 import { CommonModule } from '@angular/common';
 import { TournamentInvite } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-tournament-invites',
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IonList, IonItem ],
   templateUrl: './tournament-invites.page.html',
   styleUrls: ['./tournament-invites.page.scss']
 })

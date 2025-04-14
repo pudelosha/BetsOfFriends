@@ -1,19 +1,19 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ModalController, AlertController } from '@ionic/angular';
 import { EditStageModalComponent } from 'src/app/modals/edit-stage-modal/edit-stage-modal.component';
 import { Stage } from 'src/app/model/tournament-model';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonList, IonItem, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-stage-stages-management',
   templateUrl: './stage-stages-management.page.html',
   styleUrls: ['./stage-stages-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
 })
 export class StageStagesManagementPage {
   @Input() stagesArray!: FormArray;

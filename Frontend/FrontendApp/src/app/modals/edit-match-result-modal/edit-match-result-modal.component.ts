@@ -1,10 +1,10 @@
 import { Component, Input, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Match } from 'src/app/model/match';
+import { ModalController, ToastController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonLabel, IonDatetime, IonItem, IonToggle, IonPicker, IonPickerColumn, IonPickerColumnOption, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { Match } from 'src/app/model/match';
 
 @Component({
   selector: 'app-edit-match-result-modal',
@@ -12,7 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrls: ['./edit-match-result-modal.component.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonLabel, IonDatetime, IonItem, IonToggle, IonPicker, IonPickerColumn, IonPickerColumnOption, IonSegment, IonSegmentButton],
 })
 export class EditMatchResultModalComponent implements AfterViewInit {
   @Input() set match(value: Match) {

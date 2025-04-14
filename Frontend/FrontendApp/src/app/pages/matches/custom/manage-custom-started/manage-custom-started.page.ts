@@ -2,7 +2,6 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges  } from '@angular/co
 import { ModalController, ToastController, LoadingController } from '@ionic/angular';
 import { EditMatchResultModalComponent } from 'src/app/modals/edit-match-result-modal/edit-match-result-modal.component';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
@@ -10,14 +9,14 @@ import { CustomMatchService } from 'src/app/services/custom-match.service';
 import { Match } from 'src/app/model/match';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonSpinner, IonList, IonItem, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-manage-custom-started',
   templateUrl: './manage-custom-started.page.html',
   styleUrls: ['./manage-custom-started.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonSpinner, IonList, IonItem, IonButton],
 })
 export class ManageCustomStartedPage implements OnInit, OnChanges {
   @Input() stage!: string; // Receive stage from parent

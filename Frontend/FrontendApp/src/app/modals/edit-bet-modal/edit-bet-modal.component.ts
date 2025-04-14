@@ -1,11 +1,10 @@
 import { Component, Input, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { Bet } from '../../model/bet';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { ModalController, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { ModalController, ToastController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonLabel, IonPicker, IonPickerColumn, IonPickerColumnOption, IonItem, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { Bet } from '../../model/bet';
 
 @Component({
   selector: 'app-edit-bet-modal',
@@ -13,7 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrls: ['./edit-bet-modal.component.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [CommonModule, IonicModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonLabel, IonPicker, IonPickerColumn, IonPickerColumnOption, IonItem, IonSegment, IonSegmentButton],
 })
 export class EditBetModalComponent implements AfterViewInit {
   @Input() set bet(value: Bet) {

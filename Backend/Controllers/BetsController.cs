@@ -9,7 +9,7 @@ using Backend.Repository.Services;
 namespace Backend.Controllers
 {
     [ApiController]
-    [Route("api/bets")]
+    [Route("bets")]
     public class BetsController : ControllerBase
     {
         private readonly IBetService _betService;

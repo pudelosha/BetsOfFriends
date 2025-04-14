@@ -2,20 +2,19 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { ToastController, LoadingController } from '@ionic/angular';
 import { RegisterService } from '../../../services/register.service';
 import { ViewChild } from '@angular/core';
-import { IonContent } from '@ionic/angular';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonContent, IonItem, IonLabel, IonInput, IonCheckbox, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, LanguageFabComponent, IonContent, IonItem, IonLabel, IonInput, IonCheckbox, IonButton]
 })
 export class RegisterPage {
   @ViewChild(IonContent) content!: IonContent;

@@ -1,7 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, IonContent } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { ManagePredefinedFinalisedPage } from '../manage-predefined-finalised/manage-predefined-finalised.page';
 import { ManagePredefinedStartedPage } from '../manage-predefined-started/manage-predefined-started.page';
 import { ManagePredefinedUpcomingPage } from '../manage-predefined-upcoming/manage-predefined-upcoming.page';
@@ -11,15 +11,14 @@ import { ActivatedRoute } from '@angular/router';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-
-
+import { IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-manage-predefined-matches',
   templateUrl: './manage-predefined-matches.page.html',
   styleUrls: ['./manage-predefined-matches.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, ManagePredefinedFinalisedPage, ManagePredefinedStartedPage, ManagePredefinedUpcomingPage, TranslateModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ManagePredefinedFinalisedPage, ManagePredefinedStartedPage, ManagePredefinedUpcomingPage, TranslateModule, IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {

@@ -3,18 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { SupportService } from 'src/app/services/support.service';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { TitleService } from 'src/app/services/title.service';
 import { LanguageService } from 'src/app/services/language.service';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
+import { IonContent, IonItem, IonLabel, IonInput, IonTextarea, IonButton, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-support',
   templateUrl: './support.page.html',
   styleUrls: ['./support.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonContent, IonItem, IonLabel, IonInput, IonTextarea, IonButton, IonSpinner],
 })
 export class SupportPage implements OnInit {
   supportForm!: FormGroup;

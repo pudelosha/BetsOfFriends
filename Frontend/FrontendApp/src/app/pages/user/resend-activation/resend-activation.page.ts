@@ -1,20 +1,19 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { ToastController, LoadingController } from '@ionic/angular';
 import { RegisterService } from 'src/app/services/register.service';
 import { Router } from '@angular/router';
 import { ViewChild } from '@angular/core';
-import { IonContent } from '@ionic/angular';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonContent, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-resend-activation',
   templateUrl: './resend-activation.page.html',
   styleUrls: ['./resend-activation.page.scss'],
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, LanguageFabComponent, IonContent, IonItem, IonLabel, IonInput, IonButton],
   standalone: true,
 })
 export class ResendActivationPage {

@@ -1,20 +1,19 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { RegisterService } from 'src/app/services/register.service';
 import { ViewChild } from '@angular/core';
-import { IonContent } from '@ionic/angular';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonContent, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-confirm-email',
   templateUrl: './confirm-email.page.html',
   styleUrls: ['./confirm-email.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, LanguageFabComponent, TranslateModule],
+  imports: [CommonModule, LanguageFabComponent, TranslateModule, IonContent, IonButton]
 })
 export class ConfirmEmailPage {
   @ViewChild(IonContent) content!: IonContent;

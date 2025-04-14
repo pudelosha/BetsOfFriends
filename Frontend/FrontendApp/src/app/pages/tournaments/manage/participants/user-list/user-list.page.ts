@@ -1,20 +1,20 @@
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, LoadingController, AlertController } from '@ionic/angular';
+import { ToastController, LoadingController, AlertController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentParticipant } from 'src/app/model/tournament-model';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonList, IonItem, IonButton, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.page.html',
   styleUrls: ['./user-list.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IonList, IonItem, IonButton, IonSpinner],
 })
 export class UserListPage implements OnInit {
   @Input() refreshTrigger: number = 0;

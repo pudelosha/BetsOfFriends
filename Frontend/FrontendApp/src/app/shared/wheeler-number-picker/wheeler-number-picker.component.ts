@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -8,7 +7,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './wheeler-number-picker.component.html',
   styleUrls: ['./wheeler-number-picker.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule],
+  imports: [CommonModule, FormsModule],
 })
 export class WheelerNumberPickerComponent  implements AfterViewInit {
   @Input() selectedNumber: number = 0;

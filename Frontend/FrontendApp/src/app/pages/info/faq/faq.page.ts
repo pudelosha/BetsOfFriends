@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TitleService } from 'src/app/services/title.service';
+import { IonContent, IonSpinner, IonList, IonAccordionGroup, IonAccordion, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-faq',
   templateUrl: './faq.page.html',
   styleUrls: ['./faq.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonContent, IonSpinner, IonList, IonAccordionGroup, IonAccordion, IonItem ],
 })
 export class FaqPage implements OnInit {
   expandedQuestionId: string | null = null;

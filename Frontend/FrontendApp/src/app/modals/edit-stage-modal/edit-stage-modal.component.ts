@@ -1,17 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Stage } from 'src/app/model/tournament-model';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ModalController, ToastController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { Stage } from 'src/app/model/tournament-model';
 
 @Component({
   selector: 'app-edit-stage-modal',
   templateUrl: './edit-stage-modal.component.html',
   styleUrls: ['./edit-stage-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput],
 })
 export class EditStageModalComponent implements OnInit {
   @Input() stage: Stage | null = null;

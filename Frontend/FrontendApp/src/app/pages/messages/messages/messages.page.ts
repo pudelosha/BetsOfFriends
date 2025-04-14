@@ -4,17 +4,17 @@ import { NotificationService } from 'src/app/services/notification.service';
 import { Component, OnInit } from '@angular/core';
 import { ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { Router } from '@angular/router';
+import { IonContent, IonSpinner, IonList, IonItem, IonButton, IonIcon, IonAccordionGroup, IonAccordion } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-messages',
   templateUrl: './messages.page.html',
   styleUrls: ['./messages.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonContent, IonSpinner, IonList, IonItem, IonButton, IonIcon, IonAccordionGroup, IonAccordion],
 })
 export class MessagesPage implements OnInit {
   notifications: NotificationDto[] = [];

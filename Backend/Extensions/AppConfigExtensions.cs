@@ -19,7 +19,7 @@ namespace Backend.Extensions
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("http://localhost:8100", "https://your-production-frontend.com")
+                    policy.WithOrigins("http://localhost:8100", "http://localhost:3000", "http://app.betsoffriends.com", "https://app.betsoffriends.com")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, LoadingController  } from '@ionic/angular';
+import { ToastController, LoadingController  } from '@ionic/angular';
 import { StageInputTypePage } from '../../stages/stage-input-type/stage-input-type.page';
 import { StageTeamsManagementPage } from '../../stages/stage-teams-management/stage-teams-management.page';
 import { StageStagesManagementPage } from '../../stages/stage-stages-management/stage-stages-management.page';
@@ -18,14 +18,14 @@ import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonContent, IonButton, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-build-custom-tournament',
   templateUrl: './build-custom-tournament.page.html',
   styleUrls: ['./build-custom-tournament.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, StageInputTypePage, StageTeamsManagementPage, StageStagesManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage, StageSettingsPage, TranslateModule],
+  imports: [CommonModule, StageInputTypePage, StageTeamsManagementPage, StageStagesManagementPage, StageMatchesManagementPage, StageUsersManagementPage, StageSummaryPage, StageSettingsPage, TranslateModule, IonContent, IonButton, IonSpinner],
 })
 export class BuildCustomTournamentPage implements OnInit {
   @ViewChild(StageInputTypePage) stageInputTypePage!: StageInputTypePage;

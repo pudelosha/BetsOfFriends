@@ -1,17 +1,16 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Match, Stage, Team, User } from 'src/app/model/tournament-model';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonLabel } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-stage-summary',
   templateUrl: './stage-summary.page.html',
   styleUrls: ['./stage-summary.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule]
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonLabel]
 })
 export class StageSummaryPage implements OnInit {
   @Input() tournamentName!: string;

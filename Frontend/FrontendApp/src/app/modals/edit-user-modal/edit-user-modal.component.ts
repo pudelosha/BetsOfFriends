@@ -1,16 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { ModalController, ToastController, IonicModule} from '@ionic/angular';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ModalController, ToastController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-
 
 @Component({
   selector: 'app-edit-user-modal',
   templateUrl: './edit-user-modal.component.html',
   styleUrls: ['./edit-user-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSegment, IonSegmentButton],
 })
 export class EditUserModalComponent implements OnInit {
   @Input() user: {

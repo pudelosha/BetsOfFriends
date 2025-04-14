@@ -18,7 +18,7 @@ export class AuthInterceptor implements HttpInterceptor {
         }
       });
     } else {
-      console.warn('AuthInterceptor: No auth token found');
+      //console.warn('AuthInterceptor: No auth token found');
     }
 
     return next.handle(req);

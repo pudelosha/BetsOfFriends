@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TitleService } from 'src/app/services/title.service'; // adjust path if needed
 
-
 @Component({
   selector: 'app-terms',
   templateUrl: './terms.page.html',

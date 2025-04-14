@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace Backend.Controllers
 {
     [ApiController]
-    [Route("api/notifications")]
+    [Route("notifications")]
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationService _notificationService;

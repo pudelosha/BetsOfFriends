@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonItem, IonLabel, IonSelect, IonSelectOption, IonInput } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -9,7 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './select-competition-modal.component.html',
   styleUrls: ['./select-competition-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule]
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonItem, IonLabel, IonSelect, IonSelectOption, IonInput]
 })
 export class SelectCompetitionModalComponent {
   form: FormGroup;

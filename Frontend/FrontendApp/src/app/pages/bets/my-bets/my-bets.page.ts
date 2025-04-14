@@ -1,7 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, IonContent } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { MyBetsFinalisedPage } from '../my-bets-finalised/my-bets-finalised.page';
 import { MyBetsPlacedPage } from '../my-bets-placed/my-bets-placed.page';
 import { MyBetsToPlacePage } from '../my-bets-to-place/my-bets-to-place.page';
@@ -12,14 +12,14 @@ import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-my-bets',
   templateUrl: './my-bets.page.html',
   styleUrls: ['./my-bets.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, MyBetsFinalisedPage, MyBetsPlacedPage, MyBetsToPlacePage, TranslateModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MyBetsFinalisedPage, MyBetsPlacedPage, MyBetsToPlacePage, TranslateModule, IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MyBetsPage implements OnInit, AfterViewInit {

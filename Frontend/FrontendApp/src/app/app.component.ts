@@ -1,5 +1,4 @@
 import { Component  } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
 import { Router, NavigationEnd  } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -10,12 +9,15 @@ import { ParticipantTournamentsModalComponent } from './modals/participant-tourn
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from './services/title.service';
 import { Platform } from '@ionic/angular';
+import { IonMenu, IonApp, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [
+    CommonModule, ReactiveFormsModule, TranslateModule, IonApp, IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet
+  ],  
 })
 export class AppComponent {
   isMonetizedMode = false; // default: false if app is free and ad-supported
@@ -36,7 +38,6 @@ export class AppComponent {
     // Subscribe to authentication status changes
     this.authService.getAuthStatus().subscribe((loggedIn) => {
       this.isLoggedIn = loggedIn;
-      //console.log('Auth status changed:', loggedIn);
       this.updateUserRoles();
     });
 
@@ -45,12 +46,15 @@ export class AppComponent {
     });
 
     // Monitor navigation changes
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
-      //console.log('Navigation ended, checking auth state and FAB visibility');
-
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       // Refresh authentication state
       this.isLoggedIn = this.authService.isLoggedIn();
       this.updateUserRoles();
+
+      // Global fix for aria-hidden warning
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
     });
   }
 

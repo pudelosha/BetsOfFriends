@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend.Controllers
 {
     [ApiController]
-    [Route("api/custom-tournaments")]
+    [Route("custom-tournaments")]
     public class CustomTournamentsController : ControllerBase
     {
         private readonly ICustomTournamentService _tournamentService;

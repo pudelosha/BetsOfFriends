@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
 {
-    [Route("api/predefined-matches")]
+    [Route("predefined-matches")]
     [ApiController]
     public class PredefinedMatchesController : ControllerBase
     {

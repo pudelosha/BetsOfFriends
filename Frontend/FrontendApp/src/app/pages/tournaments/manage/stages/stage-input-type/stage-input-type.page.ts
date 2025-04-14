@@ -10,15 +10,15 @@ import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-sel
 import { TranslateModule } from '@ngx-translate/core';
 import { SelectCompetitionModalComponent } from 'src/app/modals/select-competition-modal/select-competition-modal.component';
 import { ExternalDataService } from 'src/app/services/external-data.service';
-import { ToastController, AlertController, LoadingController, IonicModule } from '@ionic/angular';
-
+import { ToastController, AlertController, LoadingController } from '@ionic/angular';
+import { IonGrid, IonRow, IonCol, IonLabel, IonButton, IonIcon, IonPopover, IonContent, IonSegment, IonSegmentButton, IonInput, IonSelect, IonSelectOption, IonDatetime, IonDatetimeButton, IonModal } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-stage-input-type',
   templateUrl: './stage-input-type.page.html',
   styleUrls: ['./stage-input-type.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonGrid, IonRow, IonCol, IonLabel, IonButton, IonIcon, IonPopover, IonContent, IonSegment, IonSegmentButton, IonInput, IonSelect, IonSelectOption, IonDatetime, IonDatetimeButton, IonModal],
 })
 export class StageInputTypePage implements OnInit {
   @Input() tournamentForm!: FormGroup;

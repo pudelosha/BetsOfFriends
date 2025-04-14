@@ -1,16 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { IonicModule, ModalController } from '@ionic/angular';
-import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { Component, Input } from '@angular/core'; 
+import { CommonModule } from '@angular/common'; 
+import { ModalController } from '@ionic/angular'; 
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonList, IonItem, IonLabel } from '@ionic/angular/standalone'; 
+import { TranslateModule } from '@ngx-translate/core'; 
 import { Tournament } from 'src/app/model/tournament-model';
-import { TranslateModule } from '@ngx-translate/core';
-
 
 @Component({
   selector: 'app-tournament-selection-modal',
   templateUrl: './tournament-selection-modal.html',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonList, IonItem, IonLabel],
 })
 export class TournamentSelectionModalComponent {
   @Input() predefinedTournaments: Tournament[] = [];

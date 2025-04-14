@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
 {
-    [Route("api/tournament-selection")]
+    [Route("tournament-selection")]
     [ApiController]
     public class TournamentSelectionController : ControllerBase
     {

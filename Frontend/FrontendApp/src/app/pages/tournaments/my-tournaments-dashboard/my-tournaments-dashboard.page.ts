@@ -1,24 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, LoadingController, AlertController, ModalController  } from '@ionic/angular';
+import { ToastController, LoadingController, AlertController, ModalController  } from '@ionic/angular';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserActiveTournament } from 'src/app/model/tournament-model';
-import { firstValueFrom } from 'rxjs';
 import { AcceptInvitationModalComponent } from 'src/app/modals/accept-invitation-modal/accept-invitation-modal.component';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonContent, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-my-tournaments-dashboard',
   templateUrl: './my-tournaments-dashboard.page.html',
   styleUrls: ['./my-tournaments-dashboard.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonContent, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner],
 })
 export class MyTournamentsDashboardPage implements OnInit {
   tournaments: UserActiveTournament[] = [];

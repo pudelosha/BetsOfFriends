@@ -1,16 +1,16 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
+import { IonContent, IonIcon } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-social',
   templateUrl: './social.page.html',
   styleUrls: ['./social.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonContent, IonIcon],
 })
 export class SocialPage implements OnInit {
 

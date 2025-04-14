@@ -8,7 +8,7 @@ using static Backend.Model.Entities.CustomMatch;
 
 namespace Backend.Controllers
 {
-    [Route("api/custom-matches")]
+    [Route("custom-matches")]
     [ApiController]
     public class CustomMatchesController : ControllerBase
     {

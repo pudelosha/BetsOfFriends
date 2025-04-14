@@ -2,7 +2,6 @@ import { Component, Input, OnInit, SimpleChanges  } from '@angular/core';
 import { ModalController, ToastController, LoadingController } from '@ionic/angular';
 import { EditBetModalComponent } from 'src/app/modals/edit-bet-modal/edit-bet-modal.component';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BetService } from 'src/app/services/bet.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
@@ -11,14 +10,14 @@ import { firstValueFrom } from 'rxjs';
 import { BetsOverviewModalComponent } from 'src/app/modals/bets-overview-modal/bets-overview-modal.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonSpinner, IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-my-bets-to-place',
   templateUrl: './my-bets-to-place.page.html',
   styleUrls: ['./my-bets-to-place.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonSpinner, IonList, IonItem, IonButton, IonIcon],
 })
 export class MyBetsToPlacePage implements OnInit {
   @Input() stage!: string; // Receive stage from parent

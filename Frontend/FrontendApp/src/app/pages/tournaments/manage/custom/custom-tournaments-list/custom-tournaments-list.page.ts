@@ -1,20 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController, AlertController, LoadingController  } from '@ionic/angular';
+import { ToastController, AlertController, LoadingController  } from '@ionic/angular';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { Tournament } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonContent, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-custom-tournaments-list',
   templateUrl: './custom-tournaments-list.page.html',
   styleUrls: ['./custom-tournaments-list.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IonContent, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner],
 })
 export class CustomTournamentsListPage implements OnInit {
   tournaments: Tournament[] = [];

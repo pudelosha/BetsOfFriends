@@ -1,7 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, IonContent } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { ManageCustomFinalisedPage } from '../manage-custom-finalised/manage-custom-finalised.page';
 import { ManageCustomStartedPage } from '../manage-custom-started/manage-custom-started.page';
 import { ManageCustomUpcomingPage } from '../manage-custom-upcoming/manage-custom-upcoming.page';
@@ -12,14 +12,14 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-manage-custom-matches',
   templateUrl: './manage-custom-matches.page.html',
   styleUrls: ['./manage-custom-matches.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, ManageCustomFinalisedPage, ManageCustomStartedPage, ManageCustomUpcomingPage, TranslateModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ManageCustomFinalisedPage, ManageCustomStartedPage, ManageCustomUpcomingPage, TranslateModule, IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ManageCustomMatchesPage implements OnInit, AfterViewInit {

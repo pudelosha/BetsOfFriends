@@ -1,21 +1,20 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '..//..//../services//user.service';
-import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { ToastController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ViewChild } from '@angular/core';
-import { IonContent } from '@ionic/angular';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonContent, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.page.html',
   styleUrls: ['./forgot-password.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, LanguageFabComponent, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, LanguageFabComponent, TranslateModule, IonContent, IonItem, IonLabel, IonInput, IonButton]
 })
 export class ForgotPasswordPage {
   @ViewChild(IonContent) content!: IonContent;

@@ -4,15 +4,15 @@ import { NotificationService } from 'src/app/services/notification.service';
 import { NotificationDto } from 'src/app/model/notification';
 import { firstValueFrom } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonList, IonItem, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-latest-messages',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonSpinner],
   templateUrl: './latest-messages.page.html',
   styleUrls: ['./latest-messages.page.scss']
 })

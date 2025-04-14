@@ -1,19 +1,19 @@
 import { Component, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TournamentSettings } from 'src/app/model/tournament-model';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonGrid, IonRow, IonCol, IonLabel, IonToggle, IonButton, IonIcon, IonPopover, IonContent, IonSelect, IonSelectOption, IonInput } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-stage-settings',
   templateUrl: './stage-settings.page.html',
   styleUrls: ['./stage-settings.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonGrid, IonRow, IonCol, IonLabel, IonToggle, IonButton, IonIcon, IonPopover, IonContent, IonSelect, IonSelectOption, IonInput],
 })
 export class StageSettingsPage implements OnDestroy {
   @Input() settings!: TournamentSettings;

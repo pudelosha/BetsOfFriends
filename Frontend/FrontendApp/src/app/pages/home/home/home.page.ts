@@ -1,7 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
 import { LatestMessagesPage } from '../latest-messages/latest-messages.page';
 import { UpcomingBetsPage } from '../upcoming-bets/upcoming-bets.page';
 import { TournamentSummaryPage } from '../tournament-summary/tournament-summary.page';
@@ -10,14 +9,14 @@ import { StartedCustomMatchesPage } from '../started-custom-matches/started-cust
 import { StartedPredefinedMatchesPage } from '../started-predefined-matches/started-predefined-matches.page';
 import { LoadingController } from '@ionic/angular';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonContent } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, LatestMessagesPage, UpcomingBetsPage, TournamentSummaryPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage],
+  imports: [CommonModule, IonContent, ReactiveFormsModule, LatestMessagesPage, UpcomingBetsPage, TournamentSummaryPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class HomePage implements OnInit {

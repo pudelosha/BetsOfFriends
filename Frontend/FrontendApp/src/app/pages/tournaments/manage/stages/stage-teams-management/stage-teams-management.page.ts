@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ModalController } from '@ionic/angular';
@@ -7,14 +7,14 @@ import { EditTeamModalComponent } from 'src/app/modals/edit-team-modal/edit-team
 import { AlertController } from '@ionic/angular';
 import { Team } from 'src/app/model/tournament-model';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { IonList, IonItem, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-stage-teams-management',
   templateUrl: './stage-teams-management.page.html',
   styleUrls: ['./stage-teams-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
 })
 export class StageTeamsManagementPage {
   @Input() teamsArray!: FormArray; // Input from parent for teams FormArray

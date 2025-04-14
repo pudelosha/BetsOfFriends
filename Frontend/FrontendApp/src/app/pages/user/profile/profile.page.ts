@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ToastController, AlertController, IonicModule, LoadingController } from '@ionic/angular';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
@@ -13,14 +13,14 @@ import { LanguageService } from 'src/app/services/language.service';
 import { Language } from 'src/app/model/language';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonContent, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonContent, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner]
 })
 export class ProfilePage implements OnInit {
   profileForm: FormGroup;

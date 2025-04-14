@@ -1,13 +1,12 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent,  } from '@ionic/angular/standalone';
 import { UserListPage } from '../user-list/user-list.page';
 import { PendingRequestsPage } from '../pending-requests/pending-requests.page';
 import { PendingInvitesPage } from '../pending-invites/pending-invites.page';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-
+import { IonContent } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-manage-participants',

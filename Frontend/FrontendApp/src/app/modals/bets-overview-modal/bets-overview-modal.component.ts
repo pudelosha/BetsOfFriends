@@ -1,17 +1,16 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
-import { BetStats } from 'src/app/model/bet';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonLabel, IonIcon } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { BetStats } from 'src/app/model/bet';
 
 @Component({
   selector: 'app-bets-overview-modal',
   templateUrl: './bets-overview-modal.component.html',
   styleUrls: ['./bets-overview-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonIcon],
 })
 export class BetsOverviewModalComponent {
   @Input() betStats: BetStats = {
