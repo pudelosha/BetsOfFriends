@@ -9,13 +9,15 @@ import { provideTranslation } from './app/config/translation.config';
 import { ModalController } from '@ionic/angular';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-
 import { addIcons } from 'ionicons';
 import { logOutOutline, homeOutline, logoAndroid, logoX, logoTiktok, logoApple, logoTwitter, logoFacebook, logoDiscord, logoInstagram, logoYoutube, helpBuoyOutline, shareSocialOutline, helpCircleOutline, cloudDownloadOutline, logoGooglePlaystore, downloadOutline, documentAttachOutline, trophyOutline, checkmark, trash, close, mailOutline, peopleOutline, chevronBackOutline, chevronForwardOutline, searchOutline, chatbubblesOutline, cogOutline, informationCircleOutline, pauseOutline, trashOutline, settingsOutline, listOutline, podiumOutline, statsChartOutline, footballOutline, createOutline, eyeOutline, personOutline, notificationsOutline, shieldCheckmarkOutline, addCircleOutline, hammerOutline, clipboardOutline, starOutline, documentTextOutline, buildOutline, exitOutline, filterOutline } from 'ionicons/icons';
+import { IonicModule } from '@ionic/angular';
+
 
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    importProvidersFrom(IonicModule.forRoot()), // force registration
     provideIonicAngular({ animated: true }),
     provideTranslation(),
     provideRouter(routes, withPreloading(PreloadAllModules)),

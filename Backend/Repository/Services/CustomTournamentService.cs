@@ -382,6 +382,7 @@ namespace Backend.Repository.Services
                 // Step 1: Find the tournament with its related entities
                 var tournament = await _context.CustomTournaments
                     .Include(t => t.Matches)
+                        .ThenInclude(m => m.Bets)
                     .Include(t => t.Teams)
                     .Include(t => t.Participants) // User-Tournament Assignments
                     .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
@@ -400,12 +401,14 @@ namespace Backend.Repository.Services
                 }
 
                 // Step 3: Delete Bets linked to Matches in this Tournament
-                var matchIds = tournament.Matches.Select(m => m.MatchId).ToList();
-                var bets = await _context.Bets.Where(b => matchIds.Contains(b.MatchId)).ToListAsync();
+                var bets = await _context.Bets
+                    .Where(b => b.Match.TournamentId == tournamentId)
+                    .ToListAsync();
+
                 if (bets.Any())
                 {
                     _context.Bets.RemoveRange(bets);
-                    _logger.LogInformation($"Deleted {bets.Count} bets associated with tournament ID: {tournamentId}");
+                    _logger.LogInformation($"Deleted {bets.Count} bets linked directly via match to tournament ID: {tournamentId}");
                 }
 
                 // Step 4: Delete Matches
@@ -894,7 +897,7 @@ namespace Backend.Repository.Services
             {
                 _logger.LogInformation($"User {userId} attempting to quit tournament ID {tournamentId}");
 
-                // Find the user assignment
+                // Step 1: Get assignment
                 var assignment = await _context.CustomTournamentUserAssignments
                     .FirstOrDefaultAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
 
@@ -904,23 +907,38 @@ namespace Backend.Repository.Services
                     return false;
                 }
 
-                // Delete user's bets linked to this tournament
-                var userBets = await _context.Bets
-                    .Where(b => b.UserId == userId && _context.CustomMatches.Any(m => m.MatchId == b.MatchId && m.TournamentId == tournamentId))
+                // Step 2: Get match IDs from tournament (safe, in memory)
+                var matchIds = await _context.CustomMatches
+                    .Where(m => m.TournamentId == tournamentId)
+                    .Select(m => m.MatchId)
                     .ToListAsync();
 
-                if (userBets.Any())
+                var matchIdSet = matchIds.ToHashSet(); // More efficient lookup
+
+                // Step 3: Load user's bets and filter in memory
+                var userBets = await _context.Bets
+                    .Where(b => b.UserId == userId)
+                    .ToListAsync();
+
+                var betsToRemove = userBets
+                    .Where(b => matchIdSet.Contains(b.MatchId))
+                    .ToList();
+
+                // Step 4: Remove bets in batches
+                const int batchSize = 100;
+                for (int i = 0; i < betsToRemove.Count; i += batchSize)
                 {
-                    _context.Bets.RemoveRange(userBets);
-                    _logger.LogInformation($"Deleted {userBets.Count} bets for user {userId} in tournament ID {tournamentId}");
+                    var batch = betsToRemove.Skip(i).Take(batchSize).ToList();
+                    _context.Bets.RemoveRange(batch);
+                    await _context.SaveChangesAsync();
                 }
 
-                // Remove the user from tournament assignments
+                // Step 5: Remove assignment
                 _context.CustomTournamentUserAssignments.Remove(assignment);
-                _logger.LogInformation($"Removed user {userId} from tournament ID {tournamentId}");
-
                 await _context.SaveChangesAsync();
+
                 await transaction.CommitAsync();
+                _logger.LogInformation($"User {userId} has quit tournament ID {tournamentId} successfully");
 
                 return true;
             }
@@ -1510,11 +1528,29 @@ namespace Backend.Repository.Services
                 if (assignmentToRemove == null)
                     return ActionResultDto.ErrorResult("User is not a participant.");
 
+                // SAFELY collect match IDs from tournament (in memory)
+                var matchIdSet = tournament.Matches.Select(m => m.MatchId).ToHashSet();
+
+                // Query only this user's bets in the tournament (efficient)
                 var userBets = await _context.Bets
-                    .Where(b => b.UserId == userToExclude.Id && tournament.Matches.Select(m => m.MatchId).Contains(b.MatchId))
+                    .Where(b => b.UserId == userToExclude.Id)
                     .ToListAsync();
 
-                _context.Bets.RemoveRange(userBets);
+                // Filter in memory using the HashSet
+                var betsToRemove = userBets
+                    .Where(b => matchIdSet.Contains(b.MatchId))
+                    .ToList();
+
+                // Process deletions in batches if needed
+                const int batchSize = 100;
+                for (int i = 0; i < betsToRemove.Count; i += batchSize)
+                {
+                    var batch = betsToRemove.Skip(i).Take(batchSize).ToList();
+                    _context.Bets.RemoveRange(batch);
+                    await _context.SaveChangesAsync(); // Flush between batches (optional)
+                }
+
+                // Remove tournament assignment
                 _context.CustomTournamentUserAssignments.Remove(assignmentToRemove);
                 await _context.SaveChangesAsync();
 

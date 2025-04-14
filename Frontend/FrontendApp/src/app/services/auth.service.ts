@@ -23,13 +23,13 @@ export class AuthService {
   login(email: string, password: string): Observable<{ success: boolean; message: string }> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       map((response) => {
-        //console.log('Backend response:', response);
+        console.log('Backend response:', response);
         if (response.success && response.token) {
           localStorage.setItem(this.authTokenKey, response.token);
   
           try {
             const decodedToken: any = jwtDecode(response.token);
-            //console.log('language' + decodedToken['preferred_language']);
+            console.log('language' + decodedToken['preferred_language']);
             const language = decodedToken['preferred_language'] || 'en';
             localStorage.setItem('lang', language); // store for persistence
             this.languageService.useLanguage(language);

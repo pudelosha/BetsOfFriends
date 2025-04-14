@@ -40,41 +40,45 @@ public class BetUpdateHostedService : BackgroundService
         {
             _logger.LogInformation("Starting automatic update of bet statuses...");
 
-            // Step 1: Get all matches that are in the past AND are not Timed
-            //TODO review this logic !!!!!!!!!!
-            var finalisedMatchIds = await dbContext.CustomMatches
+            var now = DateTime.UtcNow;
+
+            // Step 1: Get all match IDs that are finished or in the past and not Timed
+            var finalisedMatches = await dbContext.CustomMatches
                 .Where(m => m.Status == CustomMatch.MatchStatus.Finished ||
-                            (m.MatchStart < DateTime.UtcNow && m.Status != CustomMatch.MatchStatus.Timed))
+                            (m.MatchStart < now && m.Status != CustomMatch.MatchStatus.Timed))
                 .Select(m => m.MatchId)
                 .ToListAsync(cancellationToken);
 
-            if (!finalisedMatchIds.Any())
+            if (!finalisedMatches.Any())
             {
-                _logger.LogInformation("No finalised matches found in the past. No bets updated.");
+                _logger.LogInformation("No finalised matches found. Skipping bet updates.");
                 return;
             }
 
-            // Step 2: Get all bets related to those matches that are NOT already Finalised
-            var betsToUpdate = await dbContext.Bets
-                .Where(b => finalisedMatchIds.Contains(b.MatchId) && b.Status != Bet.BetStatus.Closed)
-                .ToListAsync(cancellationToken);
+            int totalUpdated = 0;
 
-            if (!betsToUpdate.Any())
+            // Step 2: Process match-by-match (avoids .Contains() in SQL)
+            foreach (var matchId in finalisedMatches)
             {
-                _logger.LogInformation("No bets found that need status updates.");
-                return;
+                var bets = await dbContext.Bets
+                    .Where(b => b.MatchId == matchId && b.Status != Bet.BetStatus.Closed)
+                    .ToListAsync(cancellationToken);
+
+                if (!bets.Any())
+                    continue;
+
+                foreach (var bet in bets)
+                    bet.Status = Bet.BetStatus.Closed;
+
+                await dbContext.SaveChangesAsync(cancellationToken);
+                totalUpdated += bets.Count;
+
+                // Optional: clear change tracking to avoid memory bloat
+                foreach (var bet in bets)
+                    dbContext.Entry(bet).State = EntityState.Detached;
             }
 
-            // Step 3: Update the status of those bets to Finalised
-            foreach (var bet in betsToUpdate)
-            {
-                bet.Status = Bet.BetStatus.Closed;
-            }
-
-            // Step 4: Save changes
-            await dbContext.SaveChangesAsync(cancellationToken);
-
-            _logger.LogInformation($"Successfully updated {betsToUpdate.Count} bets to Finalised.");
+            _logger.LogInformation($"Successfully updated {totalUpdated} bets to Finalised.");
         }
         catch (Exception ex)
         {

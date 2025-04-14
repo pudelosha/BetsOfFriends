@@ -38,6 +38,8 @@ var app = builder.Build();
 // Apply migrations & seed SuperAdmin via extension method
 await app.ApplyMigrationsAndSeedSuperAdmin();
 
+app.UseHttpsRedirection();
+
 // Enable CORS
 app.UseCors("AllowFrontend");
 
@@ -51,7 +53,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 

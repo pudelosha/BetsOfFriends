@@ -58,33 +58,48 @@ export class LoginPage {
   }
 
   async login() {
+    console.log('login() called');
+    console.log('Form valid:', this.loginForm.valid);
+    console.log('Form value:', this.loginForm.value);
+  
     if (!this.loginForm.valid) return;
   
     const { email, password } = this.loginForm.value;
+    console.log('Email and password extracted:', email, password);
   
-    // Show loading spinner
     this.isLoading = true;
-    const loading = await this.loadingController.create({
-      message: 'Logging in...',
-      spinner: 'crescent',
-    });
-    await loading.present();
-  
     const startTime = Date.now();
+    let loading: HTMLIonLoadingElement | null = null;
   
+    try {
+      console.log('Creating loading spinner...');
+      loading = await this.loadingController.create({
+        message: 'Logging in...',
+        spinner: 'crescent',
+      });
+  
+      console.log('Presenting loading spinner...');
+      await loading.present();
+    } catch (err) {
+      console.error('Error creating/presenting loading spinner:', err);
+      this.isLoading = false;
+      this.showToast('Unexpected UI error. Try again.', 'danger');
+      return;
+    }
+  
+    console.log('Calling authService.login()...');
     this.authService.login(email, password).subscribe({
       next: async (response) => {
+        console.log('Login successful, response:', response);
         const elapsed = Date.now() - startTime;
         const delay = Math.max(0, 800 - elapsed);
   
         setTimeout(async () => {
-          await loading.dismiss();
+          if (loading) await loading.dismiss();
           this.isLoading = false;
   
-          //console.log('Login response:', response);
-  
           if (response.success) {
-            this.showToast(response.message, 'success');
+            await this.showToast(response.message, 'success');
             this.router.navigate(['/home']);
           } else {
             this.showToast(response.message || 'Login failed.', 'danger');
@@ -92,21 +107,21 @@ export class LoginPage {
         }, delay);
       },
       error: async (error) => {
+        console.error('Login error caught in component:', error);
         const elapsed = Date.now() - startTime;
         const delay = Math.max(0, 800 - elapsed);
   
         setTimeout(async () => {
-          await loading.dismiss();
+          if (loading) await loading.dismiss();
           this.isLoading = false;
   
-          console.error('Login error:', error);
           const errorMsg = error?.error?.message || 'An error occurred during login.';
           this.showToast(errorMsg, 'danger');
         }, delay);
       }
     });
   }
-  
+      
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
       message,
