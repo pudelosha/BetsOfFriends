@@ -2,3 +2,8 @@ node_modules/
 bin/
 obj/
 Backend/.vs/
+/Empty/myApp
+/Backend/wwwroot
+/Backend/wwwroot/chunk-CIXZIGX5.js
+/Backend/wwwroot/main-SHQCJGRU.js
+/Backend/wwwroot/styles-VI72KM3Y.css
