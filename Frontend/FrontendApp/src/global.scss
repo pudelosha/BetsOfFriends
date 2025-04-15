@@ -1,42 +1,194 @@
 /*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+ * Global Stylesheet for Ionic Angular App
+ * ---------------------------------------
+ * - Core & Utility Imports
+ * - Layout Fixes (header, footer, modals, menu)
+ * - Theming & Responsiveness
  */
 
-/* Core CSS required for Ionic components to work properly */
+/* -------------------------------------------------- */
+/*                IONIC DEFAULT IMPORTS              */
+/* -------------------------------------------------- */
+
+/* Core Ionic Styles */
 @import "@ionic/angular/css/core.css";
 
-/* Basic CSS for apps built with Ionic */
+/* Basic Styles */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
 
-/* Optional CSS utils that can be commented out */
+/* Optional Utilities */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+/* Dark Mode Preference (System-based) */
 @import '@ionic/angular/css/palettes/dark.system.css';
 
-/* Default Styles */
+
+/* -------------------------------------------------- */
+/*                   GLOBAL LAYOUT                   */
+/* -------------------------------------------------- */
+
+.page-with-header {
+  --padding-top: 56px;
+  --padding-bottom: 56px;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: calc(100vh - 112px); // 56px header + 56px footer
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  box-shadow: none;
+}
+
+.page-container > * {
+  max-width: inherit;
+  width: 100%;
+}
+
+
+/* -------------------------------------------------- */
+/*                FIX: MODAL CONTENT                 */
+/* -------------------------------------------------- */
+
+ion-modal ion-content {
+  --padding-top: 70px !important; /* header height */
+  padding-top: var(--padding-top) !important;
+  box-sizing: border-box;
+}
+
+/* -------------------------------------------------- */
+/*         FIX: STICKY HEADER + FOOTER STYLE         */
+/* -------------------------------------------------- */
+
+ion-header, ion-footer {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: white;
+}
+
+ion-header {
+  top: 0;
+  height: 56px;
+}
+
+ion-footer.custom-footer {
+  bottom: 0;
+  height: 56px;
+}
+
+
+/* -------------------------------------------------- */
+/*             FIX: SIDE MENU OVERLAP                */
+/* -------------------------------------------------- */
+
+/* If using ion-content inside ion-menu */
+ion-menu ion-content {
+  --padding-top: 56px;
+  --padding-bottom: 56px;
+}
+
+/* Or if not using ion-content inside menu */
+ion-menu::part(content) {
+  padding-top: 56px;
+  padding-bottom: 56px;
+  box-sizing: border-box;
+}
+
+
+/* -------------------------------------------------- */
+/*                   RESPONSIVENESS                  */
+/* -------------------------------------------------- */
+
+@media screen and (min-width: 768px) {
+  .page-container {
+    max-width: 600px;
+    padding: 0 15px;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .unauth-container {
+    max-width: 500px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  ion-modal ion-content {
+    --padding-start: 30px;
+    --padding-end: 30px;
+    --padding-top: 56px;
+  }
+
+  ion-toolbar {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  ion-modal ion-content {
+    --padding-start: 40px;
+    --padding-end: 40px;
+  }
+}
+
+
+/* -------------------------------------------------- */
+/*                    SPINNER STYLE                  */
+/* -------------------------------------------------- */
+
+.loading-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  color: #3880ff;
+}
+
+
+/* -------------------------------------------------- */
+/*            SCROLLBAR HIDING GLOBALLY              */
+/* -------------------------------------------------- */
+
+ion-content {
+  --overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+
+ion-content::-webkit-scrollbar {
+  display: none;
+}
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+ion-content::part(scroll)::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* -------------------------------------------------- */
+/*                SHARED UI COMPONENTS               */
+/* -------------------------------------------------- */
+
 .unauth-container {
   max-width: 100%;
   margin: 0 auto;
@@ -65,152 +217,3 @@
   font-size: 14px;
   margin-top: 3px;
 }
-
-.ion-page {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  width: 100%;
-  height: 100vh;
-}
-
-.page-with-header {
-  --padding-top: 56px;
-  --padding-bottom: 56px;
-}
-
-/* Page Container */
-.page-container {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  min-height: calc(100vh - 112px); /* Dynamic height based on header/footer */
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
-  box-shadow: none;
-}
-
-/* Ensure children (like .button-container) inherit the same width */
-.page-container > * {
-  max-width: inherit;
-  width: 100%;
-}
-
-/* Restore Padding for Modals */
-ion-modal ion-content {
-  --padding-start: 16px;
-  --padding-end: 16px;
-}
-
-ion-header {
-  background: white;
-}
-
-ion-footer{
-  background: white;
-}
-
-/* Increase Modal Padding on Larger Screens */
-@media screen and (min-width: 768px) {
-  .page-container {
-    max-width: 600px;
-    padding: 0px 15px;
-    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  .sticky-inner {
-    max-width: 600px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .unauth-container {
-    max-width: 500px;
-    padding: 15px;
-    text-align: center;
-    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  ion-modal ion-content {
-    --padding-start: 30px;
-    --padding-end: 30px;
-  }
-
-  ion-toolbar {
-    max-width: 600px;
-    margin: 0 auto; /* Center it */
-    width: 100%;
-  }
-}
-
-@media screen and (min-width: 1024px) {
-  .page-container {
-    max-width: 600px;
-    padding: 0px 15px;
-    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  .sticky-inner {
-    max-width: 600px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .unauth-container {
-    max-width: 500px;
-    padding: 15px;
-    text-align: center;
-    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  ion-modal ion-content {
-    --padding-start: 40px;
-    --padding-end: 40px;
-  }
-
-  ion-toolbar {
-    max-width: 600px;
-    margin: 0 auto; /* Center it */
-    width: 100%;
-  }
-}
-
-.loading-spinner {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-  color: #3880ff; /* Optional: Customize spinner color */
-}
-
-/* Hide Ionic scrollbars globally but preserve scrollability */
-ion-content {
-  --overflow: auto;                /* Ensure scroll works */
-  scrollbar-width: none;           /* Firefox */
-  -ms-overflow-style: none;        /* IE 10+ */
-  scroll-behavior: smooth;
-}
-
-ion-content::-webkit-scrollbar {
-  display: none;                   /* Chrome, Safari, Edge */
-}
-
-/* Hide scrollbars inside ion-content */
-ion-content::part(scroll) {
-  scrollbar-width: none;          /* Firefox */
-  -ms-overflow-style: none;       /* IE 10+ */
-}
-
-ion-content::part(scroll)::-webkit-scrollbar {
-  display: none;                  /* Chrome, Safari, Edge */
-}
-
-
-
-
-
-
-
-
