@@ -7,14 +7,14 @@ import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-ma
 import { buildMatchFormGroup } from '../../../shared/form-utils';
 import { Match, Team, Stage } from 'src/app/model/tournament-model';
 import { TranslateModule } from '@ngx-translate/core';
-import { IonList, IonItem, IonButton } from '@ionic/angular/standalone';
+import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-stage-matches-management',
   templateUrl: './stage-matches-management.page.html',
   styleUrls: ['./stage-matches-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
+  imports: [IonIcon, CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
 })
 export class StageMatchesManagementPage implements OnInit {
   @Input() matchesArray!: FormArray; // FormArray for matches

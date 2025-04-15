@@ -15,26 +15,6 @@
   margin-bottom: 55px;
 }
 
-.button-inner {
-  max-width: 600px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  padding: 0 0px; /* optional, match your page padding */
-}
-
-/* Ensure equal slots (3 fixed slots for buttons) */
-.button-slot {
-  flex: 1; /* Each slot takes equal space */
-  display: flex;
-  justify-content: center; /* Center the button inside */
-  align-items: center;
-  padding: 5px 10px;
-}
-
 /* Ensure buttons always fill their slot */
 .third-width {
   width: 100%; /* Full width within its slot */
@@ -50,6 +30,25 @@
   pointer-events: none; /* Prevents interaction */
 }
 
+.button-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 5px 10px; /* optional, match your page padding */
+}
+
+/* Ensure equal slots (3 fixed slots for buttons) */
+.button-slot {
+  flex: 1; /* Each slot takes equal space */
+  display: flex;
+  justify-content: center; /* Center the button inside */
+  align-items: center;
+  padding: 0px;
+}
 
 .loading-spinner {
   position: fixed;

@@ -23,9 +23,8 @@
   align-items: center;
   height: 100%;
   width: 100%;
-  padding: 0 0px; /* Optional: Match page padding */
+  padding: 5px 10px; /* optional, match your page padding */
 }
-
 
 /* Ensure equal slots (3 fixed slots for buttons) */
 .button-slot {
@@ -33,7 +32,7 @@
   display: flex;
   justify-content: center; /* Center the button inside */
   align-items: center;
-  padding: 5px 10px;
+  padding: 0px;
 }
 
 /* Ensure buttons always fill their slot */
