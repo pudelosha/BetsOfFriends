@@ -4,7 +4,7 @@
   </p>
 </div>
 
-<ion-list class="user-list nav-menu-space">
+<ion-list class="user-list nav-menu-space" [ngClass]="{ 'mobile-view': isMobile }">
   <!-- Show empty row when no users are added -->
   <ion-item *ngIf="usersArray.controls.length === 0" class="user-item empty-user">
     <div class="user-grid">
@@ -28,14 +28,20 @@
       <!-- Buttons: Edit and Delete/Undo -->
       <div class="user-button-container">
         <ion-button size="small" fill="outline" color="primary" class="user-button" (click)="editUser(i)">
-          {{ 'STAGE_USERS_MANAGEMENT.EDIT' | translate }}
+          <ng-container *ngIf="!isMobile">
+            {{ 'STAGE_USERS_MANAGEMENT.EDIT' | translate }}
+          </ng-container>
+          <ion-icon *ngIf="isMobile" name="create-outline" slot="icon-only"></ion-icon>
         </ion-button>
 
         <ion-button size="small" fill="outline"
                     [color]="getDeleteButtonColor(getUserControl(i).get('recordStatus')?.value)"
                     class="user-button fixed-button"
                     (click)="handleRemoveOrUndoUser(i)">
-          {{ getDeleteButtonText(getUserControl(i).get('recordStatus')?.value) }}
+          <ng-container *ngIf="!isMobile">
+            {{ getDeleteButtonText(getUserControl(i).get('recordStatus')?.value) }}
+          </ng-container>
+          <ion-icon *ngIf="isMobile" [name]="getDeleteIcon(getUserControl(i).get('recordStatus')?.value)" slot="icon-only"></ion-icon>
         </ion-button>
       </div>
     </div>

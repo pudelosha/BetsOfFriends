@@ -20,51 +20,40 @@
   --padding-end: 5px !important;
   --padding-start: 5px !important;
   --ion-item-background: transparent;
-  --border-width: 0px; /* Removes default border */
-  --inner-border-width: 0px; /* Ensures inner borders are also removed */
+  --border-width: 0px;
+  --inner-border-width: 0px;
   border-radius: 12px;
   margin: 6px 0;
   display: flex;
   align-items: center;
   transition: all 0.3s ease-in-out;
-  border: 2px solid transparent; /* Default border */
+  border: 2px solid transparent;
 }
-
-/* ======================== */
-/*  Status-Based Formatting (Matching Borders & Backgrounds) */
-/* ======================== */
 
 /* Ensures Delete & Undo Buttons Have Consistent Width */
 .fixed-button {
-  width: 80px; /* Fixed width for "Delete" and "Undo" buttons */
+  width: 80px;
 }
 
-/* ======================== */
-/*  Status-Based Formatting (Background + Border Colors) */
-/* ======================== */
-
-/* New (Pale Green) */
+/* Status-Based Formatting */
 .team-status-new {
   background-color: #e6f9e6;
   border-color: #e6f9e6;
   color: #004d00;
 }
 
-/* Uploaded (Pale Gray) */
 .team-status-uploaded {
   background-color: #f5f5f5;
   border-color: #f5f5f5;
   color: #666;
 }
 
-/* Updated (Blue-Gray) */
 .team-status-updated {
   background-color: #e0ecf8;
   border-color: #e0ecf8;
   color: #004080;
 }
 
-/* Delete (Pale Red) */
 .team-status-delete {
   background-color: #fce6e6;
   border-color: #fce6e6;
@@ -82,7 +71,6 @@
   gap: 10px;
 }
 
-/*  Team Details */
 .team-details {
   flex: 3;
   display: flex;
@@ -90,10 +78,12 @@
   text-align: left;
 }
 
-/*  Team Name */
 .team-details .team-name {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ======================== */
@@ -107,7 +97,6 @@
   gap: 5px;
 }
 
-/*  Team Button Styling */
 .team-button {
   font-size: 12px;
   height: 32px;
@@ -121,9 +110,7 @@
   border-radius: 8px;
 }
 
-/* ======================== */
-/*  Add Team Button */
-/* ======================== */
+/* Add Team Button */
 .add-team-container {
   margin-top: 1.5rem;
   text-align: center;
@@ -132,4 +119,32 @@
 /* Ensure bottom space for navigation */
 .nav-menu-space {
   margin-bottom: 80px;
+}
+
+/* ======================== */
+/* Mobile-specific tweaks */
+/* ======================== */
+@media (max-width: 600px) {
+  .team-list.mobile-view .team-grid {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .team-list.mobile-view .team-details {
+    flex: 4;
+  }
+
+  .team-list.mobile-view .team-button-container {
+    flex: 1.5;
+    gap: 4px;
+  }
+
+  .team-list.mobile-view .team-button {
+    min-width: 40px;
+    height: 32px;
+  }
+
+  .team-list.mobile-view .fixed-button {
+    width: 40px;
+  }
 }

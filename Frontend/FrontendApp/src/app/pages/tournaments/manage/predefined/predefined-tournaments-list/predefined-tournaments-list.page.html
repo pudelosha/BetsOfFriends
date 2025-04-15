@@ -10,7 +10,7 @@
           <ion-row class="tournament-row">
 
             <!-- Tournament Info -->
-            <ion-col size="7" class="tournament-info">
+            <ion-col size="6" class="tournament-info">
               <span class="tournament-title">{{ tournament.tournamentName }}</span>
               <span class="tournament-meta">
                 {{ 'PREDEFINED_TOURNAMENTS.CREATED' | translate }}: {{ tournament.createdAt | date:'yyyy.MM.dd' }}
@@ -21,7 +21,7 @@
             </ion-col>
   
             <!-- Action Buttons -->
-            <ion-col size="5" class="button-col">
+            <ion-col size="6" class="button-col">
               <ion-button fill="outline" color="primary" (click)="editTournament(tournament)" [title]="'PREDEFINED_TOURNAMENTS.EDIT_TOURNAMENT' | translate">
                 <ion-icon name="create-outline"></ion-icon>
               </ion-button>

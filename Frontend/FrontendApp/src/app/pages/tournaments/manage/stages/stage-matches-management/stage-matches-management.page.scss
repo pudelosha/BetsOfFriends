@@ -145,3 +145,37 @@
 .nav-menu-space {
   margin-bottom: 80px;
 }
+
+/* ======================== */
+/* Mobile-specific tweaks for Match List */
+/* ======================== */
+@media (max-width: 600px) {
+  .match-list.mobile-view .match-grid {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .match-list.mobile-view .match-details {
+    flex: 4;
+  }
+
+  .match-list.mobile-view .match-date {
+    flex: 2;
+    font-size: 11px;
+  }
+
+  .match-list.mobile-view .match-button-container {
+    flex: 1.5;
+    gap: 4px;
+  }
+
+  .match-list.mobile-view .match-button {
+    min-width: 40px;
+    height: 32px;
+  }
+
+  .match-list.mobile-view .fixed-button {
+    width: 40px;
+  }
+}
+

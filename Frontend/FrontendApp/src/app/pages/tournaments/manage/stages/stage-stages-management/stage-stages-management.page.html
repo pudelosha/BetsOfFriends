@@ -4,7 +4,7 @@
   </p>
 </div>
 
-<ion-list class="stage-list nav-menu-space">
+<ion-list class="stage-list nav-menu-space" [ngClass]="{ 'mobile-view': isMobile }">
   <ion-item *ngFor="let stage of stagesArray.controls; let i = index"
             class="stage-item"
             [formGroup]="getStageControl(i)"
@@ -17,17 +17,28 @@
 
       <!-- Buttons: Edit and Delete/Undo -->
       <div class="stage-button-container">
-        <ion-button size="small" fill="outline" color="primary" class="stage-button"
-                    (click)="editStage(i)">
-          {{ 'STAGE_STAGES_MANAGEMENT.EDIT' | translate }}
+
+        <!-- Edit Button -->
+        <ion-button size="small" fill="outline" color="primary" class="stage-button" (click)="editStage(i)">
+          <ng-container *ngIf="!isMobile">
+            {{ 'STAGE_STAGES_MANAGEMENT.EDIT' | translate }}
+          </ng-container>
+          <ion-icon *ngIf="isMobile" name="create-outline" slot="icon-only"></ion-icon>
         </ion-button>
 
-        <ion-button size="small" fill="outline"
-                    [color]="getDeleteButtonColor(getStageControl(i).get('recordStatus')?.value)"
-                    class="stage-button fixed-button"
-                    (click)="handleRemoveOrUndoStage(i)">
-          {{ getDeleteButtonText(getStageControl(i).get('recordStatus')?.value) }}
+        <!-- Delete/Undo Button -->
+        <ion-button
+          size="small"
+          fill="outline"
+          [color]="getDeleteButtonColor(getStageControl(i).get('recordStatus')?.value)"
+          class="stage-button fixed-button"
+          (click)="handleRemoveOrUndoStage(i)">
+          <ng-container *ngIf="!isMobile">
+            {{ getDeleteButtonText(getStageControl(i).get('recordStatus')?.value) }}
+          </ng-container>
+          <ion-icon *ngIf="isMobile" [name]="getDeleteIcon(getStageControl(i).get('recordStatus')?.value)" slot="icon-only"></ion-icon>
         </ion-button>
+
       </div>
     </div>
   </ion-item>

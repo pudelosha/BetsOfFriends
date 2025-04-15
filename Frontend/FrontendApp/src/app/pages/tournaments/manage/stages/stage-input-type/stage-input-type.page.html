@@ -10,6 +10,93 @@
     </p>
   </div>
 
+    <!-- Import Data -->
+    <div class="grid-frame">
+      <ion-grid class="settings-grid">
+        <ion-row class="align-center">
+          <ion-col size="10" class="left-align">
+            <ion-label class="section-header">{{ 'STAGE_INPUT_TYPE.IMPORT_DATA' | translate }}</ion-label>
+          </ion-col>
+          <ion-col size="2" class="right-align">
+            <ion-button fill="clear" size="small" id="importInfo">
+              <ion-icon name="information-circle-outline"></ion-icon>
+            </ion-button>
+            <ion-popover [keepContentsMounted]="true" trigger="importInfo">
+              <ng-template>
+                <ion-content class="ion-padding">
+                  <p>{{ 'STAGE_INPUT_TYPE.IMPORT_DESC' | translate }}</p>
+                  <ul>
+                    <li>{{ 'STAGE_INPUT_TYPE.IMPORT_EXCEL' | translate }}</li>
+                    <li>{{ 'STAGE_INPUT_TYPE.IMPORT_TEMPLATE' | translate }}</li>
+                    <li>{{ 'STAGE_INPUT_TYPE.CLEAR_FORM' | translate }}</li>
+                  </ul>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+  
+  <!-- Import from file -->
+  <ion-button
+    *ngIf="isCreatePredefined || isEditPredefined || isCustomTournamentCreateMode"
+    expand="full"
+    color="medium"
+    (click)="triggerFileInput()">
+    {{ 'STAGE_INPUT_TYPE.IMPORT_FROM_FILE' | translate }}
+  </ion-button>
+  <input
+    #fileInput
+    type="file"
+    class="hidden-file-input"
+    (change)="handleFileInput($event)">
+  
+  <!-- Import from API -->
+  <ion-button
+    *ngIf="isCreatePredefined"
+    expand="full"
+    color="medium"
+    (click)="openAPISelection()">
+    {{ 'STAGE_INPUT_TYPE.IMPORT_FROM_API' | translate }}
+  </ion-button>
+  
+  <!-- Update from API -->
+  <ion-button
+    *ngIf="isEditPredefined"
+    expand="full"
+    color="medium"
+    (click)="triggerAPIUpdate()">
+    {{ 'STAGE_INPUT_TYPE.UPDATE_FROM_API' | translate }}
+  </ion-button>
+  
+  <!-- Import tournament -->
+  <ion-button
+    *ngIf="isCustomTournamentCreateMode"
+    expand="full"
+    color="medium"
+    (click)="openTournamentSelection()">
+    {{ 'STAGE_INPUT_TYPE.IMPORT_TOURNAMENT' | translate }}
+  </ion-button>
+  
+  <!-- Update tournament -->
+  <ion-button
+    *ngIf="isCustomTournamentEditMode"
+    expand="full"
+    color="medium"
+    (click)="triggerTournamentUpdate()">
+    {{ 'STAGE_INPUT_TYPE.UPDATE_TOURNAMENT' | translate }}
+  </ion-button>
+  
+  <!-- Erase form (always visible) -->
+  <ion-button
+    color="danger"
+    expand="full"
+    (click)="confirmEraseForm()">
+    {{ 'STAGE_INPUT_TYPE.ERASE_FORM' | translate }}
+  </ion-button>
+  
+  </div>
+
   <!-- Tournament Visibility & Name -->
   <div class="grid-frame">
     <ion-grid class="settings-grid" *ngIf="!isPredefinedTournament">
@@ -141,93 +228,6 @@
       <ion-segment-button value="Semi"><ion-label>{{ 'STAGE_INPUT_TYPE.SEMI' | translate }}</ion-label></ion-segment-button>
       <ion-segment-button value="Auto"><ion-label>{{ 'STAGE_INPUT_TYPE.AUTO' | translate }}</ion-label></ion-segment-button>
     </ion-segment>
-  </div>
-
-  <!-- Import Data -->
-  <div class="grid-frame">
-    <ion-grid class="settings-grid">
-      <ion-row class="align-center">
-        <ion-col size="10" class="left-align">
-          <ion-label class="section-header">{{ 'STAGE_INPUT_TYPE.IMPORT_DATA' | translate }}</ion-label>
-        </ion-col>
-        <ion-col size="2" class="right-align">
-          <ion-button fill="clear" size="small" id="importInfo">
-            <ion-icon name="information-circle-outline"></ion-icon>
-          </ion-button>
-          <ion-popover [keepContentsMounted]="true" trigger="importInfo">
-            <ng-template>
-              <ion-content class="ion-padding">
-                <p>{{ 'STAGE_INPUT_TYPE.IMPORT_DESC' | translate }}</p>
-                <ul>
-                  <li>{{ 'STAGE_INPUT_TYPE.IMPORT_EXCEL' | translate }}</li>
-                  <li>{{ 'STAGE_INPUT_TYPE.IMPORT_TEMPLATE' | translate }}</li>
-                  <li>{{ 'STAGE_INPUT_TYPE.CLEAR_FORM' | translate }}</li>
-                </ul>
-              </ion-content>
-            </ng-template>
-          </ion-popover>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-
-<!-- Import from file -->
-<ion-button
-  *ngIf="isCreatePredefined || isEditPredefined || isCustomTournamentCreateMode"
-  expand="full"
-  color="medium"
-  (click)="triggerFileInput()">
-  {{ 'STAGE_INPUT_TYPE.IMPORT_FROM_FILE' | translate }}
-</ion-button>
-<input
-  #fileInput
-  type="file"
-  class="hidden-file-input"
-  (change)="handleFileInput($event)">
-
-<!-- Import from API -->
-<ion-button
-  *ngIf="isCreatePredefined"
-  expand="full"
-  color="medium"
-  (click)="openAPISelection()">
-  {{ 'STAGE_INPUT_TYPE.IMPORT_FROM_API' | translate }}
-</ion-button>
-
-<!-- Update from API -->
-<ion-button
-  *ngIf="isEditPredefined"
-  expand="full"
-  color="medium"
-  (click)="triggerAPIUpdate()">
-  {{ 'STAGE_INPUT_TYPE.UPDATE_FROM_API' | translate }}
-</ion-button>
-
-<!-- Import tournament -->
-<ion-button
-  *ngIf="isCustomTournamentCreateMode"
-  expand="full"
-  color="medium"
-  (click)="openTournamentSelection()">
-  {{ 'STAGE_INPUT_TYPE.IMPORT_TOURNAMENT' | translate }}
-</ion-button>
-
-<!-- Update tournament -->
-<ion-button
-  *ngIf="isCustomTournamentEditMode"
-  expand="full"
-  color="medium"
-  (click)="triggerTournamentUpdate()">
-  {{ 'STAGE_INPUT_TYPE.UPDATE_TOURNAMENT' | translate }}
-</ion-button>
-
-<!-- Erase form (always visible) -->
-<ion-button
-  color="danger"
-  expand="full"
-  (click)="confirmEraseForm()">
-  {{ 'STAGE_INPUT_TYPE.ERASE_FORM' | translate }}
-</ion-button>
-
   </div>
 
 </form>

@@ -13,21 +13,20 @@
   padding: 0;
 }
 
-/*  Stage Item Formatting */
 .stage-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
   --padding-end: 5px !important;
   --padding-start: 5px !important;
   --ion-item-background: transparent;
-  --border-width: 0px; /* Removes default border */
-  --inner-border-width: 0px; /* Ensures inner borders are also removed */
+  --border-width: 0px;
+  --inner-border-width: 0px;
   border-radius: 12px;
   margin: 6px 0;
   display: flex;
   align-items: center;
   transition: all 0.3s ease-in-out;
-  border: 2px solid transparent; /* Default border */
+  border: 2px solid transparent;
 }
 
 /* Ensures Delete & Undo Buttons Have Consistent Width */
@@ -35,32 +34,25 @@
   width: 80px;
 }
 
-/* ======================== */
-/*  Status-Based Formatting (Background + Border Colors) */
-/* ======================== */
-
-/* New (Pale Green) */
+/* Status-Based Formatting */
 .stage-status-new {
   background-color: #e6f9e6;
   border-color: #e6f9e6;
   color: #004d00;
 }
 
-/* Uploaded (Pale Gray) */
 .stage-status-uploaded {
   background-color: #f5f5f5;
   border-color: #f5f5f5;
   color: #666;
 }
 
-/* Updated (Blue-Gray) */
 .stage-status-updated {
   background-color: #e0ecf8;
   border-color: #e0ecf8;
   color: #004080;
 }
 
-/* Delete (Pale Red) */
 .stage-status-delete {
   background-color: #fce6e6;
   border-color: #fce6e6;
@@ -78,7 +70,6 @@
   gap: 10px;
 }
 
-/*  Stage Details */
 .stage-details {
   flex: 3;
   display: flex;
@@ -86,10 +77,12 @@
   text-align: left;
 }
 
-/*  Stage Name */
 .stage-details .stage-name {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ======================== */
@@ -103,7 +96,6 @@
   gap: 5px;
 }
 
-/*  Stage Button Styling */
 .stage-button {
   font-size: 12px;
   height: 32px;
@@ -125,7 +117,37 @@
   text-align: center;
 }
 
+/* ======================== */
 /* Ensure bottom space for navigation */
+/* ======================== */
 .nav-menu-space {
   margin-bottom: 80px;
+}
+
+/* ======================== */
+/* Mobile-specific tweaks */
+/* ======================== */
+@media (max-width: 600px) {
+  .stage-list.mobile-view .stage-grid {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .stage-list.mobile-view .stage-details {
+    flex: 4;
+  }
+
+  .stage-list.mobile-view .stage-button-container {
+    flex: 1.5;
+    gap: 4px;
+  }
+
+  .stage-list.mobile-view .stage-button {
+    min-width: 40px;
+    height: 32px;
+  }
+
+  .stage-list.mobile-view .fixed-button {
+    width: 40px;
+  }
 }

@@ -4,7 +4,7 @@
   </p>
 </div>
 
-<ion-list class="match-list nav-menu-space">
+<ion-list class="match-list nav-menu-space" [ngClass]="{ 'mobile-view': isMobile }">
   <ion-item *ngFor="let match of matchesArray.controls; let i = index"
             class="match-item"
             [formGroup]="getMatchControl(i)"
@@ -24,14 +24,21 @@
 
       <!-- Buttons: Edit and Delete/Undo -->
       <div class="match-button-container">
-        <ion-button size="small" fill="outline" color="primary" class="match-button"
-                    (click)="openEditModal(i)">{{ 'STAGE_MATCHES_MANAGEMENT.EDIT' | translate }}</ion-button>
+        <ion-button size="small" fill="outline" color="primary" class="match-button" (click)="openEditModal(i)">
+          <ng-container *ngIf="!isMobile">
+            {{ 'STAGE_MATCHES_MANAGEMENT.EDIT' | translate }}
+          </ng-container>
+          <ion-icon *ngIf="isMobile" name="create-outline" slot="icon-only"></ion-icon>
+        </ion-button>
 
         <ion-button size="small" fill="outline"
                     [color]="getDeleteButtonColor(getMatchControl(i).get('recordStatus')?.value)"
                     class="match-button fixed-button"
                     (click)="handleRemoveOrUndoMatch(i)">
-          {{ getDeleteButtonText(getMatchControl(i).get('recordStatus')?.value) }}
+          <ng-container *ngIf="!isMobile">
+            {{ getDeleteButtonText(getMatchControl(i).get('recordStatus')?.value) }}
+          </ng-container>
+          <ion-icon *ngIf="isMobile" [name]="getDeleteIcon(getMatchControl(i).get('recordStatus')?.value)" slot="icon-only"></ion-icon>
         </ion-button>
       </div>
     </div>

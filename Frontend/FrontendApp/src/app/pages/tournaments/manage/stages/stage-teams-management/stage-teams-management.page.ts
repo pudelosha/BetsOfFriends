@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -7,18 +7,20 @@ import { EditTeamModalComponent } from 'src/app/modals/edit-team-modal/edit-team
 import { AlertController } from '@ionic/angular';
 import { Team } from 'src/app/model/tournament-model';
 import { TranslateModule } from '@ngx-translate/core';
-import { IonList, IonItem, IonButton } from '@ionic/angular/standalone';
+import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-stage-teams-management',
   templateUrl: './stage-teams-management.page.html',
   styleUrls: ['./stage-teams-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
+  imports: [IonIcon, CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
 })
-export class StageTeamsManagementPage {
+export class StageTeamsManagementPage implements OnInit {
   @Input() teamsArray!: FormArray; // Input from parent for teams FormArray
   @Output() teamsUpdated = new EventEmitter<{ previousTeams: Team[]; updatedTeams: Team[] }>(); // Emits old and updated teams to parent
+
+  isMobile = false;
 
   constructor(
     private toastController: ToastController,
@@ -27,6 +29,26 @@ export class StageTeamsManagementPage {
     private fb: FormBuilder
   ) {}
 
+  ngOnInit(): void {
+    this.checkScreenSize();
+    window.addEventListener('resize', this.checkScreenSize.bind(this));
+  }
+
+  checkScreenSize(): void {
+    this.isMobile = window.innerWidth < 600; // you can tweak the threshold
+  }
+
+  getDeleteIcon(status: string): string {
+    switch (status) {
+      case 'Delete': return 'arrow-undo-outline';
+      case 'Uploaded':
+      case 'Update':
+      case 'New':
+      default:
+        return 'trash-outline';
+    }
+  }
+  
   // Get control for a specific team
   getTeamControl(index: number): FormGroup {
     return this.teamsArray.at(index) as FormGroup;

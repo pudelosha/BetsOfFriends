@@ -4,7 +4,7 @@
   </p>
 </div>
 
-<ion-list class="team-list nav-menu-space">
+<ion-list class="team-list nav-menu-space" [ngClass]="{ 'mobile-view': isMobile }">
   <ion-item *ngFor="let team of teamsArray.controls; let i = index"
             class="team-item"
             [formGroup]="getTeamControl(i)"
@@ -17,17 +17,33 @@
 
       <!-- Buttons: Edit and Delete/Undo -->
       <div class="team-button-container">
-        <ion-button size="small" fill="outline" color="primary" class="team-button"
-                    (click)="editTeam(i)">
-          {{ 'STAGE_TEAMS_MANAGEMENT.EDIT' | translate }}
+
+        <!-- Edit Button -->
+        <ion-button
+          size="small"
+          fill="outline"
+          color="primary"
+          class="team-button"
+          (click)="editTeam(i)">
+          <ng-container *ngIf="!isMobile">
+            {{ 'STAGE_TEAMS_MANAGEMENT.EDIT' | translate }}
+          </ng-container>
+          <ion-icon *ngIf="isMobile" name="create-outline" slot="icon-only"></ion-icon>
         </ion-button>
 
-        <ion-button size="small" fill="outline"
-                    [color]="getDeleteButtonColor(getTeamControl(i).get('recordStatus')?.value)"
-                    class="team-button fixed-button"
-                    (click)="handleRemoveOrUndoTeam(i)">
-          {{ getDeleteButtonText(getTeamControl(i).get('recordStatus')?.value) }}
+        <!-- Delete/Undo Button -->
+        <ion-button
+          size="small"
+          fill="outline"
+          [color]="getDeleteButtonColor(getTeamControl(i).get('recordStatus')?.value)"
+          class="team-button fixed-button"
+          (click)="handleRemoveOrUndoTeam(i)">
+          <ng-container *ngIf="!isMobile">
+            {{ getDeleteButtonText(getTeamControl(i).get('recordStatus')?.value) }}
+          </ng-container>
+          <ion-icon *ngIf="isMobile" [name]="getDeleteIcon(getTeamControl(i).get('recordStatus')?.value)" slot="icon-only"></ion-icon>
         </ion-button>
+
       </div>
     </div>
   </ion-item>

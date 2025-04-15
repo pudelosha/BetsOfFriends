@@ -58,29 +58,6 @@
             <ion-label>{{ 'APP.MY_BETS' | translate }}</ion-label>
           </ion-item>
 
-          <!-- Settings -->
-          <ion-item-divider>
-            <ion-label>
-              <ion-icon name="settings-outline" slot="start"></ion-icon>
-              {{ 'APP.SETTINGS' | translate }}
-            </ion-label>
-          </ion-item-divider>
-
-          <ion-item (click)="navigateToProfile()">
-            <ion-icon name="person-outline" slot="start"></ion-icon>
-            <ion-label>{{ 'APP.PROFILE' | translate }}</ion-label>
-          </ion-item>
-
-          <ion-item (click)="navigateToNotificationSettings()">
-            <ion-icon name="notifications-outline" slot="start"></ion-icon>
-            <ion-label>{{ 'APP.NOTIFICATIONS' | translate }}</ion-label>
-          </ion-item>
-
-          <ion-item (click)="navigateToInfoAndSupport()">
-            <ion-icon name="information-circle-outline" slot="start"></ion-icon>
-            <ion-label>{{ 'APP.INFOANDSUPPORT' | translate }}</ion-label>
-          </ion-item>
-
           <!-- Admin -->
           <ng-container>
             <ion-item-divider>
@@ -136,7 +113,29 @@
             </ion-item>
           </ng-container>
 
-          <!-- Logout -->
+          <!-- Settings -->
+          <ion-item-divider>
+            <ion-label>
+              <ion-icon name="settings-outline" slot="start"></ion-icon>
+              {{ 'APP.SETTINGS' | translate }}
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-item (click)="navigateToProfile()">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-label>{{ 'APP.PROFILE' | translate }}</ion-label>
+          </ion-item>
+
+          <ion-item (click)="navigateToNotificationSettings()">
+            <ion-icon name="notifications-outline" slot="start"></ion-icon>
+            <ion-label>{{ 'APP.NOTIFICATIONS' | translate }}</ion-label>
+          </ion-item>
+
+          <ion-item (click)="navigateToInfoAndSupport()">
+            <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+            <ion-label>{{ 'APP.INFOANDSUPPORT' | translate }}</ion-label>
+          </ion-item>
+
           <ion-item (click)="logout()">
             <ion-icon name="log-out-outline" slot="start"></ion-icon>
             <ion-label>{{ 'APP.LOGOUT' | translate }}</ion-label>

@@ -137,3 +137,32 @@
 .nav-menu-space {
   margin-bottom: 80px;
 }
+
+/* ======================== */
+/* Mobile-specific tweaks for User List */
+/* ======================== */
+@media (max-width: 600px) {
+  .user-list.mobile-view .user-grid {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .user-list.mobile-view .user-details {
+    flex: 4;
+  }
+
+  .user-list.mobile-view .user-button-container {
+    flex: 1.5;
+    gap: 4px;
+  }
+
+  .user-list.mobile-view .user-button {
+    min-width: 40px;
+    height: 32px;
+  }
+
+  .user-list.mobile-view .fixed-button {
+    width: 40px;
+  }
+}
+

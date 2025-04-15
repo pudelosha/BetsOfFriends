@@ -22,6 +22,8 @@ export class StageMatchesManagementPage implements OnInit {
   @Input() stagesArray!: Stage[]; // List of structured stages
   @Output() matchesUpdated = new EventEmitter<Match[]>(); // Emits updated matches to parent
 
+  isMobile = false;
+
   constructor(
     private fb: FormBuilder,
     private modalController: ModalController,
@@ -29,7 +31,25 @@ export class StageMatchesManagementPage implements OnInit {
     private toastController: ToastController
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.checkScreenSize();
+    window.addEventListener('resize', this.checkScreenSize.bind(this));
+  }
+
+  checkScreenSize(): void {
+    this.isMobile = window.innerWidth < 600; // you can tweak the threshold
+  }
+
+  getDeleteIcon(status: string): string {
+    switch (status) {
+      case 'Delete': return 'arrow-undo-outline';
+      case 'Uploaded':
+      case 'Update':
+      case 'New':
+      default:
+        return 'trash-outline';
+    }
+  }
 
   // Get a specific match control by index
   getMatchControl(index: number): FormGroup {

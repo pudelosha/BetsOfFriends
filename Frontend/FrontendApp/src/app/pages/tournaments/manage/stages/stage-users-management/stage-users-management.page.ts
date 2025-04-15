@@ -1,22 +1,24 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ModalController, AlertController } from '@ionic/angular';
 import { EditUserModalComponent } from 'src/app/modals/edit-user-modal/edit-user-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
-import { IonList, IonItem, IonButton } from '@ionic/angular/standalone';
+import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-stage-users-management',
   templateUrl: './stage-users-management.page.html',
   styleUrls: ['./stage-users-management.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
+  imports: [IonIcon, CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
 })
-export class StageUsersManagementPage {
+export class StageUsersManagementPage implements OnInit {
   @Input() usersArray!: FormArray; // Input from parent for users FormArray
   @Output() usersUpdated = new EventEmitter<any[]>(); // Emit current list of users
+
+  isMobile = false;
 
   constructor(
     private fb: FormBuilder, // Inject FormBuilder
@@ -24,6 +26,26 @@ export class StageUsersManagementPage {
     private modalController: ModalController,
     private alertController: AlertController
   ) {}
+
+  ngOnInit(): void {
+    this.checkScreenSize();
+    window.addEventListener('resize', this.checkScreenSize.bind(this));
+  }
+
+  checkScreenSize(): void {
+    this.isMobile = window.innerWidth < 600; // you can tweak the threshold
+  }
+
+  getDeleteIcon(status: string): string {
+    switch (status) {
+      case 'Delete': return 'arrow-undo-outline';
+      case 'Uploaded':
+      case 'Update':
+      case 'New':
+      default:
+        return 'trash-outline';
+    }
+  }
 
   // Get control for a specific user
   getUserControl(index: number): FormGroup {
