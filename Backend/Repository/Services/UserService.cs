@@ -120,42 +120,13 @@ namespace Backend.Repository.Services
             _logger.LogInformation($"User profile updated successfully for UserId: {userId}");
             return true;
         }
-
-
         public async Task<bool> SendPasswordResetEmailAsync(string email)
         {
-            _logger.LogInformation($"Generating password reset token for email: {email}");
-
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
                 return false;
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            // Encode the token safely in Base64 (avoids double encoding issues)
-            var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
-
-            var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
-            var frontendBaseUrl = environment == "Development"
-                ? _configuration["App:ClientBaseUrlDev"]
-                : _configuration["App:ClientBaseUrlProd"];
-
-            var resetLink = $"{frontendBaseUrl}/reset-password?userId={user.Id}&token={encodedToken}";
-
-            // Step 1: Prepare placeholders for the email template
-            var placeholders = new Dictionary<string, string>
-            {
-                { "RESET_LINK", resetLink }
-            };
-
-            // Step 2: Retrieve the email template
-            string emailBody = await _emailTemplateService.GetEmailTemplateAsync("PasswordReset", placeholders);
-
-            // Step 3: Send the email
-            await _emailService.SendEmailAsync(user.Email, "Reset Your Password", emailBody);
-
-            _logger.LogInformation($"Generated password reset email for user {user.Email}");
-
+            await _emailService.SendPasswordResetEmailAsync(user);
             return true;
         }
 
@@ -325,11 +296,51 @@ namespace Backend.Repository.Services
             if (roles.Contains("SuperAdmin"))
                 return ActionResultDto.ErrorResult("You cannot delete a Super Admin.");
 
-            var result = await _userManager.DeleteAsync(user);
-            return result.Succeeded
-                ? ActionResultDto.SuccessResult("User deleted successfully.")
-                : ActionResultDto.ErrorResult("Failed to delete user.");
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                // Remove user's bets
+                var userBets = await _dbContext.Bets
+                    .Where(b => b.UserId == targetUserId)
+                    .ToListAsync();
+                if (userBets.Any())
+                    _dbContext.Bets.RemoveRange(userBets);
+
+                // Remove tournament assignments
+                var assignments = await _dbContext.CustomTournamentUserAssignments
+                    .Where(a => a.UserId == targetUserId)
+                    .ToListAsync();
+                if (assignments.Any())
+                    _dbContext.CustomTournamentUserAssignments.RemoveRange(assignments);
+
+                // Remove notification recipients
+                var notifications = await _dbContext.NotificationRecipients
+                    .Where(nr => nr.UserId == targetUserId)
+                    .ToListAsync();
+                if (notifications.Any())
+                    _dbContext.NotificationRecipients.RemoveRange(notifications);
+
+                await _dbContext.SaveChangesAsync();
+
+                // Delete the user
+                var result = await _userManager.DeleteAsync(user);
+                if (!result.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+                    return ActionResultDto.ErrorResult("Failed to delete user.");
+                }
+
+                await transaction.CommitAsync();
+                return ActionResultDto.SuccessResult("User deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, $"Error deleting user {targetUserId}");
+                return ActionResultDto.ErrorResult("An error occurred while deleting the user.");
+            }
         }
+
         private string GetUserStatus(ApplicationUser user)
         {
             if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)

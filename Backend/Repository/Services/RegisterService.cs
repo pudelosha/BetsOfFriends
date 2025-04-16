@@ -103,28 +103,14 @@ namespace Backend.Repository.Services
                 _logger.LogInformation($"Assigned 'User' role to {email}.");
             }
 
-            // Send confirmation email
-            var confirmationUrl = await GenerateEmailConfirmationLinkAsync(user);
             _logger.LogInformation($"Sending confirmation email to {email}");
-            await SendConfirmationEmailAsync(user.Email, confirmationUrl);
+            await _emailService.SendConfirmationEmailAsync(user);
 
             return new RegisterResultDto
             {
                 Success = true,
                 Message = "Registration successful. Please check your email to confirm your account."
             };
-        }
-
-        private async Task SendConfirmationEmailAsync(string email, string confirmationUrl)
-        {
-            var placeholders = new Dictionary<string, string>
-        {
-            { "CONFIRMATION_LINK", confirmationUrl }
-        };
-
-            string emailBody = await _emailTemplateService.GetEmailTemplateAsync("ConfirmEmail", placeholders);
-
-            await _emailService.SendEmailAsync(email, "Confirm Your Account", emailBody);
         }
 
         public async Task<ApplicationUser?> RegisterInvitedUserAsync(string email)
@@ -218,35 +204,11 @@ namespace Backend.Repository.Services
                 return new RegisterResultDto { Success = false, Message = "Email already confirmed." };
             }
 
-            var confirmationUrl = await GenerateEmailConfirmationLinkAsync(user);
-
             _logger.LogInformation($"Sending new confirmation email to {email}");
 
-            await SendConfirmationEmailAsync(user.Email, confirmationUrl);
+            await _emailService.SendConfirmationEmailAsync(user);
 
             return new RegisterResultDto { Success = true, Message = "Confirmation email sent successfully." };
-        }
-
-        private async Task<string> GenerateEmailConfirmationLinkAsync(ApplicationUser user)
-        {
-            _logger.LogInformation($"Generating email confirmation token for user: {user.Email}");
-
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-            // Encode the token safely in Base64 (avoids double encoding issues)
-            var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
-
-            // Determine the correct backend URL based on environment
-            var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
-            var frontendBaseUrl = environment == "Development"
-                ? _configuration["App:ClientBaseUrlDev"]
-                : _configuration["App:ClientBaseUrlProd"];
-
-            var confirmationLink = $"{frontendBaseUrl}/confirm-email?userId={user.Id}&token={encodedToken}";
-
-            _logger.LogInformation($"Generated confirmation link for user {user.Email}: {confirmationLink}");
-
-            return confirmationLink;
         }
 
         public async Task<RegisterResultDto> SetupAccountAsync(string userId, string token, string password, string language)

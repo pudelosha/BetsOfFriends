@@ -1,7 +1,12 @@
-﻿namespace Backend.Repository.Interfaces
+﻿using Backend.Model.Entities;
+
+namespace Backend.Repository.Interfaces
 {
     public interface IEmailService
     {
-        Task SendEmailAsync(string to, string subject, string body);
+        Task SendConfirmationEmailAsync(ApplicationUser user);
+        Task SendAccountSetupEmailAsync(ApplicationUser user, string tournamentName);
+        Task SendTournamentInvitationEmailAsync(string email, string tournamentName, int tournamentId);
+        Task SendPasswordResetEmailAsync(ApplicationUser user);
     }
 }

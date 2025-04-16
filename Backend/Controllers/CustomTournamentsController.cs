@@ -1,6 +1,9 @@
 ﻿using Backend.DTOs;
 using Backend.Repository.Interfaces;
+using Backend.Repository.Services;
+using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
@@ -12,12 +15,23 @@ namespace Backend.Controllers
         private readonly ICustomTournamentService _tournamentService;
         private readonly ILogger<CustomTournamentsController> _logger;
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
+        private readonly ITournamentSelectionService _tournamentSelectionService;
+        private readonly IBetService _betService;
 
-        public CustomTournamentsController(ICustomTournamentService tournamentService, ILogger<CustomTournamentsController> logger, IUserService userService)
+        public CustomTournamentsController(ICustomTournamentService tournamentService,
+            ILogger<CustomTournamentsController> logger, 
+            IUserService userService, 
+            IEmailService emailService,
+            IBetService betService,
+            ITournamentSelectionService tournamentSelectionService)
         {
             _tournamentService = tournamentService;
             _logger = logger;
             _userService = userService;
+            _betService = betService;
+            _emailService = emailService;
+            _tournamentSelectionService = tournamentSelectionService;
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
@@ -51,13 +65,70 @@ namespace Backend.Controllers
             // Set CreatedBy field with logged-in user ID
             tournamentDto.CreatedBy = userId;
 
-            // Call Tournament Service
-            bool success = await _tournamentService.CreateCustomTournamentAsync(tournamentDto);
+            // Step 1: Create tournament
+            var result = await _tournamentService.CreateCustomTournamentAsync(tournamentDto);
 
-            if (!success)
+            if (!result.Success)
             {
-                return StatusCode(500, "Error inserting tournament.");
+                return StatusCode(500, result.ErrorMessage ?? "Error inserting tournament.");
             }
+
+            // Step 2: Populate bets AFTER DB commit
+            await _betService.CreateBetsForTournamentAsync(result.TournamentId);
+            _logger.LogInformation($"Bets populated for tournament ID: {result.TournamentId}");
+
+            // Step 3: Send emails for invited and existing users
+            _logger.LogInformation("Step 3: Preparing to send emails to invited and existing users.");
+            var emailTasks = new List<Task>();
+
+            foreach (var email in result.InvitedEmails)
+            {
+                try
+                {
+                    _logger.LogInformation("Looking up invited user: {Email}", email);
+                    var invitedUser = await _userService.FindUserByEmailAsync(email);
+                    if (invitedUser == null)
+                    {
+                        _logger.LogWarning("Invited user not found: {Email}", email);
+                        continue;
+                    }
+
+                    _logger.LogInformation("Sending account setup email to {Email}", email);
+                    emailTasks.Add(_emailService.SendAccountSetupEmailAsync(invitedUser, tournamentDto.TournamentName));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send account setup email to {Email}", email);
+                }
+            }
+
+            foreach (var email in result.ExistingEmails)
+            {
+                try
+                {
+                    _logger.LogInformation("Sending tournament invite email to existing user: {Email}", email);
+                    emailTasks.Add(_emailService.SendTournamentInvitationEmailAsync(email, tournamentDto.TournamentName, result.TournamentId));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send tournament invite to {Email}", email);
+                }
+            }
+
+            // Wait for all successful tasks (ones that reached the emailService)
+            try
+            {
+                await Task.WhenAll(emailTasks);
+                _logger.LogInformation("All email tasks completed.");
+            }
+            catch (Exception ex)
+            {
+                // This will only trigger if Task.WhenAll itself fails
+                _logger.LogError(ex, "Error occurred while executing email tasks in parallel.");
+            }
+
+            // Step 4: Set tournament as selected for creator
+            await _tournamentSelectionService.SetSelectedTournamentAsync(result.CreatorUserId, result.TournamentId);
 
             return Ok(new { message = "Tournament created successfully!" });
         }
@@ -198,16 +269,40 @@ namespace Backend.Controllers
                     return Unauthorized("User ID not found in claims.");
                 }
 
-                bool? success = await _tournamentService.UpdateCustomTournamentAsync(tournamentDto, userId);
+                var result = await _tournamentService.UpdateCustomTournamentAsync(tournamentDto, userId);
 
-                if (success == null)
+                if (result == null)
                 {
                     return NotFound("Tournament not found.");
                 }
-                if (!success.Value)
+
+                if (!result.Success)
                 {
-                    return Forbid("You do not have permission to update this tournament.");
+                    return Forbid(result.ErrorMessage ?? "You do not have permission to update this tournament.");
                 }
+
+                // Step 1: Populate bets AFTER DB transaction is committed
+                await _betService.CreateBetsForTournamentAsync(result.TournamentId);
+                _logger.LogInformation($"Bets populated for updated tournament ID: {result.TournamentId}");
+
+                // Step 2: Send emails for invited and existing users
+                var emailTasks = new List<Task>();
+
+                foreach (var email in result.InvitedEmails)
+                {
+                    var user = await _userService.FindUserByEmailAsync(email);
+                    if (user != null)
+                    {
+                        emailTasks.Add(_emailService.SendAccountSetupEmailAsync(user, result.TournamentName));
+                    }
+                }
+
+                foreach (var email in result.ExistingEmails)
+                {
+                    emailTasks.Add(_emailService.SendTournamentInvitationEmailAsync(email, result.TournamentName, result.TournamentId));
+                }
+
+                await Task.WhenAll(emailTasks);
 
                 return Ok("Tournament updated successfully.");
             }

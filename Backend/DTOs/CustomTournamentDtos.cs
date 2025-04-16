@@ -283,4 +283,62 @@ namespace Backend.DTOs
     {
         public string Nickname { get; set; }
     }
+
+    public class TournamentCreationResultDto
+    {
+        public bool Success { get; set; }
+        public int TournamentId { get; set; }
+        public string TournamentName { get; set; }
+        public string CreatorUserId { get; set; }
+        public List<string> InvitedEmails { get; set; } = new();
+        public List<string> ExistingEmails { get; set; } = new();
+        public string? ErrorMessage { get; set; }
+
+        public static TournamentCreationResultDto SuccessResult(int tournamentId, string tournamentName, string creatorUserId, IEnumerable<string> invited, IEnumerable<string> existing)
+        {
+            return new TournamentCreationResultDto
+            {
+                Success = true,
+                TournamentId = tournamentId,
+                TournamentName = tournamentName,
+                CreatorUserId = creatorUserId,
+                InvitedEmails = invited.ToList(),
+                ExistingEmails = existing.ToList()
+            };
+        }
+
+        public static TournamentCreationResultDto ErrorResult(string errorMessage)
+        {
+            return new TournamentCreationResultDto
+            {
+                Success = false,
+                ErrorMessage = errorMessage
+            };
+        }
+    }
+
+    public class TournamentUpdateResultDto
+    {
+        public bool Success { get; set; }
+        public int TournamentId { get; set; }
+        public string? TournamentName { get; set; }
+        public HashSet<string> InvitedEmails { get; set; } = new();
+        public HashSet<string> ExistingEmails { get; set; } = new();
+        public string? ErrorMessage { get; set; }
+
+        public static TournamentUpdateResultDto SuccessResult(int tournamentId, string? name, HashSet<string> invited, HashSet<string> existing)
+        {
+            return new TournamentUpdateResultDto
+            {
+                Success = true,
+                TournamentId = tournamentId,
+                TournamentName = name,
+                InvitedEmails = invited,
+                ExistingEmails = existing
+            };
+        }
+
+        public static TournamentUpdateResultDto ErrorResult(string message) =>
+            new TournamentUpdateResultDto { Success = false, ErrorMessage = message };
+    }
 }
