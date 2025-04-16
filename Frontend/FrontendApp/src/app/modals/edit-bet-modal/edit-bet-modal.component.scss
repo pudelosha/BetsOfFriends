@@ -1,23 +1,13 @@
-/* ============================ */
-/* ✅ General Styles */
-/* ============================ */
-ion-content {
-  --padding-top: 0 !important;
-  --padding-bottom: 0 !important;
-  padding: 0 !important;
-}
-
-/* Section Titles */
 .section-title {
   font-size: 14px;
   font-weight: bold;
-  text-align: center; /* ✅ Ensures center alignment */
+  text-align: center; /* Ensures center alignment */
   margin: 10px 0;
   color: #555;
-  display: flex; /* ✅ Flexbox ensures proper centering */
-  justify-content: center; /* ✅ Horizontally centers text */
-  align-items: center; /* ✅ Vertically centers text */
-  width: 100%; /* ✅ Ensures full width for consistency */
+  display: flex; /* Flexbox ensures proper centering */
+  justify-content: center; /* Horizontally centers text */
+  align-items: center; /* Vertically centers text */
+  width: 100%; /* Ensures full width for consistency */
 }
 
 /* Divider Line */
@@ -27,9 +17,6 @@ ion-content {
   margin: 10px 0;
 }
 
-/* ============================ */
-/* ✅ Match Info Styles */
-/* ============================ */
 .team-names {
   font-size: 18px;
   font-weight: bold;
@@ -56,9 +43,6 @@ ion-content {
   flex: none;
 }
 
-/* ============================ */
-/* ✅ Odds Styling */
-/* ============================ */
 .odds-labels {
   font-size: 12px;
   font-weight: bold;
@@ -81,7 +65,7 @@ ion-select {
   display: flex;
 }
 
-/* ✅ Force Text & Options to Center Inside Select */
+/* Force Text & Options to Center Inside Select */
 ::ng-deep ion-select::part(text),
 ::ng-deep ion-select::part(label) {
   text-align: center;
@@ -89,9 +73,6 @@ ion-select {
   display: flex;
 }
 
-/* ============================ */
-/* ✅ Score Prediction Styling */
-/* ============================ */
 .center-grid {
   display: flex;
   justify-content: center;
@@ -140,9 +121,6 @@ ion-select {
   border-top: 2px solid #000;
 }
 
-/* ============================ */
-/* ✅ Qualification Selection */
-/* ============================ */
 .full-width {
   width: 100%;
   padding: 0;
@@ -184,17 +162,11 @@ ion-segment-button {
   flex: 5;
 }
 
-/* ============================ */
-/* ✅ Save Button Styling */
-/* ============================ */
 .save-button-container {
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
-/* ============================ */
-/* ✅ Miscellaneous Styling */
-/* ============================ */
 .no-padding {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;

@@ -31,8 +31,9 @@
       <!-- Place Bet Button -->
       <div class="bet-button-container">
         <ion-button size="small" class="bet-button" color="medium" (click)="editBet(bet, $event)">
-          {{ 'MY_BETS_TO_PLACE.PLACE_BUTTON' | translate }}
-        </ion-button>
+          <ion-icon name="create-outline" class="edit-icon mobile-only"></ion-icon>
+          <span class="edit-text desktop-only">{{ 'MY_BETS_TO_PLACE.PLACE_BUTTON' | translate }}</span>
+        </ion-button>        
       </div>
     </div>
   </ion-item>

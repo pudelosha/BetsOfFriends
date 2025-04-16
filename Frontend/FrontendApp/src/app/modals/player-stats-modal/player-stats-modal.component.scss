@@ -7,11 +7,7 @@
 ion-content {
   --padding-start: 0 !important;
   --padding-end: 0 !important;
-}
-
-ion-content::part(scroll) {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+  --padding-top: 56px !important;
 }
 
 /* Accordion Header Styling */
@@ -34,13 +30,13 @@ ion-content::part(scroll) {
 /* Header text left, payout right */
 .header-content {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 12px;
   color: #000;
   padding: 0px 0px;
 }
 
 .payout-summary {
-  font-size: 1rem;
+  font-size: 12px;
   font-weight: bold;
   color: var(--ion-color-medium);
   margin-left: auto;

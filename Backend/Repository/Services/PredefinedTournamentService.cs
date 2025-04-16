@@ -32,7 +32,7 @@ namespace Backend.Repository.Services
                     Season = tournamentDto.Season,
                     ExternalSeasonId = tournamentDto.SeasonId,
                     EndDate = tournamentDto.TournamentEnd,
-                    IsActive = tournamentDto.IsActive,
+                    IsActive = false,   // be default new tournament is not visible
                     CreatedBy = tournamentDto.CreatedBy,
                     CreatedAt = DateTime.UtcNow,
                     Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var u) ? u : TournamentUpdate.Manual

@@ -33,6 +33,11 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
+              },
+              {
+                "glob": "web.config",
+                "input": "src",
+                "output": "."
               }
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
@@ -107,6 +112,11 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
+              },
+              {
+                "glob": "web.config",
+                "input": "src",
+                "output": "."
               }
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
