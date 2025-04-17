@@ -10,6 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from './services/title.service';
 import { Platform } from '@ionic/angular';
 import { IonMenu, IonApp, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet} from '@ionic/angular/standalone';
+import { version } from 'src/environments/version';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +27,7 @@ export class AppComponent {
   isAdmin = false;
   showFab: boolean = false; // Control FAB visibility
   pageTitle: string = 'APP.TITLE';
+  version = version;
 
   constructor(private authService: AuthService, 
               private router: Router, 

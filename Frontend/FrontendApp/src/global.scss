@@ -217,3 +217,12 @@ ion-content::part(scroll)::-webkit-scrollbar {
   font-size: 14px;
   margin-top: 3px;
 }
+
+ion-menu .version-text {
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: lightgray;
+  padding: 15px 0 10px;
+}
+
