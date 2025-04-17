@@ -143,23 +143,29 @@ namespace Backend.Repository.Services
                 {
                     JsonElement regularScore, fullScore;
 
-                    if (scoreProp.TryGetProperty("regularTime", out regularScore) &&
-                        regularScore.TryGetProperty("home", out var homeReg) &&
-                        regularScore.TryGetProperty("away", out var awayReg) &&
-                        homeReg.ValueKind == JsonValueKind.Number &&
-                        awayReg.ValueKind == JsonValueKind.Number)
+                    if (scoreProp.TryGetProperty("regularTime", out regularScore))
                     {
-                        scoreHome = homeReg.GetInt32();
-                        scoreAway = awayReg.GetInt32();
+                        if (regularScore.TryGetProperty("home", out var homeReg) &&
+                            regularScore.TryGetProperty("away", out var awayReg) &&
+                            homeReg.ValueKind == JsonValueKind.Number &&
+                            awayReg.ValueKind == JsonValueKind.Number)
+                        {
+                            scoreHome = homeReg.GetInt32();
+                            scoreAway = awayReg.GetInt32();
+                        }
                     }
-                    else if (scoreProp.TryGetProperty("fullTime", out fullScore) &&
-                             fullScore.TryGetProperty("home", out var homeFull) &&
-                             fullScore.TryGetProperty("away", out var awayFull) &&
-                             homeFull.ValueKind == JsonValueKind.Number &&
-                             awayFull.ValueKind == JsonValueKind.Number)
+
+                    if (scoreHome == null || scoreAway == null) // Only fallback if not already set
                     {
-                        scoreHome = homeFull.GetInt32();
-                        scoreAway = awayFull.GetInt32();
+                        if (scoreProp.TryGetProperty("fullTime", out fullScore) &&
+                            fullScore.TryGetProperty("home", out var homeFull) &&
+                            fullScore.TryGetProperty("away", out var awayFull) &&
+                            homeFull.ValueKind == JsonValueKind.Number &&
+                            awayFull.ValueKind == JsonValueKind.Number)
+                        {
+                            scoreHome = homeFull.GetInt32();
+                            scoreAway = awayFull.GetInt32();
+                        }
                     }
 
                     if (scoreProp.TryGetProperty("winner", out var winnerProp))

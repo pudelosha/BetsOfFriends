@@ -44,4 +44,8 @@ export class PredefinedTournamentService {
   getTournamentStages(tournamentId: number): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/stages/${tournamentId}`);
   } 
+
+  downloadExcel(tournamentId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/export-matches?tournamentId=${tournamentId}`, { responseType: 'blob' });
+  }  
 }

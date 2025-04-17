@@ -535,6 +535,8 @@
     "IMPORT_FROM_FILE": "Import from file",
     "IMPORT_FROM_API": "Import from API",   
     "UPDATE_FROM_API": "Update from API",
+    "DOWNLOAD_BETS_FILE": "Download bets to file",
+    "UPDATE_BETS_FROM_FILE": "Update bets from file",
     "IMPORT_TOURNAMENT": "Import tournament",
     "UPDATE_TOURNAMENT": "Update tournament",
     "ERASE_FORM": "Erase All Form Data"

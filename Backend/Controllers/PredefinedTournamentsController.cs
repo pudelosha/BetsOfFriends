@@ -186,5 +186,35 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while fetching tournament stages." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpGet("export-matches")]
+        public async Task<IActionResult> ExportMatchesToExcel([FromQuery] int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Generating Excel file for tournament ID {tournamentId}.");
+
+                var fileContent = await _tournamentService.ExportMatchesToExcelAsync(tournamentId);
+                if (fileContent == null || fileContent.Length == 0)
+                {
+                    _logger.LogWarning($"No data found or failed to generate Excel for tournament ID {tournamentId}.");
+                    return NotFound("Excel export failed or tournament has no matches.");
+                }
+
+                _logger.LogInformation($"Excel export successful for tournament ID {tournamentId}.");
+                return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "matches.xlsx");
+            }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, $"Application error while exporting Excel for tournament ID {tournamentId}: {ex.Message}");
+                return StatusCode(500, "An internal error occurred while exporting the Excel file.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Unexpected error while exporting Excel for tournament ID {tournamentId}: {ex.Message}");
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
     }
 }

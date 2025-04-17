@@ -68,6 +68,24 @@
     (click)="triggerAPIUpdate()">
     {{ 'STAGE_INPUT_TYPE.UPDATE_FROM_API' | translate }}
   </ion-button>
+
+  <!-- Download bets as Excel file -->
+  <ion-button
+    *ngIf="isEditPredefined"
+    expand="full"
+    color="medium"
+    (click)="downloadExcel()">
+    {{ 'STAGE_INPUT_TYPE.DOWNLOAD_BETS_FILE' | translate }}
+  </ion-button>
+
+  <!-- Update bets from Excel file -->
+  <ion-button
+    *ngIf="isEditPredefined"
+    expand="full"
+    color="medium"
+    (click)="triggerAPIUpdate()">
+    {{ 'STAGE_INPUT_TYPE.UPDATE_BETS_FROM_FILE' | translate }}
+  </ion-button>
   
   <!-- Import tournament -->
   <ion-button

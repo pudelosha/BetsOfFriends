@@ -323,6 +323,34 @@ export class StageInputTypePage implements OnInit {
     //call backend external data to call API and get the latest tournament data
   }
 
+  async downloadExcel() {
+    const tournamentId = this.tournamentForm.get('tournamentId')?.value;
+    const tournamentName = this.tournamentForm.get('tournamentName')?.value;
+
+    if (!tournamentId ) {
+      await this.showToast('No tournament selected.', 'danger');
+      return;
+    }
+  
+    this.tournamentService.downloadExcel(tournamentId )
+      .subscribe({
+        next: async (blob) => {
+          const a = document.createElement('a');
+          const url = window.URL.createObjectURL(blob);
+          a.href = url;
+          a.download = `matches_${tournamentName}.xlsx`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+  
+          await this.showToast('Excel file downloaded.', 'success');
+        },
+        error: async (err) => {
+          console.error('Error downloading Excel file:', err);
+          await this.showToast('Failed to download Excel file.', 'danger');
+        }
+      });
+  }
+  
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary' = 'primary') {
     const toast = await this.toastController.create({
       message,

@@ -12,5 +12,6 @@ namespace Backend.Repository.Interfaces
         Task<bool> DeletePredefinedTournamentByIdAsync(int tournamentId);
         Task<bool> UpdatePredefinedTournamentStatusAsync(int tournamentId, bool isActive);
         Task<List<string>> GetTournamentStagesAsync(int tournamentId);
+        Task<byte[]?> ExportMatchesToExcelAsync(int tournamentId);
     }
 }

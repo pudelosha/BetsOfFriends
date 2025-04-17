@@ -78,82 +78,121 @@ public class FootballDataHostedService : BackgroundService
                         continue;
 
                     var existingMatch = await dbContext.PredefinedMatches
+                        .Include(m => m.HomeTeam)
+                        .Include(m => m.AwayTeam)
                         .FirstOrDefaultAsync(m => m.ExternalMatchId == updatedMatch.ExternalMatchId, cancellationToken);
 
                     if (existingMatch == null)
                         continue;
 
                     bool hasChanges =
+                        existingMatch.ExternalMatchId == updatedMatch.ExternalMatchId && (
                         existingMatch.Status.ToString() != updatedMatch.MatchStatus ||
                         existingMatch.MatchStart != updatedMatch.MatchStart ||
                         existingMatch.HomeScore != updatedMatch.ScoreHome ||
-                        existingMatch.AwayScore != updatedMatch.ScoreAway;
+                        existingMatch.AwayScore != updatedMatch.ScoreAway ||
+                        existingMatch.HomeTeam.TeamName != updatedMatch.HomeTeam ||
+                        existingMatch.AwayTeam.TeamName != updatedMatch.AwayTeam);
 
-                    if (hasChanges)
+                    if (!hasChanges)
+                        continue;
+
+                    _logger.LogInformation($"Updating predefined match {existingMatch.MatchId} from external match {updatedMatch.ExternalMatchId}");
+
+                    var previousStatus = existingMatch.Status;
+
+                    // Update match values
+                    existingMatch.Status = Enum.TryParse(updatedMatch.MatchStatus, out CustomMatch.MatchStatus parsedStatus)
+                        ? parsedStatus
+                        : existingMatch.Status;
+
+                    existingMatch.MatchStart = DateTime.SpecifyKind(updatedMatch.MatchStart, DateTimeKind.Utc);
+                    existingMatch.HomeScore = updatedMatch.ScoreHome;
+                    existingMatch.AwayScore = updatedMatch.ScoreAway;
+
+                    // Team ID matching by name
+                    var homeTeamId = await dbContext.PredefinedTeams
+                        .Where(t => t.PredefinedTournamentId == tournament.TournamentId && t.TeamName == updatedMatch.HomeTeam)
+                        .Select(t => t.TeamId)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    var awayTeamId = await dbContext.PredefinedTeams
+                        .Where(t => t.PredefinedTournamentId == tournament.TournamentId && t.TeamName == updatedMatch.AwayTeam)
+                        .Select(t => t.TeamId)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    if (homeTeamId != 0 && awayTeamId != 0)
                     {
-                        _logger.LogInformation($"Updating predefined match {existingMatch.MatchId} from external match {updatedMatch.ExternalMatchId}");
+                        existingMatch.HomeTeamId = homeTeamId;
+                        existingMatch.AwayTeamId = awayTeamId;
+                    }
 
-                        // Capture original status before update
-                        var previousStatus = existingMatch.Status;
+                    // Propagate changes to linked custom matches
+                    var relatedCustomMatches = await dbContext.CustomMatches
+                        .Where(m => m.PredefinedMatchId == existingMatch.MatchId &&
+                                    m.Tournament.Update == CustomTournament.TournamentUpdate.Auto)
+                        .Include(m => m.Tournament)
+                        .ToListAsync(cancellationToken);
 
-                        // Apply updates
-                        existingMatch.Status = Enum.TryParse(updatedMatch.MatchStatus, out CustomMatch.MatchStatus parsedStatus)
-                            ? parsedStatus
-                            : existingMatch.Status;
+                    foreach (var customMatch in relatedCustomMatches)
+                    {
+                        _logger.LogInformation($"Propagating updates to custom match {customMatch.MatchId}");
 
-                        existingMatch.MatchStart = DateTime.SpecifyKind(updatedMatch.MatchStart, DateTimeKind.Utc);
-                        existingMatch.HomeScore = updatedMatch.ScoreHome;
-                        existingMatch.AwayScore = updatedMatch.ScoreAway;
+                        customMatch.MatchStart = existingMatch.MatchStart;
+                        customMatch.HomeScore = existingMatch.HomeScore;
+                        customMatch.AwayScore = existingMatch.AwayScore;
+                        customMatch.Status = existingMatch.Status;
 
-                        // Find and update all custom matches linked to this predefined match
-                        var relatedCustomMatches = await dbContext.CustomMatches
-                            .Where(m => m.PredefinedMatchId == existingMatch.MatchId &&
-                                        m.Tournament.Update == CustomTournament.TournamentUpdate.Auto)
-                            .Include(m => m.Tournament)
-                            .ToListAsync(cancellationToken);
+                        // Match team names to CustomTeams inside the same tournament
+                        var customHomeTeamId = await dbContext.CustomTeams
+                            .Where(t => t.TournamentId == customMatch.Tournament.TournamentId && t.TeamName == updatedMatch.HomeTeam)
+                            .Select(t => t.TeamId)
+                            .FirstOrDefaultAsync(cancellationToken);
 
-                        foreach (var customMatch in relatedCustomMatches)
+                        var customAwayTeamId = await dbContext.CustomTeams
+                            .Where(t => t.TournamentId == customMatch.Tournament.TournamentId && t.TeamName == updatedMatch.AwayTeam)
+                            .Select(t => t.TeamId)
+                            .FirstOrDefaultAsync(cancellationToken);
+
+                        if (customHomeTeamId != 0 && customAwayTeamId != 0)
                         {
-                            _logger.LogInformation($"Propagating updates to custom match {customMatch.MatchId}");
+                            customMatch.HomeTeamId = customHomeTeamId;
+                            customMatch.AwayTeamId = customAwayTeamId;
+                        }
+                    }
 
-                            var previousCustomStatus = customMatch.Status;
+                    // Save changes BEFORE any service calls
+                    await dbContext.SaveChangesAsync(cancellationToken);
 
-                            customMatch.MatchStart = existingMatch.MatchStart;
-                            customMatch.HomeScore = existingMatch.HomeScore;
-                            customMatch.AwayScore = existingMatch.AwayScore;
-                            customMatch.Status = existingMatch.Status;
-
-                            if (existingMatch.Status == CustomMatch.MatchStatus.Finished)
+                    // Call services AFTER changes are saved
+                    foreach (var customMatch in relatedCustomMatches)
+                    {
+                        if (customMatch.Status == CustomMatch.MatchStatus.Finished)
+                        {
+                            _logger.LogInformation($"Triggering bet recalculation for custom match {customMatch.MatchId}");
+                            try
                             {
-                                _logger.LogInformation($"Triggering bet recalculation for custom match {customMatch.MatchId}");
-
-                                try
-                                {
-                                    await betService.RecalculateBetsForMatchAsync(customMatch.MatchId);
-                                }
-                                catch (Exception ex)
-                                {
-                                    _logger.LogError(ex, $"Failed to recalculate bets for match {customMatch.MatchId}");
-                                }
+                                await betService.RecalculateBetsForMatchAsync(customMatch.MatchId);
                             }
-                            else if (existingMatch.Status == CustomMatch.MatchStatus.In_Play && previousCustomStatus != CustomMatch.MatchStatus.In_Play)
+                            catch (Exception ex)
                             {
-                                _logger.LogInformation($"Marking bets as completed for in-play match {customMatch.MatchId}");
-
-                                try
-                                {
-                                    await betService.MarkBetsAsCompletedForMatchAsync(customMatch.MatchId);
-                                }
-                                catch (Exception ex)
-                                {
-                                    _logger.LogError(ex, $"Failed to mark bets as completed for match {customMatch.MatchId}");
-                                }
+                                _logger.LogError(ex, $"Failed to recalculate bets for match {customMatch.MatchId}");
+                            }
+                        }
+                        else if (customMatch.Status == CustomMatch.MatchStatus.In_Play)
+                        {
+                            _logger.LogInformation($"Marking bets as completed for in-play match {customMatch.MatchId}");
+                            try
+                            {
+                                await betService.MarkBetsAsCompletedForMatchAsync(customMatch.MatchId);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, $"Failed to mark bets as completed for match {customMatch.MatchId}");
                             }
                         }
                     }
                 }
-
-                await dbContext.SaveChangesAsync(cancellationToken);
             }
             catch (Exception ex)
             {

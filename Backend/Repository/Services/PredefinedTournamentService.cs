@@ -2,6 +2,7 @@
 using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
+using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using static Backend.Model.Entities.CustomMatch;
 using static Backend.Model.Entities.CustomTournament;
@@ -554,6 +555,68 @@ namespace Backend.Repository.Services
             {
                 _logger.LogError(ex, $"Error fetching tournament stages for tournament ID {tournamentId}");
                 throw;
+            }
+        }
+
+        public async Task<byte[]?> ExportMatchesToExcelAsync(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Exporting matches for tournament ID: {tournamentId}");
+
+                var matches = await _context.PredefinedMatches
+                    .Where(m => m.TournamentId == tournamentId)
+                    .Include(m => m.HomeTeam)
+                    .Include(m => m.AwayTeam)
+                    .ToListAsync();
+
+                if (!matches.Any())
+                {
+                    _logger.LogWarning($"No matches found for tournament ID: {tournamentId}");
+                    return null;
+                }
+
+                using var workbook = new XLWorkbook();
+                var worksheet = workbook.Worksheets.Add("Matches");
+
+                // Header row
+                worksheet.Cell(1, 1).Value = "Match ID";
+                worksheet.Cell(1, 2).Value = "Home Team";
+                worksheet.Cell(1, 3).Value = "Away Team";
+                worksheet.Cell(1, 4).Value = "Home Win Odds";
+                worksheet.Cell(1, 5).Value = "Draw Odds";
+                worksheet.Cell(1, 6).Value = "Away Win Odds";
+                worksheet.Cell(1, 7).Value = "Home Qualifies";
+                worksheet.Cell(1, 8).Value = "Away Qualifies";
+
+                // Data rows
+                int row = 2;
+                foreach (var match in matches)
+                {
+                    worksheet.Cell(row, 1).Value = match.MatchId;
+                    worksheet.Cell(row, 2).Value = match.HomeTeam?.TeamName ?? "-";
+                    worksheet.Cell(row, 3).Value = match.AwayTeam?.TeamName ?? "-";
+                    worksheet.Cell(row, 4).Value = match.HomeWinOdds;
+                    worksheet.Cell(row, 5).Value = match.DrawOdds;
+                    worksheet.Cell(row, 6).Value = match.AwayWinOdds;
+                    worksheet.Cell(row, 7).Value = match.HomeQualifies;
+                    worksheet.Cell(row, 8).Value = match.AwayQualifies;
+                    row++;
+                }
+
+                // Adjust column widths
+                worksheet.Columns().AdjustToContents();
+
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+
+                _logger.LogInformation($"Excel file created for tournament ID: {tournamentId}, total matches: {matches.Count}");
+                return stream.ToArray();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to export Excel for tournament ID: {tournamentId}");
+                throw new ApplicationException("Error generating Excel file.", ex);
             }
         }
     }
