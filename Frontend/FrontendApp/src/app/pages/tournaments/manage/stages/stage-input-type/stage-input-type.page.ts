@@ -30,8 +30,10 @@ export class StageInputTypePage implements OnInit {
   @Output() tournamentSelected = new EventEmitter<Tournament>();
   @Output() tournamentUpdateRequested = new EventEmitter<void>();
   @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild('betsFileInput') betsFileInput!: ElementRef;
 
   file: File | null = null;
+  betsFile: File | null = null;
   predefinedTournaments: Tournament[] = [];
   selectedTournamentId: number | null = null;
   isLoading: boolean = false;
@@ -169,8 +171,19 @@ export class StageInputTypePage implements OnInit {
     }
   }
 
+  handleBetsFileInput(event: any) {
+    this.betsFile = event.target.files[0];
+    if (this.betsFile) {
+      this.readBetsExcelFile();
+    }
+  }
+
   triggerFileInput(): void {
     this.fileInput.nativeElement.click();
+  }
+
+  triggerBetsFileInput(): void {
+    this.betsFileInput.nativeElement.click();
   }
 
   async openAPISelection() {
@@ -389,6 +402,63 @@ export class StageInputTypePage implements OnInit {
     reader.readAsArrayBuffer(this.file!);
   }
 
+  readBetsExcelFile() {
+    if (!this.betsFile) {
+      this.showToast('No file selected.', 'warning');
+      return;
+    }
+  
+    const reader = new FileReader();
+  
+    reader.onload = (e: any) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+  
+        const sheet = workbook.Sheets['Matches'];
+        if (!sheet) {
+          this.showToast('No "Matches" sheet found in Excel file.', 'danger');
+          return;
+        }
+  
+        const rows = XLSX.utils.sheet_to_json(sheet);
+  
+        const matches: Match[] = this.tournamentForm.get('matches')?.value ?? [];
+        let updates = 0;
+  
+        rows.forEach((row: any) => {
+          const matchId = Number(row['MatchId']);
+  
+          if (!matchId) return;
+  
+          const matchIndex = matches.findIndex(m => m.matchId === matchId);
+  
+          if (matchIndex >= 0) {
+            const updatedMatch = { ...matches[matchIndex] };
+  
+            updatedMatch.homeWinOdds = this.parseOdds(row['HomeWinOdds']);
+            updatedMatch.drawOdds = this.parseOdds(row['DrawOdds']);
+            updatedMatch.awayWinOdds = this.parseOdds(row['AwayWinOdds']);
+            updatedMatch.homeQualifies = this.parseOptionalQualifier(row['HomeQualifies']);
+            updatedMatch.awayQualifies = this.parseOptionalQualifier(row['AwayQualifies']);
+            updatedMatch.recordStatus = "Update";
+  
+            matches[matchIndex] = updatedMatch;
+            updates++;
+          }
+        });
+  
+        this.matchesExtracted.emit(matches);
+        this.showToast(`${updates} matches updated from odds file.`, 'success');
+      } catch (error) {
+        console.error('Error reading bets Excel file:', error);
+        this.showToast('Failed to read bets file.', 'danger');
+      }
+    };
+  
+    reader.readAsArrayBuffer(this.betsFile);
+  }
+  
   extractTeams(workbook: XLSX.WorkBook): Team[] {
     const sheet = workbook.Sheets['Teams'];
     const teams: Team[] = [];

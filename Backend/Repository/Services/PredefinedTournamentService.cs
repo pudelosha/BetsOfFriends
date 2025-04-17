@@ -580,14 +580,14 @@ namespace Backend.Repository.Services
                 var worksheet = workbook.Worksheets.Add("Matches");
 
                 // Header row
-                worksheet.Cell(1, 1).Value = "Match ID";
-                worksheet.Cell(1, 2).Value = "Home Team";
-                worksheet.Cell(1, 3).Value = "Away Team";
-                worksheet.Cell(1, 4).Value = "Home Win Odds";
-                worksheet.Cell(1, 5).Value = "Draw Odds";
-                worksheet.Cell(1, 6).Value = "Away Win Odds";
-                worksheet.Cell(1, 7).Value = "Home Qualifies";
-                worksheet.Cell(1, 8).Value = "Away Qualifies";
+                worksheet.Cell(1, 1).Value = "MatchId";
+                worksheet.Cell(1, 2).Value = "HomeTeam";
+                worksheet.Cell(1, 3).Value = "AwayTeam";
+                worksheet.Cell(1, 4).Value = "HomeWinOdds";
+                worksheet.Cell(1, 5).Value = "DrawOdds";
+                worksheet.Cell(1, 6).Value = "AwayWinOdds";
+                worksheet.Cell(1, 7).Value = "HomeQualifies";
+                worksheet.Cell(1, 8).Value = "AwayQualifies";
 
                 // Data rows
                 int row = 2;

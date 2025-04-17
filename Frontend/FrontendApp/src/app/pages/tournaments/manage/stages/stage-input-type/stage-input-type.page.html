@@ -83,9 +83,14 @@
     *ngIf="isEditPredefined"
     expand="full"
     color="medium"
-    (click)="triggerAPIUpdate()">
+    (click)="triggerBetsFileInput()">
     {{ 'STAGE_INPUT_TYPE.UPDATE_BETS_FROM_FILE' | translate }}
   </ion-button>
+  <input
+    #betsFileInput
+    type="file"
+    class="hidden-file-input"
+    (change)="handleBetsFileInput($event)">
   
   <!-- Import tournament -->
   <ion-button
