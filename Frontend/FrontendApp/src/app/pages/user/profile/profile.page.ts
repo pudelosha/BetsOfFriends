@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ToastController, AlertController, LoadingController } from '@ionic/angular';
+import { ToastController, AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
@@ -13,14 +13,15 @@ import { LanguageService } from 'src/app/services/language.service';
 import { Language } from 'src/app/model/language';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-import { IonContent, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonItem, IonLabel, IonText, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner } from '@ionic/angular/standalone';
+import { SelectCountryModalComponent } from 'src/app/modals/select-country-modal/select-country-modal.component';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonContent, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner]
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonContent, IonText, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner]
 })
 export class ProfilePage implements OnInit {
   profileForm: FormGroup;
@@ -36,6 +37,7 @@ export class ProfilePage implements OnInit {
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private userService: UserService,
+    private modalController: ModalController,
     private locationService: LocationService,
     private loadingController: LoadingController,
     private languageService: LanguageService,
@@ -52,9 +54,6 @@ export class ProfilePage implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle('PROFILE.TITLE');
-    this.loadCountries();
-    this.loadLanguages();
-    this.loadUserProfile();
   }
 
   ionViewWillEnter() {
@@ -96,7 +95,28 @@ export class ProfilePage implements OnInit {
       this.presentToast('Could not load languages list.', 'danger');
     }
   }
+
+  async openCountrySelector() {
+    const modal = await this.modalController.create({
+      component: SelectCountryModalComponent,
+      componentProps: {
+        countries: this.availableCountries // provide your array of countries
+      }
+    });
   
+    await modal.present();
+  
+    const { data } = await modal.onDidDismiss();
+    if (data !== undefined) {
+      this.profileForm.controls['location'].setValue(data);
+    }
+  }
+
+  getSelectedCountryName(): string | null {
+    const id = this.profileForm.controls['location'].value;
+    return this.availableCountries.find(c => c.countryId === id)?.name ?? null;
+  }
+    
   async changeEmail() {
     const alert = await this.alertCtrl.create({
       header: 'Change Email',
@@ -120,7 +140,7 @@ export class ProfilePage implements OnInit {
             }
   
             try {
-              await this.userService.changeEmail(data.newEmail, data.password).toPromise();
+              await firstValueFrom(this.userService.changeEmail(data.newEmail, data.password));
               this.presentToast('Email updated successfully!', 'success');
   
               this.profileForm.patchValue({ email: data.newEmail });
@@ -165,7 +185,7 @@ export class ProfilePage implements OnInit {
             }
   
             try {
-              await this.userService.updatePassword(data.currentPassword, data.newPassword).toPromise();
+              await firstValueFrom(this.userService.updatePassword(data.currentPassword, data.newPassword));
   
               this.authService.logout('Password updated successfully! Please log in again.');
   
@@ -214,7 +234,7 @@ export class ProfilePage implements OnInit {
             const startTime = Date.now();
   
             try {
-              await this.userService.deleteAccount(data.password).toPromise();
+              await firstValueFrom(this.userService.deleteAccount(data.password));
               await this.authService.logout('Your account has been deleted. We hope to see you again!', '/register');
             } catch (error) {
               console.error('Error deleting account:', error);

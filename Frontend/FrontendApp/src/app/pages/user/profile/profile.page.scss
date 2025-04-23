@@ -29,3 +29,10 @@ ion-button{
   margin-bottom: 15px;
   text-align: left;
 }
+
+.fake-select-value {
+  font-size: 16px;
+  color: var(--ion-color-step-600);
+  flex: 1;
+  text-align: start; // or start, depending on your layout preference
+}

@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Select Country</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-searchbar
+    [(ngModel)]="searchText"
+    (ionInput)="filterCountries()"
+    placeholder="Search countries..."
+  ></ion-searchbar>
+
+  <ion-list>
+    <ion-item button *ngFor="let country of filteredCountries" (click)="selectCountry(country.countryId)">
+      {{ country.name }}
+    </ion-item>
+  </ion-list>
+</ion-content>
