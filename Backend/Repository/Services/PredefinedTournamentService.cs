@@ -509,7 +509,8 @@ namespace Backend.Repository.Services
                         TournamentId = t.TournamentId,
                         TournamentName = t.TournamentName,
                         CreatedAt = DateTime.SpecifyKind(t.CreatedAt, DateTimeKind.Utc),
-                        IsActive = t.IsActive
+                        IsActive = t.IsActive,
+                        HasLiveUpdates = t.ExternalTournamentId != null && t.Update == TournamentUpdate.Auto
                     })
                     .ToListAsync();
 

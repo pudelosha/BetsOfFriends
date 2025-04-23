@@ -11,6 +11,13 @@
   <ion-list>
     <ion-item *ngFor="let tournament of predefinedTournaments" (click)="selectTournament(tournament.tournamentId)">
       <ion-label>{{ tournament.tournamentName }}</ion-label>
+
+      <!-- Green LIVE badge -->
+      <ng-container *ngIf="tournament.hasLiveUpdates">
+        <ion-text color="success" slot="end">
+          <strong>LIVE</strong>
+        </ion-text>
+      </ng-container>
     </ion-item>
   </ion-list>
 </ion-content>

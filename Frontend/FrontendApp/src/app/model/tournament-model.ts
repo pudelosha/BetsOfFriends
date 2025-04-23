@@ -79,6 +79,7 @@ export interface Tournament {
   tournamentVisibility: 'Private' | 'Public';
   updateMethod: 'Manual' | 'Semi' | 'Auto';
   isActive: boolean,
+  hasLiveUpdates?: boolean,
   createdBy: string;
   createdAt: string;
   teams: Team[];

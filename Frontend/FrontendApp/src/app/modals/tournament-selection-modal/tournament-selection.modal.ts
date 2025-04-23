@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core'; 
 import { CommonModule } from '@angular/common'; 
 import { ModalController } from '@ionic/angular'; 
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonList, IonItem, IonLabel } from '@ionic/angular/standalone'; 
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonText, IonButton, IonContent, IonList, IonItem, IonLabel } from '@ionic/angular/standalone'; 
 import { TranslateModule } from '@ngx-translate/core'; 
 import { Tournament } from 'src/app/model/tournament-model';
 
@@ -9,7 +9,7 @@ import { Tournament } from 'src/app/model/tournament-model';
   selector: 'app-tournament-selection-modal',
   templateUrl: './tournament-selection-modal.html',
   standalone: true,
-  imports: [CommonModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonList, IonItem, IonLabel],
+  imports: [CommonModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonText, IonContent, IonList, IonItem, IonLabel],
 })
 export class TournamentSelectionModalComponent {
   @Input() predefinedTournaments: Tournament[] = [];
