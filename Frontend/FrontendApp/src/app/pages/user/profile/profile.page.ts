@@ -13,7 +13,7 @@ import { LanguageService } from 'src/app/services/language.service';
 import { Language } from 'src/app/model/language';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-import { IonContent, IonItem, IonLabel, IonText, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner } from '@ionic/angular/standalone';
 import { SelectCountryModalComponent } from 'src/app/modals/select-country-modal/select-country-modal.component';
 
 @Component({
@@ -21,7 +21,7 @@ import { SelectCountryModalComponent } from 'src/app/modals/select-country-modal
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonContent, IonText, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner]
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonContent, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner]
 })
 export class ProfilePage implements OnInit {
   profileForm: FormGroup;

@@ -41,45 +41,45 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task SendMatchStartRemindersAsync(INotificationService notificationService,
-                                                        AppDbContext dbContext,
-                                                        TimeSpan threshold)
+        public async Task SendMatchStartRemindersAsync(
+            INotificationService notificationService,
+            AppDbContext dbContext,
+            TimeSpan threshold)
         {
             var now = DateTime.UtcNow;
+            var lowerBound = now.AddMinutes(-1); // Add 1-minute tolerance
             var upperBound = now + threshold;
 
             // Decide which reminder type we're sending
             bool is1Hour = threshold.TotalHours == 1;
             bool is24Hours = threshold.TotalHours == 24;
 
-            // Filter matches based on threshold and reminder flag
+            _logger.LogDebug($"Checking match reminders for {threshold.TotalHours}h window.");
+            _logger.LogDebug($"Window: {lowerBound:u} to {upperBound:u}");
+
+            // Fetch matches within the timing window that haven't been notified yet
             var matches = await dbContext.CustomMatches
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
                 .Where(m =>
-                    m.MatchStart > now &&
+                    m.MatchStart >= lowerBound &&
                     m.MatchStart <= upperBound &&
                     m.Status == CustomMatch.MatchStatus.Timed &&
                     ((is1Hour && !m.Notifications1Sent) || (is24Hours && !m.Notifications24Sent)))
                 .ToListAsync();
 
+            _logger.LogInformation($"Found {matches.Count} match(es) for {threshold.TotalHours}h reminder.");
+
             foreach (var match in matches)
             {
-                // Notify users who haven't placed a bet
                 await notificationService.NotifyMatchStartingSoonAsync(match, threshold);
 
-                // Update the correct flag
                 if (is1Hour)
-                {
                     match.Notifications1Sent = true;
-                }
                 else if (is24Hours)
-                {
                     match.Notifications24Sent = true;
-                }
             }
 
-            // Save changes (only if any matches were processed)
             if (matches.Any())
             {
                 await dbContext.SaveChangesAsync();

@@ -82,7 +82,13 @@ export class CustomTournamentService {
   getTournamentStages(tournamentId: number): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/stages/${tournamentId}`);
   } 
-  
+
+  getFirstStageWithPendingBets(tournamentId: number): Observable<string | null> {
+    return this.http.get<string>(`${this.apiUrl}/pending-stage/${tournamentId}`, {
+      responseType: 'text' as 'json'
+    });
+  }
+      
   getUserBettingStats(tournamentId: number, statsUserId: string): Observable<UserBettingStats[]> {
     return this.http.get<UserBettingStats[]>(`${this.apiUrl}/betting-stats/${tournamentId}/${statsUserId}`);
   } 

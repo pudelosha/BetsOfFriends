@@ -1319,6 +1319,29 @@ namespace Backend.Repository.Services
             }
         }
 
+        public async Task<string?> GetFirstStageWithPendingBetsAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                var stageName = await _context.CustomMatches
+                    .Where(m =>
+                        m.TournamentId == tournamentId &&
+                        m.Status == CustomMatch.MatchStatus.Timed &&
+                        m.Bets.Any(b => b.UserId == userId && b.Status == Bet.BetStatus.ToPlace))
+                    .OrderBy(m => m.Stage.Order)
+                    .Select(m => m.Stage.StageName)
+                    .FirstOrDefaultAsync();
+
+                return stageName;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching first stage with pending bets for tournament {tournamentId}, user {userId}");
+                throw new ApplicationException("Failed to retrieve pending stage.");
+            }
+        }
+
+
         public async Task<bool> TournamentNameExistsAsync(string publicTournamentName)
         {
             try

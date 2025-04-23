@@ -46,14 +46,20 @@ public class NotificationService : INotificationService
 
         _logger.LogInformation($"Sending match start reminders to {usersWithToPlaceBets.Count} users for Match ID {match.MatchId} (threshold: {timeStr})");
 
+        // Build dynamic URL
+        var tournamentId = match.TournamentId;
+        var stageNameEncoded = Uri.EscapeDataString(match.Stage?.StageName ?? ""); // fallback to empty
+        var url = $"/my-bets?tab=to-place&stage={stageNameEncoded}&tournamentId={tournamentId}";
+
         await ProcessNotificationsAsync(
             usersWithToPlaceBets,
             $"Reminder: Match starts in {timeStr}",
             $"You haven't submitted your bet for {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName}. The match starts in less than {timeStr}!",
-            "/my-bets",
+            url,
             u => (u.ReceiveEmailPendingBets, u.ReceivePushPendingBets)
         );
     }
+
 
     public async Task NotifyMatchClosureAsync(CustomMatch match)
     {

@@ -553,6 +553,37 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("pending-stage/{tournamentId}")]
+        public async Task<IActionResult> GetFirstStageWithPendingBets(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching first stage with pending bets for tournament {tournamentId}.");
+
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User authentication failed.");
+                }
+
+                var stageName = await _tournamentService.GetFirstStageWithPendingBetsAsync(tournamentId, userId);
+
+                return Ok(stageName);
+            }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, $"Application error while fetching stage for tournament {tournamentId}: {ex.Message}");
+                return StatusCode(500, "An internal error occurred while retrieving the stage.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Unexpected error while fetching stage for tournament {tournamentId}: {ex.Message}");
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
+
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPost("check-name")]
         public async Task<IActionResult> CheckTournamentNameAvailability([FromBody] CustomTournamentNameDto request)
         {

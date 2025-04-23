@@ -49,17 +49,26 @@ export class MyBetsPage implements OnInit, AfterViewInit {
     this.route.queryParamMap.subscribe(params => {
       const urlTab = params.get('tab') ?? 'to-place';
       const urlStage = params.get('stage') ?? undefined;
+      const urlTournamentId = params.get('tournamentId');
   
+      // Update selected tab
       if (urlTab === 'to-place' || urlTab === 'placed' || urlTab === 'finalised') {
         this.selectedTab = urlTab;
       } else {
         this.selectedTab = 'to-place';
       }
   
+      // Optionally override selected tournament if provided
+      if (urlTournamentId && !isNaN(+urlTournamentId)) {
+        const parsedId = Number(urlTournamentId);
+        this.tournamentSelectionService.setSelectedTournament(parsedId);
+      }
+  
+      // Always load stages after possibly setting tournament
       this.loadStages(urlStage);
     });
-  }  
-  
+  }
+     
   triggerRefresh() {
     //console.log('Triggering tab refresh...');
     this.changeTab(this.selectedTab);
@@ -121,8 +130,16 @@ export class MyBetsPage implements OnInit, AfterViewInit {
           this.selectedStage = stageFromUrl;
           this.selectedStageIndex = this.availableStages.indexOf(stageFromUrl);
         } else {
-          this.selectedStage = this.availableStages[0];
-          this.selectedStageIndex = 0;
+          const suggestedStage = await firstValueFrom(this.tournamentService.getFirstStageWithPendingBets(tournamentId));
+
+          if (suggestedStage && this.availableStages.includes(suggestedStage)) {
+            this.selectedStage = suggestedStage;
+            this.selectedStageIndex = this.availableStages.indexOf(suggestedStage);
+          } else {
+            // fallback
+            this.selectedStage = this.availableStages[0];
+            this.selectedStageIndex = 0;
+          }
         }
       }
       
