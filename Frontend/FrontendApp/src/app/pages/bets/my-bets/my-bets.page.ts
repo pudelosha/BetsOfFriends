@@ -130,16 +130,17 @@ export class MyBetsPage implements OnInit, AfterViewInit {
           this.selectedStage = stageFromUrl;
           this.selectedStageIndex = this.availableStages.indexOf(stageFromUrl);
         } else {
-          const suggestedStage = await firstValueFrom(this.tournamentService.getFirstStageWithPendingBets(tournamentId));
-
-          if (suggestedStage && this.availableStages.includes(suggestedStage)) {
-            this.selectedStage = suggestedStage;
-            this.selectedStageIndex = this.availableStages.indexOf(suggestedStage);
+          const stageWithPending = await firstValueFrom(
+            this.tournamentService.getFirstStageWithPendingBets(tournamentId)
+          );
+          
+          if (stageWithPending && this.availableStages.includes(stageWithPending)) {
+            this.selectedStage = stageWithPending;
+            this.selectedStageIndex = this.availableStages.indexOf(stageWithPending);
           } else {
-            // fallback
             this.selectedStage = this.availableStages[0];
             this.selectedStageIndex = 0;
-          }
+          }          
         }
       }
       

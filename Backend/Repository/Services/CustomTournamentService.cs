@@ -1323,11 +1323,58 @@ namespace Backend.Repository.Services
         {
             try
             {
+                _logger.LogInformation($"Fetching first stage with pending bets for tournament {tournamentId}, requested by {userId}");
+
+                // User must be assigned to the tournament (any role)
+                var isParticipant = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (!isParticipant)
+                {
+                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}");
+                    return null;
+                }
+
+                var stageName = await _context.Bets
+                    .Where(b =>
+                        b.Match.TournamentId == tournamentId &&
+                        b.UserId == userId &&
+                        b.Status == Bet.BetStatus.ToPlace)
+                    .OrderBy(b => b.Match.Stage.Order)
+                    .Select(b => b.Match.Stage.StageName)
+                    .FirstOrDefaultAsync();
+
+                return stageName;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching first pending bet stage for user {userId}, tournament {tournamentId}");
+                throw new ApplicationException("Could not retrieve pending bet stage.");
+            }
+        }
+
+
+        public async Task<string?> GetFirstStageWithUpcomingMatchesAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching first stage with upcoming matches for tournament {tournamentId}, requested by user {userId}");
+
+                // Check if user is an Admin in the tournament
+                var isAdmin = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId && a.Role == UserTournamentRole.Admin);
+
+                if (!isAdmin)
+                {
+                    _logger.LogWarning($"User {userId} is not an Admin in tournament {tournamentId} and is not authorized.");
+                    return null;
+                }
+
                 var stageName = await _context.CustomMatches
+                    .Include(m => m.Stage)
                     .Where(m =>
                         m.TournamentId == tournamentId &&
-                        m.Status == CustomMatch.MatchStatus.Timed &&
-                        m.Bets.Any(b => b.UserId == userId && b.Status == Bet.BetStatus.ToPlace))
+                        (m.Status == CustomMatch.MatchStatus.Scheduled || m.Status == CustomMatch.MatchStatus.Timed))
                     .OrderBy(m => m.Stage.Order)
                     .Select(m => m.Stage.StageName)
                     .FirstOrDefaultAsync();
@@ -1336,11 +1383,10 @@ namespace Backend.Repository.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching first stage with pending bets for tournament {tournamentId}, user {userId}");
-                throw new ApplicationException("Failed to retrieve pending stage.");
+                _logger.LogError(ex, $"Error fetching stage with upcoming matches for tournament {tournamentId}, user {userId}");
+                throw new ApplicationException("Could not retrieve upcoming stage.");
             }
         }
-
 
         public async Task<bool> TournamentNameExistsAsync(string publicTournamentName)
         {

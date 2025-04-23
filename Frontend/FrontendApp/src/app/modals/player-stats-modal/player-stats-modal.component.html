@@ -32,11 +32,16 @@
 
     <!-- Dropdown -->
     <ion-col size="auto">
-      <ion-select [(ngModel)]="selectedStage" interface="popover">
-        <ion-select-option *ngFor="let stage of availableStages" [value]="stage">
-          {{ stage }}
-        </ion-select-option>
-      </ion-select>
+      <ion-select 
+        [(ngModel)]="selectedStage"
+        interface="popover"
+        (click)="blurBeforeOpen()"
+        >
+      <ion-select-option *ngFor="let stage of availableStages" [value]="stage">
+        {{ stage }}
+      </ion-select-option>
+    </ion-select>
+    
     </ion-col>
 
     <!-- Forward Button -->

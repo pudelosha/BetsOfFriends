@@ -5,6 +5,9 @@ import { Tournament } from '../model/tournament-model';
 import { environment } from '../../environments/environment';
 import { UserActiveTournament, TournamentSummary, TournamentPlayerResult, TournamentInvite, UserBettingStats, PublicTournament, TournamentParticipant, SelectedTournamentDetails } from '../model/tournament-model';
 import { ActionResult } from '../model/action-result';
+import { map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -84,11 +87,37 @@ export class CustomTournamentService {
   } 
 
   getFirstStageWithPendingBets(tournamentId: number): Observable<string | null> {
-    return this.http.get<string>(`${this.apiUrl}/pending-stage/${tournamentId}`, {
-      responseType: 'text' as 'json'
-    });
+    return this.http.get(`${this.apiUrl}/pending-stage/${tournamentId}`, {
+      responseType: 'text',
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        if (response.status === 204) return null;
+        return response.body ?? null;
+      }),
+      catchError(err => {
+        console.error('Error fetching first stage with pending bets:', err);
+        return of(null);
+      })
+    );
   }
-      
+  
+  getFirstStageWithUpcomingMatches(tournamentId: number): Observable<string | null> {
+    return this.http.get(`${this.apiUrl}/upcoming-stage/${tournamentId}`, {
+      responseType: 'text',
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        if (response.status === 204) return null;
+        return response.body ?? null;
+      }),
+      catchError(err => {
+        console.error('Error fetching first stage with upcoming matches:', err);
+        return of(null);
+      })
+    );
+  }
+          
   getUserBettingStats(tournamentId: number, statsUserId: string): Observable<UserBettingStats[]> {
     return this.http.get<UserBettingStats[]>(`${this.apiUrl}/betting-stats/${tournamentId}/${statsUserId}`);
   } 

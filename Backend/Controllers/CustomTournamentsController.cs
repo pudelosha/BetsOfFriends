@@ -558,22 +558,54 @@ namespace Backend.Controllers
         {
             try
             {
-                _logger.LogInformation($"Fetching first stage with pending bets for tournament {tournamentId}.");
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized("User authentication failed.");
 
+                _logger.LogInformation($"Fetching stage with pending bets for user {userId} and tournament {tournamentId}");
+
+                var stage = await _tournamentService.GetFirstStageWithPendingBetsAsync(tournamentId, userId);
+
+                if (stage == null)
+                    return NoContent();
+
+                return Ok(stage);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Unexpected error in GetFirstStageWithPendingBets: {ex.Message}");
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
+
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("upcoming-stage/{tournamentId}")]
+        public async Task<IActionResult> GetFirstStageWithUpcomingMatches(int tournamentId)
+        {
+            try
+            {
                 var userId = _userService.GetUserIdFromClaims(User);
                 if (string.IsNullOrEmpty(userId))
                 {
                     return Unauthorized("User authentication failed.");
                 }
 
-                var stageName = await _tournamentService.GetFirstStageWithPendingBetsAsync(tournamentId, userId);
+                _logger.LogInformation($"Fetching first stage with upcoming matches for tournament {tournamentId} for user {userId}");
 
-                return Ok(stageName);
+                var stage = await _tournamentService.GetFirstStageWithUpcomingMatchesAsync(tournamentId, userId);
+
+                if (stage == null)
+                {
+                    return NoContent();
+                }
+
+                return Ok(stage);
             }
             catch (ApplicationException ex)
             {
-                _logger.LogError(ex, $"Application error while fetching stage for tournament {tournamentId}: {ex.Message}");
-                return StatusCode(500, "An internal error occurred while retrieving the stage.");
+                _logger.LogError(ex, $"App error while fetching stage for upcoming matches in tournament {tournamentId}");
+                return StatusCode(500, "An error occurred while retrieving the stage.");
             }
             catch (Exception ex)
             {

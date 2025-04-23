@@ -16,11 +16,11 @@
           
           <!-- Compact Row (Title & Date) -->
           <ion-item 
-            slot="header"
-            class="notification-item"
-            [ngClass]="{ 'unread-notification': !notification.isRead }"
-            (click)="toggleNotification(notification)"
-          >
+              slot="header"
+              class="notification-item"
+              [ngClass]="{ 'unread-notification': !notification.isRead }"
+              (click)="toggleNotification(notification)"
+              >
             <div class="notification-grid">
               
               <!-- Notification Title -->

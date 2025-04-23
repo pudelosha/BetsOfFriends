@@ -75,6 +75,9 @@ export class MyBetsToPlacePage implements OnInit {
       console.warn("No tournament selected.");
       this.isLoading = false;
       this.errorMessage = "No tournament selected.";
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
       await loading.dismiss();
       return;
     }
@@ -101,6 +104,11 @@ export class MyBetsToPlacePage implements OnInit {
   
       setTimeout(async () => {
         this.isLoading = false;
+
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+
         await loading.dismiss();
       }, delay);
     }

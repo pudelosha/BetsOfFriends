@@ -44,17 +44,25 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
 
   ionViewDidEnter() {
     this.titleService.setTitle('MANAGE_CUSTOM_MATCHES.TITLE');
-
+  
     const urlTab = this.route.snapshot.queryParamMap.get('tab');
+    const urlStage = this.route.snapshot.queryParamMap.get('stage');
+    const urlTournamentId = this.route.snapshot.queryParamMap.get('tournamentId');
+  
     if (urlTab === 'upcoming' || urlTab === 'started' || urlTab === 'finalised') {
       this.selectedTab = urlTab;
     } else {
       this.selectedTab = 'upcoming';
     }
-
-    this.forceTabReload();
+  
+    if (urlTournamentId && !isNaN(+urlTournamentId)) {
+      const parsedId = Number(urlTournamentId);
+      this.tournamentSelectionService.setSelectedTournament(parsedId);
+    }
+  
+    this.loadStages(urlStage ?? undefined);
   }
-
+  
   ngAfterViewInit() {
 
   }
@@ -68,25 +76,43 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
     }, 100);
   }
 
-  async loadStages() {
+  async loadStages(stageFromUrl?: string) {
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
-    
+  
     if (!tournamentId) {
       console.warn("No tournament selected.");
       return;
     }
-
+  
     try {
       this.availableStages = await firstValueFrom(this.tournamentService.getTournamentStages(tournamentId));
+  
       if (this.availableStages.length > 0) {
-        this.selectedStageIndex = 0;
-        this.selectedStage = this.availableStages[0]; // Set the first stage as default
+        if (stageFromUrl && this.availableStages.includes(stageFromUrl)) {
+          this.selectedStage = stageFromUrl;
+          this.selectedStageIndex = this.availableStages.indexOf(stageFromUrl);
+        } else {
+          // Get first stage with upcoming matches
+          const stageWithUpcoming = await firstValueFrom(
+            this.tournamentService.getFirstStageWithUpcomingMatches(tournamentId)
+          );
+          
+          if (stageWithUpcoming && this.availableStages.includes(stageWithUpcoming)) {
+            this.selectedStage = stageWithUpcoming;
+            this.selectedStageIndex = this.availableStages.indexOf(stageWithUpcoming);
+          } else {
+            this.selectedStage = this.availableStages[0];
+            this.selectedStageIndex = 0;
+          }          
+        }
       }
+  
+      this.forceTabReload();
     } catch (error) {
       console.error("Error fetching tournament stages:", error);
     }
   }
-
+  
   prevStage() {
     if (this.selectedStageIndex > 0) {
       this.selectedStageIndex--;

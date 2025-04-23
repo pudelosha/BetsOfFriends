@@ -76,6 +76,13 @@ export class PlayerStatsModalComponent implements OnInit {
     return value === 'V' ? 'v-status' : value === 'X' ? 'x-status' : '';
   }  
 
+  blurBeforeOpen() {
+    requestAnimationFrame(() => {
+      const active = document.activeElement as HTMLElement | null;
+      if (active) active.blur();
+    });
+  }
+  
   get showQualified(): boolean {
     return this.stats.some(s => s.showQualified);
   }

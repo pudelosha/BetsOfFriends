@@ -88,7 +88,7 @@ export class AppComponent {
   async openFootballModal() {
     const modal = await this.modalController.create({
       component: ParticipantTournamentsModalComponent,
-      breakpoints: [0, 0.5, 0.8],
+      breakpoints: [0, 0.5, 0.75, 1],
       initialBreakpoint: 1,
       backdropDismiss: true
     });
