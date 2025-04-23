@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonSpinner, IonItem, IonLabel, IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonSpinner, IonItem, IonLabel, IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { UserBettingStats } from 'src/app/model/tournament-model';
@@ -12,7 +12,7 @@ import { UserBettingStats } from 'src/app/model/tournament-model';
   templateUrl: './player-stats-modal.component.html',
   styleUrls: ['./player-stats-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonSpinner, IonItem, IonLabel, IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonGrid, IonRow, IonCol],
+  imports: [CommonModule, FormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonIcon, IonButtons, IonButton, IonContent, IonSpinner, IonItem, IonLabel, IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonGrid, IonRow, IonCol],
 })
 export class PlayerStatsModalComponent implements OnInit {
   @Input() tournamentId!: number;
@@ -91,4 +91,23 @@ export class PlayerStatsModalComponent implements OnInit {
     if (this.showQualified) base.push('1fr', '1fr', '1fr'); // Qualify: Bet + Outcome + Payout
     return base.join(' ');
   }  
+
+  get selectedStageIndex(): number {
+    return this.availableStages.findIndex(stage => stage === this.selectedStage);
+  }
+  
+  prevStage(): void {
+    const index = this.selectedStageIndex;
+    if (index > 0) {
+      this.selectedStage = this.availableStages[index - 1];
+    }
+  }
+  
+  nextStage(): void {
+    const index = this.selectedStageIndex;
+    if (index < this.availableStages.length - 1) {
+      this.selectedStage = this.availableStages[index + 1];
+    }
+  }
+  
 }

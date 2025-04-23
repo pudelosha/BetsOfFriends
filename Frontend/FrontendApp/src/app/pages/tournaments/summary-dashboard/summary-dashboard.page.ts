@@ -104,7 +104,9 @@ export class SummaryDashboardPage implements OnInit {
   
     const modal = await this.modalController.create({
       component: PlayerStatsModalComponent,
-      componentProps: { tournamentId, userId }
+      componentProps: { tournamentId, userId },
+      breakpoints: [1],
+      initialBreakpoint: 1
     });
   
     await modal.present();

@@ -19,15 +19,36 @@
     <p>{{ 'PLAYER_STATS.NO_STATS' | translate }}</p>
   </div>
 
-  <!-- Stage Filter Dropdown -->
-  <ion-item *ngIf="!isLoading && availableStages.length > 1">
-    <ion-label>{{ 'PLAYER_STATS.STAGE' | translate }}</ion-label>
-    <ion-select [(ngModel)]="selectedStage">
-      <ion-select-option *ngFor="let stage of availableStages" [value]="stage">
-        {{ stage }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
+<!-- Stage Filter Navigation with Icon Buttons -->
+<ion-grid *ngIf="!isLoading && availableStages.length > 1" class="stage-selector-grid">
+  <ion-row class="ion-align-items-center ion-justify-content-center">
+    
+    <!-- Back Button -->
+    <ion-col size="auto">
+      <ion-button fill="clear" (click)="prevStage()" [disabled]="selectedStageIndex === 0">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-col>
+
+    <!-- Dropdown -->
+    <ion-col size="auto">
+      <ion-select [(ngModel)]="selectedStage" interface="popover">
+        <ion-select-option *ngFor="let stage of availableStages" [value]="stage">
+          {{ stage }}
+        </ion-select-option>
+      </ion-select>
+    </ion-col>
+
+    <!-- Forward Button -->
+    <ion-col size="auto">
+      <ion-button fill="clear" (click)="nextStage()" [disabled]="selectedStageIndex === availableStages.length - 1">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+    </ion-col>
+
+  </ion-row>
+</ion-grid>
+
 
   <!-- Stats Accordion -->
   <ion-accordion-group *ngIf="!isLoading && filteredStats.length > 0" (ionChange)="onAccordionChange($event)">
