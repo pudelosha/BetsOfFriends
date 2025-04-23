@@ -145,6 +145,8 @@ export interface TournamentInvite {
 }
 
 export interface UserBettingStats {
+  playerName: string | null;
+
   showExactResult: boolean | false;
   showQualified: boolean | false;
 

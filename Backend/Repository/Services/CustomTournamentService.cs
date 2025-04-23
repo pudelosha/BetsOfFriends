@@ -1061,10 +1061,11 @@ namespace Backend.Repository.Services
                     return new List<UserBettingStatsDto>();
                 }
 
-                bool isStatsUserParticipant = await _context.CustomTournamentUserAssignments
-                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == statsUserId);
+                var statsUserAssignment = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.TournamentId == tournamentId && a.UserId == statsUserId)
+                    .FirstOrDefaultAsync();
 
-                if (!isStatsUserParticipant)
+                if (statsUserAssignment == null)
                 {
                     _logger.LogWarning($"Stats user {statsUserId} is not assigned to tournament {tournamentId}.");
                     return new List<UserBettingStatsDto>();
@@ -1080,12 +1081,14 @@ namespace Backend.Repository.Services
                 }
 
                 var tournamentMatches = await _context.CustomMatches
-                    .Where(m => m.TournamentId == tournamentId && m.IsVisible) // display only visible
+                    .Where(m => m.TournamentId == tournamentId && m.IsVisible)
                     .Include(m => m.HomeTeam)
                     .Include(m => m.AwayTeam)
                     .Include(m => m.Stage)
                     .Include(m => m.Bets.Where(b => b.UserId == statsUserId))
                     .ToListAsync();
+
+                var nickname = statsUserAssignment.UserName ?? "Unknown";
 
                 var bettingStats = tournamentMatches.Select(match =>
                 {
@@ -1100,13 +1103,14 @@ namespace Backend.Repository.Services
                         ? $"{userBet.HomeGoals}:{userBet.AwayGoals}"
                         : userBet != null ? "-" : null;
 
-                    // Determine ShowExactResult and ShowQualified based on tournament settings and match type
                     bool showExactResult = tournament.AllowExactResultBonus && isFinalised;
-                    bool showQualified = tournament.AllowWhoQualifiesBets && match.Type == CustomMatch.MatchType.ExtendedWithQualification
-                                         && userBet?.Qualified != null;
+                    bool showQualified = tournament.AllowWhoQualifiesBets &&
+                                         match.Type == CustomMatch.MatchType.ExtendedWithQualification &&
+                                         userBet?.Qualified != null;
 
                     return new UserBettingStatsDto
                     {
+                        PlayerName = nickname,
                         MatchId = match.MatchId,
                         MatchStatus = match.Status.ToString(),
                         Stage = match.Stage.StageName,
@@ -1116,7 +1120,10 @@ namespace Backend.Repository.Services
                         BetPlaced = betPlaced,
                         WhoQualifiedBet = userBet?.Qualified?.ToString(),
 
-                        MatchResult = matchResult,
+                        MatchResult = match.Type == CustomMatch.MatchType.ExtendedWithQualification && match.Qualified != null
+                            ? matchResult
+                            : matchResult,
+
                         WhoQualifiedResult = match.Type == CustomMatch.MatchType.ExtendedWithQualification
                             ? match.Qualified?.ToString()
                             : null,
@@ -1142,7 +1149,6 @@ namespace Backend.Repository.Services
                                (showQualified ? (userBet?.QualificationPayout ?? 0) : 0))
                             : null,
 
-                        // Set ShowExactResult and ShowQualified flags based on the rules
                         ShowExactResult = showExactResult,
                         ShowQualified = showQualified
                     };

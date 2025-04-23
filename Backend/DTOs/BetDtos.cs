@@ -101,6 +101,7 @@ namespace Backend.DTOs
 
     public class UserBettingStatsDto
     {
+        public string PlayerName { get; set; }
         public bool ShowExactResult { get; set; } = false;
         public bool ShowQualified { get; set; } = false;
 

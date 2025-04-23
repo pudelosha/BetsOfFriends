@@ -1,6 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ 'PLAYER_STATS.TITLE' | translate }}</ion-title>
+    <ion-title>
+      {{ stats.length > 0 ? stats[0].playerName + ' - ' : '' }}{{ 'PLAYER_STATS.TITLE' | translate }}
+    </ion-title>    
     <ion-buttons slot="end">
       <ion-button (click)="closeModal()">{{ 'PLAYER_STATS.CLOSE' | translate }}</ion-button>
     </ion-buttons>
