@@ -33,7 +33,7 @@ export class TournamentSummaryPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.loadTournamentAndFetchSummary();
+    //await this.loadTournamentAndFetchSummary();
   }
 
   async ionViewWillEnter() {

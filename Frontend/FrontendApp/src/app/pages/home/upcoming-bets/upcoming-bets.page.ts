@@ -35,7 +35,7 @@ export class UpcomingBetsPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.loadTournamentAndFetchBets();
+    //await this.loadTournamentAndFetchBets();
   }
 
   async ionViewWillEnter() {

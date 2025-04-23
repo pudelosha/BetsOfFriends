@@ -7,6 +7,7 @@ import { TournamentSummaryPage } from '../tournament-summary/tournament-summary.
 import { TournamentInvitesPage } from '../tournament-invites/tournament-invites.page';
 import { StartedCustomMatchesPage } from '../started-custom-matches/started-custom-matches.page';
 import { StartedPredefinedMatchesPage } from '../started-predefined-matches/started-predefined-matches.page';
+import { SelectedTournamentPage } from '../selected-tournament/selected-tournament.page';
 import { LoadingController } from '@ionic/angular';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent } from '@ionic/angular/standalone';
@@ -16,7 +17,7 @@ import { IonContent } from '@ionic/angular/standalone';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonContent, ReactiveFormsModule, LatestMessagesPage, UpcomingBetsPage, TournamentSummaryPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage],
+  imports: [CommonModule, IonContent, ReactiveFormsModule, LatestMessagesPage, SelectedTournamentPage, UpcomingBetsPage, TournamentSummaryPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class HomePage implements OnInit {

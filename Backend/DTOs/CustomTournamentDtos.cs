@@ -279,9 +279,16 @@ namespace Backend.DTOs
         public string Nickname { get; set; } = string.Empty;
     }
 
-    public class UpdateAssignmentRequest
+    public class UpdateAssignmentRequestDto
     {
         public string Nickname { get; set; }
+    }
+
+    public class SelectedTournamentDetailsDto
+    {
+        public string TournamentName { get; set; } = string.Empty;
+        public int MatchesCount { get; set; }
+        public int FinalisedMatchesCount { get; set; }
     }
 
     public class TournamentCreationResultDto

@@ -2,6 +2,7 @@
 using Backend.Repository.Interfaces;
 using Backend.Repository.Services;
 using Backend.Services.Interfaces;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -738,7 +739,7 @@ namespace Backend.Controllers
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPut("assignment/{tournamentId}")]
-        public async Task<IActionResult> UpdateTournamentAssignment(int tournamentId, [FromBody] UpdateAssignmentRequest request)
+        public async Task<IActionResult> UpdateTournamentAssignment(int tournamentId, [FromBody] UpdateAssignmentRequestDto request)
         {
             try
             {
@@ -858,6 +859,34 @@ namespace Backend.Controllers
             {
                 _logger.LogError(ex, $"An error occurred while checking updates for custom tournament ID {tournamentId}.");
                 return StatusCode(500, new { Message = "An error occurred while checking for tournament updates." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("details/{tournamentId}")]
+        public async Task<IActionResult> GetSelectedTournamentDetails(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var details = await _tournamentService.GetSelectedTournamentDetailsAsync(tournamentId, userId);
+
+                if (details == null)
+                {
+                    return NotFound(new { Message = "Tournament details not found or access denied." });
+                }
+
+                return Ok(details);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching selected tournament details for tournament {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while retrieving tournament details." });
             }
         }
     }

@@ -31,7 +31,7 @@ export class TournamentInvitesPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.loadTournamentInvites();
+    //await this.loadTournamentInvites();
   }
 
   async ionViewWillEnter() {

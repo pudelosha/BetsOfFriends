@@ -32,11 +32,17 @@ export class LatestMessagesPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.loadMessages();
+    //await this.loadMessages();
   }
 
   async ionViewWillEnter() {
     await this.loadMessages(); // Refresh messages on page enter
+  }
+
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
+      this.loadMessages();
+    }
   }
 
   async loadMessages() {

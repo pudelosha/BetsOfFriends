@@ -34,7 +34,7 @@ export class StartedCustomMatchesPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.loadTournamentAndFetchMatches();
+    //await this.loadTournamentAndFetchMatches();
   }
 
   async ionViewWillEnter() {

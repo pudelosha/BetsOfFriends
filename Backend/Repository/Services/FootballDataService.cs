@@ -134,38 +134,41 @@ namespace Backend.Repository.Services
                 if (!stageMap.Any(kv => kv.Key == stageKey))
                     stageMap.Add(new KeyValuePair<string, string>(stageKey, stageName));
 
-                // Score logic (regularTime preferred over fullTime)
+                // Score extraction logic (with fallback)
                 int? scoreHome = null;
                 int? scoreAway = null;
                 string? qualified = null;
 
                 if (match.TryGetProperty("score", out var scoreProp))
                 {
-                    JsonElement regularScore, fullScore;
+                    bool hasValidRegular = false;
 
-                    if (scoreProp.TryGetProperty("regularTime", out regularScore))
+                    if (scoreProp.TryGetProperty("regularTime", out var regularScore) &&
+                        regularScore.TryGetProperty("home", out var homeReg) &&
+                        regularScore.TryGetProperty("away", out var awayReg) &&
+                        homeReg.ValueKind == JsonValueKind.Number &&
+                        awayReg.ValueKind == JsonValueKind.Number)
                     {
-                        if (regularScore.TryGetProperty("home", out var homeReg) &&
-                            regularScore.TryGetProperty("away", out var awayReg) &&
-                            homeReg.ValueKind == JsonValueKind.Number &&
-                            awayReg.ValueKind == JsonValueKind.Number)
+                        var regHome = homeReg.GetInt32();
+                        var regAway = awayReg.GetInt32();
+
+                        if (regHome != 0 || regAway != 0)
                         {
-                            scoreHome = homeReg.GetInt32();
-                            scoreAway = awayReg.GetInt32();
+                            scoreHome = regHome;
+                            scoreAway = regAway;
+                            hasValidRegular = true;
                         }
                     }
 
-                    if (scoreHome == null || scoreAway == null) // Only fallback if not already set
+                    if (!hasValidRegular &&
+                        scoreProp.TryGetProperty("fullTime", out var fullScore) &&
+                        fullScore.TryGetProperty("home", out var homeFull) &&
+                        fullScore.TryGetProperty("away", out var awayFull) &&
+                        homeFull.ValueKind == JsonValueKind.Number &&
+                        awayFull.ValueKind == JsonValueKind.Number)
                     {
-                        if (scoreProp.TryGetProperty("fullTime", out fullScore) &&
-                            fullScore.TryGetProperty("home", out var homeFull) &&
-                            fullScore.TryGetProperty("away", out var awayFull) &&
-                            homeFull.ValueKind == JsonValueKind.Number &&
-                            awayFull.ValueKind == JsonValueKind.Number)
-                        {
-                            scoreHome = homeFull.GetInt32();
-                            scoreAway = awayFull.GetInt32();
-                        }
+                        scoreHome = homeFull.GetInt32();
+                        scoreAway = awayFull.GetInt32();
                     }
 
                     if (scoreProp.TryGetProperty("winner", out var winnerProp))

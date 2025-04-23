@@ -99,6 +99,10 @@ export const routes: Routes = [
   { path: 'social', loadComponent: () => import('./pages/info/social/social.page').then( m => m.SocialPage) },
 
   // 🛑 Wildcard route
-  { path: '**', redirectTo: 'welcome' },
+  { path: '**', redirectTo: 'welcome' },  {
+    path: 'selected-tournament',
+    loadComponent: () => import('./pages/home/selected-tournament/selected-tournament.page').then( m => m.SelectedTournamentPage)
+  },
+
 
 ];

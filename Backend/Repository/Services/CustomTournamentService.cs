@@ -2031,5 +2031,50 @@ namespace Backend.Repository.Services
             _logger.LogInformation($"Finished checking updates for tournament {tournamentId}");
             return dto;
         }
+
+        public async Task<SelectedTournamentDetailsDto?> GetSelectedTournamentDetailsAsync(int tournamentId, string userId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching selected tournament details for ID {tournamentId}, user {userId}");
+
+                var isParticipant = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+                if (!isParticipant)
+                {
+                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}.");
+                    return null;
+                }
+
+                var tournament = await _context.CustomTournaments
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Tournament ID {tournamentId} not found.");
+                    return null;
+                }
+
+                var matches = await _context.CustomMatches
+                    .Where(m => m.TournamentId == tournamentId)
+                    .ToListAsync();
+
+                int matchesCount = matches.Count;
+                int finalisedMatchesCount = matches.Count(m => m.Status == CustomMatch.MatchStatus.Finished);
+
+                return new SelectedTournamentDetailsDto
+                {
+                    TournamentName = tournament.Name,
+                    MatchesCount = matchesCount,
+                    FinalisedMatchesCount = finalisedMatchesCount
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching selected tournament details for tournament ID {tournamentId}");
+                throw;
+            }
+        }
     }
 }

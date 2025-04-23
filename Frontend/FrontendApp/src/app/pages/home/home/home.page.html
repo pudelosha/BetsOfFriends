@@ -11,19 +11,13 @@
         (loadingStart)="showGlobalSpinner()"
         (loadingEnd)="hideGlobalSpinner()"
       ></app-latest-messages>
-  
-      <app-started-custom-matches
+
+      <app-selected-tournament
         [refreshTrigger]="refreshCounter"
         (loadingStart)="showGlobalSpinner()"
         (loadingEnd)="hideGlobalSpinner()"
-      ></app-started-custom-matches>
-  
-      <app-started-predefined-matches
-        [refreshTrigger]="refreshCounter"
-        (loadingStart)="showGlobalSpinner()"
-        (loadingEnd)="hideGlobalSpinner()"
-      ></app-started-predefined-matches>
-  
+      ></app-selected-tournament>
+    
       <app-upcoming-bets
         [refreshTrigger]="refreshCounter"
         (loadingStart)="showGlobalSpinner()"
@@ -35,6 +29,19 @@
         (loadingStart)="showGlobalSpinner()"
         (loadingEnd)="hideGlobalSpinner()"
       ></app-tournament-summary>
+
+      <app-started-custom-matches
+      [refreshTrigger]="refreshCounter"
+      (loadingStart)="showGlobalSpinner()"
+      (loadingEnd)="hideGlobalSpinner()"
+    ></app-started-custom-matches>
+
+    <app-started-predefined-matches
+      [refreshTrigger]="refreshCounter"
+      (loadingStart)="showGlobalSpinner()"
+      (loadingEnd)="hideGlobalSpinner()"
+    ></app-started-predefined-matches>
+    
     </div>
   </ion-content>
   

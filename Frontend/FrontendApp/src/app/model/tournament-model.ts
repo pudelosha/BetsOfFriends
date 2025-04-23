@@ -190,6 +190,12 @@ export interface TournamentParticipant {
   role: string;
 }
 
+export interface SelectedTournamentDetails {
+  tournamentName: string;
+  matchesCount: number;
+  finalisedMatchesCount: number;
+}
+
 export type RecordStatus = 'New' | 'Uploaded' | 'Update' | 'Delete' | 'Finalised';
 
 

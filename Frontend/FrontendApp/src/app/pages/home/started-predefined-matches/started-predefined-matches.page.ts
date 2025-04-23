@@ -31,7 +31,7 @@ export class StartedPredefinedMatchesPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.loadStartedMatches();
+    //await this.loadStartedMatches();
   }
 
   async ionViewWillEnter() {

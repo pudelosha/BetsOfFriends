@@ -30,5 +30,7 @@ namespace Backend.Repository.Interfaces
         Task<TournamentInvitationResponseDto> AcceptTournamentInvitationAsync(int tournamentId, string userId, string nickname);
         Task<TournamentInvitationResponseDto> RequestToJoinTournamentAsync(string userId, int tournamentId, string nickname, string message);
         Task<CustomTournamentDto?> CheckForPendingUpdatesAsync(int tournamentId, string userId);
+
+        Task<SelectedTournamentDetailsDto?> GetSelectedTournamentDetailsAsync(int tournamentId, string userId);
     }
 }

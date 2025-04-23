@@ -1,0 +1,29 @@
+<div class="selected-tournament-box" (click)="goToMyTournaments()">
+  <h2 class="frame-title">Selected Tournament</h2>
+
+  <ng-container *ngIf="summaryData; else noTournamentSelected">
+    <div class="tournament-details">
+      <div class="tournament-name">
+        {{ summaryData.tournamentName }}
+      </div>
+
+      <div class="match-progress-container">
+        <div class="progress-label">
+          Match Completion:
+          {{ summaryData.finalisedMatchesCount }} / {{ summaryData.matchesCount }}
+        </div>
+
+        <ion-progress-bar
+          [value]="summaryData.matchesCount > 0
+                    ? summaryData.finalisedMatchesCount / summaryData.matchesCount
+                    : 0"
+          color="success">
+        </ion-progress-bar>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noTournamentSelected>
+    <p class="no-tournament-message">No tournament selected.</p>
+  </ng-template>
+</div>
