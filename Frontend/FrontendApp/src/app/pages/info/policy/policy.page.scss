@@ -6,6 +6,9 @@
     border-radius: 10px;
     transition: background 0.3s ease-in-out;
     padding-bottom: 50px;
+    padding-top: 50px;
+    min-height: 100vh;
+    overflow-y: auto;
   }
   
   .page-container h4 {

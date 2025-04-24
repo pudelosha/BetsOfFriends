@@ -5,7 +5,9 @@
   line-height: 1.6;
   border-radius: 10px;
   transition: background 0.3s ease-in-out;
-  height: 100vh;
+  padding-bottom: 0px;
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
 .download-grid {
