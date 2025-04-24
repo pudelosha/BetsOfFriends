@@ -576,6 +576,13 @@ namespace Backend.Repository.Services
                 {
                     if (existingAssignments.TryGetValue(user.AssignmentId!.Value, out var assignment))
                     {
+                        // Prevent deletion of the tournament creator
+                        if (assignment.UserId == tournament.CreatedByUserId)
+                        {
+                            _logger.LogWarning($"Attempted to remove the tournament creator: {assignment.UserAdminName} ({assignment.UserId}) — skipping.");
+                            continue;
+                        }
+
                         _context.CustomTournamentUserAssignments.Remove(assignment);
                         _logger.LogInformation($"Removed tournament assignment for user {assignment.UserAdminName} ({assignment.UserId})");
                     }
@@ -731,7 +738,8 @@ namespace Backend.Repository.Services
                         UserAdminName = p.UserAdminName,
                         UserName = p.UserName,
                         UserEmail = p.User.Email,
-                        Status = p.Status.ToString()
+                        Status = p.Status.ToString(),
+                        UserRole = p.Role.ToString()
                     }).ToList(),
                     Settings = new CustomTournamentSettingsDto
                     {
@@ -1407,23 +1415,34 @@ namespace Backend.Repository.Services
             {
                 _logger.LogInformation($"Fetching public active tournaments (excluding accepted ones) for user {userId}");
 
-                var tournaments = await _context.CustomTournaments
+                var rawTournaments = await _context.CustomTournaments
                     .AsNoTracking()
                     .Where(t =>
                         t.IsActive &&
                         t.Visibility == CustomTournament.TournamentVisibility.Public &&
                         !t.Participants.Any(p => p.UserId == userId && p.Status == AssignmentStatus.Accepted)
                     )
+                    .Select(t => new
+                    {
+                        t.TournamentId,
+                        t.Name,
+                        t.CreatedAt,
+                        ParticipantsCount = t.Participants.Count,
+                        JoinRequested = t.Participants.Any(p => p.UserId == userId && p.Status == AssignmentStatus.Requested)
+                    })
+                    .OrderByDescending(t => t.CreatedAt)
+                    .ToListAsync();
+
+                var tournaments = rawTournaments
                     .Select(t => new PublicTournamentDto
                     {
                         TournamentId = t.TournamentId,
                         TournamentName = t.Name,
                         CreatedAt = DateTime.SpecifyKind(t.CreatedAt, DateTimeKind.Utc),
-                        Participants = t.Participants.Count,
-                        JoinRequested = t.Participants.Any(p => p.UserId == userId && p.Status == AssignmentStatus.Requested)
+                        Participants = t.ParticipantsCount,
+                        JoinRequested = t.JoinRequested
                     })
-                    .OrderByDescending(t => t.CreatedAt)
-                    .ToListAsync();
+                    .ToList();
 
                 return tournaments;
             }

@@ -39,7 +39,7 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     this.titleService.setTitle('MANAGE_CUSTOM_MATCHES.TITLE');
-    this.loadStages(); // Load tournament stages
+    //this.loadStages(); // Load tournament stages
   }
 
   ionViewDidEnter() {

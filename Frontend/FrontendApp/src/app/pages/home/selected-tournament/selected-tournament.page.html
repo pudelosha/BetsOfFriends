@@ -1,5 +1,7 @@
 <div class="selected-tournament-box" (click)="goToMyTournaments()">
-  <h2 class="frame-title">Selected Tournament</h2>
+  <h2 class="frame-title">
+    {{ 'DASHBOARD.SELECTED_TOURNAMENT' | translate }}
+  </h2>
 
   <ng-container *ngIf="summaryData; else noTournamentSelected">
     <div class="tournament-details">
@@ -9,7 +11,7 @@
 
       <div class="match-progress-container">
         <div class="progress-label">
-          Match Completion:
+          {{ 'DASHBOARD.MATCH_COMPLETION' | translate }}:
           {{ summaryData.finalisedMatchesCount }} / {{ summaryData.matchesCount }}
         </div>
 
@@ -24,6 +26,8 @@
   </ng-container>
 
   <ng-template #noTournamentSelected>
-    <p class="no-tournament-message">No tournament selected.</p>
+    <p class="no-tournament-message">
+      {{ 'DASHBOARD.NO_TOURNAMENT_SELECTED' | translate }}
+    </p>
   </ng-template>
 </div>

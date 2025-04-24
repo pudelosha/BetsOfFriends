@@ -131,6 +131,9 @@ namespace Backend.Model.Database
                 .WithOne(s => s.Tournament)
                 .HasForeignKey(s => s.TournamentId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<CustomMatchStage>()
+                .HasIndex(s => new { s.TournamentId, s.StageName });
         }
 
         private void ConfigureUserTournamentRelationship(ModelBuilder builder)
@@ -141,6 +144,9 @@ namespace Backend.Model.Database
             builder.Entity<CustomTournamentUserAssignment>()
                 .HasIndex(ut => new { ut.UserId, ut.TournamentId })
                 .IsUnique();
+
+            builder.Entity<CustomTournamentUserAssignment>()
+                .HasIndex(ut => ut.TournamentId);
 
             builder.Entity<CustomTournamentUserAssignment>()
                 .HasOne(ut => ut.User)
@@ -188,6 +194,12 @@ namespace Backend.Model.Database
             builder.Entity<CustomMatch>()
                 .HasIndex(m => new { m.TournamentId, m.HomeTeamId, m.AwayTeamId, m.MatchStart })
                 .IsUnique();
+
+            builder.Entity<CustomMatch>()
+                .HasIndex(m => new { m.TournamentId, m.Status, m.MatchStart });
+
+            builder.Entity<CustomMatch>()
+                .HasIndex(m => new { m.TournamentId, m.StageId, m.Status });
         }
 
         private void ConfigureBetRelationships(ModelBuilder builder)
@@ -203,6 +215,19 @@ namespace Backend.Model.Database
                 .WithMany()
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Bet>()
+                .HasIndex(b => new { b.MatchId, b.UserId })
+                .IsUnique();
+
+            builder.Entity<Bet>()
+                .HasIndex(b => new { b.MatchId, b.Status });
+
+            builder.Entity<Bet>()
+                .HasIndex(b => new { b.UserId, b.Status });
+
+            builder.Entity<Bet>()
+                .HasIndex(b => new { b.MatchId, b.Calculated });
         }
 
         private void ConfigureNotificationRelationships(ModelBuilder builder)

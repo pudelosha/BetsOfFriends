@@ -326,6 +326,11 @@
     "NO_MATCHES": "No upcoming matches to bet on.",
     "PLACE_BUTTON": "Place Bet"
   },
+  "DASHBOARD": {
+    "SELECTED_TOURNAMENT": "Selected Tournament",
+    "MATCH_COMPLETION": "Match Completion",
+    "NO_TOURNAMENT_SELECTED": "No tournament selected."
+  },
   "MESSAGES": {
     "TITLE": "Messages",
     "NO_NOTIFICATIONS": "No notifications found."

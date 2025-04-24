@@ -173,7 +173,7 @@ export class BuildCustomTournamentPage implements OnInit {
       
   async loadTournament(): Promise<void> {
     if (!this.tournamentId) {
-      console.error('Tournament ID is missing.');
+      //console.error('Tournament ID is missing.');
       return;
     }
 
@@ -190,11 +190,11 @@ export class BuildCustomTournamentPage implements OnInit {
         if (tournament) {
           this.populateForm(tournament);
         } else {
-          console.error('Tournament not found:', this.tournamentId);
+          //console.error('Tournament not found:', this.tournamentId);
         }
       },
       error: (err) => {
-        console.error('Error loading tournament:', err);
+        //console.error('Error loading tournament:', err);
       },
       complete: async () => {
         const elapsedTime = Date.now() - startTime;
@@ -392,7 +392,7 @@ export class BuildCustomTournamentPage implements OnInit {
       );
     });
   
-    console.log('Updated Teams:', this.teamsArray.value);
+    //console.log('Updated Teams:', this.teamsArray.value);
   }
   
   handleStagesExtracted(stages: Stage[]): void {
@@ -410,11 +410,11 @@ export class BuildCustomTournamentPage implements OnInit {
       );
     });
   
-    console.log('Updated Stages:', this.stagesArray.value);
+    //console.log('Updated Stages:', this.stagesArray.value);
   }   
     
   handleMatchesExtracted(matches: Match[]): void {
-    console.log('Matches Received from Child:', matches);
+    //console.log('Matches Received from Child:', matches);
   
     this.matchesArray.clear();
   
@@ -425,11 +425,11 @@ export class BuildCustomTournamentPage implements OnInit {
       }));
     });
   
-    console.log('Updated Matches (from FormArray.value):', this.matchesArray.value);
+    //console.log('Updated Matches (from FormArray.value):', this.matchesArray.value);
   }
   
   handleUsersUpdated(users: User[]): void {
-    console.log("Received updated users from child:", users);
+    //console.log("Received updated users from child:", users);
   
     const previousUsers: User[] = this.usersArray.value; // Explicitly define previous users as User[]
     const previousUserMap = new Map(previousUsers.map(user => [user.assignmentId, user])); 
@@ -447,9 +447,9 @@ export class BuildCustomTournamentPage implements OnInit {
       }
   
       if (recordStatus === 'Delete' && user.recordStatus !== 'New') {
-        console.log(`Marking user as Delete: ${user.userName}`);
+        //console.log(`Marking user as Delete: ${user.userName}`);
       } else if (recordStatus === 'Delete') {
-        console.log(`Removing new user: ${user.userName}`);
+        //console.log(`Removing new user: ${user.userName}`);
         return; // Skip adding this user
       }
   
@@ -466,11 +466,11 @@ export class BuildCustomTournamentPage implements OnInit {
       );
     });
   
-    console.log('Updated Users in Parent:', this.usersArray.value);
+    //console.log('Updated Users in Parent:', this.usersArray.value);
   }   
 
   handleSettingsUpdated(updatedSettings: TournamentSettings): void {
-    console.log("Tournament Settings Updated:", updatedSettings);
+    //console.log("Tournament Settings Updated:", updatedSettings);
     this.settingsGroup.patchValue(updatedSettings);
   }
      
@@ -529,16 +529,16 @@ export class BuildCustomTournamentPage implements OnInit {
   
       if (!validTeamFrontendIds.has(match.homeTeamFrontendId) || !validTeamFrontendIds.has(match.awayTeamFrontendId)) {
         // If a team was deleted from the list (not marked as "Delete"), DELETE its matches
-        console.log(`Deleting match: ${match.homeTeam} vs ${match.awayTeam}`);
+        //console.log(`Deleting match: ${match.homeTeam} vs ${match.awayTeam}`);
       } else if (homeTeam?.recordStatus === 'Delete' || awayTeam?.recordStatus === 'Delete') {
         // If a team is marked "Delete", mark its matches as "Delete"
-        console.log(`Marking match as 'Delete': ${match.homeTeam} vs ${match.awayTeam}`);
+        //console.log(`Marking match as 'Delete': ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Delete' });
         matchesToKeep.push(control);
       } else if (previousTeamMap.get(match.homeTeamFrontendId)?.recordStatus === 'Delete' ||
                  previousTeamMap.get(match.awayTeamFrontendId)?.recordStatus === 'Delete') {
         // If a previously deleted team was restored, mark its matches as "Update"
-        console.log(`Restoring match: ${match.homeTeam} vs ${match.awayTeam}`);
+        //console.log(`Restoring match: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Update' });
         matchesToKeep.push(control);
       } else {
@@ -550,7 +550,7 @@ export class BuildCustomTournamentPage implements OnInit {
     this.matchesArray.clear();
     matchesToKeep.forEach(control => this.matchesArray.push(control));
   
-    console.log('Updated Matches after team removal or undo:', this.matchesArray.value);
+    //console.log('Updated Matches after team removal or undo:', this.matchesArray.value);
   }
       
   handleStagesUpdated(stagesData: { previousStages: Stage[]; updatedStages: Stage[] }): void {
@@ -605,15 +605,15 @@ export class BuildCustomTournamentPage implements OnInit {
   
       if (!validStageFrontendIds.has(match.stageFrontendId)) {
         // If a stage was deleted from the list (not marked as "Delete"), DELETE its matches
-        console.log(`Deleting match due to removed stage: ${match.homeTeam} vs ${match.awayTeam}`);
+        //console.log(`Deleting match due to removed stage: ${match.homeTeam} vs ${match.awayTeam}`);
       } else if (stage?.recordStatus === 'Delete') {
         // If a stage is marked "Delete", mark its matches as "Delete"
-        console.log(`Marking match as 'Delete' due to stage deletion: ${match.homeTeam} vs ${match.awayTeam}`);
+        //console.log(`Marking match as 'Delete' due to stage deletion: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Delete' });
         matchesToKeep.push(control);
       } else if (previousStageMap.get(match.stageFrontendId)?.recordStatus === 'Delete') {
         // If a previously deleted stage was restored, mark its matches as "Update"
-        console.log(`Restoring match due to restored stage: ${match.homeTeam} vs ${match.awayTeam}`);
+        //console.log(`Restoring match due to restored stage: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Update' });
         matchesToKeep.push(control);
       } else {
@@ -625,7 +625,7 @@ export class BuildCustomTournamentPage implements OnInit {
     this.matchesArray.clear();
     matchesToKeep.forEach(control => this.matchesArray.push(control));
   
-    console.log('Updated Matches after stage removal or undo:', this.matchesArray.value);
+    //console.log('Updated Matches after stage removal or undo:', this.matchesArray.value);
   }  
        
   handleMatchesUpdated(updatedMatches: Match[]): void {
@@ -688,7 +688,7 @@ export class BuildCustomTournamentPage implements OnInit {
           const team = control.value;
           if ((team.teamFrontendId === match.homeTeamFrontendId || team.teamFrontendId === match.awayTeamFrontendId)
             && team.recordStatus === 'Delete') {
-            console.log(`Restoring team: ${team.teamName}`);
+            //console.log(`Restoring team: ${team.teamName}`);
             (control as FormGroup).patchValue({ recordStatus: 'Update' });
           }
         });
@@ -696,14 +696,14 @@ export class BuildCustomTournamentPage implements OnInit {
         this.stagesArray.controls.forEach(control => {
           const stage = control.value;
           if (stage.stageFrontendId === match.stageFrontendId && stage.recordStatus === 'Delete') {
-            console.log(`Restoring stage: ${stage.stageName}`);
+            //console.log(`Restoring stage: ${stage.stageName}`);
             (control as FormGroup).patchValue({ recordStatus: 'Update' });
           }
         });
       }
     });
   
-    console.log('Updated Matches:', this.matchesArray.value);
+    //console.log('Updated Matches:', this.matchesArray.value);
   } 
 
   async submitTournament(): Promise<void> {
@@ -815,7 +815,7 @@ export class BuildCustomTournamentPage implements OnInit {
       },
     };
   
-    console.log('Finalized Custom Tournament Data:', tournamentData);
+    //console.log('Finalized Custom Tournament Data:', tournamentData);
   
     const submitObservable = isEditing
       ? this.tournamentService.updateCustomTournament(tournamentData)
@@ -823,7 +823,7 @@ export class BuildCustomTournamentPage implements OnInit {
   
     submitObservable.subscribe({
       next: async (response) => {
-        console.log('Server response:', response);
+        //console.log('Server response:', response);
 
         await this.tournamentSelectionService.loadSelectedTournamentFromBackend();
 
@@ -835,7 +835,7 @@ export class BuildCustomTournamentPage implements OnInit {
         );
       },
       error: async (error) => {
-        console.error('Error submitting tournament:', error);
+        //console.error('Error submitting tournament:', error);
         this.showToast('Error submitting tournament!', 'danger');
       },
       complete: async () => {
@@ -869,7 +869,7 @@ export class BuildCustomTournamentPage implements OnInit {
         this.tournamentService.checkForTournamentUpdates(tournamentId)
       );
   
-      console.log('[Tournament Update] Backend returned updated records:', updatedTournament);
+      //console.log('[Tournament Update] Backend returned updated records:', updatedTournament);
   
       // Merge logic — compare existing FormArray with backend and patch
       this.mergeUpdatedEntities(this.teamsArray, updatedTournament.teams, 'teamId');
@@ -878,7 +878,7 @@ export class BuildCustomTournamentPage implements OnInit {
   
       this.showToast('Tournament updated from source!', 'success');
     } catch (error) {
-      console.error('[Tournament Update] Failed:', error);
+      //console.error('[Tournament Update] Failed:', error);
       this.showToast('Failed to refresh tournament!', 'danger');
     } finally {
       await loading.dismiss();

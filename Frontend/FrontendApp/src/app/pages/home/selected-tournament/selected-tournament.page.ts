@@ -7,13 +7,14 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { SelectedTournamentDetails } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-selected-tournament',
   templateUrl: './selected-tournament.page.html',
   styleUrls: ['./selected-tournament.page.scss'],
   standalone: true,
-  imports: [IonProgressBar, CommonModule, FormsModule],
+  imports: [IonProgressBar, CommonModule, FormsModule, TranslateModule],
 })
 export class SelectedTournamentPage implements OnInit, OnChanges {
   @Input() refreshTrigger: number = 0;

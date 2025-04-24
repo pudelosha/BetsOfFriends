@@ -49,20 +49,20 @@ export class StageInputTypePage implements OnInit {
 
   ngOnInit(): void {  
     if (this.isCustomTournamentCreateMode) {
-      console.log('Setting defaults for Custom - Create');
+      //console.log('Setting defaults for Custom - Create');
       this.tournamentForm.patchValue({
         tournamentVisibility: 'Private',
         updateMethod: 'Manual',
       });
     } else if (!this.isEditMode && this.isPredefinedTournament) {
-      console.log('Setting defaults for Predefined - Create');
+      //console.log('Setting defaults for Predefined - Create');
       this.tournamentForm.patchValue({
         updateMethod: 'Manual',
       });
     }
   
     if (this.isCustomTournamentCreateMode) {
-      console.log('Loading predefined tournaments...');
+      //console.log('Loading predefined tournaments...');
       this.loadPredefinedTournaments();
     }
   }
@@ -71,7 +71,7 @@ export class StageInputTypePage implements OnInit {
     this.tournamentService.getActivePredefinedTournaments().subscribe({
       next: (tournaments) => {
         this.predefinedTournaments = tournaments;
-        console.log('Loaded predefined tournaments:', tournaments);
+        //console.log('Loaded predefined tournaments:', tournaments);
       },
       error: (err) => {
         console.error('Error loading predefined tournaments:', err);
@@ -201,7 +201,7 @@ export class StageInputTypePage implements OnInit {
       const competitionCode = data.competitionCode;
       const seasonCode = data.seasonCode;
   
-      console.log(`Importing matches for competition ${competitionCode}, season ${seasonCode}`);
+      //console.log(`Importing matches for competition ${competitionCode}, season ${seasonCode}`);
   
       const loading = await this.loadingController.create({
         message: 'Importing competition data...',
@@ -213,7 +213,7 @@ export class StageInputTypePage implements OnInit {
   
       this.externalDataService.getCompetitionMatches(competitionCode, seasonCode).subscribe({
         next: (tournament) => {
-          console.log('Fetched Tournament DTO:', tournament);
+          //console.log('Fetched Tournament DTO:', tournament);
   
           const teams: Team[] = tournament.teams.map(t => ({
             teamFrontendId: this.generateFrontendId(),
@@ -478,7 +478,7 @@ export class StageInputTypePage implements OnInit {
         }
       });
 
-      console.log('Extracted Teams:', teams);
+      //console.log('Extracted Teams:', teams);
     } else {
       console.warn('No "Teams" sheet found in the Excel file.');
     }
@@ -508,7 +508,7 @@ export class StageInputTypePage implements OnInit {
         }
       });
   
-      console.log('Extracted Stages:', stages);
+      //console.log('Extracted Stages:', stages);
     } else {
       console.warn('No "Stages" sheet found in the Excel file.');
     }
@@ -584,7 +584,7 @@ export class StageInputTypePage implements OnInit {
         matches.push(match);
       });
   
-      console.log('Extracted Matches:', matches);
+      //console.log('Extracted Matches:', matches);
     } else {
       console.warn('No "Matches" sheet found in the Excel file.');
     }

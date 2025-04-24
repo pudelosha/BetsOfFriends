@@ -6,6 +6,7 @@ import { ModalController, AlertController } from '@ionic/angular';
 import { EditUserModalComponent } from 'src/app/modals/edit-user-modal/edit-user-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
+import { AuthService } from 'src/app/services/auth.service'; // Adjust the path as needed
 
 @Component({
   selector: 'app-stage-users-management',
@@ -19,23 +20,35 @@ export class StageUsersManagementPage implements OnInit {
   @Output() usersUpdated = new EventEmitter<any[]>(); // Emit current list of users
 
   isMobile = false;
+  loggedInUserEmail: string = '';
 
   constructor(
     private fb: FormBuilder, // Inject FormBuilder
     private toastController: ToastController,
     private modalController: ModalController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize.bind(this));
+
+    this.loggedInUserEmail = (this.authService.getEmailFromToken())?.toLowerCase().trim() || '';
   }
 
   checkScreenSize(): void {
     this.isMobile = window.innerWidth < 600; // you can tweak the threshold
   }
-
+  
+  get filteredUserControls(): FormGroup[] {
+    return this.usersArray.controls
+      .filter(control => {
+        const email = control.get('userEmail')?.value?.toLowerCase().trim();
+        return email !== this.loggedInUserEmail;
+      }) as FormGroup[];
+  }
+  
   getDeleteIcon(status: string): string {
     switch (status) {
       case 'Delete': return 'arrow-undo-outline';
@@ -105,9 +118,9 @@ export class StageUsersManagementPage implements OnInit {
   }
   
   // Edit user
-  async editUser(index: number): Promise<void> {
-    const user = this.usersArray.at(index).value;
-
+  async editUser(userControl: FormGroup): Promise<void> {
+    const user = userControl.value;
+  
     const modal = await this.modalController.create({
       component: EditUserModalComponent,
       componentProps: {
@@ -115,35 +128,34 @@ export class StageUsersManagementPage implements OnInit {
         isEditing: true,
       },
     });
-
+  
     modal.onDidDismiss().then(result => {
       if (result.data) {
         const updatedUser = result.data;
-        const userGroup = this.usersArray.at(index) as FormGroup;
-        const existingUser = userGroup.value;
-    
-        const isUpdated = existingUser.userAdminName.trim() !== updatedUser.userAdminName.trim() ||
-                          existingUser.userEmail.trim().toLowerCase() !== updatedUser.userEmail.trim().toLowerCase() ||
-                          existingUser.status !== updatedUser.status ||
-                          existingUser.userRole !== updatedUser.userRole;
-    
-        userGroup.patchValue({
-          assignmentId: existingUser.assignmentId ?? null, // Preserve backend assignmentId
+        const existingUser = userControl.value;
+  
+        const isUpdated =
+          existingUser.userAdminName.trim() !== updatedUser.userAdminName.trim() ||
+          existingUser.userEmail.trim().toLowerCase() !== updatedUser.userEmail.trim().toLowerCase() ||
+          existingUser.status !== updatedUser.status ||
+          existingUser.userRole !== updatedUser.userRole;
+  
+        userControl.patchValue({
+          assignmentId: existingUser.assignmentId ?? null,
           userName: updatedUser.userName.trim(),
           userAdminName: updatedUser.userAdminName.trim(),
           userEmail: updatedUser.userEmail.trim().toLowerCase(),
-          status: existingUser.status, // Ensure status remains unchanged
+          status: existingUser.status,
           userRole: updatedUser.userRole,
           recordStatus: isUpdated ? 'Update' : existingUser.recordStatus,
         });
-    
-        //console.log('Updated User:', updatedUser);
+  
         this.emitUsers();
       }
     });
-    
+  
     await modal.present();
-  }
+  }  
 
   // Remove user
   async removeUser(index: number): Promise<void> {
@@ -219,32 +231,32 @@ getUserStatusClass(recordStatus: string | null): string {
 }
 
 // Handles user removal and undo logic
-async handleRemoveOrUndoUser(index: number): Promise<void> {
-  const userControl = this.getUserControl(index);
-  const userToRemove = userControl.value;
-  const currentStatus = userToRemove.recordStatus;
+async handleRemoveOrUndoUser(userControl: FormGroup): Promise<void> {
+  const userEmail = userControl.get('userEmail')?.value ?? 'this user';
+  const currentStatus = userControl.get('recordStatus')?.value;
 
   if (currentStatus === 'Delete') {
     userControl.patchValue({ recordStatus: 'Update' });
     this.emitUsers();
-    await this.showToast(`User restored successfully!`, 'success');
+    await this.showToast(`User "${userEmail}" restored successfully!`, 'success');
   } else {
     const alert = await this.alertController.create({
       header: 'Confirm Removal',
-      message: `Are you sure you want to delete user "${userToRemove.userName}"?`,
+      message: `Are you sure you want to delete user "${userEmail}"?`,
       buttons: [
         { text: 'Cancel', role: 'cancel' },
         {
           text: 'Delete',
           role: 'destructive',
           handler: async () => {
+            const index = this.usersArray.controls.indexOf(userControl);
             if (currentStatus === 'New') {
               this.usersArray.removeAt(index);
             } else {
               userControl.patchValue({ recordStatus: 'Delete' });
             }
             this.emitUsers();
-            await this.showToast(`User removed successfully!`, 'success');
+            await this.showToast(`User "${userEmail}" removed successfully!`, 'success');
           },
         },
       ],
@@ -254,8 +266,7 @@ async handleRemoveOrUndoUser(index: number): Promise<void> {
   }
 }
 
-
-  // Show toast messages
+// Show toast messages
 private async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary'): Promise<void> {
   const toast = await this.toastController.create({
     message,

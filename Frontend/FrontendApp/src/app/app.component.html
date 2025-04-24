@@ -35,11 +35,6 @@
             <ion-label>{{ 'APP.MY_TOURNAMENTS' | translate }}</ion-label>
           </ion-item>
 
-          <ion-item (click)="navigateToTournamentSummary()">
-            <ion-icon name="podium-outline" slot="start"></ion-icon>
-            <ion-label>{{ 'APP.SUMMARY' | translate }}</ion-label>
-          </ion-item>
-
           <ion-item (click)="navigateToFindTournament()">
             <ion-icon name="search-outline" slot="start"></ion-icon>
             <ion-label>{{ 'APP.FIND_TOURNAMENT' | translate }}</ion-label>
@@ -56,6 +51,11 @@
           <ion-item (click)="navigateToMyBets()">
             <ion-icon name="create-outline" slot="start"></ion-icon>
             <ion-label>{{ 'APP.MY_BETS' | translate }}</ion-label>
+          </ion-item>
+
+          <ion-item (click)="navigateToTournamentSummary()">
+            <ion-icon name="podium-outline" slot="start"></ion-icon>
+            <ion-label>{{ 'APP.SUMMARY' | translate }}</ion-label>
           </ion-item>
 
           <!-- Admin -->

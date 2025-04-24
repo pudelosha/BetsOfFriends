@@ -31,6 +31,7 @@ namespace Backend.Repository.Services
 
                     await SendMatchStartRemindersAsync(notificationService, dbContext, TimeSpan.FromHours(1));
                     await SendMatchStartRemindersAsync(notificationService, dbContext, TimeSpan.FromHours(24));
+                    await DeleteOldNotificationsAsync(dbContext);
                 }
                 catch (Exception ex)
                 {
@@ -83,6 +84,40 @@ namespace Backend.Repository.Services
             if (matches.Any())
             {
                 await dbContext.SaveChangesAsync();
+            }
+        }
+
+        private async Task DeleteOldNotificationsAsync(AppDbContext dbContext)
+        {
+            var cutoffDate = DateTime.UtcNow.AddDays(-14);
+
+            _logger.LogInformation($"Deleting notifications older than {cutoffDate:u}");
+
+            // Fetch notifications older than cutoff
+            var oldNotifications = await dbContext.Notifications
+                .Where(n => n.CreatedAt < cutoffDate)
+                .ToListAsync();
+
+            if (oldNotifications.Any())
+            {
+                _logger.LogInformation($"Found {oldNotifications.Count} old notifications. Deleting...");
+
+                // Get all related NotificationRecipients
+                var oldNotificationIds = oldNotifications.Select(n => n.Id).ToList();
+                var oldRecipients = await dbContext.NotificationRecipients
+                    .Where(r => oldNotificationIds.Contains(r.NotificationId))
+                    .ToListAsync();
+
+                dbContext.NotificationRecipients.RemoveRange(oldRecipients);
+                dbContext.Notifications.RemoveRange(oldNotifications);
+
+                await dbContext.SaveChangesAsync();
+
+                _logger.LogInformation("Old notifications and recipients deleted.");
+            }
+            else
+            {
+                _logger.LogInformation("No old notifications found.");
             }
         }
     }

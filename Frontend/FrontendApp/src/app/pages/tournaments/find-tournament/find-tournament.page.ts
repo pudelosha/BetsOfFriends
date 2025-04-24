@@ -30,7 +30,6 @@ export class FindTournamentPage implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle('FIND_TOURNAMENT.TITLE');
-    this.loadTournaments(); // Initial load with all public tournaments
   }
 
   ionViewWillEnter() {

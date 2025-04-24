@@ -6,28 +6,19 @@
 
 <ion-list class="user-list nav-menu-space" [ngClass]="{ 'mobile-view': isMobile }">
   <!-- Show empty row when no users are added -->
-  <ion-item *ngIf="usersArray.controls.length === 0" class="user-item empty-user">
+  <ion-item *ngFor="let user of filteredUserControls"
+            class="user-item"
+            [formGroup]="user"
+            [ngClass]="getUserStatusClass(user.get('recordStatus')?.value)">
     <div class="user-grid">
-      <div class="user-details">{{ 'STAGE_USERS_MANAGEMENT.NO_USERS' | translate }}</div>
-    </div>
-  </ion-item>
-
-  <!-- List of users -->
-  <ion-item *ngFor="let user of usersArray.controls; let i = index" 
-            class="user-item" 
-            [formGroup]="getUserControl(i)"
-            [ngClass]="getUserStatusClass(getUserControl(i).get('recordStatus')?.value)">
-    <div class="user-grid">
-      <!-- User Details -->
       <div class="user-details">
-        <span class="user-name">{{ getUserControl(i).get('userName')?.value }}</span>
-        <span class="user-email">{{ getUserControl(i).get('userEmail')?.value }}</span>
-        <span class="user-status">{{ getUserControl(i).get('status')?.value }}</span>
+        <span class="user-name">{{ user.get('userName')?.value }}</span>
+        <span class="user-email">{{ user.get('userEmail')?.value }}</span>
+        <span class="user-status">{{ user.get('status')?.value }}</span>
       </div>
 
-      <!-- Buttons: Edit and Delete/Undo -->
       <div class="user-button-container">
-        <ion-button size="small" fill="outline" color="primary" class="user-button" (click)="editUser(i)">
+        <ion-button size="small" fill="outline" color="primary" class="user-button" (click)="editUser(user)">
           <ng-container *ngIf="!isMobile">
             {{ 'STAGE_USERS_MANAGEMENT.EDIT' | translate }}
           </ng-container>
@@ -35,15 +26,16 @@
         </ion-button>
 
         <ion-button size="small" fill="outline"
-                    [color]="getDeleteButtonColor(getUserControl(i).get('recordStatus')?.value)"
+                    [color]="getDeleteButtonColor(user.get('recordStatus')?.value)"
                     class="user-button fixed-button"
-                    (click)="handleRemoveOrUndoUser(i)">
+                    (click)="handleRemoveOrUndoUser(user)">
           <ng-container *ngIf="!isMobile">
-            {{ getDeleteButtonText(getUserControl(i).get('recordStatus')?.value) }}
+            {{ getDeleteButtonText(user.get('recordStatus')?.value) }}
           </ng-container>
-          <ion-icon *ngIf="isMobile" [name]="getDeleteIcon(getUserControl(i).get('recordStatus')?.value)" slot="icon-only"></ion-icon>
+          <ion-icon *ngIf="isMobile" [name]="getDeleteIcon(user.get('recordStatus')?.value)" slot="icon-only"></ion-icon>
         </ion-button>
       </div>
     </div>
   </ion-item>
+
 </ion-list>

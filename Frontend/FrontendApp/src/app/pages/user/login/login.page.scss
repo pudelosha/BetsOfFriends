@@ -64,6 +64,7 @@ ion-item {
   margin: 4px 0 12px 0;
   font-size: 0.8rem;
   color: #e74c3c;
+  text-align: center;
 }
 
 .forgot-password,
@@ -92,3 +93,8 @@ ion-item {
   padding: 10px 24px;
   font-size: 1rem;
 }
+
+.validation-message .error {
+  color: #e74c3c !important;
+}
+
