@@ -106,6 +106,11 @@ export class StageMatchesManagementPage implements OnInit {
           homeQualifies: result.data.homeQualifies ?? null,
           awayQualifies: result.data.awayQualifies ?? null,
 
+          matchStatus: result.data.matchStatus ?? null,
+          scoreHome: result.data.scoreHome ?? null,
+          scoreAway: result.data.scoreAway ?? null,        
+          qualifiedTeam: result.data.qualifiedTeam ?? null,
+
           isVisible: result.data.isVisible ?? true,
   
           recordStatus: 'New'
@@ -174,8 +179,9 @@ export class StageMatchesManagementPage implements OnInit {
 
           matchStatus: result.data.matchStatus ?? null, 
           scoreHome: result.data.scoreHome ?? null,   
-          scoreAway: result.data.scoreAway ?? null,   
-  
+          scoreAway: result.data.scoreAway ?? null,  
+          qualifiedTeam: result.data.qualifiedTeam ?? null,
+   
           recordStatus: index !== undefined
             ? (JSON.stringify(existingMatch) !== JSON.stringify(result.data) ? 'Update' : existingMatch.recordStatus)
             : 'New'
@@ -271,8 +277,9 @@ export class StageMatchesManagementPage implements OnInit {
 
       matchStatus: match.matchStatus ?? null,  
       scoreHome: match.scoreHome ?? null,     
-      scoreAway: match.scoreAway ?? null,    
-
+      scoreAway: match.scoreAway ?? null,  
+      qualifiedTeam: match.qualifiedTeam ?? null,
+  
       recordStatus: match.recordStatus ?? 'Update'
     }));
 

@@ -271,8 +271,9 @@ export class BuildPredefinedTournamentPage implements OnInit {
 
             matchStatus: [match.matchStatus || null],    
             scoreHome: [match.scoreHome ?? null],       
-            scoreAway: [match.scoreAway ?? null],        
-
+            scoreAway: [match.scoreAway ?? null],   
+            qualifiedTeam: [match.qualifiedTeam ?? null],
+     
             isVisible: [match.isVisible ?? true],
           })
         );
@@ -317,6 +318,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
       matchStatus: [match.matchStatus || null],
       scoreHome: [match.scoreHome ?? null],
       scoreAway: [match.scoreAway ?? null],
+      qualifiedTeam: [match.qualifiedTeam ?? null],
 
       recordStatus: [match.recordStatus ?? 'New'],
     });
@@ -555,7 +557,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
         previousMatch.awayQualifies !== match.awayQualifies ||
         previousMatch.matchStatus !== match.matchStatus ||             
         previousMatch.scoreHome !== match.scoreHome ||              
-        previousMatch.scoreAway !== match.scoreAway             
+        previousMatch.scoreAway !== match.scoreAway ||
+        previousMatch.qualifiedTeam !== match.qualifiedTeam            
       );
   
       this.matchesArray.push(this.fb.group({
@@ -582,6 +585,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
         matchStatus: [match.matchStatus || null],
         scoreHome: [match.scoreHome ?? null],
         scoreAway: [match.scoreAway ?? null],
+        qualifiedTeam: [match.qualifiedTeam ?? null],
         recordStatus: [isUpdated ? 'Update' : match.recordStatus || 'New']
       }));
     });
@@ -690,7 +694,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
         awayQualifies: match.awayQualifies,
         matchStatus: match.matchStatus || null,   
         scoreHome: match.scoreHome ?? null,        
-        scoreAway: match.scoreAway ?? null,     
+        scoreAway: match.scoreAway ?? null,    
+        qualifiedTeam: match.qualifiedTeam ?? null, 
         isVisible: match.isVisible ?? true,
         recordStatus: match.recordStatus || 'New'
       })),

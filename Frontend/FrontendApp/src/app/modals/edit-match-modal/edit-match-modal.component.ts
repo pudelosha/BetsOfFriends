@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSelect, IonSelectOption, IonDatetime, IonItem, IonToggle } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonSegment, IonSegmentButton, IonContent, IonLabel, IonInput, IonSelect, IonSelectOption, IonDatetime, IonItem, IonToggle } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { Team, Stage } from 'src/app/model/tournament-model';
 
@@ -11,7 +11,7 @@ import { Team, Stage } from 'src/app/model/tournament-model';
   templateUrl: './edit-match-modal.component.html',
   styleUrls: ['./edit-match-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSelect, IonSelectOption, IonDatetime, IonItem, IonToggle],
+  imports: [IonSegmentButton, CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonSegment, IonSegmentButton, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSelect, IonSelectOption, IonDatetime, IonItem, IonToggle],
 })
 export class EditMatchModalComponent implements OnInit {
   @Input() match: any; // Existing match (if editing), otherwise null
@@ -54,10 +54,11 @@ export class EditMatchModalComponent implements OnInit {
       matchStatus: ['Timed'],      // NEW
       scoreHome: [null],           // NEW
       scoreAway: [null],           // NEW
+      qualifiedTeam: ['neutral'],  // 'home', 'away', or 'neutral'
 
       isVisible: [true],
 
-      recordStatus: ['New'], // Default to "New"
+      recordStatus: ['New'],       // Default to "New"
     });
 
     // Listen for matchType changes
@@ -78,6 +79,7 @@ export class EditMatchModalComponent implements OnInit {
         recordStatus: this.match.recordStatus ?? 'Uploaded',
         scoreHome: this.match?.scoreHome ?? null,
         scoreAway: this.match?.scoreAway ?? null,
+        qualifiedTeam: this.match.qualifiedTeam || 'neutral',
         matchStatus: this.match?.matchStatus ?? 'Timed',
         isVisible: this.match.isVisible ?? true,
       });
@@ -186,6 +188,7 @@ export class EditMatchModalComponent implements OnInit {
       matchStatus: this.matchForm.value.matchStatus || 'Timed',
       scoreHome: this.matchForm.value.scoreHome ?? null,
       scoreAway: this.matchForm.value.scoreAway ?? null,
+      qualifiedTeam: this.matchForm.value.qualifiedTeam || null,
 
       recordStatus: this.index !== undefined
         ? (isUpdated ? 'Update' : this.matchForm.value.recordStatus) 

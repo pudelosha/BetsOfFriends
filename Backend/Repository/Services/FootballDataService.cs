@@ -190,7 +190,7 @@ namespace Backend.Repository.Services
                     MatchStatus = MapMatchStatus(matchStatus),
                     ScoreHome = scoreHome,
                     ScoreAway = scoreAway,
-                    Qualified = qualified,
+                    QualifiedTeam = qualified,
 
                     HomeTeam = homeTeamName,
                     AwayTeam = awayTeamName,

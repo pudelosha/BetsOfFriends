@@ -38,8 +38,10 @@ export interface Match {
   isVisible: boolean;
 
   matchStatus?: 'Scheduled' | 'Timed' | 'In_Play' | 'Paused' | 'Finished' | 'Postponed' | 'Suspended' | 'Canceled' | null;
+  
   scoreHome?: number | null;
   scoreAway?: number | null;
+  qualifiedTeam?: 'Home' | 'Away' | null;
 
   recordStatus: RecordStatus;
 }

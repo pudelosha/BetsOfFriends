@@ -4,6 +4,7 @@ using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 using static Backend.Model.Entities.CustomMatch;
 using static Backend.Model.Entities.CustomTournament;
 
@@ -107,7 +108,8 @@ namespace Backend.Repository.Services
                         IsVisible = m.IsVisible,
                         ExternalMatchId = m.ExternalMatchId,
                         HomeScore = m.ScoreHome,
-                        AwayScore = m.ScoreAway
+                        AwayScore = m.ScoreAway,
+                        Qualified = Enum.TryParse<TeamQualified>(m.QualifiedTeam, true, out var qualifiedEnum) ? qualifiedEnum : null,
                     };
                 }).ToList();
 
@@ -279,6 +281,7 @@ namespace Backend.Repository.Services
                         existingMatch.AwayQualifies = match.AwayQualifies;
                         existingMatch.HomeScore = match.ScoreHome;
                         existingMatch.AwayScore = match.ScoreAway;
+                        existingMatch.Qualified = Enum.TryParse<TeamQualified>(match.QualifiedTeam, true, out var q) ? q : null;
                         existingMatch.Status = Enum.Parse<CustomMatch.MatchStatus>(match.MatchStatus);
                         existingMatch.IsVisible = match.IsVisible;
                     }
@@ -310,6 +313,9 @@ namespace Backend.Repository.Services
                         AwayWinOdds = newMatch.AwayWinOdds,
                         HomeQualifies = newMatch.HomeQualifies,
                         AwayQualifies = newMatch.AwayQualifies,
+                        HomeScore = newMatch.ScoreHome,
+                        AwayScore = newMatch.ScoreAway,
+                        Qualified = Enum.TryParse<TeamQualified>(newMatch.QualifiedTeam, true, out var q) ? q : null,
                         IsVisible = newMatch.IsVisible
                     });
                 }
@@ -411,7 +417,8 @@ namespace Backend.Repository.Services
                         IsVisible = match.IsVisible,
                         MatchStatus = match.Status.ToString(),
                         ScoreHome = match.HomeScore,
-                        ScoreAway = match.AwayScore
+                        ScoreAway = match.AwayScore,
+                        QualifiedTeam = match.Qualified?.ToString(),
                     }).ToList()
                 };
 

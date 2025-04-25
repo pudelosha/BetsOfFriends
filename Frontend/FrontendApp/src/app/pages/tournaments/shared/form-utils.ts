@@ -30,8 +30,9 @@ export function buildMatchFormGroup(fb: FormBuilder, match: any): FormGroup {
 
     matchStatus: [match.matchStatus ?? null],      
     scoreHome: [match.scoreHome ?? null],           
-    scoreAway: [match.scoreAway ?? null],           
-
+    scoreAway: [match.scoreAway ?? null],     
+    qualifiedTeam: [match.qualifiedTeam ?? null],
+      
     isVisible: [match.isVisible ?? true],       
     recordStatus: [match.recordStatus ?? 'New'],
   });

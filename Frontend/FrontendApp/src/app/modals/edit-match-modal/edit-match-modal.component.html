@@ -131,6 +131,27 @@
       <ion-input type="number" formControlName="scoreAway" class="half-width odds-input"></ion-input>
     </div>
 
+    <!-- Qualifying Team Selection -->
+    <ng-container *ngIf="matchForm.value.matchType === 'ExtendedWithQualification'">
+      <div class="divider"></div>
+      <ion-label class="section-title">
+        {{ 'MATCH_MODAL.QUALIFY_LABEL' | translate }}
+      </ion-label>
+      <ion-item class="full-width no-padding">
+        <ion-segment formControlName="qualifiedTeam" class="full-width">
+          <ion-segment-button value="home" class="segment-home">
+            {{ matchForm.get('homeTeam')?.value || 'Home' }}
+          </ion-segment-button>
+          <ion-segment-button value="neutral" class="segment-neutral">
+            -
+          </ion-segment-button>
+          <ion-segment-button value="away" class="segment-away">
+            {{ matchForm.get('awayTeam')?.value || 'Away' }}
+          </ion-segment-button>
+        </ion-segment>
+      </ion-item>
+    </ng-container>
+    
     <!-- Save Button -->
     <div class="save-button-container">
       <ion-button expand="full" color="medium" (click)="saveMatch()">{{ 'MATCH_MODAL.SAVE' | translate }}</ion-button>
