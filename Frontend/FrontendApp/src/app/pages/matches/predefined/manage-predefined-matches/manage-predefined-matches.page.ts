@@ -57,18 +57,38 @@ export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
     }, 100);
   }
 
-  async loadStages() {
+  async loadStages(stageFromUrl?: string) {
     try {
-      this.availableStages = await firstValueFrom(this.tournamentService.getTournamentStages(this.tournamentId));
+      this.availableStages = await firstValueFrom(
+        this.tournamentService.getTournamentStages(this.tournamentId)
+      );
+  
       if (this.availableStages.length > 0) {
-        this.selectedStageIndex = 0;
-        this.selectedStage = this.availableStages[0];
+        if (stageFromUrl && this.availableStages.includes(stageFromUrl)) {
+          this.selectedStage = stageFromUrl;
+          this.selectedStageIndex = this.availableStages.indexOf(stageFromUrl);
+        } else {
+          // Find the first stage with upcoming matches
+          const stageWithUpcoming = await firstValueFrom(
+            this.tournamentService.getFirstStageWithUpcomingMatches(this.tournamentId)
+          );
+  
+          if (stageWithUpcoming && this.availableStages.includes(stageWithUpcoming)) {
+            this.selectedStage = stageWithUpcoming;
+            this.selectedStageIndex = this.availableStages.indexOf(stageWithUpcoming);
+          } else {
+            this.selectedStage = this.availableStages[0];
+            this.selectedStageIndex = 0;
+          }
+        }
       }
+  
+      this.forceTabReload();
     } catch (error) {
       console.error("Error fetching stages:", error);
     }
   }
-
+  
   prevStage() {
     if (this.selectedStageIndex > 0) {
       this.selectedStageIndex--;
@@ -95,6 +115,14 @@ export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
   changeTab(tab: string) {
     this.selectedTab = tab;
     this.scrollToTop();
+  }
+
+  forceTabReload() {
+    const currentTab = this.selectedTab;
+    this.selectedTab = ''; // Force reset
+    setTimeout(() => {
+      this.selectedTab = currentTab; // Restore tab
+    }, 100);
   }
 
   scrollToTop() {

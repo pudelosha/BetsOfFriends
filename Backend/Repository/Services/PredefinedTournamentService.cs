@@ -620,5 +620,29 @@ namespace Backend.Repository.Services
                 throw new ApplicationException("Error generating Excel file.", ex);
             }
         }
+
+        public async Task<string?> GetFirstStageWithUpcomingMatchesAsync(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching first stage with upcoming matches for tournament {tournamentId}");
+
+                var stageName = await _context.PredefinedMatches
+                    .Include(m => m.PredefinedStage)
+                    .Where(m =>
+                        m.TournamentId == tournamentId &&
+                        (m.Status == CustomMatch.MatchStatus.Scheduled || m.Status == CustomMatch.MatchStatus.Timed))
+                    .OrderBy(m => m.PredefinedStage.Order)
+                    .Select(m => m.PredefinedStage.StageName)
+                    .FirstOrDefaultAsync();
+
+                return stageName;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching stage with upcoming matches for tournament {tournamentId}");
+                throw new ApplicationException("Could not retrieve upcoming stage.");
+            }
+        }
     }
 }

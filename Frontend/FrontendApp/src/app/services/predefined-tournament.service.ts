@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tournament } from '../model/tournament-model';
 import { environment } from '../../environments/environment';
+import { map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +46,22 @@ export class PredefinedTournamentService {
   getTournamentStages(tournamentId: number): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/stages/${tournamentId}`);
   } 
+
+  getFirstStageWithUpcomingMatches(tournamentId: number): Observable<string | null> {
+    return this.http.get(`${this.apiUrl}/upcoming-stage/${tournamentId}`, {
+      responseType: 'text',
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        if (response.status === 204) return null;
+        return response.body ?? null;
+      }),
+      catchError(err => {
+        console.error('Error fetching first stage with upcoming matches:', err);
+        return of(null);
+      })
+    );
+  }  
 
   downloadExcel(tournamentId: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/export-matches?tournamentId=${tournamentId}`, { responseType: 'blob' });

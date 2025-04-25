@@ -68,7 +68,6 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
   }
 
   forceTabReload() {
-    //console.log(`Force reloading tab: ${this.selectedTab}`);
     const currentTab = this.selectedTab;
     this.selectedTab = ''; // Force reset
     setTimeout(() => {

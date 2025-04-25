@@ -216,5 +216,34 @@ namespace Backend.Controllers
                 return StatusCode(500, "An unexpected error occurred.");
             }
         }
+
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpGet("upcoming-stage/{tournamentId}")]
+        public async Task<IActionResult> GetFirstStageWithUpcomingMatches(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching first stage with upcoming matches for tournament {tournamentId}");
+
+                var stage = await _tournamentService.GetFirstStageWithUpcomingMatchesAsync(tournamentId);
+
+                if (stage == null)
+                {
+                    return NoContent();
+                }
+
+                return Ok(stage);
+            }
+            catch (ApplicationException ex)
+            {
+                _logger.LogError(ex, $"App error while fetching stage for upcoming matches in tournament {tournamentId}");
+                return StatusCode(500, "An error occurred while retrieving the stage.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Unexpected error while fetching stage for tournament {tournamentId}: {ex.Message}");
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
     }
 }
