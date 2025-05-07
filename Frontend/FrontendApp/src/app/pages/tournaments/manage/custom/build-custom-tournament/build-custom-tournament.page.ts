@@ -896,31 +896,48 @@ export class BuildCustomTournamentPage implements OnInit {
     const currentMap = new Map(formArray.value.map((item: any) => [item[key], item]));
     const updatedMap = new Map(updatedList.map((item: any) => [item[key], item]));
   
-    // === 1. Update or delete existing items ===
     formArray.controls.forEach((control: AbstractControl) => {
       const formValue = control.value;
-      const match = updatedMap.get(formValue[key]);
+      const updated = updatedMap.get(formValue[key]);
   
-      if (match) {
-        const changed = Object.entries(match).some(([k, v]) => formValue[k] !== v);
-        if (changed) {
-          // Update everything from backend, including recordStatus and backend ID
-          (control as FormGroup).patchValue({ ...match });
+      if (updated) {
+        const patch: any = {};
+  
+        for (const [k, v] of Object.entries(updated)) {
+          // DO NOT overwrite custom IDs
+          if (
+            ['matchId', 'homeTeamId', 'awayTeamId', 'stageId'].includes(k)
+          ) continue;
+  
+          if (formValue[k] !== v) {
+            patch[k] = v;
+          }
+        }
+  
+        if (Object.keys(patch).length > 0) {
+          (control as FormGroup).patchValue(patch);
         }
       } else {
-        // Backend did not return this record => mark as "Delete"
         (control as FormGroup).patchValue({ recordStatus: 'Delete' });
       }
     });
   
-    // === 2. Add new records ===
     updatedList.forEach(item => {
       if (!currentMap.has(item[key])) {
-        formArray.push(this.fb.group(item));
+        // Only take predefined info, leave IDs null for custom use
+        const newItem = {
+          ...item,
+          matchId: null,
+          homeTeamId: null,
+          awayTeamId: null,
+          stageId: null,
+          recordStatus: 'New'
+        };
+        formArray.push(this.fb.group(newItem));
       }
     });
-  }   
-               
+  }
+                   
   async nextStep(): Promise<void> {
     const canProceed = await this.canProceed();
     if (canProceed && this.step < 7) {
