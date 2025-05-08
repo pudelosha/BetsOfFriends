@@ -322,19 +322,19 @@ namespace Backend.Model.Database
                 new Language { LanguageId = 4, ShortName = "fr", LongName = "Français" },
                 new Language { LanguageId = 5, ShortName = "es", LongName = "Español" },
                 new Language { LanguageId = 6, ShortName = "it", LongName = "Italiano" },
-                new Language { LanguageId = 7, ShortName = "pt", LongName = "Português" },
-                new Language { LanguageId = 8, ShortName = "nl", LongName = "Dutch" },
-                new Language { LanguageId = 9, ShortName = "se", LongName = "Swedish" },
-                new Language { LanguageId = 10, ShortName = "no", LongName = "Norge" },
-                new Language { LanguageId = 11, ShortName = "dk", LongName = "Dansk" },
-                new Language { LanguageId = 12, ShortName = "cz", LongName = "Czesky/Slovacky" },
-                new Language { LanguageId = 13, ShortName = "hr", LongName = "Hrvatski" },
-                new Language { LanguageId = 14, ShortName = "ru", LongName = "Русский" },
-                new Language { LanguageId = 15, ShortName = "uk", LongName = "Українська" },
-                new Language { LanguageId = 16, ShortName = "tr", LongName = "Türkçe" },
-                new Language { LanguageId = 17, ShortName = "ar", LongName = "العربية" },
-                new Language { LanguageId = 18, ShortName = "zh", LongName = "中文" },
-                new Language { LanguageId = 19, ShortName = "hi", LongName = "हिन्दी" }
+                new Language { LanguageId = 7, ShortName = "pt", LongName = "Português" }
+                //new Language { LanguageId = 8, ShortName = "nl", LongName = "Dutch" },
+                //new Language { LanguageId = 9, ShortName = "se", LongName = "Swedish" },
+                //new Language { LanguageId = 10, ShortName = "no", LongName = "Norge" },
+                //new Language { LanguageId = 11, ShortName = "dk", LongName = "Dansk" },
+                //new Language { LanguageId = 12, ShortName = "cz", LongName = "Czesky/Slovacky" },
+                //new Language { LanguageId = 13, ShortName = "hr", LongName = "Hrvatski" },
+                //new Language { LanguageId = 14, ShortName = "ru", LongName = "Русский" },
+                //new Language { LanguageId = 15, ShortName = "uk", LongName = "Українська" },
+                //new Language { LanguageId = 16, ShortName = "tr", LongName = "Türkçe" },
+                //new Language { LanguageId = 17, ShortName = "ar", LongName = "العربية" },
+                //new Language { LanguageId = 18, ShortName = "zh", LongName = "中文" },
+                //new Language { LanguageId = 19, ShortName = "hi", LongName = "हिन्दी" }
             );
         }
 

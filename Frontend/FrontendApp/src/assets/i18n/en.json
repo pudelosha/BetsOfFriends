@@ -79,7 +79,7 @@
     "MESSAGES": "Messages",
     "TOURNAMENTS": "Tournaments",
     "MY_TOURNAMENTS": "My Tournaments",
-    "SUMMARY": "Summary",
+    "RESULTS": "Results",
     "FIND_TOURNAMENT": "Find Tournament",
     "BETTING": "Betting",
     "MY_BETS": "My Bets",
@@ -409,8 +409,8 @@
     "JOIN": "Join",
     "WITHDRAW": "Withdraw"
   },
-  "SUMMARY": {
-    "TITLE": "Summary",
+  "RESULTS": {
+    "TITLE": "Results",
     "DESCRIPTION": "This summary provides an overview of participants' performance in the tournament. The table includes ranking, successful predictions in different bet categories, and total payout.",
     "MATCH_PROGRESS": "Match Completion",
     "PLAYER": "Player",

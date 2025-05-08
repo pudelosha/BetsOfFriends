@@ -3,13 +3,13 @@
 
     <div class="page-description">
       <p>
-        {{ 'SUMMARY.DESCRIPTION' | translate }}
+        {{ 'RESULTS.DESCRIPTION' | translate }}
       </p>
 
       <!-- Match Completion Progress -->
       <div *ngIf="summaryData?.length" class="match-progress-container">
         <div class="progress-label">
-          {{ 'SUMMARY.MATCH_PROGRESS' | translate }}:
+          {{ 'RESULTS.MATCH_PROGRESS' | translate }}:
           {{ summaryData[0].finalisedMatchesCount }} / {{ summaryData[0].matchesCount }}
         </div>
 
@@ -29,21 +29,21 @@
       <ion-row class="summary-header">
         <ion-col size="1" class="centered-text"><strong>#</strong></ion-col>
         <ion-col [size]="calculatePlayerColumnSize()" class="text-left">
-          <strong>{{ 'SUMMARY.PLAYER' | translate }}</strong>
+          <strong>{{ 'RESULTS.PLAYER' | translate }}</strong>
         </ion-col>
         <ion-col size="2" class="centered-text"><strong>%</strong></ion-col>
-        <ion-col size="1" class="centered-text"><strong>{{ 'SUMMARY.W' | translate }}</strong></ion-col>
+        <ion-col size="1" class="centered-text"><strong>{{ 'RESULTS.W' | translate }}</strong></ion-col>
 
         <ion-col *ngIf="showQualifiedColumn" size="1" class="centered-text">
-          <strong>{{ 'SUMMARY.Q' | translate }}</strong>
+          <strong>{{ 'RESULTS.Q' | translate }}</strong>
         </ion-col>
 
         <ion-col *ngIf="showExactResultColumn" size="1" class="centered-text">
-          <strong>{{ 'SUMMARY.P' | translate }}</strong>
+          <strong>{{ 'RESULTS.P' | translate }}</strong>
         </ion-col>
 
         <ion-col size="2" class="centered-text">
-          <strong>{{ 'SUMMARY.RESULT' | translate }}</strong>
+          <strong>{{ 'RESULTS.RESULT' | translate }}</strong>
         </ion-col>
       </ion-row>
 

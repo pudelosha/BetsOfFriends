@@ -51,13 +51,7 @@ export class LanguagePage {
       es: 'Continuar',
       it: 'Continua',
       pt: 'Continuar',
-      pl: 'Kontynuuj',
-      ru: 'Продолжить',
-      uk: 'Продовжити',
-      tr: 'Devam et',
-      ar: 'استمر',
-      zh: '继续',
-      hi: 'जारी रखें'
+      pl: 'Kontynuuj'
     };
     return labelMap[this.selectedLang] || 'Continue';
   }
@@ -70,13 +64,7 @@ export class LanguagePage {
       es: 'Selecciona tu idioma',
       it: 'Seleziona la tua lingua',
       pt: 'Selecione o seu idioma',
-      pl: 'Wybierz swój język',
-      ru: 'Выберите язык',
-      uk: 'Оберіть мову',
-      tr: 'Dil seçin',
-      ar: 'اختر لغتك',
-      zh: '选择你的语言',
-      hi: 'अपनी भाषा चुनें'
+      pl: 'Wybierz swój język'
     };
     return headingMap[this.selectedLang] || 'Select Your Language';
   }

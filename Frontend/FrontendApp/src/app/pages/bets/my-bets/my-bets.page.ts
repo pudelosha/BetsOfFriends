@@ -38,7 +38,6 @@ export class MyBetsPage implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    this.titleService.setTitle('MY_BETS.TITLE');
   }
 
   ngAfterViewInit() {
@@ -67,6 +66,8 @@ export class MyBetsPage implements OnInit, AfterViewInit {
       // Always load stages after possibly setting tournament
       this.loadStages(urlStage);
     });
+
+    this.titleService.setTitle('MY_BETS.TITLE');
   }
      
   triggerRefresh() {

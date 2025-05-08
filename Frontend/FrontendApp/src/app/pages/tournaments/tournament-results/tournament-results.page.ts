@@ -11,13 +11,13 @@ import { TitleService } from 'src/app/services/title.service';
 import { IonContent, IonGrid, IonRow, IonCol, IonProgressBar, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
-  selector: 'app-summary-dashboard',
-  templateUrl: './summary-dashboard.page.html',
-  styleUrls: ['./summary-dashboard.page.scss'],
+  selector: 'app-tournament-results',
+  templateUrl: './tournament-results.page.html',
+  styleUrls: ['./tournament-results.page.scss'],
   standalone: true,
   imports: [CommonModule, TranslateModule, IonContent, IonGrid, IonRow, IonCol, IonProgressBar, IonSpinner],
 })
-export class SummaryDashboardPage implements OnInit {
+export class TournamentResultsPage implements OnInit {
   tournamentId: number | null = null;
   summaryData: TournamentSummary[] = [];
   isLoading = true;
@@ -32,13 +32,13 @@ export class SummaryDashboardPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.titleService.setTitle('SUMMARY.TITLE');
+    this.titleService.setTitle('RESULTS.TITLE');
     await this.loadTournamentAndFetchSummary();
   }
 
   async ionViewWillEnter() {
-    this.titleService.setTitle('SUMMARY.TITLE');
-    await this.loadTournamentAndFetchSummary(); // Ensure summary is refreshed on view enter
+    this.titleService.setTitle('RESULTS.TITLE');
+    await this.loadTournamentAndFetchSummary(); // Ensure results is refreshed on view enter
   }
 
   private async loadTournamentAndFetchSummary() {
@@ -55,12 +55,12 @@ export class SummaryDashboardPage implements OnInit {
 
   async fetchSummary() {
     if (this.tournamentId === null) {
-      console.error('Tournament ID is null, cannot fetch summary.');
+      console.error('Tournament ID is null, cannot fetch results.');
       return;
     }
   
     const loading = await this.loadingController.create({
-      message: 'Loading summary...',
+      message: 'Loading results...',
       spinner: 'crescent',
     });
     await loading.present(); // Show spinner
@@ -80,7 +80,7 @@ export class SummaryDashboardPage implements OnInit {
         }, delay);
       },
       error: async (error) => {
-        console.error('Error fetching summary:', error);
+        console.error('Error fetching results:', error);
         this.isLoading = false;
   
         const elapsedTime = Date.now() - startTime;
@@ -88,7 +88,7 @@ export class SummaryDashboardPage implements OnInit {
   
         setTimeout(async () => {
           await loading.dismiss();
-          await this.showToast('Error loading summary', 'danger');
+          await this.showToast('Error loading results', 'danger');
         }, delay);
       },
     });

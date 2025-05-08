@@ -24,7 +24,7 @@ import { IonFab, IonFabButton, IonFabList } from '@ionic/angular/standalone';
 })
 export class LanguageFabComponent {
   @Input() supportedLangs: string[] = [
-    'en', 'pl', 'de', 'fr', 'es', 'it', 'pt', 'nl', 'se', 'no', 'dk', 'cz', 'hr', 'ru', 'uk', 'tr', 'ar', 'zh', 'hi'
+    'en', 'pl', 'de', 'fr', 'es', 'it', 'pt'
   ];
 
   constructor(private languageService: LanguageService) {}

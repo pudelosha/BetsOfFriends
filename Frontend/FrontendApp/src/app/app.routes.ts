@@ -24,7 +24,7 @@ export const routes: Routes = [
   { path: 'notification-settings', loadComponent: () => import('./pages/user/notification-settings/notification-settings.page').then(m => m.NotificationSettingsPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'my-bets', loadComponent: () => import('./pages/bets/my-bets/my-bets.page').then(m => m.MyBetsPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'my-tournaments', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
-  { path: 'summary', loadComponent: () => import('./pages/tournaments/summary-dashboard/summary-dashboard.page').then(m => m.SummaryDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'results', loadComponent: () => import('./pages/tournaments/tournament-results/tournament-results.page').then(m => m.TournamentResultsPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'find-tournament', loadComponent: () => import('./pages/tournaments/find-tournament/find-tournament.page').then(m => m.FindTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'redirect', loadComponent: () => import('./shared/dummy-redirect/dummy-redirect.page').then(m => m.DummyRedirectPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
@@ -99,7 +99,8 @@ export const routes: Routes = [
   { path: 'social', loadComponent: () => import('./pages/info/social/social.page').then( m => m.SocialPage) },
 
   // 🛑 Wildcard route
-  { path: '**', redirectTo: 'welcome' },  {
+  { path: '**', redirectTo: 'welcome' },
+  {
     path: 'selected-tournament',
     loadComponent: () => import('./pages/home/selected-tournament/selected-tournament.page').then( m => m.SelectedTournamentPage)
   },

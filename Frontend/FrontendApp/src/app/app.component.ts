@@ -179,9 +179,9 @@ export class AppComponent {
     this.router.navigate(['/home']);
   }
 
-  navigateToTournamentSummary(){
-    //console.log('Navigating to summary...');
-    this.router.navigate(['/summary']);
+  navigateToTournamentResults(){
+    //console.log('Navigating to results...');
+    this.router.navigate(['/results']);
   }
 
   navigateToFindTournament() {
