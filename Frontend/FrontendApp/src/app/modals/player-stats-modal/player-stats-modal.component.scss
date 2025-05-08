@@ -53,14 +53,15 @@ ion-content {
 /* Table Rows */
 .header-row {
   font-weight: bold;
-  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #e6e6e6;
   background-color: #f7f7f7;
   padding: 6px 0;
 }
 
 .data-row ion-col {
   padding: 5px 0 !important;
-
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 /* Outcome statuses */
@@ -87,7 +88,7 @@ ion-content {
 .header-row ion-col:nth-child(6),
 .data-row ion-col:nth-child(4),
 .data-row ion-col:nth-child(6) {
-  border-left: 1px solid #ccc;
+  border-left: 1px solid #f7f7f7;
 }
 
 .header-row,
@@ -98,6 +99,10 @@ ion-content {
 .stage-navigation ion-select {
   min-width: 150px;
   margin: 0 10px;
+}
+
+.stage-selector-grid {
+  border-bottom: 1px solid #e6e6e6;
 }
 
 
