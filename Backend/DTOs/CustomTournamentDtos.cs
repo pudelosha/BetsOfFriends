@@ -184,6 +184,7 @@ namespace Backend.DTOs
         public int NumberOfParticipants { get; set; }
         public string Role { get; set; }
         public string AssignmentStatus { get; set; }
+        public string Visibility { get; set; }
         public bool IsVisible { get; set; }
     }
 

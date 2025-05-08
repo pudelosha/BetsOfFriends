@@ -114,6 +114,7 @@ export interface UserActiveTournament {
   numberOfParticipants: number;
   role: string;  // 'Admin' or 'Guest'
   assignmentStatus: string; // 'New', 'Invited', 'Accepted'
+  visibility: string; // Private or Public
   isVisible: boolean;
 }
 

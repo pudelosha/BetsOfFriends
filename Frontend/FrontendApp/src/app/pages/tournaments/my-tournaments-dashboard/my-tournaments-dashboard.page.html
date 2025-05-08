@@ -1,59 +1,72 @@
 <ion-content class="ion-padding page-with-header">
-  <div class="page-container">
-    <div class="page-description">
-      <p>{{ 'MY_TOURNAMENTS.DESCRIPTION' | translate }}</p>
+
+  <!-- Sticky Menu for Tabs -->
+  <div class="sticky-menu">
+    <div class="sticky-inner">
+      <ion-segment [(ngModel)]="selectedTab" class="full-width">
+        <ion-segment-button value="private" (click)="onTabChange('private')">
+          PRIVATE
+        </ion-segment-button>
+        <ion-segment-button value="public" (click)="onTabChange('public')">
+          PUBLIC
+        </ion-segment-button>
+      </ion-segment>
     </div>
+  </div>
 
-    <ion-list *ngIf="!isLoading" class="tournament-list">
-      <ion-item
-        *ngFor="let tournament of tournaments"
-        class="tournament-item"
-        [ngClass]="{ 'selected-tournament': tournament.tournamentId === selectedTournamentId }"
-        (click)="tournament.assignmentStatus === 'Accepted' && selectTournament(tournament)">
-    
-        <ion-grid>
-          <ion-row class="tournament-row">
-
-            <!-- Tournament Info -->
-            <ion-col size="7" class="tournament-info">
-              <span class="tournament-title">{{ tournament.tournamentName }}</span>
-              <span class="tournament-meta">
-                {{ 'MY_TOURNAMENTS.PARTICIPANTS' | translate }}: {{ tournament.numberOfParticipants }}
-              </span>
-              <span class="tournament-role">
-                {{ 'MY_TOURNAMENTS.ROLE' | translate }}: {{ tournament.role }}
-              </span>
-              <span class="tournament-status" 
-                    [class.invited]="tournament.assignmentStatus === 'Invited'"
-                    [class.accepted]="tournament.assignmentStatus === 'Accepted'">
-                {{ tournament.assignmentStatus }}
-              </span>
-            </ion-col>
-
-            <!-- Eye Icon -->
-            <ion-col size="1" class="eye-icon-col">
-              <ion-button fill="clear" (click)="toggleTournamentVisibility(tournament); $event.stopPropagation()">
-                <ion-icon name="eye-outline" [ngClass]="{'hidden': !tournament.isVisible}"></ion-icon>
-              </ion-button>
-            </ion-col>
-
-            <!-- Action Buttons -->
-            <ion-col size="4" class="button-col">
-              <ion-button *ngIf="tournament.assignmentStatus === 'Invited'" fill="outline" color="success"
-                          (click)="openEditModal(tournament, false); $event.stopPropagation()">
-                {{ 'MY_TOURNAMENTS.ACCEPT' | translate }}
-              </ion-button>
-
-              <ion-button *ngIf="tournament.assignmentStatus === 'Accepted'" fill="outline" color="primary"
-                          (click)="openEditModal(tournament, true); $event.stopPropagation()">
-                {{ 'MY_TOURNAMENTS.EDIT' | translate }}
-              </ion-button>
-            </ion-col>
-
-          </ion-row>
-        </ion-grid>
-      </ion-item>
-    </ion-list>
+  <div class="page-container">
+    <div class="menu-space">
+      <ion-list *ngIf="!isLoading" class="tournament-list">
+        <ion-item
+          *ngFor="let tournament of filteredTournaments"
+          class="tournament-item"
+          [ngClass]="{ 'selected-tournament': tournament.tournamentId === selectedTournamentId }"
+          (click)="tournament.assignmentStatus === 'Accepted' && selectTournament(tournament)">
+      
+          <ion-grid>
+            <ion-row class="tournament-row">
+  
+              <!-- Tournament Info -->
+              <ion-col size="7" class="tournament-info">
+                <span class="tournament-title">{{ tournament.tournamentName }}</span>
+                <span class="tournament-meta">
+                  {{ 'MY_TOURNAMENTS.PARTICIPANTS' | translate }}: {{ tournament.numberOfParticipants }}
+                </span>
+                <span class="tournament-role">
+                  {{ 'MY_TOURNAMENTS.ROLE' | translate }}: {{ tournament.role }}
+                </span>
+                <span class="tournament-status" 
+                      [class.invited]="tournament.assignmentStatus === 'Invited'"
+                      [class.accepted]="tournament.assignmentStatus === 'Accepted'">
+                  {{ tournament.assignmentStatus }}
+                </span>
+              </ion-col>
+  
+              <!-- Eye Icon -->
+              <ion-col size="1" class="eye-icon-col">
+                <ion-button fill="clear" (click)="toggleTournamentVisibility(tournament); $event.stopPropagation()">
+                  <ion-icon name="eye-outline" [ngClass]="{'hidden': !tournament.isVisible}"></ion-icon>
+                </ion-button>
+              </ion-col>
+  
+              <!-- Action Buttons -->
+              <ion-col size="4" class="button-col">
+                <ion-button *ngIf="tournament.assignmentStatus === 'Invited'" fill="outline" color="success"
+                            (click)="openEditModal(tournament, false); $event.stopPropagation()">
+                  {{ 'MY_TOURNAMENTS.ACCEPT' | translate }}
+                </ion-button>
+  
+                <ion-button *ngIf="tournament.assignmentStatus === 'Accepted'" fill="outline" color="primary"
+                            (click)="openEditModal(tournament, true); $event.stopPropagation()">
+                  {{ 'MY_TOURNAMENTS.EDIT' | translate }}
+                </ion-button>
+              </ion-col>
+  
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+      </ion-list>
+    </div>
   </div>
 
   <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>

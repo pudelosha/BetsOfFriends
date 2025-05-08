@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastController, LoadingController, AlertController, ModalController  } from '@ionic/angular';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
@@ -10,19 +10,22 @@ import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-import { IonContent, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
+import { FormsModule } from '@angular/forms';
+import { IonContent, IonSelect, IonSegment, IonSelectOption, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner, IonSegmentButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-my-tournaments-dashboard',
   templateUrl: './my-tournaments-dashboard.page.html',
   styleUrls: ['./my-tournaments-dashboard.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonContent, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, IonSegment, IonSegmentButton, IonContent, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MyTournamentsDashboardPage implements OnInit {
   tournaments: UserActiveTournament[] = [];
   isLoading = true;
   selectedTournamentId: number | null = null;
+  selectedTab: 'private' | 'public' = 'private';
 
   constructor(
     private tournamentService: CustomTournamentService,
@@ -36,9 +39,7 @@ export class MyTournamentsDashboardPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.titleService.setTitle('MY_TOURNAMENTS.TITLE');
-    this.selectedTournamentId = this.tournamentSelectionService.getSelectedTournament();
-    this.loadTournaments();
+
   }
 
   async ionViewWillEnter() {
@@ -81,6 +82,18 @@ export class MyTournamentsDashboardPage implements OnInit {
         }, delay);
       }
     });
+  }
+
+  onTabChange(tab: 'private' | 'public') {
+    this.selectedTab = tab;
+  }
+
+  get filteredTournaments(): UserActiveTournament[] {
+    return this.tournaments.filter(t =>
+      this.selectedTab === 'private'
+        ? t.visibility === 'Private'
+        : t.visibility === 'Public'
+    );
   }
 
   async openEditModal(tournament: UserActiveTournament, editMode: boolean): Promise<void> {

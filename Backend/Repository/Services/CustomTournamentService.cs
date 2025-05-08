@@ -797,6 +797,7 @@ namespace Backend.Repository.Services
                         NumberOfParticipants = a.Tournament.Participants.Count,
                         Role = a.Role.ToString(),
                         AssignmentStatus = a.Status.ToString(),
+                        Visibility = a.Tournament.Visibility.ToString(),
                         IsVisible = a.IsVisible
                     })
                     .ToListAsync();

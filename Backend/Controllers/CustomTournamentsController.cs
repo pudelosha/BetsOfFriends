@@ -282,11 +282,9 @@ namespace Backend.Controllers
                     return Forbid(result.ErrorMessage ?? "You do not have permission to update this tournament.");
                 }
 
-                // Step 1: Populate bets AFTER DB transaction is committed
                 await _betService.CreateBetsForTournamentAsync(result.TournamentId);
                 _logger.LogInformation($"Bets populated for updated tournament ID: {result.TournamentId}");
 
-                // Step 2: Send emails for invited and existing users
                 var emailTasks = new List<Task>();
 
                 foreach (var email in result.InvitedEmails)
