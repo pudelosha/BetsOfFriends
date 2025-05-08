@@ -1,4 +1,30 @@
 <ion-content class="ion-padding page-with-header">
+
+      <!-- Sticky Pagination Bar at Top -->
+      <div class="sticky-pagination-bar-top">
+        <div class="sticky-inner">
+          <ion-grid class="full-width">
+            <ion-row class="ion-justify-content-center ion-align-items-center">
+              <ion-col size="auto">
+                <ion-button fill="clear" (click)="prevPage()" [disabled]="currentPage === 1">
+                  <ion-icon name="chevron-back-outline"></ion-icon>
+                </ion-button>
+              </ion-col>
+
+              <ion-col size="auto">
+                <span class="page-indicator">{{ currentPage }} / {{ totalPages }}</span>
+              </ion-col>
+
+              <ion-col size="auto">
+                <ion-button fill="clear" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </div>
+  
   <div class="page-container">
     
     <!-- Loading Spinner -->
@@ -11,6 +37,7 @@
 
     <!-- Notifications List -->
     <ion-list *ngIf="!isLoading && notifications.length > 0" class="notification-list">
+   
       <ion-accordion-group [value]="expandedNotificationId">
         <ion-accordion *ngFor="let notification of notifications" [value]="notification.notificationId">
           
@@ -54,6 +81,7 @@
 
         </ion-accordion>
       </ion-accordion-group>
+
     </ion-list>
 
   </div>

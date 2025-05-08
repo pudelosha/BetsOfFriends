@@ -2,6 +2,7 @@
 .page-container {
     padding-left: 0 !important;
     padding-right: 0 !important;
+    padding-top: 56px;
   }
   
   /* Ensure notification list stretches fully */
@@ -100,4 +101,27 @@
     color: gray;
     margin-top: 20px;
   }
+
+  .sticky-pagination-bar-top {
+    position: fixed;
+    top: 56px; // adjust as needed to fit under your main header
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 600px;
+    background-color: white;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .page-indicator {
+    font-weight: 500;
+    font-size: 16px;
+  }
+  
+  
   

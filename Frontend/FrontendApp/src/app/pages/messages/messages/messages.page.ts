@@ -7,16 +7,20 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { Router } from '@angular/router';
-import { IonContent, IonSpinner, IonList, IonItem, IonButton, IonIcon, IonAccordionGroup, IonAccordion } from '@ionic/angular/standalone';
+import { IonContent, IonSpinner, IonList, IonItem, IonButton, IonIcon, IonAccordionGroup, IonAccordion, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-messages',
   templateUrl: './messages.page.html',
   styleUrls: ['./messages.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonContent, IonSpinner, IonList, IonItem, IonButton, IonIcon, IonAccordionGroup, IonAccordion],
+  imports: [IonCol, IonRow, IonGrid, CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonContent, IonSpinner, IonList, IonItem, IonButton, IonIcon, IonAccordionGroup, IonAccordion],
 })
 export class MessagesPage implements OnInit {
+  currentPage = 1;
+  pageSize = 20;
+  totalPages = 1;
+  allNotifications: NotificationDto[] = [];
   notifications: NotificationDto[] = [];
   expandedNotificationId: number | null = null;
   isLoading = true;
@@ -48,48 +52,43 @@ export class MessagesPage implements OnInit {
         .catch(err => console.error('Navigation error:', err));
     }
   }
-     
-  // Load notifications from API
-  async loadNotifications() {
+       
+  loadNotifications() {
     this.isLoading = true;
-  
-    const loading = await this.loadingController.create({
-      message: 'Loading notifications...',
-      spinner: 'crescent',
-    });
-    await loading.present(); // Show loading UI
-  
-    const startTime = Date.now(); // Track when loading starts
-  
     this.notificationService.getNotifications().subscribe({
-      next: async (data) => {
-        this.notifications = data;
-        this.expandedNotificationId = null; // Ensure all accordions are collapsed
-  
-        // Ensure the spinner stays visible for at least 1 second
-        const elapsedTime = Date.now() - startTime;
-        const delay = Math.max(0, 1000 - elapsedTime);
-  
-        setTimeout(async () => {
-          await loading.dismiss();
-          this.isLoading = false;
-        }, delay);
+      next: (data) => {
+        this.allNotifications = data;
+        this.totalPages = Math.ceil(data.length / this.pageSize);
+        this.updatePage();
       },
-      error: async (error) => {
-        console.error('Error fetching notifications:', error);
+      error: (err) => {
+        console.error(err);
         this.showToast('Failed to load notifications', 'danger');
-  
-        const elapsedTime = Date.now() - startTime;
-        const delay = Math.max(0, 500 - elapsedTime);
-  
-        setTimeout(async () => {
-          await loading.dismiss();
-          this.isLoading = false;
-        }, delay);
+        this.isLoading = false;
       }
     });
   }
   
+  updatePage() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.notifications = this.allNotifications.slice(start, start + this.pageSize);
+    this.isLoading = false;
+  }
+  
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePage();
+    }
+  }
+  
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePage();
+    }
+  }
+    
   // Toggle message expansion and mark as read
   toggleNotification(notification: NotificationDto) {
     if (this.expandedNotificationId === notification.notificationId) {
