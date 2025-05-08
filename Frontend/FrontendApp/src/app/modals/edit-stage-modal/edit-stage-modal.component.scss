@@ -13,12 +13,17 @@
     margin-bottom: 5px; /* Slight spacing below label */
   }
   
+  .error-wrapper {
+    margin-top: 10px;
+    min-height: 20px;
+    position: relative;
+  }
+  
   .error-message {
     font-size: 12px;
     color: red;
-    margin-top: 5px;
   }
-  
+    
   .save-button-container ion-button {
     width: 100%;
   }

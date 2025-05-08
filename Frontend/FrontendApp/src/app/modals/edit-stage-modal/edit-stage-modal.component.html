@@ -9,16 +9,19 @@
 
 <ion-content class="ion-padding">
   <form [formGroup]="stageForm" class="stage-form">
+
     <!-- Stage Name Input -->
     <div class="form-group">
       <ion-label class="selector-label">{{ 'STAGE_MODAL.STAGE_NAME_LABEL' | translate }}</ion-label>
       <ion-input formControlName="stageName" [placeholder]="'STAGE_MODAL.STAGE_NAME_PLACEHOLDER' | translate"></ion-input>
     </div>
-    <div class="error-message" *ngIf="stageForm.get('stageName')?.hasError('required') && stageForm.get('stageName')?.touched">
-      {{ 'STAGE_MODAL.STAGE_NAME_REQUIRED' | translate }}
-    </div>
-    <div class="error-message" *ngIf="stageForm.get('stageName')?.hasError('maxlength') && stageForm.get('stageName')?.touched">
-      {{ 'STAGE_MODAL.STAGE_NAME_MAXLENGTH' | translate }}
+    <div class="error-wrapper">
+      <div class="error-message" *ngIf="stageForm.get('stageName')?.hasError('required') && stageForm.get('stageName')?.touched">
+        {{ 'STAGE_MODAL.STAGE_NAME_REQUIRED' | translate }}
+      </div>
+      <div class="error-message" *ngIf="stageForm.get('stageName')?.hasError('maxlength') && stageForm.get('stageName')?.touched">
+        {{ 'STAGE_MODAL.STAGE_NAME_MAXLENGTH' | translate }}
+      </div>
     </div>
 
     <!-- Stage Order Input -->
@@ -26,11 +29,13 @@
       <ion-label class="selector-label">{{ 'STAGE_MODAL.STAGE_ORDER_LABEL' | translate }}</ion-label>
       <ion-input type="number" formControlName="order" [placeholder]="'STAGE_MODAL.STAGE_ORDER_PLACEHOLDER' | translate"></ion-input>
     </div>
-    <div class="error-message" *ngIf="stageForm.get('order')?.hasError('required') && stageForm.get('order')?.touched">
-      {{ 'STAGE_MODAL.STAGE_ORDER_REQUIRED' | translate }}
-    </div>
-    <div class="error-message" *ngIf="stageForm.get('order')?.hasError('min') && stageForm.get('order')?.touched">
-      {{ 'STAGE_MODAL.STAGE_ORDER_MIN' | translate }}
+    <div class="error-wrapper">
+      <div class="error-message" *ngIf="stageForm.get('order')?.hasError('required') && stageForm.get('order')?.touched">
+        {{ 'STAGE_MODAL.STAGE_ORDER_REQUIRED' | translate }}
+      </div>
+      <div class="error-message" *ngIf="stageForm.get('order')?.hasError('min') && stageForm.get('order')?.touched">
+        {{ 'STAGE_MODAL.STAGE_ORDER_MIN' | translate }}
+      </div>
     </div>
 
     <!-- Save Button -->

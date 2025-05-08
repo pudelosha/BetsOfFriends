@@ -15,11 +15,17 @@
   margin-bottom: 5px; /* Slight spacing below label */
 }
 
-/* Error message styling */
+/* Wrapper always takes up space to prevent layout shift */
+.error-wrapper {
+  margin-top: 10px;
+  min-height: 20px; /* Adjust height to match .error-message font size and margin */
+  position: relative;
+}
+
+/* Keep error message styling as is */
 .error-message {
   font-size: 12px;
   color: red;
-  margin-top: 5px;
 }
 
 /* Save button styling */
