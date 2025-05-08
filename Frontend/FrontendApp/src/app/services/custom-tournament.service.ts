@@ -122,9 +122,9 @@ export class CustomTournamentService {
     return this.http.get<UserBettingStats[]>(`${this.apiUrl}/betting-stats/${tournamentId}/${statsUserId}`);
   } 
   
-  checkTournamentNameAvailability(name: string): Observable<{ available: boolean }> {
-    return this.http.post<{ available: boolean }>(`${this.apiUrl}/check-name`, { name });
-  } 
+  checkTournamentNameAvailability(name: string, visibility: string): Observable<{ available: boolean }> {
+    return this.http.post<{ available: boolean }>(`${this.apiUrl}/check-name`, { name, visibility });
+  }
 
   searchPublicTournaments(searchTerm: string = ''): Observable<PublicTournament[]> {
     return this.http.post<PublicTournament[]>(`${this.apiUrl}/search-public`, { searchTerm: searchTerm.trim() });

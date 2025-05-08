@@ -246,6 +246,7 @@ namespace Backend.DTOs
     public class CustomTournamentNameDto
     {
         public string Name { get; set; } = string.Empty;
+        public string Visibility { get; set; }  // "Public" or "Private"
     }
 
     public class TournamentSearchRequestDto

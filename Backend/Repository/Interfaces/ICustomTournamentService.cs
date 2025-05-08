@@ -21,7 +21,7 @@ namespace Backend.Repository.Interfaces
         Task<string?> GetFirstStageWithPendingBetsAsync(int tournamentId, string userId);
         Task<string?> GetFirstStageWithUpcomingMatchesAsync(int tournamentId, string userId);
         Task<List<UserBettingStatsDto>> GetUserBettingStatsAsync(string userId, int tournamentId, string statsUserId);
-        Task<bool> TournamentNameExistsAsync(string publicTournamentName);
+        Task<bool> IsTournamentNameTakenAsync(string name, string visibility, string userId);
         Task<List<PublicTournamentDto>> GetPublicActiveTournamentsAsync(string userId);
         Task<List<TournamentParticipantDto>?> GetTournamentParticipantsAsync(int tournamentId, string userId, string status);
         Task<ActionResultDto> ExcludeParticipantAsync(int tournamentId, string requesterUserId, string targetUserEmail);
@@ -32,7 +32,6 @@ namespace Backend.Repository.Interfaces
         Task<TournamentInvitationResponseDto> AcceptTournamentInvitationAsync(int tournamentId, string userId, string nickname);
         Task<TournamentInvitationResponseDto> RequestToJoinTournamentAsync(string userId, int tournamentId, string nickname, string message);
         Task<CustomTournamentDto?> CheckForPendingUpdatesAsync(int tournamentId, string userId);
-
         Task<SelectedTournamentDetailsDto?> GetSelectedTournamentDetailsAsync(int tournamentId, string userId);
     }
 }

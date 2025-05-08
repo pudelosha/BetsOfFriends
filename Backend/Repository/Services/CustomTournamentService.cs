@@ -1405,15 +1405,35 @@ namespace Backend.Repository.Services
             }
         }
 
-        public async Task<bool> TournamentNameExistsAsync(string publicTournamentName)
+        public async Task<bool> IsTournamentNameTakenAsync(string name, string visibility, string userId)
         {
+            if (string.IsNullOrWhiteSpace(name)) return true;
+
+            name = name.Trim();
+
             try
             {
-                return await _context.CustomTournaments.AnyAsync(t => t.Name == publicTournamentName);  //TODO change model, add prop
+                if (visibility == CustomTournament.TournamentVisibility.Public.ToString())
+                {
+                    return await _context.CustomTournaments
+                        .AnyAsync(t =>
+                            t.Visibility == CustomTournament.TournamentVisibility.Public &&
+                            t.Name.ToLower() == name.ToLower());
+                }
+                else if (visibility == CustomTournament.TournamentVisibility.Private.ToString())
+                {
+                    return await _context.CustomTournaments
+                        .AnyAsync(t =>
+                            t.Visibility == CustomTournament.TournamentVisibility.Private &&
+                            t.Name.ToLower() == name.ToLower() &&
+                            t.Participants.Any(p => p.UserId == userId));
+                }
+
+                return false;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error querying database for tournament name: {publicTournamentName}");
+                _logger.LogError(ex, $"Error checking tournament name availability: {name}");
                 throw;
             }
         }

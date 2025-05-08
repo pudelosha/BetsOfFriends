@@ -974,12 +974,19 @@ export class BuildCustomTournamentPage implements OnInit {
           return false;
         }
   
-        if (visibility === 'Public') {
-          const response = await firstValueFrom(this.tournamentService.checkTournamentNameAvailability(name));
+        try {
+          const response = await firstValueFrom(
+            this.tournamentService.checkTournamentNameAvailability(name, visibility)
+          );
+  
           if (!response.available) {
             await this.showToast('This tournament name is already taken.', 'danger');
             return false;
           }
+        } catch (error) {
+          console.error('Error checking name availability:', error);
+          await this.showToast('Could not validate tournament name.', 'danger');
+          return false;
         }
   
         return true;

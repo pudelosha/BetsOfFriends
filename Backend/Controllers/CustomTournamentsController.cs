@@ -621,23 +621,18 @@ namespace Backend.Controllers
         {
             try
             {
-                if (request == null || string.IsNullOrWhiteSpace(request.Name))
+                if (request == null || string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Visibility))
                 {
-                    return BadRequest(new { Message = "Tournament name cannot be empty." });
+                    return BadRequest(new { Message = "Tournament name and visibility are required." });
                 }
 
-                _logger.LogInformation($"Checking availability for tournament name: {request.Name}");
-
-                bool nameExists = await _tournamentService.TournamentNameExistsAsync(request.Name);
-
-                if (nameExists)
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
                 {
-                    _logger.LogWarning($"Tournament name '{request.Name}' is already taken.");
+                    return Unauthorized(new { Message = "User authentication failed." });
                 }
-                else
-                {
-                    _logger.LogInformation($"Tournament name '{request.Name}' is available.");
-                }
+
+                bool nameExists = await _tournamentService.IsTournamentNameTakenAsync(request.Name, request.Visibility, userId);
 
                 return Ok(new { Available = !nameExists });
             }
@@ -647,6 +642,7 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while checking tournament name availability." });
             }
         }
+
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpPost("search-public")]
