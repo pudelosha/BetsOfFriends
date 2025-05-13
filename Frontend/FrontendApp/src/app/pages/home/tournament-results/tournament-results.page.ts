@@ -10,13 +10,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
-  selector: 'app-tournament-summary',
+  selector: 'app-tournament-results',
   standalone: true,
   imports: [CommonModule, TranslateModule, IonList, IonItem],
-  templateUrl: './tournament-summary.page.html',
-  styleUrls: ['./tournament-summary.page.scss']
+  templateUrl: './tournament-results.page.html',
+  styleUrls: ['./tournament-results.page.scss']
 })
-export class TournamentSummaryPage implements OnInit {
+export class TournamentResultsPage implements OnInit {
   @Input() refreshTrigger: number = 0;
   @Output() loadingStart = new EventEmitter<void>();
   @Output() loadingEnd = new EventEmitter<void>();
@@ -62,22 +62,22 @@ export class TournamentSummaryPage implements OnInit {
 
   async loadTournamentSummary() {
     if (this.tournamentId === null) {
-      console.error('Tournament ID is null, cannot fetch summary.');
+      console.error('Tournament ID is null, cannot fetch results.');
       return;
     }
 
     try {
       this.players = await firstValueFrom(this.tournamentService.getTournamentPlayerResult(this.tournamentId));
     } catch (error) {
-      console.error('Error fetching summary:', error);
-      await this.showToast('Failed to load tournament summary', 'danger');
+      console.error('Error fetching results:', error);
+      await this.showToast('Failed to load tournament results', 'danger');
     } finally {
       this.isLoading = false;
     }
   }
 
   goToMyBets() {
-    this.router.navigate(['/summary']);
+    this.router.navigate(['/results']);
   }
 
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary') {

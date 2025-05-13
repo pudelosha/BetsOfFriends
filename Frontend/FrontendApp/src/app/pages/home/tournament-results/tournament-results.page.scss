@@ -1,5 +1,5 @@
 /* Frame Styling */
-.tournament-summary-box {
+.tournament-results-box {
   background: #f5f5f5 !important; /* Light gray background */
   border-radius: 10px; /* Rounded corners */
   padding: 15px;
@@ -10,7 +10,7 @@
 }
 
 /* Hover effect */
-.tournament-summary-box:hover {
+.tournament-results-box:hover {
   background: #ebebeb !important; /* Slightly darker gray on hover */
 }
 
@@ -24,7 +24,7 @@
 }
 
 /* No tournament data message */
-.no-summary-message {
+.no-results-message {
   text-align: center;
   color: #666;
   font-size: 14px;
@@ -32,7 +32,7 @@
 }
 
 /* Remove extra padding/margins from ion-list */
-.tournament-summary-list {
+.tournament-results-list {
   --background: transparent !important; /* Ensures the list itself is transparent */
   --padding-top: 0px !important;
   --padding-bottom: 0px !important;
@@ -42,7 +42,7 @@
 }
 
 /* Ensure ion-items do NOT have a white background */
-.tournament-summary-item {
+.tournament-results-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
   --padding-end: 0px !important;
@@ -59,7 +59,7 @@
 }
 
 /* Grid layout for Tournament Summary */
-.summary-grid {
+.results-grid {
   display: grid;
   grid-template-columns: 1fr 6fr 2fr; /* Position, Name, Points */
   align-items: center;
@@ -101,7 +101,7 @@
 }
 
 /* Ensure clickable behavior does not break flex/grid */
-.tournament-summary-clickable {
+.tournament-results-clickable {
   display: flex;
   flex-direction: column;
   justify-content: space-between;

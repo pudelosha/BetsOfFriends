@@ -70,7 +70,8 @@ namespace Backend.Model.Entities
             Finished,
             Postponed,
             Suspended,
-            Canceled
+            Canceled,
+            Awarded
         }
 
         public enum MatchType

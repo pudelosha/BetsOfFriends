@@ -91,7 +91,7 @@ public class NotificationService : INotificationService
             $"Match Closed: {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName}",
             $"The match {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName} has been finalized.\n" +
             $"Final Score: {match.HomeScore}-{match.AwayScore}.\nCheck your bets and standings!",
-            $"/my-bets?tab=finalised&stage={encodedStage}",
+            $"/my-bets?tab=finalised&stage={encodedStage}&tournamentId={tournamentId}",
             user => (user.ReceiveEmailMatchClosed, user.ReceivePushMatchClosed)
         );
     }

@@ -349,8 +349,8 @@
     "TITLE": "Tournament Invites",
     "PARTICIPANTS": "participants"
   },
-  "TOURNAMENT_SUMMARY": {
-    "TITLE": "Tournament Summary",
+  "TOURNAMENT_RESULTS": {
+    "TITLE": "Tournament Results",
     "YOU": "you",
     "NO_DATA": "No tournament data available."
   },

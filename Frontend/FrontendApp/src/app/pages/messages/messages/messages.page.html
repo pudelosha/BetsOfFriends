@@ -45,7 +45,10 @@
           <ion-item 
               slot="header"
               class="notification-item"
-              [ngClass]="{ 'unread-notification': !notification.isRead }"
+              [ngClass]="{
+                'unread-notification': !notification.isRead,
+                'expanded-header': expandedNotificationId === notification.notificationId
+              }"
               (click)="toggleNotification(notification)"
               >
             <div class="notification-grid">

@@ -255,6 +255,7 @@ namespace Backend.Repository.Services
                 "POSTPONED" => "Canceled",
                 "SUSPENDED" => "Canceled",
                 "CANCELED" => "Canceled",
+                "AWARDED" => "Finished",
                 _ => "Timed"
             };
         }

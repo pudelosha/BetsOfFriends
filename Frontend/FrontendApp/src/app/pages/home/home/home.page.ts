@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LatestMessagesPage } from '../latest-messages/latest-messages.page';
 import { UpcomingBetsPage } from '../upcoming-bets/upcoming-bets.page';
-import { TournamentSummaryPage } from '../tournament-summary/tournament-summary.page';
+import { TournamentResultsPage } from '../tournament-results/tournament-results.page';
 import { TournamentInvitesPage } from '../tournament-invites/tournament-invites.page';
 import { StartedCustomMatchesPage } from '../started-custom-matches/started-custom-matches.page';
 import { StartedPredefinedMatchesPage } from '../started-predefined-matches/started-predefined-matches.page';
@@ -17,7 +17,7 @@ import { IonContent } from '@ionic/angular/standalone';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonContent, ReactiveFormsModule, LatestMessagesPage, SelectedTournamentPage, UpcomingBetsPage, TournamentSummaryPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage],
+  imports: [CommonModule, IonContent, ReactiveFormsModule, LatestMessagesPage, SelectedTournamentPage, UpcomingBetsPage, TournamentResultsPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class HomePage implements OnInit {
