@@ -566,7 +566,7 @@ export class StageInputTypePage implements OnInit {
           awayTeamFrontendId: awayTeam.teamFrontendId,
           awayTeam: awayTeamName,
   
-          matchStart: this.convertToTimestamp(row['Date'], row['Time'], row['UTC Offset']),
+          matchStart: this.convertToTimestamp(row['Date'], row['Time'], row['Offset']),
           matchType: row['Match Type'] || 'default',
   
           homeWinOdds: this.parseMandatoryOdds(row['Home Win Odds'], 'Home Win Odds'),
@@ -607,11 +607,11 @@ export class StageInputTypePage implements OnInit {
   }
   
 
-  convertToTimestamp(date: string, time: string, utcOffset: number): string {
+  convertToTimestamp(date: string, time: string, offset: number): string {
     if (!date || !time) return '';
     const dateTimeString = `${date}T${time}`;
     const localDate = new Date(dateTimeString);
-    localDate.setHours(localDate.getHours() - (utcOffset || 0));
+    localDate.setHours(localDate.getHours() - (offset || 0));
     return localDate.toISOString();
   }
 

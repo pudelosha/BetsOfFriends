@@ -35,11 +35,12 @@ export class MessagesPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.titleService.setTitle('MESSAGES.TITLE');
-    this.loadNotifications();
+    //this.titleService.setTitle('MESSAGES.TITLE');
+    //this.loadNotifications();
   }
 
   ionViewWillEnter() {
+    this.expandedNotificationId = null;
     this.titleService.setTitle('MESSAGES.TITLE');
     this.loadNotifications();
   }
@@ -72,6 +73,7 @@ export class MessagesPage implements OnInit {
   updatePage() {
     const start = (this.currentPage - 1) * this.pageSize;
     this.notifications = this.allNotifications.slice(start, start + this.pageSize);
+    this.expandedNotificationId = null;
     this.isLoading = false;
   }
   
