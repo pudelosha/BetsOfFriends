@@ -137,5 +137,63 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while deleting the notification." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("settings")]
+        public async Task<IActionResult> GetNotificationSettings()
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var settings = await _notificationService.GetNotificationSettingsAsync(userId);
+
+                if (settings == null)
+                {
+                    return NotFound(new { Message = "Notification settings not found." });
+                }
+
+                return Ok(settings);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving notification settings.");
+                return StatusCode(500, new { Message = "An error occurred while retrieving settings." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPut("settings")]
+        public async Task<IActionResult> UpdateNotificationSettings([FromBody] NotificationSettingsDto settingsDto)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var updated = await _notificationService.UpdateNotificationSettingsAsync(userId, settingsDto);
+
+                if (!updated)
+                {
+                    return BadRequest(new { Message = "Failed to update notification settings." });
+                }
+
+                return Ok(new { Message = "Notification settings updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating notification settings.");
+                return StatusCode(500, new { Message = "An error occurred while updating settings." });
+            }
+        }
     }
 }

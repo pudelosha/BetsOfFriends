@@ -104,6 +104,4 @@ export const routes: Routes = [
     path: 'selected-tournament',
     loadComponent: () => import('./pages/home/selected-tournament/selected-tournament.page').then( m => m.SelectedTournamentPage)
   },
-
-
 ];

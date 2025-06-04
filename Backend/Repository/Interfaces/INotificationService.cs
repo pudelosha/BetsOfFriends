@@ -23,5 +23,8 @@ namespace Backend.Repository.Interfaces
         Task<List<NotificationDto>> GetUserNotificationsAsync(string userId, int? limit = null);
         Task<bool> MarkNotificationAsReadAsync(int notificationId, string userId);
         Task<bool> DeleteNotificationAsync(int notificationId, string userId);
+        Task<NotificationSettingsDto?> GetNotificationSettingsAsync(string userId);
+        Task<bool> UpdateNotificationSettingsAsync(string userId, NotificationSettingsDto settingsDto);
+
     }
 }

@@ -187,7 +187,7 @@ namespace Backend.Repository.Services
                 {
                     ExternalMatchId = externalMatchId,
                     MatchStart = utcDate,
-                    MatchStatus = MapMatchStatus(matchStatus),
+                    MatchStatus = MapMatchStatus(matchStatus, match),
                     ScoreHome = scoreHome,
                     ScoreAway = scoreAway,
                     QualifiedTeam = qualified,
@@ -243,20 +243,34 @@ namespace Backend.Repository.Services
             return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input.ToLower());
         }
 
-        private static string MapMatchStatus(string? rawStatus)
+        private static string MapMatchStatus(string? rawStatus, JsonElement match)
         {
-            return rawStatus?.ToUpperInvariant() switch
+            var status = rawStatus?.ToUpperInvariant();
+
+            // Check if fullTime scores are available
+            bool hasFullTimeScores = false;
+            if (match.TryGetProperty("score", out var scoreProp) &&
+                scoreProp.TryGetProperty("fullTime", out var fullTimeProp) &&
+                fullTimeProp.TryGetProperty("home", out var homeScore) &&
+                fullTimeProp.TryGetProperty("away", out var awayScore) &&
+                homeScore.ValueKind == JsonValueKind.Number &&
+                awayScore.ValueKind == JsonValueKind.Number)
+            {
+                hasFullTimeScores = true;
+            }
+
+            return status switch
             {
                 "SCHEDULED" => "Timed",
-                "TIMED" => "Timed",
+                "TIMED" => hasFullTimeScores ? "Finished" : "Timed",
                 "IN_PLAY" => "In_Play",
                 "PAUSED" => "In_Play",
                 "FINISHED" => "Finished",
                 "POSTPONED" => "Canceled",
                 "SUSPENDED" => "Canceled",
-                "CANCELED" => "Canceled",
+                "CANCELLED" => "Canceled",
                 "AWARDED" => "Finished",
-                _ => "Timed"
+                _ => hasFullTimeScores ? "Finished" : "Timed"
             };
         }
     }

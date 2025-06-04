@@ -59,11 +59,16 @@ public class FootballDataHostedService : BackgroundService
         _logger.LogInformation("Checking predefined tournament changes...");
 
         var predefinedTournaments = await dbContext.PredefinedTournaments
-            .Where(t => t.ExternalTournamentId != null && t.Update == CustomTournament.TournamentUpdate.Auto)
+            .Where(t => t.ExternalTournamentId != null
+                && t.Update == CustomTournament.TournamentUpdate.Auto
+                && t.IsActive)
             .ToListAsync(cancellationToken);
 
         foreach (var tournament in predefinedTournaments)
         {
+            if (!tournament.IsActive)
+                continue;
+
             try
             {
                 var externalId = tournament.ExternalTournamentId!.Value;
@@ -90,9 +95,9 @@ public class FootballDataHostedService : BackgroundService
                         existingMatch.Status.ToString() != updatedMatch.MatchStatus ||
                         existingMatch.MatchStart != updatedMatch.MatchStart ||
                         existingMatch.HomeScore != updatedMatch.ScoreHome ||
-                        existingMatch.AwayScore != updatedMatch.ScoreAway ||
-                        existingMatch.HomeTeam.TeamName != updatedMatch.HomeTeam ||
-                        existingMatch.AwayTeam.TeamName != updatedMatch.AwayTeam);
+                        existingMatch.AwayScore != updatedMatch.ScoreAway);
+                        //existingMatch.HomeTeam.TeamName != updatedMatch.HomeTeam ||
+                        //existingMatch.AwayTeam.TeamName != updatedMatch.AwayTeam);
 
                     if (!hasChanges)
                         continue;

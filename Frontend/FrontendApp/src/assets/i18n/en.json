@@ -422,6 +422,8 @@
   "MY_TOURNAMENTS": {
     "TITLE": "My Tournaments",
     "DESCRIPTION": "View and manage tournaments you are participating in. Accept invitations or proceed with active tournaments.",
+    "PRIVATE": "Private",
+    "PUBLIC": "Public",
     "PARTICIPANTS": "Participants",
     "ROLE": "Role",
     "ACCEPT": "Accept",
@@ -589,7 +591,18 @@
         "TITLE": "Privacy Policy"
       },
       "DOWNLOAD": {
-        "TITLE": "Download"
+        "TITLE": "Download",
+        "IOS_TITLE": "Download for iOS",
+        "IOS_DESCRIPTION": "Install the app on your iPhone or iPad. Available on the App Store or as a direct install package.",
+        "IOS_DOWNLOAD_BUTTON": "Download .IPA File",
+        "IOS_OPEN_STORE_BUTTON": "Open in App Store",
+        "ANDROID_TITLE": "Download for Android",
+        "ANDROID_DESCRIPTION": "Install the Android app using the APK file or visit the Google Play Store for official distribution.",
+        "ANDROID_DOWNLOAD_BUTTON": "Download .APK File",
+        "ANDROID_OPEN_STORE_BUTTON": "Open in Google Play",
+        "EXCEL_TITLE": "Excel Tournament Template",
+        "EXCEL_DESCRIPTION": "Use this Excel template to prepare your own custom tournament, then import it in the app.",
+        "EXCEL_DOWNLOAD_BUTTON": "Download Template"
       },
       "FAQ": {
         "TITLE": "FAQ"
@@ -598,7 +611,19 @@
       "TITLE": "Social Media"
     },
     "INFO": {
-      "TITLE": "Info & Support"
+      "TITLE": "Info & Support",
+      "DOWNLOAD_TITLE": "Download",
+      "DOWNLOAD_DESCRIPTION": "Get the Android/iOS apps or download the Excel template for custom tournaments.",
+      "TERMS_TITLE": "Terms & Conditions",
+      "TERMS_DESCRIPTION": "Review our platform usage terms and how tournaments are managed.",
+      "POLICY_TITLE": "Privacy Policy",
+      "POLICY_DESCRIPTION": "Understand how we protect your data and your rights under GDPR.",
+      "SUPPORT_TITLE": "Contact Support",
+      "SUPPORT_DESCRIPTION": "Have an issue? Use our support form to contact us directly.",
+      "FAQ_TITLE": "FAQ",
+      "FAQ_DESCRIPTION": "Frequently asked questions about tournaments, roles, and predictions.",
+      "SOCIAL_TITLE": "Social Media",
+      "SOCIAL_DESCRIPTION": "Follow us on social media for updates and announcements."
     },
     "SELECT_COMPETITION": {
       "TITLE": "Select Competition",
@@ -609,5 +634,4 @@
       "INVALID_COMPETITION": "Competition code is required.",
       "INVALID_SEASON": "Season is required."
     }
-
 }

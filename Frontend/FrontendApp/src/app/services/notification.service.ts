@@ -27,4 +27,12 @@ export class NotificationService {
   deleteNotification(notificationId: number): Observable<void> {  // Updated type
     return this.http.delete<void>(`${this.apiUrl}/delete/${notificationId}`);
   }
+
+  getNotificationSettings(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/settings`); // Adjust endpoint as needed
+  }
+
+  updateNotificationSettings(settings: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/settings`, settings);
+  }
 }

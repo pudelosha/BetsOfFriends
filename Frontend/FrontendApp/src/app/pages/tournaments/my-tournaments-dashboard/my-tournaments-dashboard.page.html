@@ -5,10 +5,10 @@
     <div class="sticky-inner">
       <ion-segment [(ngModel)]="selectedTab" class="full-width">
         <ion-segment-button value="private" (click)="onTabChange('private')">
-          PRIVATE
+          {{ 'MY_TOURNAMENTS.PRIVATE' | translate }}
         </ion-segment-button>
         <ion-segment-button value="public" (click)="onTabChange('public')">
-          PUBLIC
+          {{ 'MY_TOURNAMENTS.PUBLIC' | translate }}
         </ion-segment-button>
       </ion-segment>
     </div>

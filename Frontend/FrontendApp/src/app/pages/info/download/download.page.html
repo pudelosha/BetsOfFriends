@@ -8,16 +8,16 @@
           <ion-icon name="logo-apple"></ion-icon>
         </div>
         <div class="download-text">
-          <h3>Download for iOS</h3>
-          <p>Install the app on your iPhone or iPad. Available on the App Store or as a direct install package.</p>
+          <h3>{{ 'DOWNLOAD.IOS_TITLE' | translate }}</h3>
+          <p>{{ 'DOWNLOAD.IOS_DESCRIPTION' | translate }}</p>
         </div>
         <ion-button expand="block" color="medium" fill="solid" (click)="downloadFile('app.ipa')">
           <ion-icon name="download-outline" slot="start"></ion-icon>
-          Download .IPA File
+          {{ 'DOWNLOAD.IOS_DOWNLOAD_BUTTON' | translate }}
         </ion-button>
         <ion-button expand="block" color="primary" fill="clear" (click)="openStore('ios')">
           <ion-icon name="logo-apple" slot="start"></ion-icon>
-          Open in App Store
+          {{ 'DOWNLOAD.IOS_OPEN_STORE_BUTTON' | translate }}
         </ion-button>
       </div>
 
@@ -27,16 +27,16 @@
           <ion-icon name="logo-android"></ion-icon>
         </div>
         <div class="download-text">
-          <h3>Download for Android</h3>
-          <p>Install the Android app using the APK file or visit the Google Play Store for official distribution.</p>
+          <h3>{{ 'DOWNLOAD.ANDROID_TITLE' | translate }}</h3>
+          <p>{{ 'DOWNLOAD.ANDROID_DESCRIPTION' | translate }}</p>
         </div>
         <ion-button expand="block" color="medium" fill="solid" (click)="downloadFile('app.apk')">
           <ion-icon name="download-outline" slot="start"></ion-icon>
-          Download .APK File
+          {{ 'DOWNLOAD.ANDROID_DOWNLOAD_BUTTON' | translate }}
         </ion-button>
         <ion-button expand="block" color="success" fill="clear" (click)="openStore('android')">
           <ion-icon name="logo-google-playstore" slot="start"></ion-icon>
-          Open in Google Play
+          {{ 'DOWNLOAD.ANDROID_OPEN_STORE_BUTTON' | translate }}
         </ion-button>
       </div>
 
@@ -46,12 +46,12 @@
           <ion-icon name="document-attach-outline"></ion-icon>
         </div>
         <div class="download-text">
-          <h3>Excel Tournament Template</h3>
-          <p>Use this Excel template to prepare your own custom tournament, then import it in the app.</p>
+          <h3>{{ 'DOWNLOAD.EXCEL_TITLE' | translate }}</h3>
+          <p>{{ 'DOWNLOAD.EXCEL_DESCRIPTION' | translate }}</p>
         </div>
         <ion-button expand="block" color="success" fill="solid" (click)="downloadFile('template.xlsx')">
           <ion-icon name="download-outline" slot="start"></ion-icon>
-          Download Template
+          {{ 'DOWNLOAD.EXCEL_DOWNLOAD_BUTTON' | translate }}
         </ion-button>
       </div>
     </div>

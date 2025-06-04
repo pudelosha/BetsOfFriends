@@ -2,6 +2,7 @@
 using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 public class NotificationService : INotificationService
@@ -11,9 +12,11 @@ public class NotificationService : INotificationService
     private readonly IEmailTemplateService _emailTemplateService;
     private readonly IPushNotificationService _pushNotificationService;
     private readonly ILogger<NotificationService> _logger;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public NotificationService(
         AppDbContext dbContext,
+        UserManager<ApplicationUser> userManager,
         IEmailService emailService,
         IEmailTemplateService emailTemplateService,
         IPushNotificationService pushNotificationService,
@@ -21,6 +24,7 @@ public class NotificationService : INotificationService
     {
         _dbContext = dbContext;
         _emailService = emailService;
+        _userManager = userManager;
         _emailTemplateService = emailTemplateService;
         _pushNotificationService = pushNotificationService;
         _logger = logger;
@@ -388,5 +392,56 @@ public class NotificationService : INotificationService
         await _dbContext.SaveChangesAsync();
 
         _logger.LogInformation($"Successfully processed notifications for {recipients.Count} users.");
+    }
+
+    public async Task<NotificationSettingsDto?> GetNotificationSettingsAsync(string userId)
+    {
+        var user = await _userManager.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            return null;
+
+        return new NotificationSettingsDto
+        {
+            ReceiveEmailMatchClosed = user.ReceiveEmailMatchClosed,
+            ReceivePushMatchClosed = user.ReceivePushMatchClosed,
+            ReceiveEmailDailyUpdates = user.ReceiveEmailDailyUpdates,
+            ReceivePushDailyUpdates = user.ReceivePushDailyUpdates,
+            ReceiveEmailTournamentInvitation = user.ReceiveEmailTournamentInvitation,
+            ReceivePushTournamentInvitation = user.ReceivePushTournamentInvitation,
+            ReceiveEmailPendingBets = user.ReceiveEmailPendingBets,
+            ReceivePushPendingBets = user.ReceivePushPendingBets,
+            ReceiveEmailNewGames = user.ReceiveEmailNewGames,
+            ReceivePushNewGames = user.ReceivePushNewGames,
+            ReceiveEmailSpecialOffers = user.ReceiveEmailSpecialOffers,
+            ReceivePushSpecialOffers = user.ReceivePushSpecialOffers
+        };
+    }
+
+    public async Task<bool> UpdateNotificationSettingsAsync(string userId, NotificationSettingsDto settingsDto)
+    {
+        var user = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            return false;
+
+        user.ReceiveEmailMatchClosed = settingsDto.ReceiveEmailMatchClosed;
+        user.ReceivePushMatchClosed = settingsDto.ReceivePushMatchClosed;
+        user.ReceiveEmailDailyUpdates = settingsDto.ReceiveEmailDailyUpdates;
+        user.ReceivePushDailyUpdates = settingsDto.ReceivePushDailyUpdates;
+        user.ReceiveEmailTournamentInvitation = settingsDto.ReceiveEmailTournamentInvitation;
+        user.ReceivePushTournamentInvitation = settingsDto.ReceivePushTournamentInvitation;
+        user.ReceiveEmailPendingBets = settingsDto.ReceiveEmailPendingBets;
+        user.ReceivePushPendingBets = settingsDto.ReceivePushPendingBets;
+        user.ReceiveEmailNewGames = settingsDto.ReceiveEmailNewGames;
+        user.ReceivePushNewGames = settingsDto.ReceivePushNewGames;
+        user.ReceiveEmailSpecialOffers = settingsDto.ReceiveEmailSpecialOffers;
+        user.ReceivePushSpecialOffers = settingsDto.ReceivePushSpecialOffers;
+
+        var result = await _userManager.UpdateAsync(user);
+        return result.Succeeded;
     }
 }

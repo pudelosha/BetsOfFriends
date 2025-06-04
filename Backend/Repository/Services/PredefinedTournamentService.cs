@@ -150,7 +150,8 @@ namespace Backend.Repository.Services
                 tournament.ExternalTournamentId = tournamentDto.ExternalTournamentId;
                 tournament.Season = tournamentDto.Season;
                 tournament.ExternalSeasonId = tournamentDto.SeasonId;
-                tournament.EndDate = tournamentDto.TournamentEnd; tournament.IsActive = tournamentDto.IsActive;
+                tournament.EndDate = tournamentDto.TournamentEnd;
+                //tournament.IsActive = tournamentDto.IsActive;
                 tournament.CreatedBy = tournamentDto.CreatedBy;
                 tournament.Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var updateEnum) ? updateEnum : TournamentUpdate.Manual;
 

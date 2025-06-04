@@ -12,6 +12,7 @@ import { AppComponent } from './app/app.component';
 import { addIcons } from 'ionicons';
 import { logOutOutline, homeOutline, logoAndroid, arrowUndoOutline, logoX, logoTiktok, logoApple, logoTwitter, logoFacebook, logoDiscord, logoInstagram, logoYoutube, helpBuoyOutline, shareSocialOutline, helpCircleOutline, cloudDownloadOutline, logoGooglePlaystore, downloadOutline, documentAttachOutline, trophyOutline, checkmark, trash, close, mailOutline, peopleOutline, chevronBackOutline, chevronForwardOutline, searchOutline, chatbubblesOutline, cogOutline, informationCircleOutline, pauseOutline, trashOutline, settingsOutline, listOutline, podiumOutline, statsChartOutline, footballOutline, createOutline, eyeOutline, personOutline, notificationsOutline, shieldCheckmarkOutline, addCircleOutline, hammerOutline, clipboardOutline, starOutline, documentTextOutline, buildOutline, exitOutline, filterOutline } from 'ionicons/icons';
 import { IonicModule } from '@ionic/angular';
+import { withHashLocation } from '@angular/router';
 
 
 bootstrapApplication(AppComponent, {
