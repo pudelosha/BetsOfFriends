@@ -19,7 +19,11 @@ bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     importProvidersFrom(IonicModule.forRoot()), // force registration
-    provideIonicAngular({ animated: true }),
+    provideIonicAngular({
+      mode: 'md',
+      //rippleEffect: true,
+      animated: true
+    }),
     provideTranslation(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(withInterceptorsFromDi()),

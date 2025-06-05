@@ -11,7 +11,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonSelect, IonSegment, IonSelectOption, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner, IonSegmentButton } from '@ionic/angular/standalone';
+import { IonContent, IonSegment, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner, IonSegmentButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-my-tournaments-dashboard',
