@@ -50,7 +50,7 @@ public class EmailService : IEmailService
     {
         // Step 1: Generate token and encode it
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
+        var encodedToken = Uri.EscapeDataString(token);
 
         // Step 2: Construct setup link
         var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
@@ -79,7 +79,7 @@ public class EmailService : IEmailService
 
         // Generate and encode the token
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
+        var encodedToken = Uri.EscapeDataString(token);
 
         // Build confirmation URL
         var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
@@ -107,7 +107,7 @@ public class EmailService : IEmailService
         _logger.LogInformation($"Generating password reset token for user: {user.Email}");
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(token));
+        var encodedToken = Uri.EscapeDataString(token);
 
         var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
         var frontendBaseUrl = environment == "Development"

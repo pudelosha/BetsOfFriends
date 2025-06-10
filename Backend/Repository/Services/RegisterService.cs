@@ -173,7 +173,7 @@ namespace Backend.Repository.Services
                 return new RegisterResultDto { Success = false, Message = "Invalid user ID." };
             }
 
-            var decodedToken = Encoding.UTF8.GetString(Convert.FromBase64String(token));
+            var decodedToken = Uri.UnescapeDataString(token);
 
             var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
             if (!result.Succeeded)
@@ -219,7 +219,7 @@ namespace Backend.Repository.Services
                 return new RegisterResultDto { Success = false, Message = "User not found." };
             }
 
-            var decodedToken = Encoding.UTF8.GetString(Convert.FromBase64String(token));
+            var decodedToken = Uri.UnescapeDataString(token);
             var resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, password);
 
             if (!resetResult.Succeeded)
