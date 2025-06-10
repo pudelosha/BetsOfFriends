@@ -41,7 +41,7 @@ export class MyBetsPage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-
+    
   }
 
   ionViewDidEnter() {

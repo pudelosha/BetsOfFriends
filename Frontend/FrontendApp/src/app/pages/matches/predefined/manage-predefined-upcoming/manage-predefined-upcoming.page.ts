@@ -33,7 +33,7 @@ export class ManagePredefinedUpcomingPage implements OnInit, OnChanges  {
   ) {}
 
   ngOnInit() {
-    //this.loadMatches(); 
+    this.loadMatches(); 
   }
 
   ngOnChanges(changes: SimpleChanges) {

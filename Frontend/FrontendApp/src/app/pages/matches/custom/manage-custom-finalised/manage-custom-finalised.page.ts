@@ -34,7 +34,7 @@ export class ManageCustomFinalisedPage implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    //this.loadMatches(); 
+    this.loadMatches(); 
   }
 
   ngOnChanges(changes: SimpleChanges) {

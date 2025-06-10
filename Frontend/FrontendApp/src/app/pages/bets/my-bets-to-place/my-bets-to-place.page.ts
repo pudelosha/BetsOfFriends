@@ -36,7 +36,7 @@ export class MyBetsToPlacePage implements OnInit {
   ) {}
 
   ngOnInit() {
-    //this.loadBets();
+    this.loadBets();
   }
 
   ngOnChanges(changes: SimpleChanges) {
