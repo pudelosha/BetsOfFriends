@@ -50,7 +50,7 @@ export class TournamentSelectionService {
   clearSelectedTournament(): void {
     localStorage.removeItem(this.storageKey);
     this.selectedTournamentSubject.next(null);
-    this.setSelectedTournament(-1); // -1 to indicate no selection in backend
+    this.setSelectedTournament(-1);
   }
 
   getSelectedTournamentObservable(): Observable<number | null> {

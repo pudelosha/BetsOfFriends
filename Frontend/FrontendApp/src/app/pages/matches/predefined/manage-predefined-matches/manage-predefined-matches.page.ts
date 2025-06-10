@@ -68,7 +68,6 @@ export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
           this.selectedStage = stageFromUrl;
           this.selectedStageIndex = this.availableStages.indexOf(stageFromUrl);
         } else {
-          // Find the first stage with upcoming matches
           const stageWithUpcoming = await firstValueFrom(
             this.tournamentService.getFirstStageWithUpcomingMatches(this.tournamentId)
           );
@@ -108,7 +107,6 @@ export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
     if (index !== -1) {
       this.selectedStageIndex = index;
       this.selectedStage = selected;
-      //console.log(`Stage changed to: ${selected}`);
     }
   }
     
@@ -119,16 +117,15 @@ export class ManagePredefinedMatchesPage implements OnInit, AfterViewInit {
 
   forceTabReload() {
     const currentTab = this.selectedTab;
-    this.selectedTab = ''; // Force reset
+    this.selectedTab = '';
     setTimeout(() => {
-      this.selectedTab = currentTab; // Restore tab
+      this.selectedTab = currentTab;
     }, 100);
   }
 
   scrollToTop() {
     if (this.content) {
       this.content.scrollToTop(300);
-      //console.log('Scrolled to top');
     }
   }
 }

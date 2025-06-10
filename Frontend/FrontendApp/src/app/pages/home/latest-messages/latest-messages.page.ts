@@ -36,7 +36,7 @@ export class LatestMessagesPage implements OnInit {
   }
 
   async ionViewWillEnter() {
-    await this.loadMessages(); // Refresh messages on page enter
+    await this.loadMessages();
   }
 
   async ngOnChanges(changes: SimpleChanges) {

@@ -39,7 +39,6 @@ export class LanguagePage {
 
   onContinue() {
     this.languageService.useLanguage(this.selectedLang);
-    //console.log('Language saved:', this.selectedLang);
     this.router.navigate(['/welcome']);
   }
 

@@ -35,7 +35,6 @@ export class MessagesPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    //this.titleService.setTitle('MESSAGES.TITLE');
     //this.loadNotifications();
   }
 
@@ -91,17 +90,16 @@ export class MessagesPage implements OnInit {
     }
   }
     
-  // Toggle message expansion and mark as read
   toggleNotification(notification: NotificationDto) {
     if (this.expandedNotificationId === notification.notificationId) {
-      this.expandedNotificationId = null;  // Collapse if already expanded
+      this.expandedNotificationId = null;
     } else {
-      this.expandedNotificationId = notification.notificationId;  // Expand new one
+      this.expandedNotificationId = notification.notificationId;
 
       if (!notification.isRead) {
         this.notificationService.markAsRead(notification.notificationId).subscribe({
           next: () => {
-            notification.isRead = true;  // Update UI after marking as read
+            notification.isRead = true;
           },
           error: (error) => console.error('Error marking as read:', error)
         });
@@ -109,7 +107,6 @@ export class MessagesPage implements OnInit {
     }
   }
 
-  // Confirm delete notification
   async confirmDelete(notification: NotificationDto) {
     const alert = await this.alertController.create({
       header: 'Delete Notification',
@@ -130,20 +127,19 @@ export class MessagesPage implements OnInit {
     await alert.present();
   }
 
-  // Delete a notification
   async deleteNotification(notification: NotificationDto) {
     const loading = await this.loadingController.create({
       message: 'Deleting notification...',
       spinner: 'crescent',
     });
-    await loading.present(); // Show loading UI
+    await loading.present();
   
     const startTime = Date.now();
   
     this.notificationService.deleteNotification(notification.notificationId).subscribe({
       next: async () => {
         this.notifications = this.notifications.filter(n => n.notificationId !== notification.notificationId);
-        this.expandedNotificationId = null; // Collapse everything after deletion
+        this.expandedNotificationId = null;
   
         const elapsedTime = Date.now() - startTime;
         const delay = Math.max(0, 500 - elapsedTime);
@@ -166,7 +162,6 @@ export class MessagesPage implements OnInit {
     });
   }
   
-  // Display a toast message
   private async showToast(message: string, color: 'success' | 'danger') {
     const toast = await this.toastController.create({
       message,

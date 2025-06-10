@@ -94,16 +94,14 @@ export class UserListPage implements OnInit {
     await alert.present();
   }
 
-  async excludeParticipant(userEmail: string) {
-    //console.log('Confirming exclusion for:', userEmail);
-  
+  async excludeParticipant(userEmail: string) {  
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
   
     this.tournamentService.excludeParticipant(this.tournamentId!, userEmail).subscribe({
       next: async (result) => {
         if (result.success) {
           await this.showToast(result.message, 'success');
-          await this.loadParticipants(); // Refresh the list
+          await this.loadParticipants();
         } else {
           await this.showToast(result.message, 'danger');
         }

@@ -35,7 +35,7 @@ export class StartedPredefinedMatchesPage implements OnInit {
   }
 
   async ionViewWillEnter() {
-    await this.loadStartedMatches(); // Refresh messages on page enter
+    await this.loadStartedMatches();
   }
 
   async ngOnChanges(changes: SimpleChanges) {

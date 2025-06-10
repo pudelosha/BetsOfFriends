@@ -6,7 +6,7 @@ import { ModalController, AlertController } from '@ionic/angular';
 import { EditUserModalComponent } from 'src/app/modals/edit-user-modal/edit-user-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
-import { AuthService } from 'src/app/services/auth.service'; // Adjust the path as needed
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-stage-users-management',
@@ -16,14 +16,14 @@ import { AuthService } from 'src/app/services/auth.service'; // Adjust the path 
   imports: [IonIcon, CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
 })
 export class StageUsersManagementPage implements OnInit {
-  @Input() usersArray!: FormArray; // Input from parent for users FormArray
-  @Output() usersUpdated = new EventEmitter<any[]>(); // Emit current list of users
+  @Input() usersArray!: FormArray;
+  @Output() usersUpdated = new EventEmitter<any[]>();
 
   isMobile = false;
   loggedInUserEmail: string = '';
 
   constructor(
-    private fb: FormBuilder, // Inject FormBuilder
+    private fb: FormBuilder,
     private toastController: ToastController,
     private modalController: ModalController,
     private alertController: AlertController,
@@ -38,7 +38,7 @@ export class StageUsersManagementPage implements OnInit {
   }
 
   checkScreenSize(): void {
-    this.isMobile = window.innerWidth < 600; // you can tweak the threshold
+    this.isMobile = window.innerWidth < 600;
   }
   
   get filteredUserControls(): FormGroup[] {
@@ -60,7 +60,6 @@ export class StageUsersManagementPage implements OnInit {
     }
   }
 
-  // Get control for a specific user
   getUserControl(index: number): FormGroup {
     return this.usersArray.at(index) as FormGroup;
   }
@@ -72,7 +71,7 @@ export class StageUsersManagementPage implements OnInit {
       component: EditUserModalComponent,
       componentProps: {
         user: {
-          assignmentId: null, // New users do not get an assignmentId
+          assignmentId: null,
           userName: '',
           userAdminName: '',
           userEmail: '',
@@ -88,7 +87,7 @@ export class StageUsersManagementPage implements OnInit {
     modal.onDidDismiss().then(result => {
       if (result.data) {
         const newUser = {
-          assignmentId: null, // New users should not have an assignmentId
+          assignmentId: null,
           userName: result.data.userName.trim(),
           userAdminName: result.data.userAdminName.trim(),
           userEmail: result.data.userEmail.trim().toLowerCase(),
@@ -99,7 +98,7 @@ export class StageUsersManagementPage implements OnInit {
     
         this.usersArray.push(
           this.fb.group({
-            assignmentId: [newUser.assignmentId], // Include assignmentId
+            assignmentId: [newUser.assignmentId],
             userName: [newUser.userName, Validators.required],
             userAdminName: [newUser.userAdminName, Validators.required],
             userEmail: [newUser.userEmail, [Validators.required, Validators.email]],
@@ -109,7 +108,6 @@ export class StageUsersManagementPage implements OnInit {
           })
         );
     
-        //console.log('Added New User:', newUser);
         this.emitUsers();
       }
     });    
@@ -117,7 +115,6 @@ export class StageUsersManagementPage implements OnInit {
     await modal.present();
   }
   
-  // Edit user
   async editUser(userControl: FormGroup): Promise<void> {
     const user = userControl.value;
   
@@ -157,7 +154,6 @@ export class StageUsersManagementPage implements OnInit {
     await modal.present();
   }  
 
-  // Remove user
   async removeUser(index: number): Promise<void> {
     const userToRemove = this.usersArray.at(index).value;
   
@@ -174,16 +170,13 @@ export class StageUsersManagementPage implements OnInit {
           role: 'destructive',
           handler: async () => {
             if (userToRemove.recordStatus === 'New') {
-              // If user is "New", remove it from the array
               this.usersArray.removeAt(index);
             } else {
-              // Otherwise, mark it for deletion
               const userGroup = this.usersArray.at(index) as FormGroup;
               userGroup.patchValue({ recordStatus: 'Delete' });
             }
   
             this.emitUsers();
-            //console.log('Removed User:', userToRemove);
             await this.showToast(`User "${userToRemove.userName}" removed successfully!`, 'success');
           },
         },
@@ -193,10 +186,9 @@ export class StageUsersManagementPage implements OnInit {
     await alert.present();
   }
   
-  // Emit updated list of users to parent
   private emitUsers(): void {
     const updatedUsers = this.usersArray.value.map((user: any) => ({
-      assignmentId: user.assignmentId ?? null, // Preserve assignmentId
+      assignmentId: user.assignmentId ?? null,
       userName: user.userName,
       userAdminName: user.userAdminName,
       userEmail: user.userEmail,
@@ -206,20 +198,16 @@ export class StageUsersManagementPage implements OnInit {
     }));
   
     this.usersUpdated.emit(updatedUsers);
-    //console.log('Emitted Updated Users:', updatedUsers);
   }  
 
-// Determines Delete vs Undo button text
 getDeleteButtonText(recordStatus: string | null): string {
   return recordStatus === 'Delete' ? 'Undo' : 'Delete';
 }
 
-// Determines button color based on record status
 getDeleteButtonColor(recordStatus: string | null): string {
   return recordStatus === 'Delete' ? 'medium' : 'danger';
 }
 
-// Returns the class for status-based background coloring
 getUserStatusClass(recordStatus: string | null): string {
   switch (recordStatus) {
     case 'New': return 'user-status-new';
@@ -230,7 +218,6 @@ getUserStatusClass(recordStatus: string | null): string {
   }
 }
 
-// Handles user removal and undo logic
 async handleRemoveOrUndoUser(userControl: FormGroup): Promise<void> {
   const userEmail = userControl.get('userEmail')?.value ?? 'this user';
   const currentStatus = userControl.get('recordStatus')?.value;
@@ -266,7 +253,6 @@ async handleRemoveOrUndoUser(userControl: FormGroup): Promise<void> {
   }
 }
 
-// Show toast messages
 private async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary'): Promise<void> {
   const toast = await this.toastController.create({
     message,

@@ -60,10 +60,8 @@ export class StageSettingsPage implements OnDestroy {
       nonSubmittedBetPenalty: this.settings?.nonSubmittedBetPenalty ?? 1,
     };
 
-    //console.log("Merging Parent Settings with Defaults:", mergedSettings);
     this.settingsForm.patchValue(mergedSettings, { emitEvent: false });
 
-    // Subscribe to changes, debounce, and prevent redundant emissions
     this.settingsSubscription = this.settingsForm.valueChanges
       .pipe(
         debounceTime(300),
@@ -107,7 +105,6 @@ export class StageSettingsPage implements OnDestroy {
       nonSubmittedBetPenalty: this.settingsForm.value.nonSubmittedBetPenalty ?? null,
     };
 
-    //console.log("Emitting Updated Settings:", settings);
     this.settingsUpdated.emit(settings);
   }
 

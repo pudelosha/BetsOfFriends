@@ -44,7 +44,6 @@ export class PlayerStatsModalComponent implements OnInit {
       next: (data) => {
         this.stats = data;
   
-        // Extract unique stages
         const uniqueStages = [...new Set(data.map(s => s.stage))];
         this.availableStages = uniqueStages;
         this.selectedStage = uniqueStages[0] ?? null;
@@ -92,10 +91,9 @@ export class PlayerStatsModalComponent implements OnInit {
   }
     
   get columnGridTemplate(): string {
-    // Always 3 base columns (Bet, OutcomeRegular, PayoutRegular)
     const base = ['1fr', '1fr', '1fr'];
-    if (this.showExact) base.push('1fr', '1fr');       // Exact: Outcome + Payout
-    if (this.showQualified) base.push('1fr', '1fr', '1fr'); // Qualify: Bet + Outcome + Payout
+    if (this.showExact) base.push('1fr', '1fr');
+    if (this.showQualified) base.push('1fr', '1fr', '1fr');
     return base.join(' ');
   }  
 

@@ -1,11 +1,9 @@
-/* Tournament List Styling */
 .tournament-list {
   --background: transparent !important;
   margin: 0;
   padding: 0;
 }
 
-/* Individual Tournament Row */
 .tournament-item {
   --padding-start: 0 !important;
   --padding-end: 0 !important;
@@ -21,7 +19,6 @@
   border: none !important;
 }
 
-/* Remove bottom border from ion-item */
 ion-item.tournament-item {
   --border-width: 0 !important;
   --inner-border-width: 0 !important;
@@ -33,7 +30,6 @@ ion-item.tournament-item {
   background-color: #ebebeb;
 }
 
-/* Grid Cleanup */
 ion-grid {
   --ion-grid-padding: 0px;
   --ion-grid-margin: 0px;
@@ -56,7 +52,6 @@ ion-col {
   padding: 0 !important;
 }
 
-/* Tournament Info */
 .tournament-info {
   display: flex;
   flex-direction: column;
@@ -95,7 +90,6 @@ ion-col {
   color: green;
 }
 
-/* Eye Icon Column */
 .eye-icon-col {
   display: flex;
   justify-content: center;
@@ -119,7 +113,6 @@ ion-col {
   color: #333;
 }
 
-/* Responsive icon tweak */
 @media (max-width: 480px) {
   .eye-icon-col ion-icon {
     font-size: 1.8rem;
@@ -131,7 +124,6 @@ ion-col {
   }
 }
 
-/* Buttons */
 .button-col,
 .quit-button-col {
   display: flex;
@@ -154,7 +146,6 @@ ion-button ion-icon {
   font-size: 1.2rem;
 }
 
-/* General Page Text */
 .page-description {
   margin-bottom: 1rem;
   color: #666;
@@ -163,13 +154,13 @@ ion-button ion-icon {
 }
 
 .selected-tournament {
-  background-color: #e0f7e9; // Pale green
+  background-color: #e0f7e9;
   border-radius: 12px;
 }
 
 .sticky-menu {
   position: fixed;
-  top: 56px; // Adjust if needed
+  top: 56px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -181,8 +172,5 @@ ion-button ion-icon {
 }
 
 .menu-space {
-  padding-top: 65px; // Allows scroll past sticky menu
+  padding-top: 65px;
 }
-
-
-

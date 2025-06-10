@@ -160,22 +160,18 @@
   font-size: 1.2rem;
 }
 
-/* Remove vertical padding inside all ion-rows (applies to child ion-cols) */
 ion-row > ion-col {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
 
-/* ===== User Bets Table Hover & Border Styling ===== */
-
-/* Make each user bet row slightly interactive */
 .bets-overview-grid ion-row.user-bet-row {
   padding: 5px 0;
   border-bottom: 1px solid #ddd;
   transition: background-color 0.3s ease-in-out;
-  cursor: default; // Optional: Change to pointer if clickable
+  cursor: default;
 
   &:hover {
-    background-color: #F7F8FE; /* Pale blue on hover */
+    background-color: #F7F8FE;
   }
 }

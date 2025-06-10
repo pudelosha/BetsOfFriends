@@ -32,7 +32,7 @@ export class SelectCompetitionModalComponent {
   
   constructor(private fb: FormBuilder, private modalCtrl: ModalController) {
     this.form = this.fb.group({
-      competitionCode: [2021, [Validators.required, Validators.min(1)]], // PL default
+      competitionCode: [2021, [Validators.required, Validators.min(1)]],
       seasonCode: [2024, [Validators.required, Validators.min(2000)]]
     });
   }

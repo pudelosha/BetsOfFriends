@@ -150,10 +150,8 @@ export class CustomTournamentsListPage implements OnInit {
                     const startTime = Date.now();
 
                     try {
-                        // Call backend API to delete the tournament
                         await firstValueFrom(this.tournamentService.deleteCustomTournament(tournament.tournamentId));
 
-                        // Remove the deleted tournament from the local list instantly
                         this.tournaments = this.tournaments.filter(t => t.tournamentId !== tournament.tournamentId);
 
                         this.showToast('Tournament deleted successfully!', 'success');

@@ -1,6 +1,6 @@
 export interface Team {
-  teamFrontendId: string;  // Unique identifier for frontend tracking
-  externalTeamId?: number | null; // To track API data
+  teamFrontendId: string;
+  externalTeamId?: number | null;
 
   teamId: number | null;
   predefinedTeamId?: number | null;
@@ -9,22 +9,22 @@ export interface Team {
 }
 
 export interface Match {
-  matchFrontendId: string; // Unique frontend match identifier
-  matchId: number | null; // Backend match identifier (null for new matches)
-  externalMatchId?: number | null;  // To track API data
+  matchFrontendId: string;
+  matchId: number | null;
+  externalMatchId?: number | null;
 
   predefinedMatchId?: number | null;
 
-  stageId: number | null; // Backend ID (if available)
-  stageFrontendId: string; // Always set for tracking in frontend
-  stageName: string; // Readable name of the stage
+  stageId: number | null;
+  stageFrontendId: string;
+  stageName: string;
   
-  homeTeamId: number | null; // Backend ID (if available)
-  homeTeamFrontendId: string; // Always set for tracking in frontend
+  homeTeamId: number | null;
+  homeTeamFrontendId: string;
   homeTeam: string;
 
-  awayTeamId: number | null; // Backend ID (if available)
-  awayTeamFrontendId: string; // Always set for tracking in frontend
+  awayTeamId: number | null;
+  awayTeamFrontendId: string;
   awayTeam: string;
 
   matchStart: string;
@@ -58,7 +58,7 @@ export interface User {
 }
 
 export interface Stage{
-  stageFrontendId: string;  // Unique identifier for frontend tracking
+  stageFrontendId: string;
   stageId: number | null;
   predefinedStageId?: number | null;
   
@@ -70,11 +70,11 @@ export interface Stage{
 
 export interface Tournament {
   tournamentId?: number | null;
-  externalTournamentId?: number | null;  // To track API data
-  season?: number | null;                // e.g. 2024
-  seasonId?: number | null;              // API-specific season ID
-  tournamentStart?: string | null;       // ISO string of start date
-  tournamentEnd?: string | null;         // ISO string of end date
+  externalTournamentId?: number | null;
+  season?: number | null;
+  seasonId?: number | null;
+  tournamentStart?: string | null;
+  tournamentEnd?: string | null;
   predefinedTournamentId?: number | null;
   tournamentName: string;
   publicTournamentName?: string;
@@ -87,13 +87,13 @@ export interface Tournament {
   teams: Team[];
   stages: Stage[];
   matches: Match[];
-  users?: User[]; // Optional users array
-  settings?: TournamentSettings; // Optional tournament settings
+  users?: User[];
+  settings?: TournamentSettings;
 }
 
 export interface TournamentSettings {
   allowExactResultBonus: boolean;
-  exactResultBonusCalculation: 'Fixed' | 'Multiplied'; // Stored as string
+  exactResultBonusCalculation: 'Fixed' | 'Multiplied';
   exactResultBonus: number | null;
 
   allowWhoQualifiesBets: boolean;
@@ -112,9 +112,9 @@ export interface UserActiveTournament {
   assignmentId: number;
   userName: string;
   numberOfParticipants: number;
-  role: string;  // 'Admin' or 'Guest'
-  assignmentStatus: string; // 'New', 'Invited', 'Accepted'
-  visibility: string; // Private or Public
+  role: string;
+  assignmentStatus: string;
+  visibility: string;
   isVisible: boolean;
 }
 
@@ -145,7 +145,7 @@ export interface TournamentPlayerResult {
 export interface TournamentInvite {
   tournamentName: string;
   numberOfParticipants: number;
-  assignmentStatus: string; // "Invited" or "Accepted"
+  assignmentStatus: string;
 }
 
 export interface UserBettingStats {
@@ -160,20 +160,16 @@ export interface UserBettingStats {
   homeTeam: string;
   awayTeam: string;
 
-  // User's bet
-  betPlaced?: string | null;              // e.g., "2:1" or null if not placed
-  whoQualifiedBet?: string | null;        // e.g., "Home", "Away", or null
+  betPlaced?: string | null;
+  whoQualifiedBet?: string | null;
 
-  // Actual match result
-  matchResult: string | null;            // e.g., "2:1" or null if not finalised
-  whoQualifiedResult: string | null;     // e.g., "Home", "Away", or null
+  matchResult: string | null;
+  whoQualifiedResult: string | null;
 
-  // Outcome statuses
   outcomeRegular?: string;
   outcomeQualification?: string;
   outcomeExactResult?: string;
 
-  // Payouts
   payoutRegular?: number;
   payoutQualification?: number;
   payoutExactResult?: number;
@@ -203,8 +199,3 @@ export interface SelectedTournamentDetails {
 }
 
 export type RecordStatus = 'New' | 'Uploaded' | 'Update' | 'Delete' | 'Finalised';
-
-
-
-
-

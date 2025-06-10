@@ -54,7 +54,7 @@ export class LoginPage {
 
   onScroll(event: any) {
     const scrollTop = event.detail.scrollTop;
-    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
+    this.parallaxOffset = scrollTop * 0.4;
   }
 
   async login() {
@@ -132,7 +132,6 @@ export class LoginPage {
     await toast.present();
   }
 
-  // Navigation methods
   navigateToRegister() {
     this.router.navigateByUrl('/register');
   }

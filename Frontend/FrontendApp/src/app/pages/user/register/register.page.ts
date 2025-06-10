@@ -53,11 +53,10 @@ export class RegisterPage {
 
   onScroll(event: any) {
     const scrollTop = event.detail.scrollTop;
-    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
+    this.parallaxOffset = scrollTop * 0.4;
   }
 
   toggleConsent(event: Event): void {
-    // Prevent toggling if clicking the actual <a> link
     if ((event.target as HTMLElement).tagName.toLowerCase() === 'a') return;
   
     const control = this.registerForm.get('consent');
@@ -67,7 +66,7 @@ export class RegisterPage {
   }
   
   openTerms(event: Event): void {
-    event.stopPropagation(); // prevent it from bubbling to ion-label
+    event.stopPropagation();
     this.router.navigate(['/terms']);
   }
   
@@ -87,7 +86,6 @@ export class RegisterPage {
     const { email, password, consent } = this.registerForm.value;
     const language = localStorage.getItem('lang') || 'en';
   
-    // Show loading spinner
     this.isLoading = true;
     const loading = await this.loadingController.create({
       message: 'Creating your account...',

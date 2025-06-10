@@ -5,7 +5,6 @@
     padding-bottom: 0px !important;
   }
   
-  /* Remove padding/margin from ion-item */
   .match-item {
     --inner-padding-end: 0px !important;
     --inner-padding-start: 0px !important;
@@ -13,24 +12,22 @@
     --padding-start: 0px !important;
     --ion-item-background: transparent;
     
-    height: 60px; /* Fixed height for all match rows */
+    height: 60px;
     --min-height: 60px !important;
     --max-height: 60px !important;
     display: flex;
-    align-items: center; /* Centers content vertically */
+    align-items: center;
   }
   
-  /* Grid layout for each match item */
   .match-grid {
     display: grid;
-    grid-template-columns: 9fr 2fr 1fr; /* 9:2:1 ratio */
+    grid-template-columns: 9fr 2fr 1fr;
     align-items: center;
     width: 100%;
     gap: 10px;
-    padding-right: 0px; /* Remove extra right padding */
+    padding-right: 0px;
   }
   
-  /* Teams Column */
   .match-details {
     display: flex;
     flex-direction: column;
@@ -39,7 +36,6 @@
     color: #333;
   }
   
-  /* Date & Time Column */
   .match-date {
     display: flex;
     flex-direction: column;
@@ -48,15 +44,13 @@
     color: #666;
   }
   
-  /* Button Column (Forces Right Alignment) */
   .match-button-container {
     display: flex;
-    justify-content: flex-end; /* Pushes button to the right */
+    justify-content: flex-end;
     align-items: center;
     width: 100%;
   }
   
-  /* Style the Button (Remove Right Padding) */
   .match-button {
     font-size: 12px;
     height: 30px;
@@ -70,8 +64,4 @@
     font-size: 1.2em;
     color: gray;
     margin-top: 20px;
-  }
-  
-
-
-  
+  }  

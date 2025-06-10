@@ -20,7 +20,7 @@ import { IonSpinner, IonList, IonItem, IonButton, IonIcon } from '@ionic/angular
   imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonSpinner, IonList, IonItem, IonButton, IonIcon],
 })
 export class MyBetsPlacedPage implements OnInit, OnChanges {
-  @Input() stage!: string; // Receive stage from parent
+  @Input() stage!: string;
   
   bets: Bet[] = [];
   isLoading = true;
@@ -35,19 +35,16 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    //console.log('ngOnInit called - Loading bets page...');
-    this.loadBets();
+    //this.loadBets();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stage'] && !changes['stage'].firstChange) {
-      //console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadBets();
     }
   }  
   
   ionViewWillEnter() {
-    //console.log('ionViewWillEnter called - Loading bets page...');
     this.loadBets();
   }
 
@@ -113,7 +110,6 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
     
   async editBet(bet: Bet, event: Event) {
     event.stopPropagation();
-    //console.log("Opening Edit Bet Modal:", bet);
   
     if (!bet) {
       console.error("Error: bet is undefined or null!");
@@ -122,7 +118,7 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
   
     const modal = await this.modalCtrl.create({
       component: EditBetModalComponent,
-      componentProps: { bet }, // Ensure `bet` is passed properly
+      componentProps: { bet },
       breakpoints: [0, 0.5, 0.75, 1], 
       initialBreakpoint: 1, 
     });
@@ -131,11 +127,10 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
   
     const { data } = await modal.onWillDismiss();
     if (data) {
-      //console.log("Updated Bet Data:", data);
   
       const betUpdate: BetUpdateDto = {
         baseAmount: 1,
-        bonusAmount: null, // Always null for now
+        bonusAmount: null,
         homeGoals: data.playerHomeGoals,
         awayGoals: data.playerAwayGoals,
         qualifiedTeam: data.playerQualifiedTeam,
@@ -144,7 +139,6 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
       try {
         await firstValueFrom(this.betService.updateBet(bet.betId, betUpdate));
   
-        // Instead of filtering manually, reload bets from API
         await this.loadBets(); 
   
         this.showToast("Bet updated successfully!", "success");
@@ -155,16 +149,13 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
     }
   }
 
-  async openBetsOverview(bet: Bet) {
-    //console.log("Fetching bet overview data for matchId:", bet.matchId);
-  
+  async openBetsOverview(bet: Bet) {  
     try {
       const betStats: BetStats = await firstValueFrom(this.betService.getBetStatsByMatchId(bet.matchId));
-      //console.log("Received bet overview data:", betStats);
   
       const modal = await this.modalCtrl.create({
         component: BetsOverviewModalComponent,
-        componentProps: { betStats }, // Pass the fetched data directly
+        componentProps: { betStats },
         breakpoints: [0, 0.75, 1],
         initialBreakpoint: 1,
       });

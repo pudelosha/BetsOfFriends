@@ -23,7 +23,7 @@ import { IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIc
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
-  selectedTab: string = 'upcoming'; // Default tab
+  selectedTab: string = 'upcoming';
   availableStages: string[] = [];
   selectedStageIndex = 0;
   selectedStage: string = '';
@@ -39,7 +39,6 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     this.titleService.setTitle('MANAGE_CUSTOM_MATCHES.TITLE');
-    //this.loadStages(); // Load tournament stages
   }
 
   ionViewDidEnter() {
@@ -69,9 +68,9 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
 
   forceTabReload() {
     const currentTab = this.selectedTab;
-    this.selectedTab = ''; // Force reset
+    this.selectedTab = '';
     setTimeout(() => {
-      this.selectedTab = currentTab; // Restore tab
+      this.selectedTab = currentTab;
     }, 100);
   }
 
@@ -91,7 +90,6 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
           this.selectedStage = stageFromUrl;
           this.selectedStageIndex = this.availableStages.indexOf(stageFromUrl);
         } else {
-          // Get first stage with upcoming matches
           const stageWithUpcoming = await firstValueFrom(
             this.tournamentService.getFirstStageWithUpcomingMatches(tournamentId)
           );
@@ -131,7 +129,6 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
     if (index !== -1) {
       this.selectedStageIndex = index;
       this.selectedStage = selected;
-      //console.log(`Stage changed to: ${selected}`);
     }
   }  
   
@@ -143,7 +140,6 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
   scrollToTop() {
     if (this.content) {
       this.content.scrollToTop(300);
-      //console.log('Scrolled to top');
     }
   }
 }

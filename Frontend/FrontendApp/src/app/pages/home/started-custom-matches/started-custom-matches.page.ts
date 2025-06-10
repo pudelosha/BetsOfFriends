@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { CustomMatchService } from 'src/app/services/custom-match.service';
 import { firstValueFrom } from 'rxjs';
-import { Match } from 'src/app/model/match'; // or your custom match model
+import { Match } from 'src/app/model/match';
 import { TranslateModule } from '@ngx-translate/core';
 import { IonSpinner, IonList, IonItem } from '@ionic/angular/standalone';
 
@@ -38,7 +38,7 @@ export class StartedCustomMatchesPage implements OnInit {
   }
 
   async ionViewWillEnter() {
-    await this.loadTournamentAndFetchMatches(); // Refresh messages on page enter
+    await this.loadTournamentAndFetchMatches();
   }
 
   async ngOnChanges(changes: SimpleChanges) {

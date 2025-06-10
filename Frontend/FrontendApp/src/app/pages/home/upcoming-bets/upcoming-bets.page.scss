@@ -1,19 +1,16 @@
-/* Frame Styling */
 .upcoming-bets-box {
-  background: #f5f5f5 !important; /* Light gray background */
-  border-radius: 10px; /* Rounded corners */
+  background: #f5f5f5 !important;
+  border-radius: 10px;
   padding: 15px;
   margin-top: 15px;
-  cursor: pointer; /* Make the entire frame clickable */
+  cursor: pointer;
   transition: background 0.2s ease-in-out;
 }
 
-/* Add hover effect to indicate interactivity */
 .upcoming-bets-box:hover {
-  background: #ebebeb !important; /* Slightly darker gray on hover */
+  background: #ebebeb !important;
 }
 
-/* Title (Positioned in the top-left corner) */
 .frame-title {
   font-size: 18px;
   font-weight: bold;
@@ -22,7 +19,6 @@
   text-align: left;
 }
 
-/* No bets message */
 .no-bets-message {
   text-align: center;
   color: #666;
@@ -30,24 +26,21 @@
   margin-top: 10px;
 }
 
-/* Remove extra padding/margins from ion-list */
 .upcoming-bet-list {
-  --background: transparent !important; /* Ensures the list background is transparent */
+  --background: transparent !important;
   padding-top: 0px !important;
   padding-bottom: 0px !important;
-  background: transparent !important; /* Override any Ionic defaults */
+  background: transparent !important;
 }
 
-/* Make ion-items transparent so the frame color is visible */
 .upcoming-bet-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
   --padding-end: 0px !important;
   --padding-start: 0px !important;
-  --ion-item-background: transparent !important; /* Ensures no white background */
-  background: none !important; /* Fully remove background */
-  border-bottom: 1px solid #ddd; /* Light separator for readability */
-
+  --ion-item-background: transparent !important;
+  background: none !important;
+  border-bottom: 1px solid #ddd;
   height: 40px;
   --min-height: 60px !important;
   --max-height: 60px !important;
@@ -55,38 +48,34 @@
   align-items: center;
 }
 
-/* Grid layout for upcoming bets */
 .upcoming-bet-grid {
   display: grid;
-  grid-template-columns: 8fr 2fr; /* Teams take more space, time stays small */
+  grid-template-columns: 8fr 2fr;
   align-items: center;
   width: 100%;
   gap: 10px;
   padding-right: 0px;
 }
 
-/*  Fix Team Name Font */
 .upcoming-bet-details {
   text-align: left;
-  font-size: 12px; /*  Matches the other betting pages */
-  font-weight: normal; /*  Ensures the font is consistent */
+  font-size: 12px;
+  font-weight: normal;
   color: #333;
-  white-space: nowrap; /*  Prevents text from breaking into multiple lines */
-  overflow: hidden; /*  Ensures text does not overflow */
-  text-overflow: ellipsis; /*  Adds "..." if text overflows */
-  background: transparent !important; /*  Ensure no background override */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: transparent !important;
 }
 
-/*  Date & Time Column */
 .upcoming-bet-date {
   text-align: right;
   font-size: 12px;
   color: #666;
-  white-space: nowrap; /*  Keep date-time in one line */
-  background: transparent !important; /*  Prevents white background */
+  white-space: nowrap;
+  background: transparent !important;
 }
 
-/*  Ensure clickable behavior does not break flex/grid */
 .upcoming-bets-clickable {
   display: flex;
   flex-direction: column;

@@ -70,7 +70,7 @@ export class ConfirmEmailPage {
   
   onScroll(event: any) {
     const scrollTop = event.detail.scrollTop;
-    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
+    this.parallaxOffset = scrollTop * 0.4;
   }
 
   async showToast(message: string, color: 'success' | 'danger') {

@@ -17,10 +17,10 @@ import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone'
   imports: [IonIcon, CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonButton],
 })
 export class StageMatchesManagementPage implements OnInit {
-  @Input() matchesArray!: FormArray; // FormArray for matches
-  @Input() teamsArray!: Team[]; // List of structured teams
-  @Input() stagesArray!: Stage[]; // List of structured stages
-  @Output() matchesUpdated = new EventEmitter<Match[]>(); // Emits updated matches to parent
+  @Input() matchesArray!: FormArray;
+  @Input() teamsArray!: Team[];
+  @Input() stagesArray!: Stage[];
+  @Output() matchesUpdated = new EventEmitter<Match[]>();
 
   isMobile = false;
 
@@ -37,7 +37,7 @@ export class StageMatchesManagementPage implements OnInit {
   }
 
   checkScreenSize(): void {
-    this.isMobile = window.innerWidth < 600; // you can tweak the threshold
+    this.isMobile = window.innerWidth < 600;
   }
 
   getDeleteIcon(status: string): string {
@@ -51,13 +51,11 @@ export class StageMatchesManagementPage implements OnInit {
     }
   }
 
-  // Get a specific match control by index
   getMatchControl(index: number): FormGroup {
     return this.matchesArray.at(index) as FormGroup;
   }
 
   async addMatch(): Promise<void> {
-    // Filter teams and stages excluding those marked as "Delete"
     const availableTeams = this.teamsArray.filter(t => t.recordStatus !== 'Delete');
     const availableStages = this.stagesArray.filter(s => s.recordStatus !== 'Delete');
 
@@ -69,10 +67,10 @@ export class StageMatchesManagementPage implements OnInit {
     const modal = await this.modalController.create({
       component: EditMatchModalComponent,
       componentProps: {
-        match: null, // Indicate "Add New Match"
-        index: undefined, // No existing match to edit
-        teams: availableTeams, // Pass filtered team objects
-        stages: availableStages, // Pass filtered stage objects
+        match: null,
+        index: undefined,
+        teams: availableTeams,
+        stages: availableStages,
       },
     });
   
@@ -118,26 +116,21 @@ export class StageMatchesManagementPage implements OnInit {
   
         this.matchesArray.push(buildMatchFormGroup(this.fb, newMatch));
         this.emitMatches();
-        //console.log('Added New Match:', newMatch);
       }
     });
   
     await modal.present();
   }
   
-
-  // Open edit modal for a match
   async openEditModal(index?: number) {
     const existingMatch = index !== undefined ? this.getMatchControl(index).value : null;
-
-    // Filter out "Deleted" teams and stages
     const availableTeams = this.teamsArray.filter(t => t.recordStatus !== 'Delete');
     const availableStages = this.stagesArray.filter(s => s.recordStatus !== 'Delete');
   
     const modal = await this.modalController.create({
       component: EditMatchModalComponent,
       componentProps: {
-        match: existingMatch || {}, // Pass existing match or an empty object
+        match: existingMatch || {},
         index,
         teams: availableTeams,
         stages: availableStages,
@@ -195,14 +188,12 @@ export class StageMatchesManagementPage implements OnInit {
         }
   
         this.emitMatches();
-        //console.log('Updated Match:', updatedMatch);
       }
     });
   
     await modal.present();
   }  
 
-  // Remove a match from the FormArray
   async handleRemoveOrUndoMatch(index: number): Promise<void> {
     const matchControl = this.getMatchControl(index);
     const matchToRemove = matchControl.value;
@@ -246,7 +237,6 @@ export class StageMatchesManagementPage implements OnInit {
     return recordStatus === 'Delete' ? 'medium' : 'danger';
   } 
 
-  // Emit updated matches to parent
   private emitMatches(): void {
     const updatedMatches: Match[] = this.matchesArray.value.map((match: any) => ({
       matchFrontendId: match.matchFrontendId,
@@ -254,15 +244,15 @@ export class StageMatchesManagementPage implements OnInit {
       externalMatchId: match.externalMatchId ?? null,
 
       stageId: match.stageId,
-      stageFrontendId: match.stageFrontendId, // Ensure frontendId is preserved
+      stageFrontendId: match.stageFrontendId,
       stageName: match.stageName,
 
       homeTeamId: match.homeTeamId,
-      homeTeamFrontendId: match.homeTeamFrontendId, // Ensure frontendId is preserved
+      homeTeamFrontendId: match.homeTeamFrontendId,
       homeTeam: match.homeTeam,
 
       awayTeamId: match.awayTeamId,
-      awayTeamFrontendId: match.awayTeamFrontendId, // Ensure frontendId is preserved
+      awayTeamFrontendId: match.awayTeamFrontendId,
       awayTeam: match.awayTeam,
 
       matchStart: match.matchStart,
@@ -284,7 +274,6 @@ export class StageMatchesManagementPage implements OnInit {
     }));
 
     this.matchesUpdated.emit(updatedMatches);
-    //console.log('Emitted Updated Matches:', updatedMatches);
   }
 
   getRecordStatusClass(recordStatus: string | null): string {
@@ -308,7 +297,6 @@ export class StageMatchesManagementPage implements OnInit {
     await toast.present();
   }
 
-  // Generate unique frontendId for new matches
   private generateFrontendId(): string {
     return 'M-' + Math.random().toString(36).substr(2, 9);
   }

@@ -55,8 +55,6 @@ export interface BetStats {
   percent2Q?: number | null;
   result?: '1' | 'X' | '2' | null;
   resultQualified?: 'home' | 'away' | null;
-
-  /** User bets are optional (can be null if match isn't finished) */
   userBets?: UserBetDetails[] | null;
 }
 
@@ -64,7 +62,6 @@ export interface UserBetDetails {
   username: string;
   betScore: string;
 
-  /** 1 = success, 0 = failure, null = not applicable */
   homeWinSuccess?: number | null;
   drawSuccess?: number | null;
   awayWinSuccess?: number | null;
@@ -77,7 +74,7 @@ export interface UpcomingBet {
   matchId: number;
   homeTeam: string;
   awayTeam: string;
-  matchTime: string; // ISO date string
+  matchTime: string;
   stage: string
 }
 

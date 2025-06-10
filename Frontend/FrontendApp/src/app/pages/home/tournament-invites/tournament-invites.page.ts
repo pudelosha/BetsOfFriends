@@ -35,7 +35,7 @@ export class TournamentInvitesPage implements OnInit {
   }
 
   async ionViewWillEnter() {
-    await this.loadTournamentInvites(); // Refresh messages on page enter
+    await this.loadTournamentInvites();
   }
 
   async ngOnChanges(changes: SimpleChanges) {
@@ -50,7 +50,6 @@ export class TournamentInvitesPage implements OnInit {
     try {
       this.invites = await firstValueFrom(this.tournamentService.getPendingTournamentInvites());
 
-      // Hide component if no invites
       if (this.invites.length === 0) {
         this.invites = [];
       }

@@ -5,7 +5,6 @@
   padding-bottom: 0px !important;
 }
 
-/* Remove padding/margin from ion-item */
 .bet-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
@@ -13,14 +12,13 @@
   --padding-start: 0px !important;
   --ion-item-background: transparent;
   
-  height: 60px; /* Fixed height for all match rows */
+  height: 60px;
   --min-height: 60px !important;
   --max-height: 60px !important;
   display: flex;
-  align-items: center; /* Centers content vertically */
+  align-items: center;
 }
   
-  /* Grid layout */
   .bet-grid {
     display: grid;
     grid-template-columns: 7fr 1fr 1fr 2fr 1fr;
@@ -30,7 +28,6 @@
     padding-right: 0px;
   }
   
-  /* Teams Column */
   .bet-details {
     display: flex;
     flex-direction: column;
@@ -39,7 +36,6 @@
     color: #333;
   }
   
-  /* Player Prediction Column */
   .bet-player-prediction {
     display: flex;
     flex-direction: column;
@@ -50,7 +46,6 @@
     color: #444;
   }
   
-  /* Actual Game Result Column */
   .bet-actual-result {
     display: flex;
     flex-direction: column;
@@ -61,33 +56,29 @@
     color: #222;
   }
 
-  /* Remove extra formatting from bet result */
 .bet-result {
   display: flex;
   justify-content: left;
   align-items: center;
-  font-size: 12px;  /* Match other columns */
-  color: #333;      /* Match text color */
+  font-size: 12px;
+  color: #333;
 }
 
 .bet-preview-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-left: 0px !important;  /* Ensure no padding from container */
+  padding-left: 0px !important;
 }
 
-/* Remove Internal Padding from the Preview Button */
 .preview-button {
   font-size: 18px;
   color: var(--ion-color-primary);
-  padding-left: 10px !important;  /* No left padding */
-  padding-right: 0px !important; /* Small right padding */
-
-  /* Override Native Button Padding */
-  --padding-start: 0px !important; /* Remove Ionic button's internal left padding */
-  --padding-end: 0px !important;   /* Keep small right padding */
-  --border-radius: 0px; /* Optional: Adjust if necessary */
+  padding-left: 10px !important;
+  padding-right: 0px !important;
+  --padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --border-radius: 0px;
 }
 
 .no-matches {
@@ -108,4 +99,3 @@
     visibility: hidden;
   }
 }
-

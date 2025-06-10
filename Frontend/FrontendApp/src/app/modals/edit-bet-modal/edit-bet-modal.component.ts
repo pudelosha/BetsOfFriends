@@ -55,10 +55,6 @@ export class EditBetModalComponent implements AfterViewInit {
       return;
     }
   
-    // Log the original bet data before modification
-    //console.log("Original Bet Data Before Saving:", JSON.parse(JSON.stringify(this._bet)));
-  
-    // Check if qualification is required (only for ExtendedWithQualification)
     const qualificationRequired = this._bet.showWhoQualifies &&
                                   this._bet.type === 'ExtendedWithQualification' &&
                                   this._bet.qualifyHomeOdds !== null && 
@@ -69,17 +65,13 @@ export class EditBetModalComponent implements AfterViewInit {
       return;
     }
   
-    // Create object to emit
     const emittedBet = {
       playerHomeGoals: this.homeGoals,
       playerAwayGoals: this.awayGoals,
       playerQualifiedTeam: this.playerQualifiedTeam,
       actualQualifiedTeam: this.actualQualifiedTeam
     };
-  
-    // Log the emitted bet data
-    //console.log("Emitting Bet Data:", emittedBet);
-  
+    
     this.modalCtrl.dismiss(emittedBet);
   }
     

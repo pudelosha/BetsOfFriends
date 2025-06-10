@@ -31,5 +31,4 @@ export class PolicyPage implements OnInit {
     event.preventDefault();
     this.router.navigate(['/terms']);
   }
-
 }

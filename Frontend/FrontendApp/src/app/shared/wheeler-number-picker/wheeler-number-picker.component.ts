@@ -13,7 +13,7 @@ export class WheelerNumberPickerComponent  implements AfterViewInit {
   @Input() selectedNumber: number = 0;
   @Output() numberChanged = new EventEmitter<number>();
 
-  numberOptions = Array.from({ length: 10 }, (_, i) => i); // [0,1,2,3,4,5,6,7,8,9]
+  numberOptions = Array.from({ length: 10 }, (_, i) => i);
   selectedIndex = 0;
   
   @ViewChild('wheelContainer') wheelContainer!: ElementRef;

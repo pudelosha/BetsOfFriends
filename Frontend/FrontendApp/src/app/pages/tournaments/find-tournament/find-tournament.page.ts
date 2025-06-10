@@ -38,7 +38,7 @@ export class FindTournamentPage implements OnInit {
   }
 
   onSearchChange() {
-    this.loadTournaments(); // Filter when input changes
+    this.loadTournaments();
   }
 
   loadTournaments() {
@@ -46,7 +46,6 @@ export class FindTournamentPage implements OnInit {
 
     const trimmedTerm = this.searchTerm.trim();
 
-    // Always pass a trimmed term (empty string means "no search")
     this.tournamentService.searchPublicTournaments(trimmedTerm).subscribe({
       next: (result) => {
         this.filteredTournaments = result;
@@ -74,7 +73,7 @@ export class FindTournamentPage implements OnInit {
   
     if (data?.requested) {
       await this.showToast('Join request submitted successfully.', 'success');
-      this.loadTournaments(); // Refresh the list to reflect the updated status
+      this.loadTournaments();
     }
   }
 

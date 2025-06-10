@@ -19,7 +19,7 @@ import { IonSpinner, IonList, IonItem, IonButton } from '@ionic/angular/standalo
   imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonSpinner, IonList, IonItem, IonButton],
 })
 export class ManageCustomFinalisedPage implements OnInit, OnChanges {
-  @Input() stage!: string; // Receive stage from parent
+  @Input() stage!: string;
 
   matches: Match[] = [];
   isLoading = true;
@@ -34,19 +34,16 @@ export class ManageCustomFinalisedPage implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    //console.log('Loading finalised matches page...');
-    this.loadMatches(); 
+    //this.loadMatches(); 
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stage'] && !changes['stage'].firstChange) {
-      //console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadMatches();
     }
   }  
   
   ionViewWillEnter() {
-    //console.log('Reloading finalised matches...');
     this.loadMatches(); 
   }
   
@@ -91,7 +88,7 @@ export class ManageCustomFinalisedPage implements OnInit, OnChanges {
       }
     } finally {
       const elapsedTime = Date.now() - startTime;
-      const delay = Math.max(0, 500 - elapsedTime); // You set 500ms here
+      const delay = Math.max(0, 500 - elapsedTime);
   
       setTimeout(async () => {
         this.isLoading = false;
@@ -102,7 +99,6 @@ export class ManageCustomFinalisedPage implements OnInit, OnChanges {
      
   async editMatchResult(match: Match, event: Event) {
     event.stopPropagation();
-    //console.log("Opening Edit Match Result Modal:", match);
   
     const modal = await this.modalCtrl.create({
       component: EditMatchResultModalComponent,
@@ -115,12 +111,10 @@ export class ManageCustomFinalisedPage implements OnInit, OnChanges {
   
     const { data } = await modal.onWillDismiss();
     if (data) {
-      //console.log("Updated Match Result Data:", data);
   
       try {
         await firstValueFrom(this.matchService.updateMatchResult(match.matchId, data));
   
-        // Refresh the entire match list instead of updating only one item
         await this.loadMatches();  
   
         this.showToast("Match result updated successfully!", "success");

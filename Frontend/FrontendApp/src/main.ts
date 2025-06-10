@@ -18,7 +18,7 @@ import { withHashLocation } from '@angular/router';
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    importProvidersFrom(IonicModule.forRoot()), // force registration
+    importProvidersFrom(IonicModule.forRoot()),
     provideIonicAngular({
       mode: 'md',
       //rippleEffect: true,

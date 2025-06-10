@@ -39,7 +39,7 @@ export class UpcomingBetsPage implements OnInit {
   }
 
   async ionViewWillEnter() {
-    await this.loadTournamentAndFetchBets(); // Refresh messages on page enter
+    await this.loadTournamentAndFetchBets();
   }
 
   async ngOnChanges(changes: SimpleChanges) {
@@ -71,7 +71,6 @@ export class UpcomingBetsPage implements OnInit {
     try {
       this.upcomingGames = await firstValueFrom(this.betService.getUpcomingBets(this.tournamentId));
   
-      // Store the stage from the first item if available
       if (this.upcomingGames.length > 0) {
         this.firstStage = this.upcomingGames[0].stage;
       }

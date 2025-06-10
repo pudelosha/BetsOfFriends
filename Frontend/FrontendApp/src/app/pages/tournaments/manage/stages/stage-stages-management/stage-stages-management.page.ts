@@ -44,24 +44,21 @@ export class StageStagesManagementPage implements OnInit {
     }
   }
 
-  // Get control for a specific stage
   getStageControl(index: number): FormGroup {
     return this.stagesArray.at(index) as FormGroup;
   }
 
   checkScreenSize(): void {
-    this.isMobile = window.innerWidth < 600; // you can tweak the threshold
+    this.isMobile = window.innerWidth < 600;
   }
 
-  // Generate a unique frontendId for new stages
   private generateFrontendId(): string {
     return 'S-' + Math.random().toString(36).substr(2, 9);
   }
 
-  // Add a new stage with proper order handling
   async addStage(): Promise<void> {
     const existingOrders = this.stagesArray.controls.map(control => control.get('order')?.value);
-    const nextOrder = existingOrders.length > 0 ? Math.max(...existingOrders) + 1 : 1; // Get max + 1, default to 1 if empty
+    const nextOrder = existingOrders.length > 0 ? Math.max(...existingOrders) + 1 : 1;
   
     const modal = await this.modalController.create({
       component: EditStageModalComponent,
@@ -70,7 +67,7 @@ export class StageStagesManagementPage implements OnInit {
           stageFrontendId: this.generateFrontendId(),
           stageId: null,
           stageName: '',
-          order: nextOrder, // Pre-fill order with max order + 1
+          order: nextOrder,
         },
         isEditing: false,
       },
@@ -93,7 +90,6 @@ export class StageStagesManagementPage implements OnInit {
     await modal.present();
   }  
 
-  // Edit an existing stage
   async editStage(index: number): Promise<void> {
     const stage = this.stagesArray.at(index).value;
 
@@ -115,7 +111,6 @@ export class StageStagesManagementPage implements OnInit {
       const stageGroup = this.stagesArray.at(index) as FormGroup;
       const currentStage = stageGroup.value;
     
-      // Only update status if something has changed
       if (updatedStage.stageName.trim() !== currentStage.stageName.trim() || updatedStage.order !== currentStage.order) {
         stageGroup.patchValue({
           stageName: updatedStage.stageName.trim(),
@@ -130,19 +125,16 @@ export class StageStagesManagementPage implements OnInit {
     await modal.present();
   }
 
-  // Remove a stage and update order
   async handleRemoveOrUndoStage(index: number): Promise<void> {
     const stageControl = this.getStageControl(index);
     const stageToRemove = stageControl.value;
     const currentStatus = stageToRemove.recordStatus;
 
     if (currentStatus === 'Delete') {
-      // If already marked "Delete", undo by setting it to "Update"
       stageControl.patchValue({ recordStatus: 'Update' });
       this.emitStages();
       await this.showToast(`Stage "${stageToRemove.stageName}" restored successfully!`, 'success');
     } else {
-      // Otherwise, show confirmation alert before deleting or marking as "Delete"
       const alert = await this.alertController.create({
         header: 'Confirm Removal',
         message: `Are you sure you want to delete the stage "${stageToRemove.stageName}"?`,
@@ -168,22 +160,18 @@ export class StageStagesManagementPage implements OnInit {
     }
   } 
 
-  // Determines Delete vs Undo button text
   getDeleteButtonText(recordStatus: string | null): string {
     return recordStatus === 'Delete' ? 'Undo' : 'Delete';
   }
 
-  // Determines button color based on record status
   getDeleteButtonColor(recordStatus: string | null): string {
     return recordStatus === 'Delete' ? 'medium' : 'danger';
   }  
 
-  // Insert a stage and handle conflicting orders
   private insertStageWithOrder(newStage: Stage): void {
     const existingOrders = this.stagesArray.controls.map(control => control.get('order')?.value);
     
     if (existingOrders.includes(newStage.order)) {
-      // If order exists, shift existing stages down
       this.stagesArray.controls.forEach(control => {
         const currentOrder = control.get('order')?.value;
         if (currentOrder >= newStage.order) {
@@ -192,24 +180,19 @@ export class StageStagesManagementPage implements OnInit {
       });
     }
 
-    // Add the new stage at the correct position
     this.stagesArray.push(this.fb.group(newStage));
-
-    // Ensure the order is still valid
     this.recalculateStageOrder();
     this.emitStages();
   }
 
-  // Fix stage ordering after changes
   private recalculateStageOrder(): void {
     this.stagesArray.controls
-      .sort((a, b) => a.get('order')!.value - b.get('order')!.value) // Ensure sorted order
+      .sort((a, b) => a.get('order')!.value - b.get('order')!.value)
       .forEach((control, index) => {
         (control as FormGroup).patchValue({ order: index + 1 });
       });
   }
 
-  // Emit updated stages to parent
   private emitStages(): void {
     const updatedStages: Stage[] = this.stagesArray.value.map((stage: any) => ({
       stageFrontendId: stage.stageFrontendId,
@@ -232,7 +215,6 @@ export class StageStagesManagementPage implements OnInit {
     }
   }
 
-  // Show toast messages
   private async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary'): Promise<void> {
     const toast = await this.toastController.create({
       message,

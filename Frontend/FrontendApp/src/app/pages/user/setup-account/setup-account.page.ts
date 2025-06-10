@@ -46,7 +46,7 @@ export class SetupAccountPage {
 
   onScroll(event: any) {
     const scrollTop = event.detail.scrollTop;
-    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
+    this.parallaxOffset = scrollTop * 0.4;
   }
 
   toggleConsent(event: Event): void {

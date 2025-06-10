@@ -36,7 +36,7 @@ export class SelectedTournamentPage implements OnInit, OnChanges {
   }
 
   async ionViewWillEnter() {
-    await this.loadTournamentAndFetchSummary(); // Refresh messages on page enter
+    await this.loadTournamentAndFetchSummary();
   }
 
   async ngOnChanges(changes: SimpleChanges) {

@@ -14,8 +14,8 @@ import { Team, Stage } from 'src/app/model/tournament-model';
   imports: [IonSegmentButton, CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonSegment, IonSegmentButton, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSelect, IonSelectOption, IonDatetime, IonItem, IonToggle],
 })
 export class EditMatchModalComponent implements OnInit {
-  @Input() match: any; // Existing match (if editing), otherwise null
-  @Input() index?: number; // Index in the match array
+  @Input() match: any;
+  @Input() index?: number;
   @Input() teams: Team[] = [];
   @Input() stages: Stage[] = [];
 
@@ -31,15 +31,15 @@ export class EditMatchModalComponent implements OnInit {
       matchId: [null],
       externalMatchId: [null],  
 
-      stageFrontendId: [null, Validators.required], // Use frontendId for validation
+      stageFrontendId: [null, Validators.required],
       stageId: [null],
       stageName: [''],
     
-      homeTeamFrontendId: [null, Validators.required], // Use frontendId for validation
+      homeTeamFrontendId: [null, Validators.required],
       homeTeamId: [null],  
       homeTeam: [''],  
     
-      awayTeamFrontendId: [null, Validators.required], // Use frontendId for validation
+      awayTeamFrontendId: [null, Validators.required],
       awayTeamId: [null],  
       awayTeam: [''], 
 
@@ -51,17 +51,16 @@ export class EditMatchModalComponent implements OnInit {
       homeQualifies: [null],  
       awayQualifies: [null],  
 
-      matchStatus: ['Timed'],      // NEW
-      scoreHome: [null],           // NEW
-      scoreAway: [null],           // NEW
-      qualifiedTeam: ['neutral'],  // 'home', 'away', or 'neutral'
+      matchStatus: ['Timed'],
+      scoreHome: [null],
+      scoreAway: [null],
+      qualifiedTeam: ['neutral'],
 
       isVisible: [true],
 
-      recordStatus: ['New'],       // Default to "New"
+      recordStatus: ['New'],
     });
 
-    // Listen for matchType changes
     this.matchForm.get('matchType')?.valueChanges.subscribe((value) => {
       this.toggleQualificationOddsValidation(value);
     });
@@ -93,12 +92,10 @@ export class EditMatchModalComponent implements OnInit {
     }
   }  
 
-  // Ensure `ion-select` properly binds values
   compareWith(o1: any, o2: any): boolean {
     return o1 === o2;
   }
 
-  // Function to dynamically apply validation
   private toggleQualificationOddsValidation(matchType: string) {
     const homeQualifiesControl = this.matchForm.get('homeQualifies');
     const awayQualifiesControl = this.matchForm.get('awayQualifies');
@@ -120,7 +117,6 @@ export class EditMatchModalComponent implements OnInit {
   async saveMatch() {
     if (this.matchForm.invalid) {
       this.showToast('Please fill in all required fields!', 'danger');
-      //console.log(this.matchForm);
       return;
     }
 
@@ -131,7 +127,6 @@ export class EditMatchModalComponent implements OnInit {
       }
     }
 
-    // Find selected team objects based on frontendId
     const selectedStage = this.stages.find(s => s.stageFrontendId === this.matchForm.value.stageFrontendId);
     const selectedHomeTeam = this.teams.find(t => t.teamFrontendId === this.matchForm.value.homeTeamFrontendId);
     const selectedAwayTeam = this.teams.find(t => t.teamFrontendId === this.matchForm.value.awayTeamFrontendId);  
@@ -194,8 +189,6 @@ export class EditMatchModalComponent implements OnInit {
         ? (isUpdated ? 'Update' : this.matchForm.value.recordStatus) 
         : 'New'
     };
-
-    //console.log('Saving Match:', matchData);
 
     await this.modalController.dismiss(matchData);
     this.showToast(this.index !== undefined ? 'Match updated!' : 'New match added!', 'success');

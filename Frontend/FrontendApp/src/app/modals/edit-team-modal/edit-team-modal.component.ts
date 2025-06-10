@@ -14,9 +14,9 @@ import { Team } from 'src/app/model/tournament-model';
   imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput],
 })
 export class EditTeamModalComponent implements OnInit {
-  @Input() team: Team | null = null; // Input to receive team details
-  @Input() isEditing: boolean = false; // Indicates if the modal is for editing or adding
-  @Input() allTeamNames: string[] = []; // List of existing team names
+  @Input() team: Team | null = null;
+  @Input() isEditing: boolean = false;
+  @Input() allTeamNames: string[] = [];
 
   teamForm: FormGroup;
 
@@ -26,30 +26,29 @@ export class EditTeamModalComponent implements OnInit {
     private toastController: ToastController
   ) {
     this.teamForm = this.fb.group({
-      teamFrontendId: [''], // Always required (Renamed correctly)
-      teamId: [null], // Backend ID (Renamed correctly)
+      teamFrontendId: [''],
+      teamId: [null],
       teamName: ['', [Validators.required, Validators.maxLength(50)]],
-      recordStatus: ['New'], // Default to "New"
+      recordStatus: ['New'],
     });
   }
 
   ngOnInit(): void {
     if (this.team) {
       this.teamForm.patchValue({
-        teamFrontendId: this.team.teamFrontendId || this.generateFrontendId(), // Ensure frontend ID
-        teamId: this.team.teamId ?? null, // Preserve backend ID
+        teamFrontendId: this.team.teamFrontendId || this.generateFrontendId(),
+        teamId: this.team.teamId ?? null,
         teamName: this.team.teamName,
-        recordStatus: this.team.recordStatus ?? 'Uploaded', // Preserve status or default to "Uploaded"
+        recordStatus: this.team.recordStatus ?? 'Uploaded',
       });
     } else {
       this.teamForm.patchValue({ 
         teamFrontendId: this.generateFrontendId(),
-        recordStatus: 'New' // Default for new records
+        recordStatus: 'New'
       });
     }
   }
 
-  // Generate a unique teamFrontendId for new teams
   private generateFrontendId(): string {
     return 'T-' + Math.random().toString(36).substr(2, 9);
   }
@@ -72,17 +71,15 @@ export class EditTeamModalComponent implements OnInit {
       return;
     }
 
-    // Check if a real update was made
     const isUpdated = this.isEditing && teamName !== currentTeamName;
 
-    // Prepare the structured team object with correct naming
     const updatedTeam: Team = {
       teamFrontendId: this.teamForm.value.teamFrontendId,
       teamId: this.teamForm.value.teamId,
       teamName: this.teamForm.value.teamName.trim(),
       recordStatus: this.isEditing
-        ? (isUpdated ? 'Update' : this.teamForm.value.recordStatus) // Only update if changed
-        : 'New', // Default for new teams
+        ? (isUpdated ? 'Update' : this.teamForm.value.recordStatus)
+        : 'New',
     };
 
     await this.modalController.dismiss(updatedTeam);

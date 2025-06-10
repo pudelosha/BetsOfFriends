@@ -61,7 +61,7 @@ export class ResetPasswordPage implements OnInit {
 
   onScroll(event: any) {
     const scrollTop = event.detail.scrollTop;
-    this.parallaxOffset = scrollTop * 0.4; // Adjust speed
+    this.parallaxOffset = scrollTop * 0.4;
   }
 
   async submitNewPassword() {

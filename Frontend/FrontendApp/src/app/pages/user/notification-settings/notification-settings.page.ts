@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ToastController, LoadingController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-import { NotificationService } from 'src/app/services/notification.service'; // You will need to create this service
+import { NotificationService } from 'src/app/services/notification.service';
 import { IonContent, IonGrid, IonRow, IonCol, IonToggle, IonButton } from '@ionic/angular/standalone';
 
 @Component({

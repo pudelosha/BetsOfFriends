@@ -63,7 +63,6 @@ export class AuthService {
         try {
             const decodedToken: any = jwtDecode(token);
 
-            // Extract roles correctly from claim URL
             const roleClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
             return decodedToken[roleClaim] 
                 ? Array.isArray(decodedToken[roleClaim])

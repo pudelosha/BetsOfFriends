@@ -1,6 +1,3 @@
-/* ======================== */
-/*  Match List Formatting */
-/* ======================== */
 .page-description {
   margin-bottom: 1rem;
   color: #666;
@@ -13,7 +10,6 @@
   padding: 0;
 }
 
-/*  Match Item Formatting */
 .match-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
@@ -30,53 +26,40 @@
   border: 2px solid transparent;
 }
 
-/* Ensures Delete & Undo Buttons Have Consistent Width */
 .fixed-button {
   width: 80px;
 }
 
-/* ======================== */
-/*  Status-Based Formatting (Background + Border Colors) */
-/* ======================== */
-
-/* New (Pale Green) */
 .match-status-new {
   background-color: #e6f9e6;
   border-color: #e6f9e6;
   color: #004d00;
 }
 
-/* Uploaded (Pale Gray) */
 .match-status-uploaded {
   background-color: #f5f5f5;
   border-color: #f5f5f5;
   color: #666;
 }
 
-/* Update (Blue-Gray) */
 .match-status-update {
   background-color: #e0ecf8;
   border-color: #e0ecf8;
   color: #004080;
 }
 
-/* Delete (Pale Red) */
 .match-status-delete {
   background-color: #fce6e6;
   border-color: #fce6e6;
   color: #800000;
 }
 
-/* Uploaded (Pale Gray) */
 .match-status-finalised {
   background-color: #dddddd;
   border-color: #dddddd;
   color: #666;
 }
 
-/* ======================== */
-/*  Match Grid Layout */
-/* ======================== */
 .match-grid {
   display: flex;
   justify-content: space-between;
@@ -85,32 +68,25 @@
   gap: 10px;
 }
 
-/* Match Details */
-/* Match Details */
 .match-details {
   flex: 3;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;  /* Align text to the left */
-  justify-content: center;  /* Center vertically */
+  align-items: flex-start;
+  justify-content: center;
   text-align: left;
   font-size: 12px;
 }
 
-/* Match Date */
 .match-date {
   flex: 2;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center vertically */
+  justify-content: center;
   text-align: center;
   font-size: 12px;
 }
 
-
-/* ======================== */
-/*  Match Buttons */
-/* ======================== */
 .match-button-container {
   flex: 1;
   display: flex;
@@ -119,7 +95,6 @@
   gap: 5px;
 }
 
-/*  Match Button Styling */
 .match-button {
   font-size: 12px;
   height: 32px;
@@ -133,22 +108,15 @@
   border-radius: 8px;
 }
 
-/* ======================== */
-/*  Add Match Button */
-/* ======================== */
 .add-match-container {
   margin-top: 1.5rem;
   text-align: center;
 }
 
-/* Ensure bottom space for navigation */
 .nav-menu-space {
   margin-bottom: 80px;
 }
 
-/* ======================== */
-/* Mobile-specific tweaks for Match List */
-/* ======================== */
 @media (max-width: 600px) {
   .match-list.mobile-view .match-grid {
     flex-direction: row;
@@ -178,4 +146,3 @@
     width: 40px;
   }
 }
-

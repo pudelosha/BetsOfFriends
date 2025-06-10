@@ -117,15 +117,13 @@ export class PendingRequestsPage implements OnInit {
   }
     
   rejectRequest(userEmail: string) {
-    //console.log('Confirming exclusion for:', userEmail);
-  
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
   
     this.tournamentService.excludeParticipant(this.tournamentId!, userEmail).subscribe({
       next: async (result) => {
         if (result.success) {
           await this.showToast(result.message, 'success');
-          await this.loadRequests(); // Refresh the list
+          await this.loadRequests();
         } else {
           await this.showToast(result.message, 'danger');
         }

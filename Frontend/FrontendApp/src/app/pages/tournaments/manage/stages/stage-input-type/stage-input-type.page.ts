@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit }
 import * as XLSX from 'xlsx';
 import { FormGroup, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
+import { FormsModule } from '@angular/forms';
 import { Tournament, Team, Match, Stage } from 'src/app/model/tournament-model';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { ModalController } from '@ionic/angular';
@@ -49,20 +49,17 @@ export class StageInputTypePage implements OnInit {
 
   ngOnInit(): void {  
     if (this.isCustomTournamentCreateMode) {
-      //console.log('Setting defaults for Custom - Create');
       this.tournamentForm.patchValue({
         tournamentVisibility: 'Private',
         updateMethod: 'Manual',
       });
     } else if (!this.isEditMode && this.isPredefinedTournament) {
-      //console.log('Setting defaults for Predefined - Create');
       this.tournamentForm.patchValue({
         updateMethod: 'Manual',
       });
     }
   
     if (this.isCustomTournamentCreateMode) {
-      //console.log('Loading predefined tournaments...');
       this.loadPredefinedTournaments();
     }
   }
@@ -71,7 +68,6 @@ export class StageInputTypePage implements OnInit {
     this.tournamentService.getActivePredefinedTournaments().subscribe({
       next: (tournaments) => {
         this.predefinedTournaments = tournaments;
-        //console.log('Loaded predefined tournaments:', tournaments);
       },
       error: (err) => {
         console.error('Error loading predefined tournaments:', err);
@@ -119,10 +115,8 @@ export class StageInputTypePage implements OnInit {
   
       this.tournamentService.getPredefinedTournamentById(this.selectedTournamentId).subscribe({
         next: async (tournament) => {
-          // Apply predefined ID
           tournament.predefinedTournamentId = tournament?.tournamentId ?? null;
   
-          // Set recordStatus and predefined IDs
           tournament.teams = tournament.teams.map(team => ({
             ...team,
             recordStatus: 'New',
@@ -200,9 +194,7 @@ export class StageInputTypePage implements OnInit {
     if (data?.competitionCode && data?.seasonCode) {
       const competitionCode = data.competitionCode;
       const seasonCode = data.seasonCode;
-  
-      //console.log(`Importing matches for competition ${competitionCode}, season ${seasonCode}`);
-  
+    
       const loading = await this.loadingController.create({
         message: 'Importing competition data...',
         spinner: 'crescent',
@@ -212,9 +204,7 @@ export class StageInputTypePage implements OnInit {
       const startTime = Date.now();
   
       this.externalDataService.getCompetitionMatches(competitionCode, seasonCode).subscribe({
-        next: (tournament) => {
-          //console.log('Fetched Tournament DTO:', tournament);
-  
+        next: (tournament) => {  
           const teams: Team[] = tournament.teams.map(t => ({
             teamFrontendId: this.generateFrontendId(),
             teamId: null,
@@ -298,7 +288,7 @@ export class StageInputTypePage implements OnInit {
         },
         complete: async () => {
           const elapsedTime = Date.now() - startTime;
-          const delay = Math.max(0, 800 - elapsedTime); // Minimum spinner time
+          const delay = Math.max(0, 800 - elapsedTime);
           setTimeout(async () => {
             await loading.dismiss();
           }, delay);
@@ -332,8 +322,7 @@ export class StageInputTypePage implements OnInit {
   }
 
   async triggerAPIUpdate(): Promise<void> {
-    //TODO introduce later
-    //call backend external data to call API and get the latest tournament data
+
   }
 
   async downloadExcel() {
@@ -473,12 +462,11 @@ export class StageInputTypePage implements OnInit {
             teamId: null,
             predefinedTeamId: null,
             teamName: teamName.trim(),
-            recordStatus: 'New' // Mark imported teams as "New"
+            recordStatus: 'New'
           });
         }
       });
 
-      //console.log('Extracted Teams:', teams);
     } else {
       console.warn('No "Teams" sheet found in the Excel file.');
     }
@@ -502,13 +490,12 @@ export class StageInputTypePage implements OnInit {
             stageId: null,
             predefinedStageId: null,
             stageName: stageName,
-            order: index + 1, // Assigns order based on position in the list
-            recordStatus: 'New' // Mark imported stages as "New"
+            order: index + 1,
+            recordStatus: 'New'
           });
         }
       });
   
-      //console.log('Extracted Stages:', stages);
     } else {
       console.warn('No "Stages" sheet found in the Excel file.');
     }
@@ -523,7 +510,6 @@ export class StageInputTypePage implements OnInit {
     if (sheet) {
       const rows = XLSX.utils.sheet_to_json(sheet);
   
-      // Create lookup maps for teams and stages
       const teamMap = new Map(
         teams.map(team => [team.teamName.trim().toLowerCase(), { teamFrontendId: team.teamFrontendId, teamId: team.teamId }])
       );
@@ -554,7 +540,7 @@ export class StageInputTypePage implements OnInit {
           matchId: null,
           predefinedMatchId: null,
   
-          stageFrontendId: selectedStage?.stageFrontendId ?? this.generateFrontendId(), // Ensure non-null string
+          stageFrontendId: selectedStage?.stageFrontendId ?? this.generateFrontendId(),
           stageId: selectedStage?.stageId ?? null,
           stageName: selectedStage?.stageName || row['Stage'] || 'Default Stage',
   
@@ -578,13 +564,11 @@ export class StageInputTypePage implements OnInit {
 
           isVisible: true,
 
-          recordStatus: 'New' // Mark imported matches as "New"
+          recordStatus: 'New'
         };
   
         matches.push(match);
       });
-  
-      //console.log('Extracted Matches:', matches);
     } else {
       console.warn('No "Matches" sheet found in the Excel file.');
     }
@@ -639,12 +623,10 @@ export class StageInputTypePage implements OnInit {
   eraseForm(): void {
     this.tournamentForm.reset();
   
-    // Emit empty lists to parent to clear teams, stages, matches
     this.teamsExtracted.emit([]);
     this.stagesExtracted.emit([]);
     this.matchesExtracted.emit([]);
   
-    // Reapply default values based on mode
     if (this.isCustomTournamentCreateMode) {
       this.tournamentForm.patchValue({
         tournamentVisibility: 'Private',

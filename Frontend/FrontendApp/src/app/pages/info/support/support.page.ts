@@ -57,7 +57,7 @@ export class SupportPage implements OnInit {
 
     this.isLoading = true;
 
-    const rawFormValue = this.supportForm.getRawValue(); // includes disabled controls
+    const rawFormValue = this.supportForm.getRawValue();
     const { email, subject, message } = rawFormValue;
     const language = this.languageService.currentLang || 'en';
 
@@ -66,7 +66,7 @@ export class SupportPage implements OnInit {
       this.supportForm.reset();
 
       if (this.isLoggedIn) {
-        this.supportForm.controls['email'].setValue(email); // restore locked email after reset
+        this.supportForm.controls['email'].setValue(email);
         this.supportForm.controls['email'].disable();
       }
 

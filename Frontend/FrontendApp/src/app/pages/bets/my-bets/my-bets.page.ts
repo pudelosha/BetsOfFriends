@@ -23,12 +23,12 @@ import { IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIc
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MyBetsPage implements OnInit, AfterViewInit {
-  selectedTab: string = 'to-place'; // Default tab
+  selectedTab: string = 'to-place';
   availableStages: string[] = [];
   selectedStageIndex = 0;
   selectedStage: string = '';
   
-  @ViewChild(IonContent, { static: false }) content!: IonContent; // Get content reference
+  @ViewChild(IonContent, { static: false }) content!: IonContent;
 
   constructor(
     private tournamentService: CustomTournamentService,
@@ -50,20 +50,17 @@ export class MyBetsPage implements OnInit, AfterViewInit {
       const urlStage = params.get('stage') ?? undefined;
       const urlTournamentId = params.get('tournamentId');
   
-      // Update selected tab
       if (urlTab === 'to-place' || urlTab === 'placed' || urlTab === 'finalised') {
         this.selectedTab = urlTab;
       } else {
         this.selectedTab = 'to-place';
       }
   
-      // Optionally override selected tournament if provided
       if (urlTournamentId && !isNaN(+urlTournamentId)) {
         const parsedId = Number(urlTournamentId);
         this.tournamentSelectionService.setSelectedTournament(parsedId);
       }
   
-      // Always load stages after possibly setting tournament
       this.loadStages(urlStage);
     });
 
@@ -71,24 +68,21 @@ export class MyBetsPage implements OnInit, AfterViewInit {
   }
      
   triggerRefresh() {
-    //console.log('Triggering tab refresh...');
     this.changeTab(this.selectedTab);
   }
 
   changeTab(tab: string) {
-    //console.log(`Switching to tab: ${tab}`);
-    this.selectedTab = ''; // Force unmount
+    this.selectedTab = '';
     setTimeout(() => {
-      this.selectedTab = tab; // Remount child
+      this.selectedTab = tab;
     }, 100);
   }
 
   forceTabReload() {
-    //console.log(`Force reloading tab: ${this.selectedTab}`);
     const currentTab = this.selectedTab;
-    this.selectedTab = ''; // Force reset
+    this.selectedTab = '';
     setTimeout(() => {
-      this.selectedTab = currentTab; // Restore tab
+      this.selectedTab = currentTab;
     }, 100);
   }
 
@@ -111,7 +105,6 @@ export class MyBetsPage implements OnInit, AfterViewInit {
     if (index !== -1) {
       this.selectedStageIndex = index;
       this.selectedStage = selected;
-      //console.log(`Stage changed to: ${selected}`);
     }
   }
   
@@ -153,8 +146,7 @@ export class MyBetsPage implements OnInit, AfterViewInit {
 
   scrollToTop() {
     if (this.content) {
-      this.content.scrollToTop(300); // Smooth scroll to top
-      //console.log('Scrolled to top');
+      this.content.scrollToTop(300);
     }
   }
 }

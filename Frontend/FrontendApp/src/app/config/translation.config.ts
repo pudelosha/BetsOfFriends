@@ -1,5 +1,3 @@
-// src/app/config/translation.config.ts
-
 import { HttpClient } from '@angular/common/http';
 import { provideHttpClient } from '@angular/common/http';
 import { importProvidersFrom } from '@angular/core';

@@ -19,7 +19,7 @@ import { IonSpinner, IonList, IonItem, IonButton, IonIcon } from '@ionic/angular
   imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, IonSpinner, IonList, IonItem, IonButton, IonIcon],
 })
 export class MyBetsFinalisedPage implements OnInit, OnChanges {
-  @Input() stage!: string; // Receive stage from parent
+  @Input() stage!: string;
 
   bets: Bet[] = [];
   isLoading = true;
@@ -34,12 +34,11 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    this.loadBets();
+    //this.loadBets();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stage'] && !changes['stage'].firstChange) {
-      //console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadBets();
     }
   }
@@ -142,16 +141,12 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
     return predicted === actual ? 'Won' : 'Lost';
   }
       
-  async openBetsOverview(bet: Bet) {
-    //console.log("Fetching bet overview data for matchId:", bet.matchId);
-  
+  async openBetsOverview(bet: Bet) {  
     try {
-      const betStats: BetStats = await firstValueFrom(this.betService.getBetStatsByMatchId(bet.matchId));
-      //console.log("Received bet overview data:", betStats);
-  
+      const betStats: BetStats = await firstValueFrom(this.betService.getBetStatsByMatchId(bet.matchId));  
       const modal = await this.modalCtrl.create({
         component: BetsOverviewModalComponent,
-        componentProps: { betStats }, // Pass the fetched data directly
+        componentProps: { betStats },
         breakpoints: [0, 0.75, 1],
         initialBreakpoint: 1,
       });

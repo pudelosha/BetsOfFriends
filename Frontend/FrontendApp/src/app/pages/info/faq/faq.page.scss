@@ -1,16 +1,13 @@
-/* Override global padding */
 .page-container {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
-/* Remove default padding in ion-content */
 ion-content {
   --padding-start: 0 !important;
   --padding-end: 0 !important;
 }
 
-/* List container for FAQs */
 .notification-list {
   --padding-top: 0px !important;
   --padding-bottom: 0px !important;
@@ -18,7 +15,6 @@ ion-content {
   padding-bottom: 0px !important;
 }
 
-/* FAQ Header Row */
 .notification-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
@@ -35,17 +31,15 @@ ion-content {
   cursor: pointer;
 }
 
-/* FAQ Header Layout */
 .notification-grid {
   display: grid;
-  grid-template-columns: 9fr 2fr 1fr; // Q:Cat:Btn
+  grid-template-columns: 9fr 2fr 1fr;
   align-items: center;
   width: 100%;
   gap: 10px;
   padding-right: 0px;
 }
 
-/* Question Text */
 .notification-title {
   display: flex;
   flex-direction: column;
@@ -55,7 +49,6 @@ ion-content {
   color: #2d3436;
 }
 
-/* Optional Category */
 .notification-date {
   display: flex;
   flex-direction: column;
@@ -64,7 +57,6 @@ ion-content {
   color: #636e72;
 }
 
-/* Hidden action column (could be expanded later) */
 .notification-button-container {
   display: flex;
   justify-content: flex-end;
@@ -72,7 +64,6 @@ ion-content {
   width: 100%;
 }
 
-/* FAQ Answer */
 .notification-content {
   padding: 15px;
   font-size: 13px;
@@ -81,13 +72,11 @@ ion-content {
   line-height: 1.6;
 }
 
-/* Optional for "unread" emphasis (if used) */
 .unread-notification {
   background-color: #f2f4ff !important;
   font-weight: bold;
 }
 
-/* Empty state message */
 .no-notifications {
   text-align: center;
   font-size: 1.1em;

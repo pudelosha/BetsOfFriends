@@ -29,7 +29,7 @@ export class EditStageModalComponent implements OnInit {
       stageId: [null],
       stageName: ['', [Validators.required, Validators.maxLength(50)]],
       order: [1, [Validators.required, Validators.min(1)]],
-      recordStatus: ['New'], // Default to "New"
+      recordStatus: ['New'],
     });
   }
 

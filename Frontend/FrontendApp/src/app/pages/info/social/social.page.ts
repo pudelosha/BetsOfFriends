@@ -27,5 +27,4 @@ export class SocialPage implements OnInit {
   openLink(url: string): void {
     window.open(url, '_blank');
   }
-
 }

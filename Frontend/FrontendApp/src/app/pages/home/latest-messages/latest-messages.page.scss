@@ -1,4 +1,3 @@
-/* Frame Styling */
 .latest-messages-box {
   background: #f5f5f5 !important;
   border-radius: 10px;
@@ -8,12 +7,10 @@
   transition: background 0.2s ease-in-out;
 }
 
-/* Add hover effect for interactivity */
 .latest-messages-box:hover {
   background: #ebebeb !important;
 }
 
-/* Title Styling */
 .frame-title {
   font-size: 18px;
   font-weight: bold;
@@ -22,7 +19,6 @@
   text-align: left;
 }
 
-/* No messages message */
 .no-messages-message {
   text-align: center;
   color: #666;
@@ -30,7 +26,6 @@
   margin-top: 10px;
 }
 
-/* Remove extra padding/margins from ion-list */
 .latest-messages-list {
   --background: transparent !important;
   padding-top: 0px !important;
@@ -38,7 +33,6 @@
   background: transparent !important;
 }
 
-/* Make ion-items transparent so the frame color is visible */
 .latest-messages-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
@@ -55,7 +49,6 @@
   align-items: center;
 }
 
-/* Grid layout for latest messages */
 .latest-messages-grid {
   display: grid;
   grid-template-columns: 8fr 2fr;
@@ -65,7 +58,6 @@
   padding-right: 0px;
 }
 
-/* Message Title */
 .latest-messages-details {
   text-align: left;
   font-size: 12px;
@@ -77,7 +69,6 @@
   background: transparent !important;
 }
 
-/* Date & Time */
 .latest-messages-date {
   text-align: right;
   font-size: 12px;

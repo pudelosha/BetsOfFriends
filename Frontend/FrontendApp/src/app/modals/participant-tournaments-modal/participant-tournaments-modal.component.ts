@@ -54,11 +54,8 @@ export class ParticipantTournamentsModalComponent implements OnInit {
     await this.showToast(`${tournament.tournamentName} selected!`, 'success');
     await this.modalController.dismiss();
   
-    // Capture clean path before redirect (no query params)
     const cleanUrl = this.router.url.split('?')[0];
-    // Redirect to dummy page
     await this.router.navigateByUrl('/redirect', { skipLocationChange: true });
-    // Navigate back to original route without query params
     await this.router.navigateByUrl(cleanUrl);
   }
         

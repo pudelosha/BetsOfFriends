@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 
-
 @Component({
   selector: 'app-info-and-support',
   templateUrl: './info-and-support.page.html',
@@ -30,5 +29,4 @@ export class InfoAndSupportPage implements OnInit {
   navigateTo(route: string): void {
     this.router.navigate([route]);
   }
-
 }

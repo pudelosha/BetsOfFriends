@@ -12,7 +12,7 @@ export interface UserProfile {
 }
 
 export interface ApplicationUser {
-  userId: string; // Unique user identifier (can be string or number depending on your backend)
+  userId: string;
   userName: string;
   userEmail: string;
   userStatus: string;
@@ -23,5 +23,5 @@ export interface ApplicationUser {
   tournamentAdminCount: number;
   tournamentParticipantCount: number;
 
-  memberSince: string; // ISO date string, e.g. "2023-06-14T12:00:00Z"
+  memberSince: string;
 }

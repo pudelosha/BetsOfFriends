@@ -55,17 +55,16 @@ export class MyTournamentsDashboardPage implements OnInit {
       message: 'Loading tournaments...',
       spinner: 'crescent',
     });
-    await loading.present(); // Show spinner
+    await loading.present();
   
-    const startTime = Date.now(); // Capture start time
+    const startTime = Date.now();
   
     this.tournamentService.getUserActiveTournaments().subscribe({
       next: (response) => {
         this.tournaments = response.map(t => ({
           ...t,
-          isVisible: !!t.isVisible // Ensure it's always a boolean
+          isVisible: !!t.isVisible
         }));
-        //console.log("Loaded tournaments:", this.tournaments); // 🔍 Debug log
       },
       error: (error) => {
         this.showToast('Failed to load tournaments. Please try again later.', 'danger');
@@ -74,11 +73,11 @@ export class MyTournamentsDashboardPage implements OnInit {
       },
       complete: async () => {
         const elapsedTime = Date.now() - startTime;
-        const delay = Math.max(0, 500 - elapsedTime); // Ensure at least 500ms delay
+        const delay = Math.max(0, 500 - elapsedTime);
   
         setTimeout(async () => {
           this.isLoading = false;
-          await loading.dismiss(); // Dismiss spinner after delay
+          await loading.dismiss();
         }, delay);
       }
     });
@@ -125,9 +124,8 @@ export class MyTournamentsDashboardPage implements OnInit {
   toggleTournamentVisibility(tournament: UserActiveTournament) {
     this.tournamentService.toggleTournamentVisibility(tournament.tournamentId).subscribe({
       next: (updatedVisibility: boolean) => {
-        tournament.isVisible = updatedVisibility; // Update the UI immediately
-        this.cdRef.detectChanges(); // Force UI refresh
-        //console.log(`Tournament ${tournament.tournamentName} visibility: ${tournament.isVisible}`); // 🔍 Debug log
+        tournament.isVisible = updatedVisibility;
+        this.cdRef.detectChanges();
         this.showToast(`Tournament visibility updated!`, 'success');
       },
       error: (error) => {
@@ -137,7 +135,6 @@ export class MyTournamentsDashboardPage implements OnInit {
     });
   }
                 
-  // Show toast messages for notifications
   async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastController.create({
       message,

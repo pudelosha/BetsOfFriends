@@ -37,7 +37,7 @@ export class UserManagerPage implements OnInit {
 
   ionViewWillEnter(): void {
     this.titleService.setTitle('USER_MANAGER.TITLE');
-    this.loadUsers(); // Always refresh the user list on view enter
+    this.loadUsers();
   }
   
   async loadUsers() {
@@ -89,7 +89,7 @@ export class UserManagerPage implements OnInit {
   
       if (response?.success) {
         this.showToast(response.message, 'success');
-        this.loadUsers(); // Refresh the list
+        this.loadUsers();
       } else {
         this.showToast(response?.message || 'Unexpected error', 'danger');
       }

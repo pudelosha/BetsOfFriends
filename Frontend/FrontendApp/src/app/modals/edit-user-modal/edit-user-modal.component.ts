@@ -14,7 +14,7 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class EditUserModalComponent implements OnInit {
   @Input() user: {
-    assignmentId?: number | null; // Passed from backend, should remain untouched
+    assignmentId?: number | null;
     userName: string;
     userAdminName: string;
     userEmail: string;
@@ -33,12 +33,12 @@ export class EditUserModalComponent implements OnInit {
     private toastController: ToastController
   ) {
     this.userForm = this.fb.group({
-      userName: [{ value: '', disabled: true }], // Non-editable
-      userAdminName: ['', Validators.required], // Editable anytime
-      userEmail: ['', [Validators.required, Validators.email]], // Conditionally editable
-      userRole: ['Player', Validators.required], // Default to Player
-      status: [{ value: 'New', disabled: true }], // Always display-only
-      recordStatus: ['New'], // Track record status
+      userName: [{ value: '', disabled: true }],
+      userAdminName: ['', Validators.required],
+      userEmail: ['', [Validators.required, Validators.email]],
+      userRole: ['Player', Validators.required],
+      status: [{ value: 'New', disabled: true }],
+      recordStatus: ['New'],
     });
   }
 
@@ -46,19 +46,17 @@ export class EditUserModalComponent implements OnInit {
     if (this.user) {
       this.userForm.patchValue({
         ...this.user,
-        recordStatus: this.user.recordStatus ?? 'Uploaded' // Default to "Uploaded"
+        recordStatus: this.user.recordStatus ?? 'Uploaded'
       });
   
-      // Disable email input if the user has been invited or accepted
       if (this.user.status !== 'New') {
         this.userForm.get('userEmail')?.disable();
       }
   
-      // Ensure "New" status cannot be changed
       this.userForm.get('status')?.disable();
     } else {
       this.userForm.patchValue({
-        recordStatus: 'New' // Default for new users
+        recordStatus: 'New'
       });
     }
   }
@@ -72,23 +70,21 @@ export class EditUserModalComponent implements OnInit {
     const existingUser = this.user;
     const updatedUser = this.userForm.getRawValue();
   
-    // Check if a real change happened
     const isUpdated = existingUser &&
       (existingUser.userAdminName !== updatedUser.userAdminName ||
       existingUser.userEmail !== updatedUser.userEmail ||
       existingUser.userRole !== updatedUser.userRole);
   
-    // Preserve existing values but update recordStatus
     const finalUser = {
-      assignmentId: existingUser?.assignmentId ?? null, // Never modify assignmentId in frontend
+      assignmentId: existingUser?.assignmentId ?? null,
       userName: existingUser?.userName ?? '',
-      userAdminName: updatedUser.userAdminName, // Updated admin name
-      userEmail: updatedUser.userEmail, // Email is the key identifier for changes
+      userAdminName: updatedUser.userAdminName,
+      userEmail: updatedUser.userEmail,
       userRole: updatedUser.userRole,
-      status: existingUser?.status ?? 'New', // Keep backend-provided status
+      status: existingUser?.status ?? 'New',
       recordStatus: this.isEditing
-        ? (isUpdated ? 'Update' : existingUser?.recordStatus) // Mark "Update" only if changed
-        : 'New', // Default for new users
+        ? (isUpdated ? 'Update' : existingUser?.recordStatus)
+        : 'New',
     };
   
     await this.modalController.dismiss(finalUser);

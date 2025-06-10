@@ -36,9 +36,9 @@ export class BuildCustomTournamentPage implements OnInit {
 
   tournamentForm: FormGroup;
   step = 1;
-  tournamentId?: number | null = null; // Optional: null for new tournaments, number for existing ones
+  tournamentId?: number | null = null;
   isLoading = false;
-  settingsConfirmed = false; // Ensure settings are saved before proceeding
+  settingsConfirmed = false;
   isPredefinedTournament = false;
 
   constructor(private fb: FormBuilder, 
@@ -56,7 +56,7 @@ export class BuildCustomTournamentPage implements OnInit {
       predefinedTournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       publicTournamentName: [null],
-      tournamentVisibility: ['Private', Validators.required], // or 'Public' depending on default
+      tournamentVisibility: ['Private', Validators.required],
       updateMethod: ['Manual', Validators.required], 
       season: [null],              
       tournamentEnd: [null],      
@@ -111,7 +111,6 @@ export class BuildCustomTournamentPage implements OnInit {
         updateMethod: 'Manual',
       });
   
-      // Refresh predefined tournaments in Stage 1 child
       setTimeout(() => {
         this.stageInputTypePage?.loadPredefinedTournaments?.();
       });
@@ -173,7 +172,6 @@ export class BuildCustomTournamentPage implements OnInit {
       
   async loadTournament(): Promise<void> {
     if (!this.tournamentId) {
-      //console.error('Tournament ID is missing.');
       return;
     }
 
@@ -190,11 +188,9 @@ export class BuildCustomTournamentPage implements OnInit {
         if (tournament) {
           this.populateForm(tournament);
         } else {
-          //console.error('Tournament not found:', this.tournamentId);
         }
       },
       error: (err) => {
-        //console.error('Error loading tournament:', err);
       },
       complete: async () => {
         const elapsedTime = Date.now() - startTime;
@@ -237,16 +233,16 @@ export class BuildCustomTournamentPage implements OnInit {
     this.teamsArray.clear();
     tournament.teams.forEach((team) => {
       if (!team.teamFrontendId) {
-        team.teamFrontendId = this.generateFrontendId(); // Ensure frontend ID exists
+        team.teamFrontendId = this.generateFrontendId();
       }
       
-      teamMap.set(team.teamId ?? 0, team); // Map backendId to team object
+      teamMap.set(team.teamId ?? 0, team);
   
       this.teamsArray.push(
         this.fb.group({
-          teamFrontendId: [team.teamFrontendId], // Ensure we store frontendId
+          teamFrontendId: [team.teamFrontendId],
           externalTeamId: [team.externalTeamId || null],
-          teamId: [team.teamId], // Backend ID
+          teamId: [team.teamId],
           predefinedTeamId: [team.predefinedTeamId || null],
           teamName: [team.teamName, Validators.required],
           recordStatus: ['Uploaded', Validators.required]
@@ -290,7 +286,7 @@ export class BuildCustomTournamentPage implements OnInit {
   
       this.matchesArray.push(
         this.fb.group({
-          matchFrontendId: [match.matchFrontendId || this.generateFrontendId()], // Ensure unique frontendId
+          matchFrontendId: [match.matchFrontendId || this.generateFrontendId()],
           matchId: [match.matchId],
           externalMatchId: [match.externalMatchId || null],
           predefinedMatchId: [match.predefinedMatchId || null],
@@ -299,13 +295,13 @@ export class BuildCustomTournamentPage implements OnInit {
           stageId: [stage.stageId],
           stageName: [stage.stageName],
   
-          homeTeamId: [match.homeTeamId], // Backend ID
-          homeTeamFrontendId: [homeTeam?.teamFrontendId || this.generateFrontendId()], // Assign frontend ID
-          homeTeam: [homeTeam?.teamName || match.homeTeam], // Ensure correct team name
+          homeTeamId: [match.homeTeamId],
+          homeTeamFrontendId: [homeTeam?.teamFrontendId || this.generateFrontendId()],
+          homeTeam: [homeTeam?.teamName || match.homeTeam],
   
-          awayTeamId: [match.awayTeamId], // Backend ID
-          awayTeamFrontendId: [awayTeam?.teamFrontendId || this.generateFrontendId()], // Assign frontend ID
-          awayTeam: [awayTeam?.teamName || match.awayTeam], // Ensure correct team name
+          awayTeamId: [match.awayTeamId],
+          awayTeamFrontendId: [awayTeam?.teamFrontendId || this.generateFrontendId()],
+          awayTeam: [awayTeam?.teamName || match.awayTeam],
   
           matchStart: [new Date(match.matchStart).toISOString()],
           matchType: [match.matchType || 'Regular90Min'],
@@ -336,11 +332,11 @@ export class BuildCustomTournamentPage implements OnInit {
       tournament.users.forEach((user) => {
         this.usersArray.push(
           this.fb.group({
-            assignmentId: [user.assignmentId || null], // Ensure null if undefined
-            userAdminName: [user.userAdminName || '', Validators.required], // Provide empty string if undefined
-            userEmail: [user.userEmail || '', [Validators.required, Validators.email]], // Ensure valid email format
-            status: [user.status || 'New', Validators.required], // Default status to 'New'
-            userRole: [user.userRole || 'Player', Validators.required], // Default status to 'Player'
+            assignmentId: [user.assignmentId || null],
+            userAdminName: [user.userAdminName || '', Validators.required],
+            userEmail: [user.userEmail || '', [Validators.required, Validators.email]],
+            status: [user.status || 'New', Validators.required],
+            userRole: [user.userRole || 'Player', Validators.required],
             recordStatus: ['Uploaded', Validators.required]
           })
         );
@@ -392,9 +388,7 @@ export class BuildCustomTournamentPage implements OnInit {
           recordStatus: [team.recordStatus || 'New']
         })
       );
-    });
-  
-    //console.log('Updated Teams:', this.teamsArray.value);
+    });  
   }
   
   handleStagesExtracted(stages: Stage[]): void {
@@ -411,13 +405,9 @@ export class BuildCustomTournamentPage implements OnInit {
         })
       );
     });
-  
-    //console.log('Updated Stages:', this.stagesArray.value);
   }   
     
   handleMatchesExtracted(matches: Match[]): void {
-    //console.log('Matches Received from Child:', matches);
-  
     this.matchesArray.clear();
   
     matches.forEach((match) => {
@@ -426,14 +416,10 @@ export class BuildCustomTournamentPage implements OnInit {
         recordStatus: match.recordStatus || 'New'
       }));
     });
-  
-    //console.log('Updated Matches (from FormArray.value):', this.matchesArray.value);
   }
   
-  handleUsersUpdated(users: User[]): void {
-    //console.log("Received updated users from child:", users);
-  
-    const previousUsers: User[] = this.usersArray.value; // Explicitly define previous users as User[]
+  handleUsersUpdated(users: User[]): void {  
+    const previousUsers: User[] = this.usersArray.value;
     const previousUserMap = new Map(previousUsers.map(user => [user.assignmentId, user])); 
   
     this.usersArray.clear();
@@ -443,16 +429,13 @@ export class BuildCustomTournamentPage implements OnInit {
   
       if (previousUser) {
         if (previousUser.recordStatus === 'Delete' && recordStatus !== 'Delete') {
-          // If the user was "Deleted" but is now being restored, mark as "Update"
           recordStatus = 'Update';
         }
       }
   
       if (recordStatus === 'Delete' && user.recordStatus !== 'New') {
-        //console.log(`Marking user as Delete: ${user.userName}`);
       } else if (recordStatus === 'Delete') {
-        //console.log(`Removing new user: ${user.userName}`);
-        return; // Skip adding this user
+        return;
       }
   
       this.usersArray.push(
@@ -467,12 +450,9 @@ export class BuildCustomTournamentPage implements OnInit {
         })
       );
     });
-  
-    //console.log('Updated Users in Parent:', this.usersArray.value);
   }   
 
   handleSettingsUpdated(updatedSettings: TournamentSettings): void {
-    //console.log("Tournament Settings Updated:", updatedSettings);
     this.settingsGroup.patchValue(updatedSettings);
   }
      
@@ -505,7 +485,6 @@ export class BuildCustomTournamentPage implements OnInit {
         })
       );
   
-      // If the team name changed, update matches
       if (isUpdated) {
         this.matchesArray.controls.forEach((control: AbstractControl) => {
           const match = (control as FormGroup).value;
@@ -530,16 +509,13 @@ export class BuildCustomTournamentPage implements OnInit {
       const awayTeam = updatedTeamMap.get(match.awayTeamFrontendId);
   
       if (!validTeamFrontendIds.has(match.homeTeamFrontendId) || !validTeamFrontendIds.has(match.awayTeamFrontendId)) {
-        // If a team was deleted from the list (not marked as "Delete"), DELETE its matches
         //console.log(`Deleting match: ${match.homeTeam} vs ${match.awayTeam}`);
       } else if (homeTeam?.recordStatus === 'Delete' || awayTeam?.recordStatus === 'Delete') {
-        // If a team is marked "Delete", mark its matches as "Delete"
         //console.log(`Marking match as 'Delete': ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Delete' });
         matchesToKeep.push(control);
       } else if (previousTeamMap.get(match.homeTeamFrontendId)?.recordStatus === 'Delete' ||
                  previousTeamMap.get(match.awayTeamFrontendId)?.recordStatus === 'Delete') {
-        // If a previously deleted team was restored, mark its matches as "Update"
         //console.log(`Restoring match: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Update' });
         matchesToKeep.push(control);
@@ -550,9 +526,7 @@ export class BuildCustomTournamentPage implements OnInit {
   
     // Step 5: Rebuild matchesArray with only valid matches
     this.matchesArray.clear();
-    matchesToKeep.forEach(control => this.matchesArray.push(control));
-  
-    //console.log('Updated Matches after team removal or undo:', this.matchesArray.value);
+    matchesToKeep.forEach(control => this.matchesArray.push(control));  
   }
       
   handleStagesUpdated(stagesData: { previousStages: Stage[]; updatedStages: Stage[] }): void {
@@ -586,7 +560,6 @@ export class BuildCustomTournamentPage implements OnInit {
         })
       );
   
-      // If the stage name changed, update matches
       if (isUpdated) {
         this.matchesArray.controls.forEach((control: AbstractControl) => {
           const match = (control as FormGroup).value;
@@ -606,15 +579,12 @@ export class BuildCustomTournamentPage implements OnInit {
       const stage = updatedStageMap.get(match.stageFrontendId);
   
       if (!validStageFrontendIds.has(match.stageFrontendId)) {
-        // If a stage was deleted from the list (not marked as "Delete"), DELETE its matches
         //console.log(`Deleting match due to removed stage: ${match.homeTeam} vs ${match.awayTeam}`);
       } else if (stage?.recordStatus === 'Delete') {
-        // If a stage is marked "Delete", mark its matches as "Delete"
         //console.log(`Marking match as 'Delete' due to stage deletion: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Delete' });
         matchesToKeep.push(control);
       } else if (previousStageMap.get(match.stageFrontendId)?.recordStatus === 'Delete') {
-        // If a previously deleted stage was restored, mark its matches as "Update"
         //console.log(`Restoring match due to restored stage: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Update' });
         matchesToKeep.push(control);
@@ -626,13 +596,11 @@ export class BuildCustomTournamentPage implements OnInit {
     // Step 5: Rebuild matchesArray with only valid matches
     this.matchesArray.clear();
     matchesToKeep.forEach(control => this.matchesArray.push(control));
-  
-    //console.log('Updated Matches after stage removal or undo:', this.matchesArray.value);
   }  
        
   handleMatchesUpdated(updatedMatches: Match[]): void {
-    const previousMatches: Match[] = this.matchesArray.value; // Previous state
-    const previousMatchMap = new Map(previousMatches.map(match => [match.matchFrontendId, match])); // Fast lookup
+    const previousMatches: Match[] = this.matchesArray.value;
+    const previousMatchMap = new Map(previousMatches.map(match => [match.matchFrontendId, match]));
   
     // Step 1: Identify deleted matches
     previousMatches.forEach(match => {
@@ -689,12 +657,10 @@ export class BuildCustomTournamentPage implements OnInit {
     // Step 3: Handle match restoration (UNDO)
     updatedMatches.forEach(match => {
       if (match.recordStatus === 'Update') {
-        // Check if corresponding teams and stage were "Deleted" and restore them
         this.teamsArray.controls.forEach(control => {
           const team = control.value;
           if ((team.teamFrontendId === match.homeTeamFrontendId || team.teamFrontendId === match.awayTeamFrontendId)
             && team.recordStatus === 'Delete') {
-            //console.log(`Restoring team: ${team.teamName}`);
             (control as FormGroup).patchValue({ recordStatus: 'Update' });
           }
         });
@@ -702,18 +668,14 @@ export class BuildCustomTournamentPage implements OnInit {
         this.stagesArray.controls.forEach(control => {
           const stage = control.value;
           if (stage.stageFrontendId === match.stageFrontendId && stage.recordStatus === 'Delete') {
-            //console.log(`Restoring stage: ${stage.stageName}`);
             (control as FormGroup).patchValue({ recordStatus: 'Update' });
           }
         });
       }
     });
-  
-    //console.log('Updated Matches:', this.matchesArray.value);
   } 
 
   async submitTournament(): Promise<void> {
-    // Validate Tournament Data
     if (!this.tournamentForm.value.tournamentName?.trim()) {
       this.showToast('Tournament name is required!', 'danger');
       return;
@@ -740,7 +702,7 @@ export class BuildCustomTournamentPage implements OnInit {
     });
     await loading.present();
   
-    const startTime = Date.now(); // Track start time
+    const startTime = Date.now();
   
     const isEditing = !!this.tournamentId;
   
@@ -759,7 +721,7 @@ export class BuildCustomTournamentPage implements OnInit {
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
 
       teams: this.teamsArray.value.map((team: Team) => ({
-        teamId: isEditing ? team.teamId || null : null, // Use `null` for new teams
+        teamId: isEditing ? team.teamId || null : null,
         externalTeamId: team.externalTeamId || null,
         predefinedTeamId: team.predefinedTeamId || null,
         teamName: team.teamName,
@@ -800,7 +762,7 @@ export class BuildCustomTournamentPage implements OnInit {
       })),
 
       users: this.usersArray.value.map((user: User) => ({
-        assignmentId: user.assignmentId || null, // Null for new users
+        assignmentId: user.assignmentId || null,
         userName: user.userName,
         userAdminName: user.userAdminName,
         userEmail: user.userEmail,
@@ -821,17 +783,13 @@ export class BuildCustomTournamentPage implements OnInit {
         nonSubmittedBetPenalty: this.tournamentForm.value.settings.nonSubmittedBetPenalty || null,
       },
     };
-  
-    //console.log('Finalized Custom Tournament Data:', tournamentData);
-  
+    
     const submitObservable = isEditing
       ? this.tournamentService.updateCustomTournament(tournamentData)
       : this.tournamentService.createCustomTournament(tournamentData);
   
     submitObservable.subscribe({
       next: async (response) => {
-        //console.log('Server response:', response);
-
         await this.tournamentSelectionService.loadSelectedTournamentFromBackend();
 
         await this.router.navigate(['/tournaments/custom']);
@@ -842,7 +800,6 @@ export class BuildCustomTournamentPage implements OnInit {
         );
       },
       error: async (error) => {
-        //console.error('Error submitting tournament:', error);
         this.showToast('Error submitting tournament!', 'danger');
       },
       complete: async () => {
@@ -871,21 +828,16 @@ export class BuildCustomTournamentPage implements OnInit {
         return;
       }
   
-      // Call backend refresh endpoint
       const updatedTournament: Tournament = await firstValueFrom(
         this.tournamentService.checkForTournamentUpdates(tournamentId)
       );
-  
-      //console.log('[Tournament Update] Backend returned updated records:', updatedTournament);
-  
-      // Merge logic — compare existing FormArray with backend and patch
+    
       this.mergeUpdatedEntities(this.teamsArray, updatedTournament.teams, 'teamId');
       this.mergeUpdatedEntities(this.stagesArray, updatedTournament.stages, 'stageId');
       this.mergeUpdatedEntities(this.matchesArray, updatedTournament.matches, 'matchId');
   
       this.showToast('Tournament updated from source!', 'success');
     } catch (error) {
-      //console.error('[Tournament Update] Failed:', error);
       this.showToast('Failed to refresh tournament!', 'danger');
     } finally {
       await loading.dismiss();
@@ -904,7 +856,6 @@ export class BuildCustomTournamentPage implements OnInit {
         const patch: any = {};
   
         for (const [k, v] of Object.entries(updated)) {
-          // DO NOT overwrite custom IDs
           if (
             ['matchId', 'homeTeamId', 'awayTeamId', 'stageId'].includes(k)
           ) continue;
@@ -924,7 +875,6 @@ export class BuildCustomTournamentPage implements OnInit {
   
     updatedList.forEach(item => {
       if (!currentMap.has(item[key])) {
-        // Only take predefined info, leave IDs null for custom use
         const newItem = {
           ...item,
           matchId: null,
@@ -1020,10 +970,6 @@ export class BuildCustomTournamentPage implements OnInit {
         return true;
   
       case 6:
-        //if (this.usersArray.length === 0) {
-        //  await this.showToast('At least 1 user is required!', 'danger');
-        //  return false;
-        //}
         return true;
     }
   

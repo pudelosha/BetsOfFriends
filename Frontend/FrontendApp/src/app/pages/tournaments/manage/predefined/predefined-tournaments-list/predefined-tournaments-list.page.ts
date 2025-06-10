@@ -17,8 +17,8 @@ import { IonContent, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIc
   imports: [CommonModule, TranslateModule, IonContent, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner],
 })
 export class PredefinedTournamentsListPage implements OnInit {
-  tournaments: Tournament[] = []; // Store fetched tournaments
-  isLoading = true; // Loader state
+  tournaments: Tournament[] = [];
+  isLoading = true;
 
   constructor(
     private tournamentService: PredefinedTournamentService,
@@ -78,8 +78,6 @@ export class PredefinedTournamentsListPage implements OnInit {
       return;
     }
 
-    //console.log('Navigating to edit tournament with ID:', tournament.tournamentId);
-
     this.router.navigate([`/tournaments/update-predefined/${tournament.tournamentId}`]).catch((error) => {
       console.error('Navigation to edit tournament failed:', error);
       this.showToast('Failed to navigate to the tournament editor.', 'danger');
@@ -111,7 +109,7 @@ export class PredefinedTournamentsListPage implements OnInit {
       tournament.isActive = newStatus;
       this.showToast(`Tournament ${newStatus ? 'enabled' : 'disabled'} successfully!`, 'success');
     } catch (error) {
-      tournament.isActive = !newStatus; // Revert UI on error
+      tournament.isActive = !newStatus;
       console.error('Error toggling tournament status:', error);
       this.showToast('Failed to toggle tournament status. Please try again.', 'danger');
     } finally {
@@ -142,10 +140,7 @@ export class PredefinedTournamentsListPage implements OnInit {
                     const startTime = Date.now();
 
                     try {
-                        // Call backend API to delete the tournament
                         await firstValueFrom(this.tournamentService.deletePredefinedTournament(tournament.tournamentId));
-
-                        // Remove the deleted tournament from the local list instantly
                         this.tournaments = this.tournaments.filter(t => t.tournamentId !== tournament.tournamentId);
 
                         this.showToast('Tournament deleted successfully!', 'success');

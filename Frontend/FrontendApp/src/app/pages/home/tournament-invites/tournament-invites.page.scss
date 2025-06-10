@@ -1,19 +1,16 @@
-/* ✅ Frame Styling */
 .tournament-invites-box {
-  background: #f5f5f5 !important; /* Light gray background */
-  border-radius: 10px; /* Rounded corners */
+  background: #f5f5f5 !important;
+  border-radius: 10px;
   padding: 15px;
   margin-top: 15px;
-  cursor: pointer; /* ✅ Make the entire frame clickable */
+  cursor: pointer;
   transition: background 0.2s ease-in-out;
 }
 
-/* ✅ Hover effect - Darker background */
 .tournament-invites-box:hover {
-  background: #ebebeb !important; /* Slightly darker gray on hover */
+  background: #ebebeb !important;
 }
 
-/* ✅ Title Styling */
 .frame-title {
   font-size: 18px;
   font-weight: bold;
@@ -22,7 +19,6 @@
   text-align: left;
 }
 
-/* ✅ No tournament data message */
 .no-summary-message {
   text-align: center;
   color: #666;
@@ -30,9 +26,8 @@
   margin-top: 10px;
 }
 
-/* ✅ List styling */
 .tournament-invites-list {
-  --background: transparent !important; /* ✅ Ensure list background is transparent */
+  --background: transparent !important;
   --padding-top: 0px !important;
   --padding-bottom: 0px !important;
   padding-top: 0px !important;
@@ -40,26 +35,24 @@
   background: transparent !important;
 }
 
-/* ✅ Make ion-items transparent */
 .tournament-invite-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
   --padding-end: 0px !important;
   --padding-start: 0px !important;
-  --ion-item-background: transparent !important; /* ✅ No white background */
+  --ion-item-background: transparent !important;
   background: none !important;
   height: 40px;
   --min-height: 60px !important;
   --max-height: 60px !important;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #ddd; /* ✅ Light separator for readability */
+  border-bottom: 1px solid #ddd;
 }
 
-/* ✅ Grid layout */
 .invite-grid {
   display: grid;
-  grid-template-columns: 5fr 3fr 2fr; /* Tournament Name | Participants | Status */
+  grid-template-columns: 5fr 3fr 2fr;
   align-items: center;
   width: 100%;
   gap: 10px;
@@ -67,7 +60,6 @@
   background: transparent !important;
 }
 
-/* ✅ Tournament Name */
 .tournament-name {
   font-size: 14px;
   font-weight: normal;
@@ -77,7 +69,6 @@
   text-overflow: ellipsis;
 }
 
-/* ✅ Participant Count */
 .participant-count {
   font-size: 14px;
   color: #666;
@@ -85,7 +76,6 @@
   white-space: nowrap;
 }
 
-/* ✅ Assignment Status */
 .status {
   font-size: 14px;
   color: #666;
@@ -93,13 +83,11 @@
   white-space: nowrap;
 }
 
-/* ✅ Highlight pending invites */
 .status.pending {
-  color: #d9534f; /* Red for pending invites */
+  color: #d9534f;
   font-weight: bold;
 }
 
-/* ✅ Ensure clickable behavior does not break flex/grid */
 .tournament-invites-clickable {
   display: flex;
   flex-direction: column;

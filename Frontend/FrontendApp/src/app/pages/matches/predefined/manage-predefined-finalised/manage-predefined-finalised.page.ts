@@ -33,19 +33,16 @@ export class ManagePredefinedFinalisedPage implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    ////console.log('Loading finalised matches page...');
-    this.loadMatches(); 
+    //this.loadMatches(); 
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stage'] && !changes['stage'].firstChange) {
-      ////console.log(`Stage changed to: ${this.stage}, reloading matches.`);
       this.loadMatches();
     }
   }  
   
   ionViewWillEnter() {
-    ////console.log('Reloading finalised matches...');
     this.loadMatches(); 
   }
   
@@ -63,7 +60,6 @@ export class ManagePredefinedFinalisedPage implements OnInit, OnChanges {
     const startTime = Date.now();
   
     if (!this.tournamentId) {
-      //console.warn("No tournamentId received.");
       this.errorMessage = "No tournament ID provided.";
       this.isLoading = false;
       await loading.dismiss();
@@ -79,7 +75,6 @@ export class ManagePredefinedFinalisedPage implements OnInit, OnChanges {
         this.errorMessage = "No matches available for this stage.";
       }
     } catch (error: unknown) {
-      //console.error("API error:", error);
       if (error instanceof HttpErrorResponse) {
         this.errorMessage = `An error occurred: ${error.message}`;
       } else {
@@ -97,7 +92,6 @@ export class ManagePredefinedFinalisedPage implements OnInit, OnChanges {
       
   async editMatchResult(match: Match, event: Event) {
     event.stopPropagation();
-    ////console.log("Opening Edit Match Result Modal:", match);
   
     const modal = await this.modalCtrl.create({
       component: EditMatchResultModalComponent,
@@ -110,17 +104,14 @@ export class ManagePredefinedFinalisedPage implements OnInit, OnChanges {
   
     const { data } = await modal.onWillDismiss();
     if (data) {
-      ////console.log("Updated Match Result Data:", data);
   
       try {
         await firstValueFrom(this.matchService.updateMatchResult(match.matchId, data));
   
-        // Refresh the entire match list instead of updating only one item
         await this.loadMatches();  
   
         this.showToast("Match result updated successfully!", "success");
       } catch (error) {
-        //console.error("Error updating match result:", error);
         this.showToast("Failed to update match result. Please try again.", "danger");
       }
     }

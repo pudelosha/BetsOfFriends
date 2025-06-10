@@ -100,7 +100,7 @@ export class ProfilePage implements OnInit {
     const modal = await this.modalController.create({
       component: SelectCountryModalComponent,
       componentProps: {
-        countries: this.availableCountries // provide your array of countries
+        countries: this.availableCountries
       }
     });
   
@@ -258,7 +258,6 @@ export class ProfilePage implements OnInit {
   }
     
   async loadUserProfile() {
-    //console.log('Attempting to load user profile');
     this.isLoading = true;
   
     const loading = await this.loadingController.create({
@@ -267,11 +266,10 @@ export class ProfilePage implements OnInit {
     });
     await loading.present();
   
-    const startTime = Date.now(); // Start time for delay calculation
+    const startTime = Date.now();
   
     this.userService.getUserProfile().subscribe({
       next: (profile: UserProfile) => {
-        //console.log('User profile loaded:', profile);
   
         this.profileForm.patchValue({
           email: profile.email,
@@ -290,7 +288,7 @@ export class ProfilePage implements OnInit {
       },
       complete: async () => {
         const elapsedTime = Date.now() - startTime;
-        const delay = Math.max(0, 500 - elapsedTime); // Ensure at least 500ms delay
+        const delay = Math.max(0, 500 - elapsedTime);
   
         setTimeout(async () => {
           this.isLoading = false;
@@ -326,8 +324,6 @@ export class ProfilePage implements OnInit {
       language: langCode,
       darkMode: this.f['darkMode'].value
     };
-  
-    //console.log('Updating profile:', updatedProfile);
   
     const loading = await this.loadingController.create({
       message: 'Updating profile...',

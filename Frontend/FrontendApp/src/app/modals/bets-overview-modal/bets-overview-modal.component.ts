@@ -40,10 +40,8 @@ export class BetsOverviewModalComponent {
   }
 
   calculatePlayerColumnSize(): number {
-    // Fixed columns: BET(2), HW(1), D(1), AW(1)
     let used = 2 + 1 + 1 + 1;
   
-    // Optional columns
     if (this.betStats?.showQualified) used += 2;
     if (this.betStats?.showExactResult) used += 1;
   

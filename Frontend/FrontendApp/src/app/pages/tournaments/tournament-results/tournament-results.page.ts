@@ -32,13 +32,12 @@ export class TournamentResultsPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.titleService.setTitle('RESULTS.TITLE');
-    await this.loadTournamentAndFetchSummary();
+    //await this.loadTournamentAndFetchSummary();
   }
 
   async ionViewWillEnter() {
     this.titleService.setTitle('RESULTS.TITLE');
-    await this.loadTournamentAndFetchSummary(); // Ensure results is refreshed on view enter
+    await this.loadTournamentAndFetchSummary();
   }
 
   private async loadTournamentAndFetchSummary() {
@@ -63,9 +62,9 @@ export class TournamentResultsPage implements OnInit {
       message: 'Loading results...',
       spinner: 'crescent',
     });
-    await loading.present(); // Show spinner
+    await loading.present();
   
-    const startTime = Date.now(); // Capture start time
+    const startTime = Date.now();
   
     this.tournamentService.getTournamentSummary(this.tournamentId).subscribe({
       next: async (summary) => {
@@ -73,7 +72,7 @@ export class TournamentResultsPage implements OnInit {
         this.isLoading = false;
   
         const elapsedTime = Date.now() - startTime;
-        const delay = Math.max(0, 500 - elapsedTime); // Ensure 500ms delay
+        const delay = Math.max(0, 500 - elapsedTime);
   
         setTimeout(async () => {
           await loading.dismiss();
@@ -84,7 +83,7 @@ export class TournamentResultsPage implements OnInit {
         this.isLoading = false;
   
         const elapsedTime = Date.now() - startTime;
-        const delay = Math.max(0, 500 - elapsedTime); // Ensure 500ms delay
+        const delay = Math.max(0, 500 - elapsedTime);
   
         setTimeout(async () => {
           await loading.dismiss();
@@ -121,7 +120,7 @@ export class TournamentResultsPage implements OnInit {
   }
   
   calculatePlayerColumnSize(): number {
-    const baseSize = 4; // increased to account for smaller # column
+    const baseSize = 4;
     let extra = 0;
     if (!this.showQualifiedColumn) extra += 1;
     if (!this.showExactResultColumn) extra += 1;

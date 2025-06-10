@@ -1,29 +1,25 @@
-/* Frame Styling */
 .tournament-results-box {
-  background: #f5f5f5 !important; /* Light gray background */
-  border-radius: 10px; /* Rounded corners */
+  background: #f5f5f5 !important;
+  border-radius: 10px;
   padding: 15px;
-  cursor: pointer; /* Makes the entire frame clickable */
+  cursor: pointer;
   transition: background 0.2s ease-in-out;
   margin-top: 15px;
   margin-bottom: 15px;
 }
 
-/* Hover effect */
 .tournament-results-box:hover {
-  background: #ebebeb !important; /* Slightly darker gray on hover */
+  background: #ebebeb !important;
 }
 
-/* Title (Top-left corner) */
 .frame-title {
-  font-size: 18px; /* Matches the upcoming bets title */
+  font-size: 18px;
   font-weight: bold;
   color: #333;
   margin: 0px 0px 10px 0px;
   text-align: left;
 }
 
-/* No tournament data message */
 .no-results-message {
   text-align: center;
   color: #666;
@@ -31,9 +27,8 @@
   margin-top: 10px;
 }
 
-/* Remove extra padding/margins from ion-list */
 .tournament-results-list {
-  --background: transparent !important; /* Ensures the list itself is transparent */
+  --background: transparent !important;
   --padding-top: 0px !important;
   --padding-bottom: 0px !important;
   padding-top: 0px !important;
@@ -41,44 +36,40 @@
   background: transparent !important;
 }
 
-/* Ensure ion-items do NOT have a white background */
 .tournament-results-item {
   --inner-padding-end: 0px !important;
   --inner-padding-start: 0px !important;
   --padding-end: 0px !important;
   --padding-start: 0px !important;
-  --ion-item-background: transparent !important; /* No white background */
-  background: none !important; /* Fully remove background */
+  --ion-item-background: transparent !important;
+  background: none !important;
   
   height: 40px;
   --min-height: 60px !important;
   --max-height: 60px !important;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #ddd; /* Light separator for readability */
+  border-bottom: 1px solid #ddd;
 }
 
-/* Grid layout for Tournament Summary */
 .results-grid {
   display: grid;
-  grid-template-columns: 1fr 6fr 2fr; /* Position, Name, Points */
+  grid-template-columns: 1fr 6fr 2fr;
   align-items: center;
   width: 100%;
   gap: 10px;
   padding-right: 0px;
-  background: transparent !important; /* Ensure no background override */
+  background: transparent !important;
 }
 
-/* Position Styling */
 .position {
-  font-size: 12px; /* Matches the upcoming bets font */
+  font-size: 12px;
   font-weight: bold;
   color: #333;
 }
 
-/* Player Name */
 .player-name {
-  font-size: 12px; /* Matches upcoming bets font */
+  font-size: 12px;
   font-weight: normal;
   color: #333;
   white-space: nowrap;
@@ -86,25 +77,22 @@
   text-overflow: ellipsis;
 }
 
-/* Highlight the current user */
 .highlight-player {
   font-weight: bold;
-  color: #4CAF50 !important; /* Green for logged-in user */
+  color: #4CAF50 !important;
 }
 
-/* Points Styling */
 .points {
-  font-size: 12px; /* Matches upcoming bets font */
+  font-size: 12px;
   color: #666;
   text-align: right;
   white-space: nowrap;
 }
 
-/* Ensure clickable behavior does not break flex/grid */
 .tournament-results-clickable {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  background: transparent !important; /* Prevents white background */
+  background: transparent !important;
 }

@@ -125,16 +125,14 @@ export class PendingInvitesPage implements OnInit {
     });
   }
     
-  excludeInvite(userEmail: string) {
-    //console.log('Confirming exclusion for:', userEmail);
-  
+  excludeInvite(userEmail: string) {  
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
   
     this.tournamentService.excludeParticipant(this.tournamentId!, userEmail).subscribe({
       next: async (result) => {
         if (result.success) {
           await this.showToast(result.message, 'success');
-          await this.loadPendingInvites(); // Refresh the list
+          await this.loadPendingInvites();
         } else {
           await this.showToast(result.message, 'danger');
         }
