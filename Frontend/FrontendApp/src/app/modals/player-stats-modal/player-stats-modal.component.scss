@@ -50,7 +50,6 @@ ion-content {
   width: 100%;
 }
 
-/* Table Rows */
 .header-row {
   font-weight: bold;
   border-top: 1px solid #e6e6e6;
@@ -64,7 +63,6 @@ ion-content {
   border-bottom: 1px solid #e6e6e6;
 }
 
-/* Outcome statuses */
 .v-status {
   color: green;
   font-weight: bold;
@@ -91,11 +89,6 @@ ion-content {
   border-left: 1px solid #f7f7f7;
 }
 
-.header-row,
-.data-row {
-
-}
-
 .stage-navigation ion-select {
   min-width: 150px;
   margin: 0 10px;
@@ -104,8 +97,3 @@ ion-content {
 .stage-selector-grid {
   border-bottom: 1px solid #e6e6e6;
 }
-
-
-
-
-

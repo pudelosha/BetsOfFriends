@@ -2,7 +2,7 @@
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
-    gap: 5px; /* Space between label and input */
+    gap: 5px;
   }
   
   .selector-label {
@@ -10,7 +10,7 @@
     font-weight: bold;
     text-align: left;
     color: #555;
-    margin-bottom: 5px; /* Slight spacing below label */
+    margin-bottom: 5px;
   }
   
   .error-wrapper {
@@ -27,4 +27,3 @@
   .save-button-container ion-button {
     width: 100%;
   }
-  

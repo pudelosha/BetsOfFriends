@@ -1,4 +1,3 @@
-/* Team Names */
 .team-names {
     font-size: 18px;
     font-weight: bold;
@@ -17,14 +16,12 @@
     width: 20px;
   }
   
-  /* Divider Line */
   .divider {
     height: 1px;
     background: #ccc;
     margin: 10px 0;
   }
   
-  /* Section Titles */
   .section-title {
     font-size: 14px;
     font-weight: bold;
@@ -34,7 +31,6 @@
     color: #555;
   }
   
-  /* Score Prediction */
   .center-grid {
     display: flex;
     justify-content: center;
@@ -45,7 +41,6 @@
     font-size: 16px;
   }
   
-  /* Full-width segment */
   .full-width {
     width: 100%;
     padding: 0;
@@ -78,22 +73,19 @@
     flex: 5;
   }
 
-  /* Center the Match Date & Time Picker */
 .center-container {
   display: flex;
-  justify-content: center;  /* Centers horizontally */
-  align-items: center;      /* Centers vertically */
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  margin: 10px 0;           /* Adds spacing */
+  margin: 10px 0;
 }
 
-/* Ensure the date picker takes full width */
 ion-datetime {
-  width: 80%;               /* Adjust width to make it more compact */
-  text-align: center;       /* Center text */
+  width: 80%;
+  text-align: center;
 }
 
-/* Align the Section Title Properly */
 .section-title {
   font-size: 14px;
   font-weight: bold;
@@ -101,7 +93,3 @@ ion-datetime {
   margin: 10px 0;
   color: #555;
 }
-
-
-
-  

@@ -1,11 +1,9 @@
-/* Remove extra padding from ion-content */
 ion-content {
   --padding-top: 0 !important;
   --padding-bottom: 0 !important;
   --padding-top: 56px !important;
 }
 
-/* Section Titles */
 .section-title {
   font-size: 14px;
   font-weight: bold;
@@ -15,7 +13,6 @@ ion-content {
   color: #555;
 }
 
-/* Match Labels */
 .match-label {
   font-size: 12px;
   font-weight: bold;
@@ -24,17 +21,15 @@ ion-content {
   flex: 1;
 }
 
-/* Grid row alignment */
 .match-row {
   display: flex;
-  justify-content: center; /* Centers elements horizontally */
+  justify-content: center;
   align-items: center;
   width: 100%;
   padding: 8px 0;
-  gap: 10px; /* Adds spacing between elements */
+  gap: 10px;
 }
 
-/* Column Widths */
 .half-width {
   width: 48%;
 }
@@ -43,35 +38,30 @@ ion-content {
   width: 32%;
 }
 
-/* Center ion-select properly */
 .center-select {
   text-align: center;
   justify-content: center;
   display: flex;
 }
 
-/* ✅ Force Text & Options to Center Inside Select */
 ::ng-deep ion-select::part(text) {
   text-align: center;
   justify-content: center;
   display: flex;
 }
 
-/* ✅ Ensure the Selected Value in Dropdown is Centered */
 ::ng-deep ion-select::part(label) {
   text-align: center;
   justify-content: center;
   display: flex;
 }
 
-/* Divider Line */
 .divider {
   height: 1px;
   background: #ccc;
   margin: 10px 0;
 }
 
-/* Odds Input Fields */
 .odds-input {
   font-size: 14px;
   text-align: center;
@@ -79,7 +69,6 @@ ion-content {
   font-weight: bold;
 }
 
-/* Adjust Select Dropdowns */
 ion-select {
   width: 100%;
   --text-align: center;
@@ -88,7 +77,6 @@ ion-select {
   display: flex;
 }
 
-/* Ensure spacing below Save button */
 .save-button-container {
   margin-top: 20px;
   margin-bottom: 20px;
@@ -99,19 +87,18 @@ ion-select {
   font-weight: bold;
   text-align: left;
   color: #555;
-  white-space: nowrap; /* Prevents text from breaking into a new line */
-  overflow: hidden; /* Prevents text overflow */
-  text-overflow: ellipsis; /* Adds "..." if text overflows */
-  flex: none; /* Ensures it doesn’t shrink */
-  margin: 0; /* Removes extra vertical space */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: none;
+  margin: 0;
 }
 
-/* Vertical alignment for label and input */
 .vertical-align {
-  flex-direction: column; /* Stacks the label and input vertically */
-  align-items: flex-start; /* Aligns both to the left */
-  width: 100%; /* Ensures the row takes full width */
-  gap: 5px; /* Adds space between label and input */
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: 5px;
 }
 
 .visibility-item {
@@ -121,10 +108,7 @@ ion-select {
 }
 
 .visibility-status {
-  width: 80px; /* Fixed width ensures the text doesn't shift */
-  margin-right: 12px; /* Spacing between label and toggle */
+  width: 80px;
+  margin-right: 12px;
   display: inline-block;
 }
-
-
-

@@ -20,16 +20,16 @@ export class NotificationService {
     return this.http.get<NotificationDto[]>(`${this.apiUrl}`);
   }
 
-  markAsRead(notificationId: number): Observable<void> {  // Updated type
+  markAsRead(notificationId: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/mark-as-read/${notificationId}`, {});
   }
 
-  deleteNotification(notificationId: number): Observable<void> {  // Updated type
+  deleteNotification(notificationId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${notificationId}`);
   }
 
   getNotificationSettings(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/settings`); // Adjust endpoint as needed
+    return this.http.get(`${this.apiUrl}/settings`);
   }
 
   updateNotificationSettings(settings: any): Observable<any> {

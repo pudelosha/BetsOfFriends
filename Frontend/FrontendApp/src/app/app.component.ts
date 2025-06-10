@@ -21,11 +21,11 @@ import { version } from 'src/environments/version';
   ],  
 })
 export class AppComponent {
-  isMonetizedMode = false; // default: false if app is free and ad-supported
+  isMonetizedMode = false;
   isLoggedIn = false;
   isSuperAdmin = false;
   isAdmin = false;
-  showFab: boolean = false; // Control FAB visibility
+  showFab: boolean = false;
   pageTitle: string = 'APP.TITLE';
   version = version;
 
@@ -66,8 +66,6 @@ export class AppComponent {
 
   updateUserRoles() {
     const userRoles = this.authService.getUserRoles();
-    //console.log("User roles:", userRoles);
-
     this.isSuperAdmin = userRoles.includes("SuperAdmin");
     this.isAdmin = this.isSuperAdmin || userRoles.includes("Admin"); // Admin or SuperAdmin
   }
@@ -77,11 +75,8 @@ export class AppComponent {
   }
 
   logout() {
-    //console.log('Logging out...');
     this.authService.logout();
     this.isLoggedIn = false;
-  
-    //console.log('Navigating to logoff page...');
     this.router.navigate(['/logoff']);
   }
 
@@ -98,9 +93,9 @@ export class AppComponent {
   async presentToast(message: string, color: string) {
     const toast = await this.toastController.create({
       message,
-      duration: 3000, // Show for 3 seconds
+      duration: 3000,
       position: 'bottom',
-      color, // success, warning, danger, etc.
+      color,
     });
     await toast.present();
   }
@@ -110,77 +105,62 @@ export class AppComponent {
   }
 
   navigateToProfile() {
-    //console.log('Navigating to profile page...');
     this.router.navigate(['/profile']);
   }
 
   navigateToNotificationSettings() {
-    //console.log('Navigating to notification-settings...');
     this.router.navigate(['/notification-settings']);
   }
 
   navigateToInfoAndSupport(){
-    //console.log('Navigating to info-and-support...');
     this.router.navigate(['/info-and-support']);
   }
 
   navigateToMyBets() {
-    //console.log('Navigating to my-bets...');
     this.router.navigate(['/my-bets']);
   }
 
   navigateToCreatePredefinedTournament() {
-    //console.log('Navigating to create-predefined-tournament...');
     this.router.navigate(['/tournaments/create-predefined']);
   }
 
   navigateToPredefinedTournamentsList() {
-    //console.log('Navigating to predefined-tournaments-list...');
     this.router.navigate(['/tournaments/predefined']);
   }
 
   navigateToPredefinedTournamentsMatches() {
-    //console.log('Navigating to predefined-tournament-matches...');
     this.router.navigate(['/matches/predefined']);
   }
 
   navigateToManageUsers(){
-    //console.log('Navigating to manage-users...');
     this.router.navigate(['/users']);
   }
 
   navigateToMyTournaments() {
-    //console.log('Navigating to my-tournaments...');
     this.router.navigate(['/my-tournaments']);
   }
 
   navigateToCreateCustomTournament() {
-    //console.log('Navigating to create-custom-tournament...');
     this.router.navigate(['/tournaments/create-custom']);
   }
 
   navigateToCustomTournamentsList() {
-    //console.log('Navigating to custom-tournament-list...');
     this.router.navigate(['/tournaments/custom']);
   }
 
   navigateToCustomTournamentsMatches() {
-    //console.log('Navigating to custom-tournament-matches...');
     this.router.navigate(['/matches/custom']);
   }
 
   navigateToCustomTournamentsParticipants() {
-    //console.log('Navigating to custom-tournament-participants...');
     this.router.navigate(['/tournaments/participants']);
   }
 
   navigateToHome() {
-    //console.log('Navigating to home...');
     this.router.navigate(['/home']);
   }
 
   navigateToTournamentResults(){
-    //console.log('Navigating to results...');
     this.router.navigate(['/results']);
   }
 

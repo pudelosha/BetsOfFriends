@@ -5,7 +5,6 @@ import { GuestGuard } from './guards/guest.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'language', pathMatch: 'full' },
 
-  // 🌐 Guest-only pages
   { path: 'welcome', loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage), canActivate: [GuestGuard] },
   { path: 'login', loadComponent: () => import('./pages/user/login/login.page').then(m => m.LoginPage), canActivate: [GuestGuard] },
   { path: 'register', loadComponent: () => import('./pages/user/register/register.page').then(m => m.RegisterPage), canActivate: [GuestGuard] },
@@ -17,7 +16,6 @@ export const routes: Routes = [
   { path: 'setup-account', loadComponent: () => import('./pages/user/setup-account/setup-account.page').then(m => m.SetupAccountPage), canActivate: [GuestGuard] },
   { path: 'language', loadComponent: () => import('./pages/language/language.page').then(m => m.LanguagePage), canActivate: [GuestGuard] },
 
-  // 👤 Logged-in User pages
   { path: 'home', loadComponent: () => import('./pages/home/home/home.page').then(m => m.HomePage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'messages', loadComponent: () => import('./pages/messages/messages/messages.page').then(m => m.MessagesPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'profile', loadComponent: () => import('./pages/user/profile/profile.page').then(m => m.ProfilePage), canActivate: [AuthGuard], data: { role: 'User' } },
@@ -28,7 +26,6 @@ export const routes: Routes = [
   { path: 'find-tournament', loadComponent: () => import('./pages/tournaments/find-tournament/find-tournament.page').then(m => m.FindTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'redirect', loadComponent: () => import('./shared/dummy-redirect/dummy-redirect.page').then(m => m.DummyRedirectPage), canActivate: [AuthGuard], data: { role: 'User' } },
 
-  // ⚙️ Tournament Management - User
   {
     path: 'tournaments',
     children: [
@@ -52,7 +49,6 @@ export const routes: Routes = [
     ]
   },
 
-  // ⚙️ Tournament Management - SuperAdmin
   {
     path: 'tournaments',
     children: [
@@ -62,7 +58,6 @@ export const routes: Routes = [
     ]
   },
 
-  // ⚽ Matches
   {
     path: 'matches',
     children: [
@@ -81,7 +76,6 @@ export const routes: Routes = [
     ]
   },
 
-  // 👑 SuperAdmin User Manager
   {
     path: 'users',
     loadComponent: () => import('./pages/user/user-manager/user-manager.page').then(m => m.UserManagerPage),
@@ -89,7 +83,6 @@ export const routes: Routes = [
     data: { role: 'SuperAdmin' }
   },
 
-  // 📄 Publicly available pages
   { path: 'terms', loadComponent: () => import('./pages/info/terms/terms.page').then(m => m.TermsPage) },
   { path: 'download', loadComponent: () => import('./pages/info/download/download.page').then( m => m.DownloadPage) },
   { path: 'support', loadComponent: () => import('./pages/info/support/support.page').then( m => m.SupportPage) },
@@ -98,7 +91,6 @@ export const routes: Routes = [
   { path: 'faq', loadComponent: () => import('./pages/info/faq/faq.page').then( m => m.FaqPage) },
   { path: 'social', loadComponent: () => import('./pages/info/social/social.page').then( m => m.SocialPage) },
 
-  // 🛑 Wildcard route
   { path: '**', redirectTo: 'welcome' },
   {
     path: 'selected-tournament',

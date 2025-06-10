@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { SupportMessage } from '../model/support-message';
 import { environment } from '../../environments/environment';
 
-
 @Injectable({
   providedIn: 'root'
 })

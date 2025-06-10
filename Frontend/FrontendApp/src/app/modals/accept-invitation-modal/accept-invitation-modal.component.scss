@@ -1,11 +1,9 @@
-/* Remove extra padding from ion-content */
 ion-content {
   --padding-top: 60px !important;
   --padding-bottom: 0 !important;
   padding: 0 !important;
 }
 
-/* Section Title Styling */
 .section-title {
   font-size: 14px;
   font-weight: bold;
@@ -14,7 +12,6 @@ ion-content {
   color: #555;
 }
 
-/* Row Layout for Inputs */
 .form-row {
   display: flex;
   flex-direction: column;
@@ -23,7 +20,6 @@ ion-content {
   padding: 10px 0;
 }
 
-/* Label Styling */
 .selector-label {
   font-size: 14px;
   font-weight: bold;
@@ -32,12 +28,10 @@ ion-content {
   margin-bottom: 5px;
 }
 
-/* Ensure Spacing Below Button */
 .save-button-container {
   margin: 15px;
 }
 
-/* Validation Messages */
 .validation-message {
   margin-top: 5px;
 }

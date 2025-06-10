@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class TitleService {
-  private titleSubject = new BehaviorSubject<string>('APP.TITLE'); // Default title (can be a translation key)
+  private titleSubject = new BehaviorSubject<string>('APP.TITLE');
   title$ = this.titleSubject.asObservable();
 
   setTitle(title: string) {

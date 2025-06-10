@@ -8,7 +8,6 @@ import { ActionResult } from '../model/action-result';
 import { map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
-
 @Injectable({
   providedIn: 'root'
 })

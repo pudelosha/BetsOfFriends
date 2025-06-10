@@ -1,16 +1,15 @@
 .section-title {
   font-size: 14px;
   font-weight: bold;
-  text-align: center; /* Ensures center alignment */
+  text-align: center;
   margin: 10px 0;
   color: #555;
-  display: flex; /* Flexbox ensures proper centering */
-  justify-content: center; /* Horizontally centers text */
-  align-items: center; /* Vertically centers text */
-  width: 100%; /* Ensures full width for consistency */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
-/* Divider Line */
 .divider {
   height: 1px;
   background: #ccc;
@@ -56,7 +55,6 @@
   text-align: center;
 }
 
-/* Adjust Select Dropdowns */
 ion-select {
   width: 100%;
   --text-align: center;
@@ -65,7 +63,6 @@ ion-select {
   display: flex;
 }
 
-/* Force Text & Options to Center Inside Select */
 ::ng-deep ion-select::part(text),
 ::ng-deep ion-select::part(label) {
   text-align: center;
@@ -84,10 +81,9 @@ ion-select {
   font-size: 16px;
 }
 
-/* Wheel Picker Styles */
 .wheel-container {
   width: 60px;
-  height: 50px; /* Show only one number */
+  height: 50px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -97,14 +93,13 @@ ion-select {
   scroll-behavior: smooth;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* Edge */
-  margin: 0 auto; /* Center align */
+  margin: 0 auto;
 }
 
 .wheel-container::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
 }
 
-/* Number styling */
 .number-item {
   height: 50px;
   line-height: 50px;
@@ -149,7 +144,6 @@ ion-segment-button {
   text-overflow: ellipsis;
 }
 
-/* Set segment proportions */
 .segment-home {
   flex: 5;
 }

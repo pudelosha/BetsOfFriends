@@ -14,8 +14,6 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
-    //console.log("AuthGuard: Checking user roles...");
-
     // Check if user is logged in
     const isLoggedIn = this.authService.isLoggedIn();
     if (!isLoggedIn) {
@@ -27,7 +25,6 @@ export class AuthGuard implements CanActivate {
 
     // Get user roles (ensure it's always an array)
     const userRoles = this.authService.getUserRoles() || [];
-    //console.log("AuthGuard: User roles:", userRoles);
 
     // If there are no roles, handle error scenario
     if (userRoles.length === 0) {
@@ -39,7 +36,6 @@ export class AuthGuard implements CanActivate {
 
     // Get required role from route metadata
     const requiredRole = route.data['role'];
-    //console.log("AuthGuard: Required role:", requiredRole);
 
     // If no specific role is required, allow access
     if (!requiredRole) {
@@ -57,7 +53,6 @@ export class AuthGuard implements CanActivate {
     const hasAccess = userRoles.some(role => roleHierarchy[role]?.includes(requiredRole));
 
     if (hasAccess) {
-      //console.log(`AuthGuard: Access granted for required role: ${requiredRole}`);
       return true;
     }
 
