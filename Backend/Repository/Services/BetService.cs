@@ -530,6 +530,12 @@ namespace Backend.Repository.Services
                     return null;
                 }
 
+                var userAssignments = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.TournamentId == match.TournamentId && a.Status == AssignmentStatus.Accepted)
+                    .ToListAsync();
+
+                var userIdToUsername = userAssignments.ToDictionary(a => a.UserId, a => a.UserName);
+
                 // Filter bets to only include placed bets
                 var bets = match.Bets.Where(b => b.HomeGoals.HasValue && b.AwayGoals.HasValue).ToList();
                 var qualificationBets = match.Bets.Where(b => b.Qualified.HasValue).ToList();
@@ -574,10 +580,10 @@ namespace Backend.Repository.Services
 
                     // User Bets
                     UserBets = match.Status == CustomMatch.MatchStatus.Finished ? match.Bets
-                        .Where(b => b.Status == Bet.BetStatus.Closed)
+                        .Where(b => b.Status == Bet.BetStatus.Closed && userIdToUsername.ContainsKey(b.UserId))
                         .Select(b => new UserBetDto
                         {
-                            Username = b.User.UserName,
+                            Username = userIdToUsername.TryGetValue(b.UserId, out var username) ? username : "Unknown",
                             BetScore = b.HomeGoals.HasValue && b.AwayGoals.HasValue ? $"{b.HomeGoals}-{b.AwayGoals}" : "-",
 
                             // Assign only if the user placed a bet

@@ -79,7 +79,7 @@
     </ion-row>
 
     <!-- User Bets Table (Only if Match is Finalised) -->
-    <ng-container *ngIf="betStats.matchStatus === 'Finalised'">
+    <ng-container *ngIf="betStats.matchStatus === 'Finished'">
       <ion-row class="betting-row">
         <ion-col size="12" class="centered-text"><strong>{{ 'BETS_OVERVIEW.USER_BETS' | translate }}</strong></ion-col>
       </ion-row>
