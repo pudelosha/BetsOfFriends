@@ -53,6 +53,11 @@
             <ion-label>{{ 'APP.MY_BETS' | translate }}</ion-label>
           </ion-item>
 
+          <ion-item (click)="navigateToMatchInsights()">
+            <ion-icon name="newspaper-outline" slot="start"></ion-icon>
+            <ion-label>{{ 'APP.MATCH_INSIGHTS' | translate }}</ion-label>
+          </ion-item>
+
           <ion-item (click)="navigateToTournamentResults()">
             <ion-icon name="podium-outline" slot="start"></ion-icon>
             <ion-label>{{ 'APP.RESULTS' | translate }}</ion-label>

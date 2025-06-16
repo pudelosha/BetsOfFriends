@@ -21,6 +21,7 @@ export const routes: Routes = [
   { path: 'profile', loadComponent: () => import('./pages/user/profile/profile.page').then(m => m.ProfilePage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'notification-settings', loadComponent: () => import('./pages/user/notification-settings/notification-settings.page').then(m => m.NotificationSettingsPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'my-bets', loadComponent: () => import('./pages/bets/my-bets/my-bets.page').then(m => m.MyBetsPage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'match-insights', loadComponent: () => import('./pages/matches/match-insights/match-insights.page').then( m => m.MatchInsightsPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'my-tournaments', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'results', loadComponent: () => import('./pages/tournaments/tournament-results/tournament-results.page').then(m => m.TournamentResultsPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'find-tournament', loadComponent: () => import('./pages/tournaments/find-tournament/find-tournament.page').then(m => m.FindTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
@@ -92,8 +93,4 @@ export const routes: Routes = [
   { path: 'social', loadComponent: () => import('./pages/info/social/social.page').then( m => m.SocialPage) },
 
   { path: '**', redirectTo: 'welcome' },
-  {
-    path: 'selected-tournament',
-    loadComponent: () => import('./pages/home/selected-tournament/selected-tournament.page').then( m => m.SelectedTournamentPage)
-  },
 ];

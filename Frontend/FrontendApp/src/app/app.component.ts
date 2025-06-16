@@ -120,6 +120,10 @@ export class AppComponent {
     this.router.navigate(['/my-bets']);
   }
 
+  navigateToMatchInsights() {
+    this.router.navigate(['/match-insights']);
+  }
+
   navigateToCreatePredefinedTournament() {
     this.router.navigate(['/tournaments/create-predefined']);
   }

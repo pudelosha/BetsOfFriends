@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'APP.MATCH_INSIGHTS' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Spinner -->
+  <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+
+  <!-- Error or No Data -->
+  <div *ngIf="!isLoading && matches.length === 0" class="no-matches">
+    <p>{{ 'MATCH_INSIGHTS.NO_MATCHES' | translate }}</p>
+  </div>
+
+  <!-- Stage Filter -->
+  <ion-grid *ngIf="!isLoading && availableStages.length > 1" class="stage-selector-grid">
+    <ion-row class="ion-align-items-center ion-justify-content-center">
+      <!-- Back -->
+      <ion-col size="auto">
+        <ion-button fill="clear" (click)="prevStage()" [disabled]="selectedStageIndex === 0">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+        </ion-button>
+      </ion-col>
+
+      <!-- Dropdown -->
+      <ion-col size="auto">
+        <ion-select [(ngModel)]="selectedStage" interface="popover" (click)="blurBeforeOpen()">
+          <ion-select-option *ngFor="let stage of availableStages" [value]="stage">
+            {{ stage }}
+          </ion-select-option>
+        </ion-select>
+      </ion-col>
+
+      <!-- Forward -->
+      <ion-col size="auto">
+        <ion-button fill="clear" (click)="nextStage()" [disabled]="selectedStageIndex === availableStages.length - 1">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Match Accordions -->
+  <ion-accordion-group *ngIf="!isLoading && filteredMatches.length > 0" (ionChange)="onAccordionChange($event)">
+    <ion-accordion *ngFor="let match of filteredMatches" [value]="match.id">
+      <!-- Header -->
+      <ion-item slot="header">
+        <ion-label>
+          {{ match.homeTeam }} {{ match.result ?? '?-?' }} {{ match.awayTeam }}
+        </ion-label>
+        <div slot="end">
+          <ion-text>{{ match.totalPayout?.toFixed(2) ?? '-' }}</ion-text>
+        </div>
+      </ion-item>
+
+      <!-- Content -->
+      <div slot="content" class="accordion-content">
+        <ion-grid class="match-details-table">
+          <!-- Header -->
+          <ion-row class="header-row">
+            <ion-col>{{ 'PLAYER_STATS.BET' | translate }}</ion-col>
+            <ion-col>{{ 'PLAYER_STATS.OUTCOME' | translate }}</ion-col>
+            <ion-col>{{ 'PLAYER_STATS.PAYOUT' | translate }}</ion-col>
+          </ion-row>
+
+          <!-- Player Bets -->
+          <ion-row *ngFor="let bet of match.playerBets" class="data-row">
+            <ion-col>{{ bet.betPlaced ?? '-' }}</ion-col>
+            <ion-col [ngClass]="getStatusClass(bet.outcome)">
+              {{ getStatusIcon(bet.outcome) }}
+            </ion-col>
+            <ion-col>{{ bet.payout?.toFixed(2) ?? '0' }}</ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+
+</ion-content>
