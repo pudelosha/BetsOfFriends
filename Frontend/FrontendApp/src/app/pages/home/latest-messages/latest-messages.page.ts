@@ -7,12 +7,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { IonList, IonItem, IonSpinner } from '@ionic/angular/standalone';
+import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-latest-messages',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem, IonSpinner],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonList, IonItem],
   templateUrl: './latest-messages.page.html',
   styleUrls: ['./latest-messages.page.scss']
 })

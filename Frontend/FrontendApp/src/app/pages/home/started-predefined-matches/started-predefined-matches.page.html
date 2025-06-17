@@ -6,7 +6,7 @@
     
     <h2 class="started-matches-title">{{ 'STARTED_MATCHES_PREDEFINED.TITLE' | translate }}</h2>
 
-    <ion-spinner *ngIf="isLoading" class="started-matches-spinner" name="crescent"></ion-spinner>
+    <!--<ion-spinner *ngIf="isLoading" class="started-matches-spinner" name="crescent"></ion-spinner> -->
 
     <ion-list class="started-match-list" *ngIf="!isLoading && startedMatches.length > 0">
       <ion-item class="started-match-item" *ngFor="let match of startedMatches">

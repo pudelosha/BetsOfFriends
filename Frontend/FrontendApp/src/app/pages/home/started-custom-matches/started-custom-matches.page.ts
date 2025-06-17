@@ -7,12 +7,12 @@ import { CustomMatchService } from 'src/app/services/custom-match.service';
 import { firstValueFrom } from 'rxjs';
 import { Match } from 'src/app/model/match';
 import { TranslateModule } from '@ngx-translate/core';
-import { IonSpinner, IonList, IonItem } from '@ionic/angular/standalone';
+import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-started-custom-matches',
   standalone: true,
-  imports: [CommonModule, TranslateModule, IonSpinner, IonList, IonItem],
+  imports: [CommonModule, TranslateModule, IonList, IonItem],
   templateUrl: './started-custom-matches.page.html',
   styleUrls: ['./started-custom-matches.page.scss']
 })

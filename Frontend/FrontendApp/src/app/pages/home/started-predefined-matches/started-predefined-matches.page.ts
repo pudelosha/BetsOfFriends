@@ -6,12 +6,12 @@ import { firstValueFrom } from 'rxjs';
 import { Match } from 'src/app/model/match';
 import { PredefinedMatchService } from 'src/app/services/predefined-match.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { IonSpinner, IonList, IonItem } from '@ionic/angular/standalone';
+import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-started-predefined-matches',
   standalone: true,
-  imports: [CommonModule, TranslateModule, IonSpinner, IonList, IonItem],
+  imports: [CommonModule, TranslateModule, IonList, IonItem],
   templateUrl: './started-predefined-matches.page.html',
   styleUrls: ['./started-predefined-matches.page.scss']
 })

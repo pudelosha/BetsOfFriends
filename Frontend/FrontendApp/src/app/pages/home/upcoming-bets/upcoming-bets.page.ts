@@ -7,12 +7,12 @@ import { ToastController } from '@ionic/angular';
 import { BetService } from 'src/app/services/bet.service';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { IonList, IonItem, IonSpinner } from '@ionic/angular/standalone';
+import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-upcoming-bets',
   standalone: true,
-  imports: [CommonModule, TranslateModule, IonList, IonItem, IonSpinner],
+  imports: [CommonModule, TranslateModule, IonList, IonItem],
   templateUrl: './upcoming-bets.page.html',
   styleUrls: ['./upcoming-bets.page.scss']
 })

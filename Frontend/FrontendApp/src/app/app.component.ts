@@ -11,6 +11,7 @@ import { TitleService } from './services/title.service';
 import { Platform } from '@ionic/angular';
 import { IonMenu, IonApp, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet} from '@ionic/angular/standalone';
 import { version } from 'src/environments/version';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -34,9 +35,15 @@ export class AppComponent {
               private toastController: ToastController, 
               private titleService: TitleService,
               private platform: Platform,
+              private translate: TranslateService,
               private modalController: ModalController) {}
 
   ngOnInit() {
+    // Load stored language or fallback to default
+    const storedLang = localStorage.getItem('lang') || 'en';
+    this.translate.setDefaultLang('en');
+    this.translate.use(storedLang);
+
     // Subscribe to authentication status changes
     this.authService.getAuthStatus().subscribe((loggedIn) => {
       this.isLoggedIn = loggedIn;
