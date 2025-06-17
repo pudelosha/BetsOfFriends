@@ -1190,19 +1190,25 @@ namespace Backend.Repository.Services
 
                 // Check if the user is a participant
                 var isParticipant = await _context.CustomTournamentUserAssignments
-                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId && a.Status == AssignmentStatus.Accepted);
 
                 if (!isParticipant)
                 {
-                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}.");
+                    _logger.LogWarning($"User {userId} is not an accepted participant in tournament {tournamentId}.");
                     return new List<TournamentPlayerResultDto>(); // Unauthorized access
                 }
+
+                // Get accepted user assignments
+                var acceptedAssignments = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.TournamentId == tournamentId && a.Status == AssignmentStatus.Accepted)
+                    .ToListAsync();
+
+                var userIdToUsername = acceptedAssignments.ToDictionary(a => a.UserId, a => a.UserName);
 
                 // Fetch all bets for the tournament
                 var tournamentBets = await _context.Bets
                     .Where(b => b.Match.TournamentId == tournamentId)
                     .Include(b => b.Match)
-                    .Include(b => b.User)
                     .ToListAsync();
 
                 if (!tournamentBets.Any())
@@ -1211,22 +1217,23 @@ namespace Backend.Repository.Services
                     return new List<TournamentPlayerResultDto>();
                 }
 
-                // Calculate total payout per user
+                // Calculate total payout per accepted user
                 var playerResults = tournamentBets
-                    .GroupBy(b => b.User)
+                    .GroupBy(b => b.UserId)
+                    .Where(g => userIdToUsername.ContainsKey(g.Key))
                     .Select(group =>
                     {
-                        var user = group.Key;
+                        var userIdKey = group.Key;
+                        var userName = userIdToUsername[userIdKey];
                         var totalPayout = group
                             .Where(b => b.Status == Bet.BetStatus.Closed)
                             .Sum(b => (b.BasePayout ?? 0) + (b.QualificationPayout ?? 0) + (b.ExactScorePayout ?? 0));
 
-
                         return new TournamentPlayerResultDto
                         {
-                            UserName = user.UserName,
+                            UserName = userName,
                             Points = totalPayout,
-                            IsCurrentUser = user.Id == userId
+                            IsCurrentUser = userIdKey == userId
                         };
                     })
                     .OrderByDescending(s => s.Points)
