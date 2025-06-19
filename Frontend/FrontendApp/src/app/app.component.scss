@@ -1,10 +1,19 @@
-ion-app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+.footer-toolbar {
+  --background: white;
+  height: 56px;
+  padding: 0;
 }
 
-#main-content {
-  position: relative;
-  z-index: 0;
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); // 4 equal columns = 25% each
+  width: 100%; // Full width of screen
+  height: 100%;
+}
+
+.footer-grid ion-button {
+  justify-self: center; // center horizontally inside the column
+  align-self: center;   // center vertically
+  --background: transparent;
+  --box-shadow: none;
 }

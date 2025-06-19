@@ -97,6 +97,10 @@ export class AppComponent {
     return await modal.present();
   }
 
+  async openLanguageModal() {
+    
+  }
+
   async presentToast(message: string, color: string) {
     const toast = await this.toastController.create({
       message,

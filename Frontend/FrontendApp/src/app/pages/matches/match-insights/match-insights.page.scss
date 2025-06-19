@@ -1,0 +1,123 @@
+/* Page Container Below Sticky Header & Selector */
+.page-container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 56px; /* 56px for app header + 56px for stage selector */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Sticky Stage Selector */
+.sticky-stage-selector {
+  position: fixed;
+  top: 56px; /* Just below the Ionic header */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  background-color: white;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Stage Selector Grid (inside sticky container) */
+.stage-selector-grid {
+  width: 100%;
+  padding: 0 1rem;
+}
+
+/* Accordion Header Styling */
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 60px;
+  --min-height: 60px !important;
+  --max-height: 60px !important;
+  --inner-padding-end: 0px !important;
+  --inner-padding-start: 0px !important;
+  --padding-end: 15px !important;
+  --padding-start: 15px !important;
+  --ion-item-background: transparent;
+}
+
+.expanded-header {
+  background-color: #f7f7f7;
+}
+
+.header-content {
+  font-weight: bold;
+  font-size: 12px;
+  color: #000;
+}
+
+.payout-summary {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--ion-color-medium);
+  margin-left: auto;
+}
+
+/* Accordion Body */
+.accordion-content {
+  padding: 0px;
+}
+
+/* Stats Table */
+.stats-table {
+  font-size: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.header-row {
+  font-weight: bold;
+  background-color: #f7f7f7;
+  border-top: 1px solid #e6e6e6;
+  padding: 6px 0;
+}
+
+.data-row ion-col {
+  background-color: #f7f7f7;
+  padding: 5px 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+/* Optional: Column Dividers */
+.header-row ion-col:nth-child(4),
+.header-row ion-col:nth-child(6),
+.data-row ion-col:nth-child(4),
+.data-row ion-col:nth-child(6) {
+  border-left: 1px solid #f7f7f7;
+}
+
+/* Status Text */
+.v-status {
+  color: green;
+  font-weight: bold;
+}
+
+.x-status {
+  color: red;
+  font-weight: bold;
+}
+
+/* No Data Message */
+.no-data {
+  text-align: center;
+  font-size: 1.2em;
+  color: gray;
+  margin-top: 20px;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}

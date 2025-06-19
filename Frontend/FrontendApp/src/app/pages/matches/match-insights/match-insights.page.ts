@@ -1,21 +1,55 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonToolbar, IonTitle, IonSpinner, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonText } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonSpinner,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonButton,
+  IonIcon,
+  IonSelect,
+  IonSelectOption,
+  IonAccordionGroup,
+  IonAccordion,
+  IonItem,
+  IonLabel,
+  IonText,
+  IonList
+} from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-
 
 @Component({
   selector: 'app-match-insights',
   templateUrl: './match-insights.page.html',
   styleUrls: ['./match-insights.page.scss'],
   standalone: true,
-  imports: [ CommonModule, FormsModule, TranslateModule, IonContent, IonHeader, IonToolbar, IonTitle, IonSpinner, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonText
-]
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslateModule,
+    IonContent,
+    IonSpinner,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonButton,
+    IonIcon,
+    IonSelect,
+    IonSelectOption,
+    IonAccordionGroup,
+    IonAccordion,
+    IonItem,
+    IonLabel
+  ]
 })
 export class MatchInsightsPage implements OnInit {
   isLoading = true;
-  matches: any[] = []; // Replace with actual Match model
+  insights: any[] = [];
   expandedMatchId: number | null = null;
   selectedStage: string | null = null;
   availableStages: string[] = [];
@@ -23,55 +57,81 @@ export class MatchInsightsPage implements OnInit {
   constructor(private translate: TranslateService) {}
 
   ngOnInit() {
-    this.fetchMatches();
+    this.fetchInsights();
   }
 
-  fetchMatches() {
-    // Replace with API call
+  fetchInsights() {
     setTimeout(() => {
-      const MOCK_MATCHES = [
+      const MOCK_INSIGHTS = [
         {
-          id: 1,
+          matchId: 1,
           stage: 'Group A',
           homeTeam: 'Team A',
           awayTeam: 'Team B',
           result: '2-1',
           totalPayout: 7.5,
-          playerBets: [
-            { betPlaced: '2-1', outcome: 'V', payout: 5 },
-            { betPlaced: '1-1', outcome: 'X', payout: 0 }
-          ]
+          betPlaced: '2-1',
+          outcomeRegular: 'V',
+          payoutRegular: 5,
+          showExactResult: true,
+          outcomeExactResult: 'V',
+          payoutExactResult: 2.5,
+          showQualified: true,
+          whoQualifiedBet: 'Team A',
+          outcomeQualification: 'X',
+          payoutQualification: 0
         },
         {
-          id: 2,
+          matchId: 2,
           stage: 'Group B',
           homeTeam: 'Team C',
           awayTeam: 'Team D',
           result: '0-3',
           totalPayout: 8.25,
-          playerBets: [
-            { betPlaced: '0-3', outcome: 'V', payout: 8.25 },
-            { betPlaced: '2-2', outcome: 'X', payout: 0 }
-          ]
+          betPlaced: '2-2',
+          outcomeRegular: 'X',
+          payoutRegular: 0,
+          showExactResult: false,
+          showQualified: true,
+          whoQualifiedBet: 'Team D',
+          outcomeQualification: 'V',
+          payoutQualification: 8.25
+        },
+        {
+          matchId: 3,
+          stage: 'Group A',
+          homeTeam: 'Team E',
+          awayTeam: 'Team F',
+          result: null,
+          totalPayout: null,
+          betPlaced: null,
+          outcomeRegular: null,
+          payoutRegular: 0,
+          showExactResult: false,
+          showQualified: false
         }
       ];
 
-      this.matches = MOCK_MATCHES; // Replace with fetched data
-      this.availableStages = [...new Set(this.matches.map(m => m.stage))];
+      this.insights = MOCK_INSIGHTS;
+      this.availableStages = [...new Set(this.insights.map(i => i.stage))];
       this.selectedStage = this.availableStages[0] ?? null;
       this.isLoading = false;
     }, 1000);
   }
 
-  get filteredMatches() {
+  get filteredInsights() {
     return this.selectedStage
-      ? this.matches.filter(m => m.stage === this.selectedStage)
-      : this.matches;
+      ? this.insights.filter(i => i.stage === this.selectedStage)
+      : this.insights;
   }
 
   onAccordionChange(event: Event) {
     const customEvent = event as CustomEvent;
     this.expandedMatchId = customEvent.detail?.value ?? null;
+  }
+
+  onStageChanged(stage: string | null) {
+    this.selectedStage = stage;
   }
 
   getStatusIcon(value?: string): string {
@@ -94,12 +154,5 @@ export class MatchInsightsPage implements OnInit {
   nextStage() {
     const i = this.selectedStageIndex;
     if (i < this.availableStages.length - 1) this.selectedStage = this.availableStages[i + 1];
-  }
-
-  blurBeforeOpen() {
-    requestAnimationFrame(() => {
-      const active = document.activeElement as HTMLElement | null;
-      if (active) active.blur();
-    });
   }
 }

@@ -1,21 +1,10 @@
-.page-container {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  font-size: 14px;
-  color: #2f3640;
-  line-height: 1.6;
-  border-radius: 10px;
-  padding-bottom: 0px;
-  min-height: 100vh;
-  overflow-y: auto;
-}
-
 .support-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 20px;
   padding: 20px;
-  margin-top: 60px;
-  margin-bottom: 60px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .support-card {

@@ -1,81 +1,109 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>{{ 'APP.MATCH_INSIGHTS' | translate }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="ion-padding page-with-header">
 
-<ion-content class="ion-padding">
+  <!-- Sticky Stage Selector -->
+  <div class="sticky-stage-selector">
+    <ion-grid class="stage-selector-grid">
+      <ion-row class="ion-align-items-center ion-justify-content-center">
+        <ion-col size="auto">
+          <ion-button fill="clear" (click)="prevStage()" [disabled]="selectedStageIndex === 0">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
 
-  <!-- Spinner -->
-  <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+        <ion-col size="auto">
+          <ion-select 
+            [(ngModel)]="selectedStage" 
+            interface="popover"
+            (ionChange)="onStageChanged(selectedStage)">
+            <ion-select-option *ngFor="let stage of availableStages" [value]="stage">
+              {{ stage }}
+            </ion-select-option>
+          </ion-select>
+        </ion-col>
 
-  <!-- Error or No Data -->
-  <div *ngIf="!isLoading && matches.length === 0" class="no-matches">
-    <p>{{ 'MATCH_INSIGHTS.NO_MATCHES' | translate }}</p>
+        <ion-col size="auto">
+          <ion-button fill="clear" (click)="nextStage()" [disabled]="selectedStageIndex === availableStages.length - 1">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </div>
 
-  <!-- Stage Filter -->
-  <ion-grid *ngIf="!isLoading && availableStages.length > 1" class="stage-selector-grid">
-    <ion-row class="ion-align-items-center ion-justify-content-center">
-      <!-- Back -->
-      <ion-col size="auto">
-        <ion-button fill="clear" (click)="prevStage()" [disabled]="selectedStageIndex === 0">
-          <ion-icon name="chevron-back-outline"></ion-icon>
-        </ion-button>
-      </ion-col>
+  <!-- Scrollable Content Below Sticky Bar -->
+  <div class="page-container">
 
-      <!-- Dropdown -->
-      <ion-col size="auto">
-        <ion-select [(ngModel)]="selectedStage" interface="popover" (click)="blurBeforeOpen()">
-          <ion-select-option *ngFor="let stage of availableStages" [value]="stage">
-            {{ stage }}
-          </ion-select-option>
-        </ion-select>
-      </ion-col>
+    <!-- Spinner -->
+    <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
 
-      <!-- Forward -->
-      <ion-col size="auto">
-        <ion-button fill="clear" (click)="nextStage()" [disabled]="selectedStageIndex === availableStages.length - 1">
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+    <!-- No Data -->
+    <div *ngIf="!isLoading && insights.length === 0" class="no-data">
+      <p>{{ 'INSIGHTS.NO_MATCHES' | translate }}</p>
+    </div>
 
-  <!-- Match Accordions -->
-  <ion-accordion-group *ngIf="!isLoading && filteredMatches.length > 0" (ionChange)="onAccordionChange($event)">
-    <ion-accordion *ngFor="let match of filteredMatches" [value]="match.id">
-      <!-- Header -->
-      <ion-item slot="header">
-        <ion-label>
-          {{ match.homeTeam }} {{ match.result ?? '?-?' }} {{ match.awayTeam }}
-        </ion-label>
-        <div slot="end">
-          <ion-text>{{ match.totalPayout?.toFixed(2) ?? '-' }}</ion-text>
+    <!-- Accordion List -->
+    <ion-accordion-group *ngIf="!isLoading && filteredInsights.length > 0" (ionChange)="onAccordionChange($event)">
+      <ion-accordion *ngFor="let match of filteredInsights" [value]="match.matchId">
+
+        <!-- Header -->
+        <ion-item slot="header" class="accordion-header" [class.expanded-header]="expandedMatchId === match.matchId">
+          <ion-label>
+            <div class="header-content">
+              {{ match.homeTeam }} {{ match.result ?? '?-?' }} {{ match.awayTeam }}
+            </div>
+          </ion-label>
+          <div slot="end" class="payout-summary">
+            {{ match.totalPayout?.toFixed(2) ?? '-' }}
+          </div>
+        </ion-item>
+
+        <!-- Content -->
+        <div class="accordion-content" slot="content">
+          <ion-grid class="stats-table">
+            <!-- Header -->
+            <ion-row class="header-row">
+              <ion-col>{{ 'INSIGHTS.BET' | translate }}</ion-col>
+              <ion-col></ion-col>
+              <ion-col></ion-col>
+
+              <ion-col *ngIf="match.showExactResult">{{ 'INSIGHTS.EXACT' | translate }}</ion-col>
+              <ion-col *ngIf="match.showExactResult"></ion-col>
+
+              <ion-col *ngIf="match.showQualified">{{ 'INSIGHTS.QUALIFY' | translate }}</ion-col>
+              <ion-col *ngIf="match.showQualified"></ion-col>
+              <ion-col *ngIf="match.showQualified"></ion-col>
+            </ion-row>
+
+            <!-- Player Bet -->
+            <ion-row class="data-row">
+              <ion-col>{{ match.betPlaced ?? '-' }}</ion-col>
+              <ion-col [ngClass]="getStatusClass(match.outcomeRegular)">
+                {{ getStatusIcon(match.outcomeRegular) }}
+              </ion-col>
+              <ion-col>{{ match.payoutRegular?.toFixed(2) ?? '0' }}</ion-col>
+
+              <ion-col *ngIf="match.showExactResult" [ngClass]="getStatusClass(match.outcomeExactResult)">
+                {{ getStatusIcon(match.outcomeExactResult) }}
+              </ion-col>
+              <ion-col *ngIf="match.showExactResult">
+                {{ match.payoutExactResult?.toFixed(2) ?? '0' }}
+              </ion-col>
+
+              <ion-col *ngIf="match.showQualified">
+                {{ match.whoQualifiedBet ?? '-' }}
+              </ion-col>
+              <ion-col *ngIf="match.showQualified" [ngClass]="getStatusClass(match.outcomeQualification)">
+                {{ getStatusIcon(match.outcomeQualification) }}
+              </ion-col>
+              <ion-col *ngIf="match.showQualified">
+                {{ match.payoutQualification?.toFixed(2) ?? '0' }}
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </div>
-      </ion-item>
 
-      <!-- Content -->
-      <div slot="content" class="accordion-content">
-        <ion-grid class="match-details-table">
-          <!-- Header -->
-          <ion-row class="header-row">
-            <ion-col>{{ 'PLAYER_STATS.BET' | translate }}</ion-col>
-            <ion-col>{{ 'PLAYER_STATS.OUTCOME' | translate }}</ion-col>
-            <ion-col>{{ 'PLAYER_STATS.PAYOUT' | translate }}</ion-col>
-          </ion-row>
+      </ion-accordion>
+    </ion-accordion-group>
 
-          <!-- Player Bets -->
-          <ion-row *ngFor="let bet of match.playerBets" class="data-row">
-            <ion-col>{{ bet.betPlaced ?? '-' }}</ion-col>
-            <ion-col [ngClass]="getStatusClass(bet.outcome)">
-              {{ getStatusIcon(bet.outcome) }}
-            </ion-col>
-            <ion-col>{{ bet.payout?.toFixed(2) ?? '0' }}</ion-col>
-          </ion-row>
-        </ion-grid>
-      </div>
-    </ion-accordion>
-  </ion-accordion-group>
-
+  </div>
 </ion-content>

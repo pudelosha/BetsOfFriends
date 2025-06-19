@@ -1,75 +1,16 @@
-/*
- * Global Stylesheet for Ionic Angular App
- * ---------------------------------------
- * - Core & Utility Imports
- * - Layout Fixes (header, footer, modals, menu)
- * - Theming & Responsiveness
- */
-
-/* -------------------------------------------------- */
-/*                IONIC DEFAULT IMPORTS              */
-/* -------------------------------------------------- */
-
-/* Core Ionic Styles */
 @import "@ionic/angular/css/core.css";
-
-/* Basic Styles */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional Utilities */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
-
-/* Dark Mode Preference (System-based) */
 @import '@ionic/angular/css/palettes/dark.system.css';
 
-
-/* -------------------------------------------------- */
-/*                   GLOBAL LAYOUT                   */
-/* -------------------------------------------------- */
-
-.page-with-header {
-  --padding-top: 56px;
-  --padding-bottom: 56px;
-}
-
-.page-container {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  min-height: calc(100vh - 112px); // 56px header + 56px footer
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
-  box-shadow: none;
-}
-
-.page-container > * {
-  max-width: inherit;
-  width: 100%;
-}
-
-
-/* -------------------------------------------------- */
-/*                FIX: MODAL CONTENT                 */
-/* -------------------------------------------------- */
-
-ion-modal ion-content {
-  --padding-top: 70px !important; /* header height */
-  padding-top: var(--padding-top) !important;
-  box-sizing: border-box;
-}
-
-/* -------------------------------------------------- */
-/*         FIX: STICKY HEADER + FOOTER STYLE         */
-/* -------------------------------------------------- */
-
+/* Fixed header and footer */
 ion-header, ion-footer {
   position: fixed;
   left: 0;
@@ -88,40 +29,82 @@ ion-footer.custom-footer {
   height: 56px;
 }
 
+/* Scrollable content with fixed header/footer offset */
+ion-content {
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
 
-/* -------------------------------------------------- */
-/*             FIX: SIDE MENU OVERLAP                */
-/* -------------------------------------------------- */
+ion-content::-webkit-scrollbar,
+ion-content::part(scroll)::-webkit-scrollbar {
+  display: none;
+}
 
-/* If using ion-content inside ion-menu */
+/* Centered scrollable page container */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: calc(100vh - 112px); // offset for header + footer
+  margin-top: 40px;     // ion-padding of 16 + 40 = 56
+  margin-bottom: 40px;  // ion-padding of 16 + 40 = 56
+  width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+/* Menu content offset */
 ion-menu ion-content {
   --padding-top: 56px;
   --padding-bottom: 56px;
 }
 
-/* Or if not using ion-content inside menu */
 ion-menu::part(content) {
   padding-top: 56px;
   padding-bottom: 56px;
   box-sizing: border-box;
 }
 
+/* Modal header fix */
+ion-modal ion-content {
+  --padding-top: 70px !important;
+  padding-top: var(--padding-top) !important;
+  box-sizing: border-box;
+}
 
-/* -------------------------------------------------- */
-/*                   RESPONSIVENESS                  */
-/* -------------------------------------------------- */
+/* Spinner positioning */
+.loading-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  color: #3880ff;
+}
 
+/* Version text in menu */
+ion-menu .version-text {
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: lightgray;
+  padding: 15px 0 10px;
+}
+
+/* Responsiveness */
 @media screen and (min-width: 768px) {
   .page-container {
     max-width: 600px;
     padding: 0 15px;
-    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  .unauth-container {
-    max-width: 500px;
-    padding: 15px;
-    text-align: center;
     box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.15);
   }
 
@@ -144,85 +127,3 @@ ion-menu::part(content) {
     --padding-end: 40px;
   }
 }
-
-
-/* -------------------------------------------------- */
-/*                    SPINNER STYLE                  */
-/* -------------------------------------------------- */
-
-.loading-spinner {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-  color: #3880ff;
-}
-
-
-/* -------------------------------------------------- */
-/*            SCROLLBAR HIDING GLOBALLY              */
-/* -------------------------------------------------- */
-
-ion-content {
-  --overflow: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  scroll-behavior: smooth;
-}
-
-ion-content::-webkit-scrollbar {
-  display: none;
-}
-
-ion-content::part(scroll) {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-ion-content::part(scroll)::-webkit-scrollbar {
-  display: none;
-}
-
-
-/* -------------------------------------------------- */
-/*                SHARED UI COMPONENTS               */
-/* -------------------------------------------------- */
-
-.unauth-container {
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 10px;
-  text-align: center;
-}
-
-.button-group {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.rounded-button {
-  border-radius: 10px;
-  width: 200px;
-}
-
-.validation-message {
-  min-height: 20px;
-  text-align: center;
-}
-
-.error {
-  color: red;
-  font-size: 14px;
-  margin-top: 3px;
-}
-
-ion-menu .version-text {
-  text-align: center;
-  font-size: 10px;
-  font-weight: bold;
-  color: lightgray;
-  padding: 15px 0 10px;
-}
-

@@ -149,34 +149,45 @@
         </ion-menu-toggle>
 
         <div class="version-text">version: {{ version }}</div>
-
       </ion-list>
     </ion-content>
   </ion-menu>
 
-  <!-- Main Content -->
+  <!-- Header -->
   <ion-header *ngIf="isLoggedIn">
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
       <ion-title>{{ pageTitle | translate }}</ion-title>
-      <ion-buttons slot="end">
-        <ion-button (click)="openFootballModal()">
-          <ion-icon name="football-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
-  <ion-router-outlet id="main-content"></ion-router-outlet>
+  <!-- Main Scrollable Content -->
+  <ion-content id="main-content" fullscreen>
+    <div class="page-container">
+      <ion-router-outlet></ion-router-outlet>
+    </div>
+  </ion-content>
 
   <!-- Footer -->
   <ion-footer class="custom-footer" *ngIf="isLoggedIn">
-    <ion-toolbar>
-      <ion-title class="footer-text">
-        ©2025 Bets of Friends
-      </ion-title>
+    <ion-toolbar class="footer-toolbar">
+      <div class="footer-grid">
+        <ion-button fill="clear" (click)="navigateToHome()">
+          <ion-icon name="home-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="navigateToMessages()">
+          <ion-icon name="chatbubbles-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="openFootballModal()">
+          <ion-icon name="football-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="openLanguageModal()">
+          <ion-icon name="settings-outline"></ion-icon>
+        </ion-button>
+      </div>
     </ion-toolbar>
   </ion-footer>
+
 </ion-app>

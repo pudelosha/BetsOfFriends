@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="!isLoading">
+<ion-content *ngIf="!isLoading" class="ion-padding">
   <div *ngFor="let tournament of tournaments" class="tournament-card" [ngClass]="{ 'selected-tournament': tournament.tournamentId === selectedTournamentId }">
     <ion-grid>
       <ion-row class="tournament-row">
