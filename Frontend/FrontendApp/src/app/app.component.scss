@@ -5,15 +5,38 @@
 }
 
 .footer-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); // 4 equal columns = 25% each
-  width: 100%; // Full width of screen
+  height: 100%;
+  width: 100%;
+  padding: 0;
+}
+
+.footer-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
   height: 100%;
 }
 
-.footer-grid ion-button {
-  justify-self: center; // center horizontally inside the column
-  align-self: center;   // center vertically
+.footer-col ion-button {
   --background: transparent;
   --box-shadow: none;
+  --color: var(--ion-color-step-850); // matches default icon color
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  border-radius: 8px; // Optional: for better hover feel
 }
+
+.footer-col ion-button:hover {
+  background-color: var(--ion-color-step-200); // matches hover effect
+}
+
+.footer-col ion-icon {
+  font-size: 24px;
+  color: inherit; // inherit color from ion-button
+}
+
+

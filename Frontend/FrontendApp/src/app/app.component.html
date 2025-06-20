@@ -171,23 +171,34 @@
   </ion-content>
 
   <!-- Footer -->
-  <ion-footer class="custom-footer" *ngIf="isLoggedIn">
-    <ion-toolbar class="footer-toolbar">
-      <div class="footer-grid">
-        <ion-button fill="clear" (click)="navigateToHome()">
-          <ion-icon name="home-outline"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" (click)="navigateToMessages()">
-          <ion-icon name="chatbubbles-outline"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" (click)="openFootballModal()">
-          <ion-icon name="football-outline"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" (click)="openLanguageModal()">
-          <ion-icon name="settings-outline"></ion-icon>
-        </ion-button>
-      </div>
-    </ion-toolbar>
-  </ion-footer>
+<ion-footer class="custom-footer" *ngIf="isLoggedIn">
+  <ion-toolbar class="footer-toolbar">
+    <ion-grid class="footer-grid ion-no-padding ion-no-margin">
+      <ion-row>
+        <ion-col size="3" class="footer-col">
+          <ion-button fill="clear" color="dark" expand="block" (click)="navigateToHome()">
+            <ion-icon name="home-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col size="3" class="footer-col">
+          <ion-button fill="clear" color="dark" expand="block" (click)="navigateToMessages()">
+            <ion-icon name="chatbubbles-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col size="3" class="footer-col">
+          <ion-button fill="clear" color="dark" expand="block" (click)="navigateToProfile()" >
+            <ion-icon name="person-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col size="3" class="footer-col">
+          <ion-button fill="clear" color="dark" expand="block" (click)="openFootballModal()">
+            <ion-icon name="football-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>
 
 </ion-app>

@@ -9,17 +9,16 @@ import { ParticipantTournamentsModalComponent } from './modals/participant-tourn
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from './services/title.service';
 import { Platform } from '@ionic/angular';
-import { IonMenu, IonApp, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet} from '@ionic/angular/standalone';
+import { IonMenu, IonApp, IonHeader, IonToolbar, IonTitle, IonRow, IonGrid, IonCol, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet, IonFab, IonFabButton, IonFabList } from '@ionic/angular/standalone';
 import { version } from 'src/environments/version';
 import { TranslateService } from '@ngx-translate/core';
+import { LanguageService } from 'src/app/services/language.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, TranslateModule, IonApp, IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet
-  ],  
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonApp, IonMenu, IonRow, IonGrid, IonCol, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet],  
 })
 export class AppComponent {
   isMonetizedMode = false;
@@ -30,12 +29,15 @@ export class AppComponent {
   pageTitle: string = 'APP.TITLE';
   version = version;
 
+  supportedLangs = ['en', 'pl', 'de', 'fr', 'es', 'it', 'pt'];
+
   constructor(private authService: AuthService, 
               private router: Router, 
               private toastController: ToastController, 
               private titleService: TitleService,
               private platform: Platform,
               private translate: TranslateService,
+              private languageService: LanguageService,
               private modalController: ModalController) {}
 
   ngOnInit() {
@@ -65,6 +67,10 @@ export class AppComponent {
         document.activeElement.blur();
       }
     });
+  }
+
+  switchLang(lang: string) {
+    this.languageService.useLanguage(lang);
   }
 
   get isNative(): boolean {

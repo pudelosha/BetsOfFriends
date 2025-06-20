@@ -114,5 +114,4 @@ export class PlayerStatsModalComponent implements OnInit {
       this.selectedStage = this.availableStages[index + 1];
     }
   }
-  
 }

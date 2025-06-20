@@ -502,6 +502,34 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("match-insights/{tournamentId}")]
+        public async Task<IActionResult> GetMatchInsights(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var insights = await _tournamentService.GetMatchInsightsAsync(userId, tournamentId);
+
+                if (insights == null || !insights.Any())
+                {
+                    return NotFound(new { Message = "No match insights found." });
+                }
+
+                return Ok(insights);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching match insights for tournament {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while fetching match insights." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("invites/pending")]
         public async Task<IActionResult> GetPendingTournamentInvites()
         {

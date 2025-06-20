@@ -1,5 +1,4 @@
 <ion-content class="ion-padding page-with-header">
-
   <!-- Sticky Stage Selector -->
   <div class="sticky-stage-selector">
     <ion-grid class="stage-selector-grid">
@@ -11,10 +10,11 @@
         </ion-col>
 
         <ion-col size="auto">
-          <ion-select 
-            [(ngModel)]="selectedStage" 
+          <ion-select
             interface="popover"
-            (ionChange)="onStageChanged(selectedStage)">
+            [value]="selectedStage"
+            (ionChange)="onStageSelected($event.detail.value)"
+            class="stage-selector">
             <ion-select-option *ngFor="let stage of availableStages" [value]="stage">
               {{ stage }}
             </ion-select-option>
@@ -32,7 +32,6 @@
 
   <!-- Scrollable Content Below Sticky Bar -->
   <div class="page-container">
-
     <!-- Spinner -->
     <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
 
@@ -44,59 +43,67 @@
     <!-- Accordion List -->
     <ion-accordion-group *ngIf="!isLoading && filteredInsights.length > 0" (ionChange)="onAccordionChange($event)">
       <ion-accordion *ngFor="let match of filteredInsights" [value]="match.matchId">
-
         <!-- Header -->
         <ion-item slot="header" class="accordion-header" [class.expanded-header]="expandedMatchId === match.matchId">
           <ion-label>
             <div class="header-content">
-              {{ match.homeTeam }} {{ match.result ?? '?-?' }} {{ match.awayTeam }}
+              {{ match.homeTeam }} {{ match.result || '?-?' }} {{ match.awayTeam }}
+            </div>
+            <div class="match-datetime" *ngIf="match.matchDateTime">
+              {{ match.matchDateTime }}
             </div>
           </ion-label>
-          <div slot="end" class="payout-summary">
-            {{ match.totalPayout?.toFixed(2) ?? '-' }}
-          </div>
         </ion-item>
 
-        <!-- Content -->
+        <!-- Accordion Content -->
         <div class="accordion-content" slot="content">
-          <ion-grid class="stats-table">
-            <!-- Header -->
-            <ion-row class="header-row">
-              <ion-col>{{ 'INSIGHTS.BET' | translate }}</ion-col>
-              <ion-col></ion-col>
-              <ion-col></ion-col>
+          <ion-grid class="bets-overview-grid" *ngIf="match.matchStatus === 'Finalized'">
 
-              <ion-col *ngIf="match.showExactResult">{{ 'INSIGHTS.EXACT' | translate }}</ion-col>
-              <ion-col *ngIf="match.showExactResult"></ion-col>
-
-              <ion-col *ngIf="match.showQualified">{{ 'INSIGHTS.QUALIFY' | translate }}</ion-col>
-              <ion-col *ngIf="match.showQualified"></ion-col>
-              <ion-col *ngIf="match.showQualified"></ion-col>
+            <!-- Table Header -->
+            <ion-row class="bet-table-header">
+              <ion-col [size]="calculatePlayerColumnSize(match)" class="centered-text">
+                <strong>{{ 'BETS_OVERVIEW.PLAYER' | translate }}</strong>
+              </ion-col>
+              <ion-col size="2" class="centered-text">
+                <strong>{{ 'BETS_OVERVIEW.BET' | translate }}</strong>
+              </ion-col>
+              <ion-col size="1" class="centered-text"><strong>R</strong></ion-col>
+              <ion-col size="1" class="centered-text"><strong>P</strong></ion-col>
+              <ion-col size="1" class="centered-text"><strong>Q</strong></ion-col>
+              <ion-col size="1" class="centered-text"><strong>P</strong></ion-col>
             </ion-row>
 
-            <!-- Player Bet -->
-            <ion-row class="data-row">
-              <ion-col>{{ match.betPlaced ?? '-' }}</ion-col>
-              <ion-col [ngClass]="getStatusClass(match.outcomeRegular)">
-                {{ getStatusIcon(match.outcomeRegular) }}
-              </ion-col>
-              <ion-col>{{ match.payoutRegular?.toFixed(2) ?? '0' }}</ion-col>
-
-              <ion-col *ngIf="match.showExactResult" [ngClass]="getStatusClass(match.outcomeExactResult)">
-                {{ getStatusIcon(match.outcomeExactResult) }}
-              </ion-col>
-              <ion-col *ngIf="match.showExactResult">
-                {{ match.payoutExactResult?.toFixed(2) ?? '0' }}
+            <!-- User Bets -->
+            <ion-row *ngFor="let bet of match.userBets" class="user-bet-row">
+              <ion-col [size]="calculatePlayerColumnSize(match)" class="player-name">
+                {{ bet.playerName }}
               </ion-col>
 
-              <ion-col *ngIf="match.showQualified">
-                {{ match.whoQualifiedBet ?? '-' }}
+              <ion-col size="2" class="centered-text">
+                {{ bet.betScore ?? '-' }}
               </ion-col>
-              <ion-col *ngIf="match.showQualified" [ngClass]="getStatusClass(match.outcomeQualification)">
-                {{ getStatusIcon(match.outcomeQualification) }}
+
+              <!-- R: Result success -->
+              <ion-col size="1" class="bet-result">
+                <ion-icon *ngIf="bet.resultSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
+                <ion-icon *ngIf="bet.resultSuccess === 0" name="close" class="failure-icon"></ion-icon>
               </ion-col>
-              <ion-col *ngIf="match.showQualified">
-                {{ match.payoutQualification?.toFixed(2) ?? '0' }}
+
+              <!-- P: Precise result -->
+              <ion-col size="1" class="bet-result">
+                <ion-icon *ngIf="bet.preciseResultSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
+                <ion-icon *ngIf="bet.preciseResultSuccess === 0" name="close" class="failure-icon"></ion-icon>
+              </ion-col>
+
+              <!-- Q: Qualification -->
+              <ion-col size="1" class="bet-result">
+                <ion-icon *ngIf="bet.qualificationSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
+                <ion-icon *ngIf="bet.qualificationSuccess === 0" name="close" class="failure-icon"></ion-icon>
+              </ion-col>
+
+              <!-- P: Payout -->
+              <ion-col size="1" class="centered-text">
+                {{ bet.totalPayout ?? 0 }}
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -104,6 +111,5 @@
 
       </ion-accordion>
     </ion-accordion-group>
-
   </div>
 </ion-content>

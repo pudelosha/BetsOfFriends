@@ -351,4 +351,28 @@ namespace Backend.DTOs
         public static TournamentUpdateResultDto ErrorResult(string message) =>
             new TournamentUpdateResultDto { Success = false, ErrorMessage = message };
     }
+
+    public class MatchInsightDto
+    {
+        public int MatchId { get; set; }
+        public string Stage { get; set; }
+        public string HomeTeam { get; set; }
+        public string AwayTeam { get; set; }
+        public string? Result { get; set; }
+        public string MatchDateTime { get; set; }
+        public string MatchStatus { get; set; } // 'Upcoming' | 'InProgress' | 'Finalized'
+        public bool ShowExactResult { get; set; }
+        public bool ShowQualified { get; set; }
+        public List<MatchUserBetDto> UserBets { get; set; } = new();
+    }
+
+    public class MatchUserBetDto
+    {
+        public string PlayerName { get; set; } = string.Empty;
+        public string BetScore { get; set; } = string.Empty;
+        public int ResultSuccess { get; set; } // 0 or 1
+        public int? PreciseResultSuccess { get; set; } // optional
+        public int? QualificationSuccess { get; set; } // optional
+        public decimal TotalPayout { get; set; }
+    }
 }

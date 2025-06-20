@@ -1182,6 +1182,102 @@ namespace Backend.Repository.Services
             }
         }
 
+        public async Task<List<MatchInsightDto>> GetMatchInsightsAsync(string userId, int tournamentId)
+        {
+            // Validate the requesting user's participation
+            bool isRequesterParticipant = await _context.CustomTournamentUserAssignments
+                .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+            if (!isRequesterParticipant)
+            {
+                _logger.LogWarning($"User {userId} is not a participant of tournament {tournamentId}.");
+                return new List<MatchInsightDto>();
+            }
+
+            // Fetch all tournament participants
+            var participants = await _context.CustomTournamentUserAssignments
+                .Where(a => a.TournamentId == tournamentId)
+                .ToListAsync();
+
+            var participantIds = participants.Select(p => p.UserId).ToHashSet();
+            var nicknameMap = participants.ToDictionary(p => p.UserId, p => p.UserName ?? "Unknown");
+
+            var tournament = await _context.CustomTournaments
+                .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+            if (tournament == null)
+            {
+                return new List<MatchInsightDto>();
+            }
+
+            var matches = await _context.CustomMatches
+                .Where(m => m.TournamentId == tournamentId && m.IsVisible)
+                .Include(m => m.HomeTeam)
+                .Include(m => m.AwayTeam)
+                .Include(m => m.Stage)
+                .Include(m => m.Bets)
+                .ToListAsync();
+
+            var result = matches.Select(match =>
+            {
+                bool isFinalised = match.Status == CustomMatch.MatchStatus.Finished;
+
+                bool showExactResult = tournament.AllowExactResultBonus && isFinalised;
+                bool showQualified = tournament.AllowWhoQualifiesBets &&
+                                     match.Type == CustomMatch.MatchType.ExtendedWithQualification;
+
+                string matchStatus = match.Status switch
+                {
+                    CustomMatch.MatchStatus.Scheduled => "Upcoming",
+                    CustomMatch.MatchStatus.In_Play => "InProgress",
+                    CustomMatch.MatchStatus.Finished => "Finalized",
+                    _ => "Upcoming"
+                };
+
+                string? resultScore = isFinalised && match.HomeScore.HasValue && match.AwayScore.HasValue
+                    ? $"{match.HomeScore}:{match.AwayScore}"
+                    : null;
+
+                var userBets = match.Bets
+                    .Where(b => participantIds.Contains(b.UserId))
+                    .Select(bet =>
+                    {
+                        string betScore = bet.HomeGoals.HasValue && bet.AwayGoals.HasValue
+                            ? $"{bet.HomeGoals}:{bet.AwayGoals}"
+                            : "-";
+
+                        return new MatchUserBetDto
+                        {
+                            PlayerName = nicknameMap.TryGetValue(bet.UserId, out var name) ? name : "Unknown",
+                            BetScore = betScore,
+                            ResultSuccess = (bet.BasePayout > 0 ? 1 : 0),
+                            PreciseResultSuccess = showExactResult ? (bet.ExactScorePayout > 0 ? 1 : 0) : null,
+                            QualificationSuccess = showQualified ? (bet.QualificationPayout > 0 ? 1 : 0) : null,
+                            TotalPayout = (bet.BasePayout ?? 0)
+                                        + (showExactResult ? (bet.ExactScorePayout ?? 0) : 0)
+                                        + (showQualified ? (bet.QualificationPayout ?? 0) : 0)
+                        };
+                    })
+                    .ToList();
+
+                return new MatchInsightDto
+                {
+                    MatchId = match.MatchId,
+                    Stage = match.Stage.StageName,
+                    HomeTeam = match.HomeTeam.TeamName,
+                    AwayTeam = match.AwayTeam.TeamName,
+                    Result = resultScore,
+                    MatchDateTime = match.MatchStart.ToString("o"),
+                    MatchStatus = matchStatus,
+                    ShowExactResult = showExactResult,
+                    ShowQualified = showQualified,
+                    UserBets = userBets
+                };
+            }).ToList();
+
+            return result;
+        }
+
         public async Task<List<TournamentPlayerResultDto>> GetTournamentPlayerResultAsync(int tournamentId, string userId)
         {
             try

@@ -7,6 +7,7 @@ import { UserActiveTournament, TournamentSummary, TournamentPlayerResult, Tourna
 import { ActionResult } from '../model/action-result';
 import { map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { MatchInsight } from '../model/match';
 
 @Injectable({
   providedIn: 'root'
@@ -168,5 +169,9 @@ export class CustomTournamentService {
 
   getSelectedTournamentDetails(tournamentId: number): Observable<SelectedTournamentDetails> {
     return this.http.get<SelectedTournamentDetails>(`${this.apiUrl}/details/${tournamentId}`);
+  }
+
+  getMatchInsights(tournamentId: number) {
+    return this.http.get<MatchInsight[]>(`${this.apiUrl}/match-insights/${tournamentId}`);
   }
 }
