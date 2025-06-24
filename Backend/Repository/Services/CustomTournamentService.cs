@@ -1267,7 +1267,7 @@ namespace Backend.Repository.Services
                     HomeTeam = match.HomeTeam.TeamName,
                     AwayTeam = match.AwayTeam.TeamName,
                     Result = resultScore,
-                    MatchDateTime = match.MatchStart.ToString("o"),
+                    MatchDateTime = DateTime.SpecifyKind(match.MatchStart, DateTimeKind.Utc).ToString("o"),
                     MatchStatus = matchStatus,
                     ShowExactResult = showExactResult,
                     ShowQualified = showQualified,

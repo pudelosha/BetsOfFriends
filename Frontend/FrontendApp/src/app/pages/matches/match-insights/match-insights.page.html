@@ -50,7 +50,7 @@
               {{ match.homeTeam }} {{ match.result || '?-?' }} {{ match.awayTeam }}
             </div>
             <div class="match-datetime" *ngIf="match.matchDateTime">
-              {{ match.matchDateTime }}
+              {{ match.matchDateTime | date:'yyyy.MM.dd HH:mm' }}
             </div>
           </ion-label>
         </ion-item>

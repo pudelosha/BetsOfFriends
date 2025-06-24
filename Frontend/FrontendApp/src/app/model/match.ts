@@ -36,4 +36,3 @@ export interface MatchUserBet {
   qualificationSuccess?: 0 | 1;      // optional depending on showQualified
   totalPayout: number;
 }
-
