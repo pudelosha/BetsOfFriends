@@ -1196,7 +1196,8 @@ namespace Backend.Repository.Services
 
             // Fetch all tournament participants
             var participants = await _context.CustomTournamentUserAssignments
-                .Where(a => a.TournamentId == tournamentId)
+                .Where(a => a.TournamentId == tournamentId
+                         && a.Status == AssignmentStatus.Accepted)
                 .ToListAsync();
 
             var participantIds = participants.Select(p => p.UserId).ToHashSet();
@@ -1228,7 +1229,7 @@ namespace Backend.Repository.Services
 
                 string matchStatus = match.Status switch
                 {
-                    CustomMatch.MatchStatus.Scheduled => "Upcoming",
+                    CustomMatch.MatchStatus.Timed => "Upcoming",
                     CustomMatch.MatchStatus.In_Play => "InProgress",
                     CustomMatch.MatchStatus.Finished => "Finalized",
                     _ => "Upcoming"

@@ -10,11 +10,7 @@
         </ion-col>
 
         <ion-col size="auto">
-          <ion-select
-            interface="popover"
-            [value]="selectedStage"
-            (ionChange)="onStageSelected($event.detail.value)"
-            class="stage-selector">
+          <ion-select interface="popover" [value]="selectedStage" (ionChange)="onStageSelected($event.detail.value)" class="stage-selector">
             <ion-select-option *ngFor="let stage of availableStages" [value]="stage">
               {{ stage }}
             </ion-select-option>
@@ -30,21 +26,17 @@
     </ion-grid>
   </div>
 
-  <!-- Scrollable Content Below Sticky Bar -->
+  <!-- Scrollable Content -->
   <div class="page-container">
-    <!-- Spinner -->
     <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
 
-    <!-- No Data -->
     <div *ngIf="!isLoading && insights.length === 0" class="no-data">
       <p>{{ 'INSIGHTS.NO_MATCHES' | translate }}</p>
     </div>
 
-    <!-- Accordion List -->
     <ion-accordion-group *ngIf="!isLoading && filteredInsights.length > 0" (ionChange)="onAccordionChange($event)">
-      <ion-accordion *ngFor="let match of filteredInsights" [value]="match.matchId">
-        <!-- Header -->
-        <ion-item slot="header" class="accordion-header" [class.expanded-header]="expandedMatchId === match.matchId">
+      <ion-accordion *ngFor="let match of filteredInsights" [value]="match.matchId" [disabled]="match.matchStatus !== 'Finalized'">
+        <ion-item slot="header" class="accordion-header" [class.expanded-header]="expandedMatchId === match.matchId" [class.disabled-header]="match.matchStatus !== 'Finalized'">
           <ion-label>
             <div class="header-content">
               {{ match.homeTeam }} {{ match.result || '?-?' }} {{ match.awayTeam }}
@@ -55,25 +47,26 @@
           </ion-label>
         </ion-item>
 
-        <!-- Accordion Content -->
         <div class="accordion-content" slot="content">
           <ion-grid class="bets-overview-grid" *ngIf="match.matchStatus === 'Finalized'">
-
-            <!-- Table Header -->
             <ion-row class="bet-table-header">
-              <ion-col [size]="calculatePlayerColumnSize(match)" class="centered-text">
+              <ion-col [size]="calculatePlayerColumnSize(match)" class="left-aligned-text">
                 <strong>{{ 'BETS_OVERVIEW.PLAYER' | translate }}</strong>
               </ion-col>
+
               <ion-col size="2" class="centered-text">
                 <strong>{{ 'BETS_OVERVIEW.BET' | translate }}</strong>
               </ion-col>
+
               <ion-col size="1" class="centered-text"><strong>R</strong></ion-col>
-              <ion-col size="1" class="centered-text"><strong>P</strong></ion-col>
-              <ion-col size="1" class="centered-text"><strong>Q</strong></ion-col>
+
+              <ion-col *ngIf="match.showExactResult" size="1" class="centered-text"><strong>P</strong></ion-col>
+
+              <ion-col *ngIf="match.showQualified" size="1" class="centered-text"><strong>Q</strong></ion-col>
+
               <ion-col size="1" class="centered-text"><strong>P</strong></ion-col>
             </ion-row>
 
-            <!-- User Bets -->
             <ion-row *ngFor="let bet of match.userBets" class="user-bet-row">
               <ion-col [size]="calculatePlayerColumnSize(match)" class="player-name">
                 {{ bet.playerName }}
@@ -83,32 +76,27 @@
                 {{ bet.betScore ?? '-' }}
               </ion-col>
 
-              <!-- R: Result success -->
               <ion-col size="1" class="bet-result">
                 <ion-icon *ngIf="bet.resultSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
                 <ion-icon *ngIf="bet.resultSuccess === 0" name="close" class="failure-icon"></ion-icon>
               </ion-col>
 
-              <!-- P: Precise result -->
-              <ion-col size="1" class="bet-result">
+              <ion-col *ngIf="match.showExactResult" size="1" class="bet-result">
                 <ion-icon *ngIf="bet.preciseResultSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
                 <ion-icon *ngIf="bet.preciseResultSuccess === 0" name="close" class="failure-icon"></ion-icon>
               </ion-col>
 
-              <!-- Q: Qualification -->
-              <ion-col size="1" class="bet-result">
+              <ion-col *ngIf="match.showQualified" size="1" class="bet-result">
                 <ion-icon *ngIf="bet.qualificationSuccess === 1" name="checkmark" class="success-icon"></ion-icon>
                 <ion-icon *ngIf="bet.qualificationSuccess === 0" name="close" class="failure-icon"></ion-icon>
               </ion-col>
 
-              <!-- P: Payout -->
               <ion-col size="1" class="centered-text">
-                {{ bet.totalPayout ?? 0 }}
+                {{ (bet.totalPayout ?? 0) | number:'1.2-2' }}
               </ion-col>
             </ion-row>
           </ion-grid>
         </div>
-
       </ion-accordion>
     </ion-accordion-group>
   </div>

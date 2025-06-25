@@ -69,7 +69,8 @@ export class MatchInsightsPage implements OnInit {
 
   onAccordionChange(event: Event) {
     const customEvent = event as CustomEvent;
-    this.expandedMatchId = customEvent.detail?.value ?? null;
+    const expandedMatchId = customEvent.detail?.value;
+    this.expandedMatchId = expandedMatchId !== undefined ? Number(expandedMatchId) : null;
   }
 
   onStageSelected(stage: string) {
@@ -81,13 +82,17 @@ export class MatchInsightsPage implements OnInit {
   }
 
   prevStage(): void {
-    const i = this.selectedStageIndex;
-    if (i > 0) this.selectedStage = this.availableStages[i - 1];
+    if (this.selectedStageIndex > 0) {
+      this.selectedStageIndex -= 1;
+      this.selectedStage = this.availableStages[this.selectedStageIndex];
+    }
   }
 
   nextStage(): void {
-    const i = this.selectedStageIndex;
-    if (i < this.availableStages.length - 1) this.selectedStage = this.availableStages[i + 1];
+    if (this.selectedStageIndex < this.availableStages.length - 1) {
+      this.selectedStageIndex += 1;
+      this.selectedStage = this.availableStages[this.selectedStageIndex];
+    }
   }
 
   getStatusIcon(value?: string | number): string {
