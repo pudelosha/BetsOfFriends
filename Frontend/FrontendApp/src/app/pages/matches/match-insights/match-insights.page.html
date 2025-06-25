@@ -73,7 +73,7 @@
               </ion-col>
 
               <ion-col size="2" class="centered-text">
-                {{ bet.betScore ?? '-' }}
+                {{ bet.betScore}}
               </ion-col>
 
               <ion-col size="1" class="bet-result">
@@ -92,7 +92,7 @@
               </ion-col>
 
               <ion-col size="1" class="centered-text">
-                {{ (bet.totalPayout ?? 0) | number:'1.2-2' }}
+                {{ (bet.totalPayout) | number:'1.2-2' }}
               </ion-col>
             </ion-row>
           </ion-grid>

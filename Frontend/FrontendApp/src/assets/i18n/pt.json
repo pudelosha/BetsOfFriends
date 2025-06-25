@@ -222,6 +222,7 @@
     "STATUS": "Status",
     "HOME_SCORE": "Placar Casa",
     "AWAY_SCORE": "Placar Fora",
+    "QUALIFY_LABEL": "Equipe classificada",
     "HIDDEN": "Oculto",
     "SAVE": "Salvar"
   },

@@ -222,6 +222,7 @@
     "STATUS": "Status",
     "HOME_SCORE": "Home Score",
     "AWAY_SCORE": "Away Score",
+    "QUALIFY_LABEL": "Team Qualified",
     "HIDDEN": "Hidden",
     "SAVE": "Save"
   },

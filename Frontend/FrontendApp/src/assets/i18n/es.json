@@ -222,6 +222,7 @@
   "STATUS": "Estado",
   "HOME_SCORE": "Goles Local",
   "AWAY_SCORE": "Goles Visitante",
+  "QUALIFY_LABEL": "Equipo clasificado",
   "HIDDEN": "Oculto",
   "SAVE": "Guardar"
 },
