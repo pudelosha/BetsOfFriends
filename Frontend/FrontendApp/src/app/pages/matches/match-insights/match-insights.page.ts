@@ -6,6 +6,7 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
 import { firstValueFrom } from 'rxjs';
 import { IonContent, IonSpinner, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonItem, IonLabel } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TitleService } from 'src/app/services/title.service';
 import { MatchInsight } from 'src/app/model/match';
 
 @Component({
@@ -15,7 +16,7 @@ import { MatchInsight } from 'src/app/model/match';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule, IonContent, IonSpinner, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption, IonAccordionGroup, IonAccordion, IonItem, IonLabel]
 })
-export class MatchInsightsPage implements OnInit {
+export class MatchInsightsPage {
   isLoading = true;
   insights: MatchInsight[] = [];
   expandedMatchId: number | null = null;
@@ -25,9 +26,11 @@ export class MatchInsightsPage implements OnInit {
 
   constructor(private translate: TranslateService,
               private tournamentService: CustomTournamentService,
+              private titleService: TitleService,           
               private tournamentSelectionService: TournamentSelectionService) {}
 
-  ngOnInit() {
+  ionViewWillEnter() {
+    this.titleService.setTitle('INSIGHTS.TITLE');
     this.loadData();
   }
 
