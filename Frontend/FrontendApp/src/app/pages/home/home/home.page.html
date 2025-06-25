@@ -17,6 +17,12 @@
         (loadingStart)="showGlobalSpinner()"
         (loadingEnd)="hideGlobalSpinner()"
       ></app-selected-tournament>
+
+      <app-tournament-message-board
+        [refreshTrigger]="refreshCounter"
+        (loadingStart)="showGlobalSpinner()"
+        (loadingEnd)="hideGlobalSpinner()"
+      ></app-tournament-message-board>
     
       <app-upcoming-bets
         [refreshTrigger]="refreshCounter"

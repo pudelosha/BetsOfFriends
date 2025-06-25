@@ -1,0 +1,24 @@
+<div class="tournament-message-board-box" (click)="openMessageBoardModal()">
+  <h2 class="frame-title">
+    {{ 'MESSAGE_BOARD.TITLE' | translate }}
+  </h2>
+
+  <ng-container *ngIf="messages && messages.length > 0; else noMessages">
+    <div class="message-list">
+      <div class="message-item" *ngFor="let msg of messages">
+        <div class="author">{{ msg.userName }}</div>
+        <div class="content">{{ msg.content }}</div>
+        <div class="timestamp">{{ msg.createdAt | date:'short' }}</div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noMessages>
+    <p class="no-messages">
+      {{ 'MESSAGE_BOARD.NO_MESSAGES' | translate }}
+    </p>
+  </ng-template>
+</div>
+
+<ion-spinner *ngIf="isLoading"></ion-spinner>
+

@@ -30,6 +30,7 @@ namespace Backend.Extensions
             services.AddScoped<IPushNotificationService, PushNotificationService>();
             services.AddScoped<ISupportService, SupportService>();
             services.AddScoped<IFootballDataService, FootballDataService>();
+            services.AddScoped<ITournamentMessageService, TournamentMessageService>();
 
             services.AddHttpClient(); // Enables HttpClient injection
 

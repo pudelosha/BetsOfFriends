@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'MESSAGE_BOARD.NEW_MESSAGE' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">{{ 'MESSAGE_BOARD.CLOSE' | translate }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-label class="section-title">{{ 'MESSAGE_BOARD.ENTER_MESSAGE' | translate }}</ion-label>
+
+  <ion-item class="textarea-container">
+    <ion-textarea
+      [(ngModel)]="messageContent"
+      maxlength="100"
+      autoGrow="false"
+      rows="5"
+      placeholder="{{ 'MESSAGE_BOARD.MESSAGE_PLACEHOLDER' | translate }}"
+      class="custom-textarea"
+    ></ion-textarea>
+  </ion-item>
+
+  <div class="char-counter">
+    {{ messageContent.length }}/100
+  </div>
+
+  <ion-button expand="full" color="medium" (click)="submitMessage()">
+    {{ 'MESSAGE_BOARD.SEND' | translate }}
+  </ion-button>
+
+</ion-content>

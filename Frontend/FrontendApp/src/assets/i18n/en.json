@@ -635,5 +635,14 @@
       "SEASON": "Season",
       "INVALID_COMPETITION": "Competition code is required.",
       "INVALID_SEASON": "Season is required."
+    },
+    "MESSAGE_BOARD": {
+      "TITLE": "Message Board",
+      "NO_MESSAGES": "No messages available",
+      "NEW_MESSAGE": "New Message",
+      "ENTER_MESSAGE": "Write your message",
+      "MESSAGE_PLACEHOLDER": "Type your message here...",
+      "SEND": "Send",
+      "CLOSE": "Close"
     }
 }

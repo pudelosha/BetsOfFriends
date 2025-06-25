@@ -28,6 +28,10 @@ namespace Backend.Model.Database
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<NotificationRecipient> NotificationRecipients { get; set; }
 
+        // Messages
+        public DbSet<TournamentMessage> TournamentMessages { get; set; }
+        public DbSet<PrivateMessage> PrivateMessages { get; set; }
+
         // Other
         public DbSet<Location> Locations { get; set; }
         public DbSet<Language> Languages { get; set; }
@@ -46,6 +50,7 @@ namespace Backend.Model.Database
             ConfigureBetRelationships(builder);
             ConfigureNotificationRelationships(builder);
             ConfigurePredefinedReferencesInCustomEntities(builder);
+            ConfigureMessageEntities(builder);
             ConfigureUserRelationship(builder);
             ConfigureSupportRelationships(builder);
             SeedRoles(builder);
@@ -278,6 +283,47 @@ namespace Backend.Model.Database
                 .WithMany()
                 .HasForeignKey(m => m.PredefinedMatchId)
                 .OnDelete(DeleteBehavior.SetNull);
+        }
+
+        private void ConfigureMessageEntities(ModelBuilder builder)
+        {
+            // Private Messages
+            builder.Entity<PrivateMessage>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<PrivateMessage>()
+                .HasOne(m => m.Recipient)
+                .WithMany()
+                .HasForeignKey(m => m.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<PrivateMessage>()
+                .Property(m => m.IsRead)
+                .HasDefaultValue(false);
+
+            builder.Entity<PrivateMessage>()
+                .Property(m => m.IsDeletedBySender)
+                .HasDefaultValue(false);
+
+            builder.Entity<PrivateMessage>()
+                .Property(m => m.IsDeletedByRecipient)
+                .HasDefaultValue(false);
+
+            // Tournament Board Messages
+            builder.Entity<TournamentMessage>()
+                .HasOne(m => m.Tournament)
+                .WithMany()
+                .HasForeignKey(m => m.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TournamentMessage>()
+                .HasOne(m => m.User)
+                .WithMany()
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         private void ConfigureUserRelationship(ModelBuilder builder)

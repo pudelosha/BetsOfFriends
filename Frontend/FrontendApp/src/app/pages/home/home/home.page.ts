@@ -11,13 +11,14 @@ import { SelectedTournamentPage } from '../selected-tournament/selected-tourname
 import { LoadingController } from '@ionic/angular';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent } from '@ionic/angular/standalone';
+import { TournamentMessageBoardPage } from "../tournament-message-board/tournament-message-board.page";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonContent, ReactiveFormsModule, LatestMessagesPage, SelectedTournamentPage, UpcomingBetsPage, TournamentResultsPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage],
+  imports: [CommonModule, IonContent, ReactiveFormsModule, LatestMessagesPage, SelectedTournamentPage, UpcomingBetsPage, TournamentResultsPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage, TournamentMessageBoardPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class HomePage implements OnInit {
