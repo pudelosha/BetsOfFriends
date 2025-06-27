@@ -7,15 +7,15 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { firstValueFrom } from 'rxjs';
 import { TournamentMessage } from 'src/app/model/message';
 import { TournamentMessageService } from 'src/app/services/tournament-message.service';
-import { IonSpinner } from "@ionic/angular/standalone";
 import { TournamentMessageModalComponent } from 'src/app/modals/tournament-message-modal/tournament-message-modal.component';
+import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-tournament-message-board',
   templateUrl: './tournament-message-board.page.html',
   styleUrls: ['./tournament-message-board.page.scss'],
   standalone: true,
-  imports: [IonSpinner, CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, IonList, IonItem],
 })
 export class TournamentMessageBoardPage implements OnInit, OnChanges {
   @Input() refreshTrigger: number = 0;
@@ -93,8 +93,8 @@ export class TournamentMessageBoardPage implements OnInit, OnChanges {
         }
       } catch (err: any) {
         console.error('Failed to post message', err);
-        if (err?.status === 400 && err?.error?.message) {
-          await this.showToast(err.error.message, 'warning');
+        if (err?.status === 400 && err?.error?.errorMessage) {
+          await this.showToast(err.error.errorMessage, 'warning');
         } else {
           await this.showToast('Failed to post message.', 'danger');
         }

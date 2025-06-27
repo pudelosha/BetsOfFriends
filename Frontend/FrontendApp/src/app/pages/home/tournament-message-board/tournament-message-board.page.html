@@ -3,15 +3,17 @@
     {{ 'MESSAGE_BOARD.TITLE' | translate }}
   </h2>
 
-  <ng-container *ngIf="messages && messages.length > 0; else noMessages">
-    <div class="message-list">
-      <div class="message-item" *ngFor="let msg of messages">
-        <div class="author">{{ msg.userName }}</div>
+  <ion-list class="tournament-message-list" *ngIf="messages.length > 0; else noMessages">
+    <ion-item *ngFor="let msg of messages" class="tournament-message-item">
+      <div class="tournament-message-grid">
+        <div class="message-meta">
+          <span class="author">{{ msg.authorName }}</span>
+          <span class="timestamp">{{ msg.createdAt | date: 'yyyy.MM.dd HH:mm' }}</span>
+        </div>
         <div class="content">{{ msg.content }}</div>
-        <div class="timestamp">{{ msg.createdAt | date:'short' }}</div>
       </div>
-    </div>
-  </ng-container>
+    </ion-item>
+  </ion-list>
 
   <ng-template #noMessages>
     <p class="no-messages">
@@ -19,6 +21,3 @@
     </p>
   </ng-template>
 </div>
-
-<ion-spinner *ngIf="isLoading"></ion-spinner>
-

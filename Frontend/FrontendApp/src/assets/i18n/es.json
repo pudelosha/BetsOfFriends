@@ -635,5 +635,14 @@
   "SEASON": "Temporada",
   "INVALID_COMPETITION": "El código de competición es obligatorio.",
   "INVALID_SEASON": "La temporada es obligatoria."
-}
+},
+  "MESSAGE_BOARD": {
+    "TITLE": "Tablón de Mensajes",
+    "NO_MESSAGES": "No hay mensajes disponibles",
+    "NEW_MESSAGE": "Nuevo mensaje",
+    "ENTER_MESSAGE": "Escribe tu mensaje",
+    "MESSAGE_PLACEHOLDER": "Escribe tu mensaje aquí...",
+    "SEND": "Enviar",
+    "CLOSE": "Cerrar"
+  }
 }

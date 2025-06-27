@@ -635,5 +635,14 @@
   "SEASON": "Saison",
   "INVALID_COMPETITION": "Le code est requis.",
   "INVALID_SEASON": "La saison est requise."
-}
+},
+  "MESSAGE_BOARD": {
+    "TITLE": "Mur de Messages",
+    "NO_MESSAGES": "Aucun message disponible",
+    "NEW_MESSAGE": "Nouveau message",
+    "ENTER_MESSAGE": "Écris ton message",
+    "MESSAGE_PLACEHOLDER": "Tapez votre message ici...",
+    "SEND": "Envoyer",
+    "CLOSE": "Fermer"
+  }
 }

@@ -31,11 +31,11 @@ export class HomePage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.titleService.setTitle('HOME.TITLE');
-    this.triggerRefresh();
+    //this.titleService.setTitle('HOME.TITLE');
+    //this.triggerRefresh();
   }
 
-  ionViewWillEnter() {
+  ionViewDidEnter() {
     this.titleService.setTitle('HOME.TITLE');
     this.triggerRefresh();
   }

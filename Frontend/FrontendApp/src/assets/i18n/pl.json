@@ -635,5 +635,14 @@
     "SEASON": "Sezon",
     "INVALID_COMPETITION": "Wymagany jest kod rozgrywek.",
     "INVALID_SEASON": "Wymagany jest sezon."
+  },
+  "MESSAGE_BOARD": {
+    "TITLE": "Tablica Wiadomości",
+    "NO_MESSAGES": "Brak dostępnych wiadomości",
+    "NEW_MESSAGE": "Nowa wiadomość",
+    "ENTER_MESSAGE": "Napisz swoją wiadomość",
+    "MESSAGE_PLACEHOLDER": "Wpisz swoją wiadomość tutaj...",
+    "SEND": "Wyślij",
+    "CLOSE": "Zamknij"
   }
 }

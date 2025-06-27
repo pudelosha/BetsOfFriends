@@ -635,5 +635,14 @@
   "SEASON": "Stagione",
   "INVALID_COMPETITION": "Codice competizione richiesto.",
   "INVALID_SEASON": "Stagione richiesta."
-}
+},
+  "MESSAGE_BOARD": {
+    "TITLE": "Bacheca dei Messaggi",
+    "NO_MESSAGES": "Nessun messaggio disponibile",
+    "NEW_MESSAGE": "Nuovo messaggio",
+    "ENTER_MESSAGE": "Scrivi il tuo messaggio",
+    "MESSAGE_PLACEHOLDER": "Scrivi qui il tuo messaggio...",
+    "SEND": "Invia",
+    "CLOSE": "Chiudi"
+  }
 }  

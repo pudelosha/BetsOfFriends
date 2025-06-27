@@ -35,13 +35,22 @@ namespace Backend.Repository.Services
                 .Where(m => m.TournamentId == tournamentId)
                 .OrderByDescending(m => m.CreatedAt)
                 .Take(count)
-                .Include(m => m.User)
+                .Select(m => new
+                {
+                    m.Id,
+                    m.Content,
+                    m.CreatedAt,
+                    AuthorName = _context.CustomTournamentUserAssignments
+                        .Where(a => a.TournamentId == tournamentId && a.UserId == m.UserId)
+                        .Select(a => a.UserName)
+                        .FirstOrDefault() ?? "Unknown"
+                })
                 .ToListAsync();
 
             return messages.Select(m => new TournamentMessageDto
             {
                 Id = m.Id,
-                AuthorName = m.User?.UserName ?? "Unknown",
+                AuthorName = m.AuthorName,
                 Content = m.Content,
                 CreatedAt = m.CreatedAt
             }).ToList();
@@ -72,14 +81,14 @@ namespace Backend.Repository.Services
             if (lastMessage != null)
             {
                 var minutesSinceLastPost = (DateTime.UtcNow - lastMessage.CreatedAt).TotalMinutes;
-                //if (minutesSinceLastPost < 5)
-                //{
-                //    return new CreateMessageResultDto
-                //    {
-                //        Success = false,
-                //        ErrorMessage = $"You can post a new message after {Math.Ceiling(5 - minutesSinceLastPost)} minute(s)."
-                //    };
-                //}
+                if (minutesSinceLastPost < 5)
+                {
+                    return new CreateMessageResultDto
+                    {
+                        Success = false,
+                        ErrorMessage = $"You can post a new message after {Math.Ceiling(5 - minutesSinceLastPost)} minute(s)."
+                    };
+                }
             }
 
             var newMessage = new TournamentMessage

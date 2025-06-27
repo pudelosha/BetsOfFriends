@@ -9,7 +9,7 @@ export interface TournamentMessage {
   id: number;
   tournamentId: number;
   userId: string;
-  userName: string;
+  authorName: string;
   content: string;
   createdAt: string; // ISO date string
 }

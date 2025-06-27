@@ -635,5 +635,14 @@
     "SEASON": "Saison",
     "INVALID_COMPETITION": "Wettbewerbscode erforderlich.",
     "INVALID_SEASON": "Saison erforderlich."
+  },
+  "MESSAGE_BOARD": {
+    "TITLE": "Nachrichtenwand",
+    "NO_MESSAGES": "Keine Nachrichten verfügbar",
+    "NEW_MESSAGE": "Neue Nachricht",
+    "ENTER_MESSAGE": "Schreibe deine Nachricht",
+    "MESSAGE_PLACEHOLDER": "Gib deine Nachricht hier ein...",
+    "SEND": "Senden",
+    "CLOSE": "Schließen"
   }
 }
