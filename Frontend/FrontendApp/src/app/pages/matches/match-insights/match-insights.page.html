@@ -51,20 +51,28 @@
           <ion-grid class="bets-overview-grid" *ngIf="match.matchStatus === 'Finalized'">
             <ion-row class="bet-table-header">
               <ion-col [size]="calculatePlayerColumnSize(match)" class="left-aligned-text">
-                <strong>{{ 'BETS_OVERVIEW.PLAYER' | translate }}</strong>
+                <strong>{{ 'INSIGHTS.PLAYER' | translate }}</strong>
               </ion-col>
 
               <ion-col size="2" class="centered-text">
-                <strong>{{ 'BETS_OVERVIEW.BET' | translate }}</strong>
+                <strong>{{ 'INSIGHTS.BET' | translate }}</strong>
               </ion-col>
 
-              <ion-col size="1" class="centered-text"><strong>R</strong></ion-col>
+              <ion-col size="1" class="centered-text">
+                <strong>{{ 'INSIGHTS.RESULT_SHORT' | translate }}</strong>
+              </ion-col>
 
-              <ion-col *ngIf="match.showExactResult" size="1" class="centered-text"><strong>P</strong></ion-col>
+              <ion-col *ngIf="match.showExactResult" size="1" class="centered-text">
+                <strong>{{ 'INSIGHTS.PRECISE_SHORT' | translate }}</strong>
+              </ion-col>
 
-              <ion-col *ngIf="match.showQualified" size="1" class="centered-text"><strong>Q</strong></ion-col>
+              <ion-col *ngIf="match.showQualified" size="1" class="centered-text">
+                <strong>{{ 'INSIGHTS.QUALIFIED_SHORT' | translate }}</strong>
+              </ion-col>
 
-              <ion-col size="1" class="centered-text"><strong>P</strong></ion-col>
+              <ion-col size="1" class="centered-text">
+                <strong>{{ 'INSIGHTS.PAYOUT_SHORT' | translate }}</strong>
+              </ion-col>
             </ion-row>
 
             <ion-row *ngFor="let bet of match.userBets" class="user-bet-row">
@@ -73,7 +81,7 @@
               </ion-col>
 
               <ion-col size="2" class="centered-text">
-                {{ bet.betScore}}
+                {{ bet.betScore }}
               </ion-col>
 
               <ion-col size="1" class="bet-result">

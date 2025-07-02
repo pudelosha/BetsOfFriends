@@ -644,5 +644,15 @@
     "MESSAGE_PLACEHOLDER": "Gib deine Nachricht hier ein...",
     "SEND": "Senden",
     "CLOSE": "Schließen"
+  },
+  "INSIGHTS": {
+    "TITLE": "Spielanalysen",
+    "NO_MATCHES": "Keine Spiele gefunden.",
+    "PLAYER": "Spieler",
+    "BET": "Tipp",
+    "RESULT_SHORT": "E",
+    "PRECISE_SHORT": "G",    
+    "QUALIFIED_SHORT": "Q",   
+    "PAYOUT_SHORT": "A"   
   }
 }

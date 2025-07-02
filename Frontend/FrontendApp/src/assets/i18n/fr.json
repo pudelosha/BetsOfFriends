@@ -644,5 +644,15 @@
     "MESSAGE_PLACEHOLDER": "Tapez votre message ici...",
     "SEND": "Envoyer",
     "CLOSE": "Fermer"
+  },
+  "INSIGHTS": {
+    "TITLE": "Analyses de match",
+    "NO_MATCHES": "Aucun match trouvé.",
+    "PLAYER": "Joueur",
+    "BET": "Pari",
+    "RESULT_SHORT": "R",
+    "PRECISE_SHORT": "P",
+    "QUALIFIED_SHORT": "Q",
+    "PAYOUT_SHORT": "G"
   }
 }

@@ -644,5 +644,15 @@
     "MESSAGE_PLACEHOLDER": "Wpisz swoją wiadomość tutaj...",
     "SEND": "Wyślij",
     "CLOSE": "Zamknij"
+  },
+  "INSIGHTS": {
+    "TITLE": "Statystyki meczowe",
+    "NO_MATCHES": "Nie znaleziono żadnych meczów.",
+    "PLAYER": "Zawodnik",
+    "BET": "Zakład",
+    "RESULT_SHORT": "W", 
+    "PRECISE_SHORT": "D",    
+    "QUALIFIED_SHORT": "A",   
+    "PAYOUT_SHORT": "W"      
   }
 }

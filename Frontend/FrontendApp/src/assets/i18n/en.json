@@ -644,5 +644,15 @@
       "MESSAGE_PLACEHOLDER": "Type your message here...",
       "SEND": "Send",
       "CLOSE": "Close"
-    }
+    },
+    "INSIGHTS": {
+      "TITLE": "Match Insights",
+      "NO_MATCHES": "No matches found.",
+      "PLAYER": "Player",
+      "BET": "Bet",
+      "RESULT_SHORT": "R",
+      "PRECISE_SHORT": "P",
+      "QUALIFIED_SHORT": "Q",
+      "PAYOUT_SHORT": "P"
+    }  
 }

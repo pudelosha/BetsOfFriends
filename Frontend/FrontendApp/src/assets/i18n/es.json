@@ -644,5 +644,15 @@
     "MESSAGE_PLACEHOLDER": "Escribe tu mensaje aquí...",
     "SEND": "Enviar",
     "CLOSE": "Cerrar"
+  },
+  "INSIGHTS": {
+    "TITLE": "Análisis de partidos",
+    "NO_MATCHES": "No se encontraron partidos.",
+    "PLAYER": "Jugador",
+    "BET": "Apuesta",
+    "RESULT_SHORT": "R",
+    "PRECISE_SHORT": "P",
+    "QUALIFIED_SHORT": "C",
+    "PAYOUT_SHORT": "G"
   }
 }
