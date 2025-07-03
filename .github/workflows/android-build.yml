@@ -48,7 +48,8 @@ jobs:
         run: ./gradlew bundleRelease
 
       - name: Upload .aab artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: android-app-bundle
           path: Frontend/FrontendApp/android/app/build/outputs/bundle/release/app-release.aab
+
