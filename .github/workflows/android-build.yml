@@ -1,0 +1,55 @@
+name: Android Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: Frontend/FrontendApp
+        run: npm install
+
+      - name: Install Ionic CLI
+        run: npm install -g @ionic/cli
+
+      - name: Build Ionic app
+        working-directory: Frontend/FrontendApp
+        run: ionic build
+
+      - name: Install Capacitor dependencies
+        working-directory: Frontend/FrontendApp
+        run: npm install @capacitor/core @capacitor/cli
+
+      - name: Capacitor sync
+        working-directory: Frontend/FrontendApp
+        run: npx cap sync
+
+      - name: Install Java & Gradle
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Android app
+        working-directory: Frontend/FrontendApp/android
+        run: ./gradlew bundleRelease
+
+      - name: Upload .aab artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-app-bundle
+          path: Frontend/FrontendApp/android/app/build/outputs/bundle/release/app-release.aab
+
