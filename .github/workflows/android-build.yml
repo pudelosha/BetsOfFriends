@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: Frontend/FrontendApp
-        run: npm ci
+        run: npm install
 
       - name: Install Ionic CLI
         run: npm install -g @ionic/cli
@@ -29,21 +29,27 @@ jobs:
         working-directory: Frontend/FrontendApp
         run: ionic build
 
-      # Remove redundant Capacitor install — already present in your package.json
-      # If you really want to be safe you can leave it uncommented
-      # - name: Install Capacitor dependencies
-      #   working-directory: Frontend/FrontendApp
-      #   run: npm install @capacitor/core@7.2.0 @capacitor/cli@7.2.0
+      - name: Install Capacitor dependencies
+        working-directory: Frontend/FrontendApp
+        run: npm install @capacitor/core @capacitor/cli
 
       - name: Capacitor sync
         working-directory: Frontend/FrontendApp
-        run: npx cap sync android
+        run: npx cap sync
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
+      - name: Install Java 21
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
+
+      - name: Set JAVA_HOME explicitly
+        run: echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))" >> $GITHUB_ENV
+
+      - name: Verify Java version
+        run: |
+          java -version
+          echo "JAVA_HOME=$JAVA_HOME"
 
       - name: Build Android app
         working-directory: Frontend/FrontendApp/android
