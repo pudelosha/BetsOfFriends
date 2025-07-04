@@ -41,12 +41,14 @@ jobs:
 
       - name: 🔑 Decode Keystore
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > Frontend/FrontendApp/android/my-release-key.jks
+          mkdir -p Frontend/FrontendApp/android/app
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > Frontend/FrontendApp/android/app/my-release-key.jks
 
       - name: 🏗 Build Signed Android Bundle
         working-directory: Frontend/FrontendApp/android
         run: |
-          ./gradlew bundleRelease -Pandroid.injected.signing.store.file=my-release-key.jks \
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=app/my-release-key.jks \
             -Pandroid.injected.signing.store.password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
             -Pandroid.injected.signing.key.alias=${{ secrets.ANDROID_KEY_ALIAS }} \
             -Pandroid.injected.signing.key.password=${{ secrets.ANDROID_KEY_PASSWORD }}
