@@ -33,17 +33,28 @@ jobs:
         working-directory: Frontend/FrontendApp
         run: npx cap sync
 
-      - name: ☕ Set up Java 21
+      - name: ☕ Set up Java 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '17'
 
-      - name: 🏗 Build Android bundle
+      - name: 🔐 Decode and save keystore
         working-directory: Frontend/FrontendApp/android
-        run: ./gradlew bundleRelease
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > my-release-key.jks
 
-      - name: 📤 Upload .aab artifact
+      - name: 🏗 Build signed Android bundle
+        working-directory: Frontend/FrontendApp/android
+        run: |
+          ./gradlew clean
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=my-release-key.jks \
+            -Pandroid.injected.signing.store.password="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="${{ secrets.ANDROID_KEY_ALIAS }}" \
+            -Pandroid.injected.signing.key.password="${{ secrets.ANDROID_KEY_PASSWORD }}"
+
+      - name: 📤 Upload signed .aab artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-app-bundle
