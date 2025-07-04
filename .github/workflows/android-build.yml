@@ -48,11 +48,11 @@ jobs:
         working-directory: Frontend/FrontendApp/android
         run: |
           ./gradlew bundleRelease \
-            -Pandroid.injected.signing.store.file=app/my-release-key.jks \
+            -Pandroid.injected.signing.store.file=my-release-key.jks \
             -Pandroid.injected.signing.store.password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
             -Pandroid.injected.signing.key.alias=${{ secrets.ANDROID_KEY_ALIAS }} \
             -Pandroid.injected.signing.key.password=${{ secrets.ANDROID_KEY_PASSWORD }}
-
+            
       - name: 📤 Upload .aab artifact
         uses: actions/upload-artifact@v4
         with:
