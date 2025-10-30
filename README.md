@@ -1,93 +1,212 @@
+# BetsofFriends — Fun Betting App
 
-# DotNet-Ionic-Angular-AuthSystem
+BetsofFriends is a **fun, social betting application** where users can create or join tournaments, place bets on real matches, and compete with friends — all without using real money.
 
-## Overview
-This project is a **fun betting application**, where users can place bets (non-monetary, just for fun) on various events.
+Live at 👉 **[betsoffriends.com](https://betsoffriends.com)**
 
-It consists of:  
-- **Backend:** .NET 9 Web API with JWT-based authentication  
-- **Frontend:** Ionic Angular v8 mobile-friendly client
+---
 
-### Features
-- User registration and login
-- JWT authentication & authorization
-- Placing, viewing, and managing bets
-- Email notifications
-- Integration with Football Data API for real events
+## 🎯 Overview
 
-## Tech Stack
-### Backend
-- .NET 9
-- ASP.NET Core Web API
-- SQL Server
-- Entity Framework Core
-- JWT Authentication
-- Email via SMTP
+This project is built with a **.NET 9 backend** and an **Ionic Angular v8 frontend**, designed to deliver a smooth, mobile-friendly betting experience.  
+The app integrates with **Football Data APIs** to pull real-world match results and updates, processed automatically by a **.NET Hosted Service** running in the background.
 
-### Frontend
-- Ionic Framework
-- Angular
-- `@ionic/angular` v8
-- Capacitor/Cordova for mobile builds
+### Key Features
 
-## Getting Started
+- 👥 User registration and login with JWT authentication  
+- 🏆 Create and manage custom tournaments with friends  
+- ⚽ Integration with real football events via external APIs  
+- 💬 Messaging and notifications  
+- 📊 Bet tracking, live match insights, and results view  
+- 🧩 Role-based access levels: User, Admin, Super Admin  
+- 🔔 Email notifications via SMTP  
+- 🌍 Mobile-ready (Ionic Angular)
+
+---
+
+## 🧱 Architecture
+
+| Layer | Technology |
+|-------|-------------|
+| **Backend** | .NET 9 Web API |
+| **Frontend** | Ionic Angular v8 |
+| **Database** | SQL Server |
+| **ORM** | Entity Framework Core |
+| **Auth** | JWT Authentication |
+| **Background Jobs** | Hosted Service (match result sync) |
+| **Emails** | SMTP-based notifications |
+
+---
+
+## 🧩 Roles & Permissions
+
+### 👤 Regular User
+- Create and join tournaments  
+- Place bets on matches  
+- View results, match insights, and statistics  
+
+### ⚙️ Admin
+- Manage tournaments, matches, and participants  
+- Approve or moderate community tournaments  
+
+### 🌟 Super Admin
+- Create predefined tournaments (e.g., *FIFA World Cup 2026*)  
+- Manage users and predefined events  
+
+---
+
+## 🧭 Navigation Overview
+
+The main sidebar (as seen in the screenshot) includes:
+
+- **Home** – Dashboard overview  
+- **Messages** – Communication center  
+- **Tournaments**
+  - *My Tournaments*
+  - *Find Tournament*
+- **Betting**
+  - *My Bets*
+  - *Match Insights*
+  - *Results*
+- **Admin**
+  - *Create Tournament*
+  - *Manage Tournaments*
+  - *Manage Matches*
+  - *Manage Participants*
+- **Super Admin**
+  - *Create Predefined Tournament*
+  - *Manage Predefined Tournaments*
+  - *Manage Users*
+- **Settings**
+  - *Profile*, *Notifications*, *Info & Support*, *Logout*
+
+---
+
+## ⚙️ Getting Started
 
 ### Prerequisites
+
 - [.NET 9 SDK](https://dotnet.microsoft.com/download)
 - [Node.js](https://nodejs.org/) & npm
-- [Ionic CLI](https://ionicframework.com/docs/cli)  
-  Install Ionic CLI:  
+- [Ionic CLI](https://ionicframework.com/docs/cli)
   ```bash
   npm install -g @ionic/cli
   ```
-- SQL Server or Azure SQL instance
+- SQL Server (local or Azure)
 
-### Backend Setup
-1. Navigate to the backend project folder:
+---
+
+## 🚀 Backend Setup
+
+1. Navigate to the backend folder:
    ```bash
    cd Backend
    ```
-2. Configure connection strings and secrets in `appsettings.json` or environment variables.
-3. Run migrations and update the database:
+
+2. Configure environment variables in `appsettings.json` or `.env`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "Server=localhost;Database=BetsofFriends;User Id=appuser;Password=apppass;TrustServerCertificate=True;"
+     },
+     "Jwt": {
+       "Key": "your-secret-key",
+       "Issuer": "BetsofFriendsAPI",
+       "Audience": "BetsofFriendsClient"
+     },
+     "Smtp": {
+       "Host": "smtp.example.com",
+       "Port": 587,
+       "User": "noreply@example.com",
+       "Password": "yourpassword"
+     }
+   }
+   ```
+
+3. Apply migrations and seed the database:
    ```bash
    dotnet ef database update
    ```
+
 4. Run the API:
    ```bash
    dotnet run
    ```
-   The API will be available at `https://localhost:7066` (or as configured).
+   Available at: **https://localhost:7066**
 
-### Frontend Setup
-1. Navigate to the frontend project folder:
+---
+
+## 📱 Frontend Setup
+
+1. Navigate to the frontend:
    ```bash
    cd Frontend
    ```
+
 2. Install dependencies:
    ```bash
    npm install
    ```
-3. Start the app:
+
+3. Start the app in development:
    ```bash
    ionic serve
    ```
-   The frontend will run at `http://localhost:8100`.
+   Runs at **http://localhost:8100**
 
-## Configuration
-The backend uses a `appsettings.json` file for configuration, including:
-- SQL Server connection strings
-- JWT secret key, issuer, audience
-- SMTP email credentials
-- Football Data API token
+---
 
-⚠️ Make sure to replace placeholder values and never commit sensitive credentials to version control.
+## 🔄 Hosted Service (Live Match Sync)
 
-## Deployment
-You can deploy the backend to Azure App Service or any cloud that supports .NET 9.  
-The frontend can be deployed to Ionic Appflow, Firebase Hosting, or as a PWA.
+A background **Hosted Service** runs automatically in the backend to:
+- Fetch live football results from the external API  
+- Update tournament and match outcomes  
+- Recalculate user bet results and leaderboard standings in real time  
 
-## License
-MIT License — see [LICENSE](LICENSE) for details.
+---
 
-## Authors
-- [@pudelosha](https://github.com/pudelosha)
+## ⚙️ Configuration Summary
+
+| Setting | Description |
+|----------|-------------|
+| **SQL Server** | Connection string for persistent storage |
+| **JWT** | Authentication & authorization secrets |
+| **SMTP** | Email sending configuration |
+| **Football Data API Token** | Used by Hosted Service to fetch real results |
+
+⚠️ **Never commit secrets** to version control — use environment variables or secret managers.
+
+---
+
+## 🧩 Deployment
+
+### Backend
+- Deployable to **Azure App Service**, **Docker**, or any .NET-compatible host.
+- Includes Hosted Service for automated result updates.
+
+### Frontend
+- Deployable to **Ionic Appflow**, **Firebase Hosting**, or **PWA** build.
+
+---
+
+## 🧠 Roadmap
+
+- 🏅 Enhanced leaderboards & global rankings  
+- 📊 Match history and performance analytics  
+- 🔔 Push notifications (FCM or OneSignal)  
+- 🤝 Team-based tournaments and achievements  
+- 📱 Full mobile packaging via Capacitor  
+
+---
+
+## 📜 License
+
+**MIT License** — Free to use and modify for educational and personal projects.
+
+---
+
+## 👨‍💻 Author
+
+- **[@pudelosha](https://github.com/pudelosha)**  
+  Creator of BetsofFriends — a social, friendly, and fun way to compete with friends.
+
