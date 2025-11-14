@@ -199,14 +199,11 @@ A background **Hosted Service** runs automatically in the backend to:
 
 ---
 
-## 📜 License
+## 📸 Screenshots
 
-**MIT License** — Free to use and modify for educational and personal projects.
+| | | |
+|---|---|---|
+| ![1](https://github.com/user-attachments/assets/6f8bf071-be76-4c67-a12e-dd908f4fcb02) | ![2](https://github.com/user-attachments/assets/6bdf198f-c0cd-4bae-bdc9-3003805daa96) | ![3](https://github.com/user-attachments/assets/d10c298c-4767-493e-a000-b25c474a21b4) |
+| ![4](https://github.com/user-attachments/assets/6b150d95-e0ae-4dcd-86d7-cfc617ed0f6f) | ![5](https://github.com/user-attachments/assets/d1d7c834-5fe4-4239-b86b-04d93c42dd3c) | ![6](https://github.com/user-attachments/assets/714df2bd-3127-41cf-a187-d47b2b26538a) |
 
----
-
-## 👨‍💻 Author
-
-- **[@pudelosha](https://github.com/pudelosha)**  
-  Creator of BetsofFriends — a social, friendly, and fun way to compete with friends.
 
