@@ -20,7 +20,18 @@ import { IonContent, IonButton, IonSpinner } from '@ionic/angular/standalone';
   templateUrl: './build-predefined-tournament.page.html',
   styleUrls: ['./build-predefined-tournament.page.scss'],
   standalone: true,
-  imports: [CommonModule, StageInputTypePage, StageTeamsManagementPage, StageStagesManagementPage, StageMatchesManagementPage, StageSummaryPage, TranslateModule, IonContent, IonButton, IonSpinner],
+  imports: [
+    CommonModule,
+    StageInputTypePage,
+    StageTeamsManagementPage,
+    StageStagesManagementPage,
+    StageMatchesManagementPage,
+    StageSummaryPage,
+    TranslateModule,
+    IonContent,
+    IonButton,
+    IonSpinner
+  ],
 })
 export class BuildPredefinedTournamentPage implements OnInit {
   @ViewChild(StageTeamsManagementPage) stageTeamsManagement!: StageTeamsManagementPage;
@@ -33,7 +44,8 @@ export class BuildPredefinedTournamentPage implements OnInit {
   isLoading = false;
   isPredefinedTournament = true;
 
-  constructor(private fb: FormBuilder, 
+  constructor(
+    private fb: FormBuilder,
     private toastController: ToastController,
     private router: Router,
     private route: ActivatedRoute,
@@ -46,7 +58,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
       externalTournamentId: [null],
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       tournamentVisibility: ['Private', Validators.required],
-      updateMethod: ['Manual', Validators.required], 
+      updateMethod: ['Manual', Validators.required],
       season: [null],
       seasonId: [null],
       tournamentStart: [null],
@@ -70,21 +82,19 @@ export class BuildPredefinedTournamentPage implements OnInit {
       }
     });
   }
-  
+
   ionViewWillEnter(): void {
-    const titleKey = this.isEditMode
-      ? 'BUILD_PREDEFINED.EDIT_TITLE'
-      : 'BUILD_PREDEFINED.TITLE';
+    const titleKey = this.isEditMode ? 'BUILD_PREDEFINED.EDIT_TITLE' : 'BUILD_PREDEFINED.TITLE';
     this.titleService.setTitle(titleKey);
-  
+
     this.resetFormData();
     this.scrollToTop();
     this.step = 1;
-  
+
     if (!this.isEditMode && this.isPredefinedTournament) {
       this.tournamentForm.patchValue({ updateMethod: 'Manual' });
     }
-  
+
     if (!this.isEditMode && !this.isPredefinedTournament) {
       this.tournamentForm.patchValue({
         tournamentVisibility: 'Private',
@@ -92,7 +102,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
       });
     }
   }
-    
+
   get isEditMode(): boolean {
     return !!this.tournamentId;
   }
@@ -165,11 +175,11 @@ export class BuildPredefinedTournamentPage implements OnInit {
         const elapsedTime = Date.now() - startTime;
         const delay = Math.max(0, 500 - elapsedTime);
         setTimeout(() => loading.dismiss(), delay);
-      }
+      },
     });
-  } 
-  
-  private async populateForm(tournament: Tournament): Promise<void> {  
+  }
+
+  private async populateForm(tournament: Tournament): Promise<void> {
     try {
       this.tournamentForm.patchValue({
         tournamentId: tournament.tournamentId,
@@ -182,51 +192,56 @@ export class BuildPredefinedTournamentPage implements OnInit {
         tournamentStart: tournament.tournamentStart || null,
         tournamentEnd: tournament.tournamentEnd || null,
       });
-  
+
       // Step 1: Create a lookup map for teams (backendId -> frontendId & name)
       const teamMap = new Map<number, Team>();
-  
+
       this.teamsArray.clear();
       tournament.teams.forEach((team) => {
         if (!team.teamFrontendId) {
           team.teamFrontendId = this.generateFrontendId();
         }
-  
+
         teamMap.set(team.teamId ?? 0, team);
-  
+
         this.teamsArray.push(
           this.fb.group({
             teamFrontendId: [team.teamFrontendId],
             teamId: [team.teamId],
             externalTeamId: [team.externalTeamId || null],
+            predefinedTeamId: [team.predefinedTeamId ?? null],
             teamName: [team.teamName, Validators.required],
-            recordStatus: ['Uploaded', Validators.required]
+            eloRating: [
+              team.eloRating ?? 1000,
+              [Validators.required, Validators.min(0), Validators.max(5000)],
+            ],
+            recordStatus: ['Uploaded', Validators.required],
           })
         );
       });
-  
+
       // Step 2: Create a lookup map for stages (backendId -> frontendId & order)
       const stageMap = new Map<number, Stage>();
-  
+
       this.stagesArray.clear();
       tournament.stages.forEach((stage) => {
         if (!stage.stageFrontendId) {
           stage.stageFrontendId = this.generateFrontendId();
         }
-  
+
         stageMap.set(stage.stageId ?? 0, stage);
-  
+
         this.stagesArray.push(
           this.fb.group({
             stageFrontendId: [stage.stageFrontendId],
             stageId: [stage.stageId],
             stageName: [stage.stageName, Validators.required],
             order: [stage.order, [Validators.required, Validators.min(1)]],
-            recordStatus: ['Uploaded', Validators.required]
+            recordStatus: ['Uploaded', Validators.required],
           })
         );
       });
-  
+
       // Step 3: Populate Matches and assign frontend IDs correctly
       this.matchesArray.clear();
       tournament.matches.forEach((match) => {
@@ -235,27 +250,27 @@ export class BuildPredefinedTournamentPage implements OnInit {
         const stage = stageMap.get(match.stageId ?? 0) || {
           stageFrontendId: this.generateFrontendId(),
           stageId: null,
-          stageName: match.stageName || 'Default Stage'
+          stageName: match.stageName || 'Default Stage',
         };
-  
+
         this.matchesArray.push(
           this.fb.group({
             matchFrontendId: [match.matchFrontendId || this.generateFrontendId()],
             matchId: [match.matchId],
             externalMatchId: [match.externalMatchId || null],
-  
+
             stageFrontendId: [stage.stageFrontendId],
             stageId: [stage.stageId],
             stageName: [stage.stageName],
-  
+
             homeTeamId: [match.homeTeamId],
             homeTeamFrontendId: [homeTeam?.teamFrontendId || this.generateFrontendId()],
             homeTeam: [homeTeam?.teamName || match.homeTeam],
-  
+
             awayTeamId: [match.awayTeamId],
             awayTeamFrontendId: [awayTeam?.teamFrontendId || this.generateFrontendId()],
             awayTeam: [awayTeam?.teamName || match.awayTeam],
-  
+
             matchStart: [new Date(match.matchStart).toISOString()],
             matchType: [match.matchType || 'Regular90Min'],
             homeWinOdds: [match.homeWinOdds],
@@ -263,44 +278,44 @@ export class BuildPredefinedTournamentPage implements OnInit {
             awayWinOdds: [match.awayWinOdds],
             homeQualifies: [match.homeQualifies],
             awayQualifies: [match.awayQualifies],
-            
+
             recordStatus: [
               match.matchStatus?.toLowerCase() === 'finished' ? 'Finalised' : 'Uploaded',
-              Validators.required
+              Validators.required,
             ],
 
-            matchStatus: [match.matchStatus || null],    
-            scoreHome: [match.scoreHome ?? null],       
-            scoreAway: [match.scoreAway ?? null],   
+            matchStatus: [match.matchStatus || null],
+            scoreHome: [match.scoreHome ?? null],
+            scoreAway: [match.scoreAway ?? null],
             qualifiedTeam: [match.qualifiedTeam ?? null],
-     
+
             isVisible: [match.isVisible ?? true],
           })
         );
-      });  
+      });
     } catch (error) {
       console.error('Error populating tournament form:', error);
     }
   }
-    
+
   private buildMatchFormGroup(match: Match): FormGroup {
     return this.fb.group({
       matchFrontendId: [match.matchFrontendId],
       matchId: [match.matchId],
       externalMatchId: [match.externalMatchId],
-  
+
       stageFrontendId: [match.stageFrontendId],
       stageId: [match.stageId],
       stageName: [match.stageName],
-  
+
       homeTeamId: [match.homeTeamId],
       homeTeamFrontendId: [match.homeTeamFrontendId],
       homeTeam: [match.homeTeam],
-  
+
       awayTeamId: [match.awayTeamId],
       awayTeamFrontendId: [match.awayTeamFrontendId],
       awayTeam: [match.awayTeam],
-  
+
       matchStart: [match.matchStart],
       matchType: [match.matchType || 'Regular90Min'],
       homeWinOdds: [match.homeWinOdds ?? 0],
@@ -319,10 +334,10 @@ export class BuildPredefinedTournamentPage implements OnInit {
       recordStatus: [match.recordStatus ?? 'New'],
     });
   }
-            
+
   handleTeamsExtracted(teams: Team[]): void {
     this.teamsArray.clear();
-  
+
     teams.forEach((team) => {
       this.teamsArray.push(
         this.fb.group({
@@ -330,68 +345,84 @@ export class BuildPredefinedTournamentPage implements OnInit {
           teamId: [team.teamId],
           externalTeamId: [team.externalTeamId || null],
           teamName: [team.teamName, Validators.required],
-          recordStatus: [team.recordStatus || 'New']
+          predefinedTeamId: [team.predefinedTeamId ?? null],
+          eloRating: [
+            team.eloRating ?? 1000,
+            [Validators.required, Validators.min(0), Validators.max(5000)],
+          ],
+          recordStatus: [team.recordStatus || 'New'],
         })
       );
     });
   }
-  
+
   handleStagesExtracted(stages: Stage[]): void {
     this.stagesArray.clear();
-  
-    stages.forEach(stage => {
+
+    stages.forEach((stage) => {
       this.stagesArray.push(
         this.fb.group({
           stageFrontendId: [stage.stageFrontendId || this.generateFrontendId()],
           stageId: [stage.stageId],
           stageName: [stage.stageName, Validators.required],
           order: [stage.order, [Validators.required, Validators.min(1)]],
-          recordStatus: [stage.recordStatus || 'New']
+          recordStatus: [stage.recordStatus || 'New'],
         })
       );
     });
-  }   
-    
+  }
+
   handleMatchesExtracted(matches: Match[]): void {
     this.matchesArray.clear();
-  
+
     matches.forEach((match) => {
-      this.matchesArray.push(this.buildMatchFormGroup({
-        ...match,
-        recordStatus: match.recordStatus || 'New'
-      }));
+      this.matchesArray.push(
+        this.buildMatchFormGroup({
+          ...match,
+          recordStatus: match.recordStatus || 'New',
+        })
+      );
     });
   }
-            
+
   handleTeamsUpdated(teamsData: { previousTeams: Team[]; updatedTeams: Team[] }): void {
     const { previousTeams, updatedTeams } = teamsData;
-  
+
     // Step 1: Create lookup maps for previous and updated teams
-    const previousTeamMap = new Map(previousTeams.map(team => [team.teamFrontendId, team]));
-    const updatedTeamMap = new Map(updatedTeams.map(team => [team.teamFrontendId, team]));
-  
+    const previousTeamMap = new Map(previousTeams.map((team) => [team.teamFrontendId, team]));
+    const updatedTeamMap = new Map(updatedTeams.map((team) => [team.teamFrontendId, team]));
+
     // Step 2: Identify removed teams and mark them as "Delete"
-    previousTeams.forEach(team => {
+    previousTeams.forEach((team) => {
       if (!updatedTeamMap.has(team.teamFrontendId)) {
         updatedTeams.push({ ...team, recordStatus: 'Delete' });
       }
     });
-  
+
     // Step 3: Update teamsArray and handle name updates
     this.teamsArray.clear();
-    updatedTeams.forEach(team => {
+    updatedTeams.forEach((team) => {
       const previousTeam = previousTeamMap.get(team.teamFrontendId);
-      const isUpdated = previousTeam && previousTeam.teamName !== team.teamName;
-  
+      const isUpdated =
+        previousTeam &&
+        (previousTeam.teamName !== team.teamName ||
+          Number(previousTeam.eloRating ?? 1000) !== Number(team.eloRating ?? 1000));
+
       this.teamsArray.push(
         this.fb.group({
           teamFrontendId: [team.teamFrontendId],
           teamId: [team.teamId],
+          externalTeamId: [team.externalTeamId ?? null],
+          predefinedTeamId: [team.predefinedTeamId ?? null],
           teamName: [team.teamName, Validators.required],
-          recordStatus: [isUpdated ? 'Update' : team.recordStatus || 'New']
+          eloRating: [
+            Number(team.eloRating ?? 1000),
+            [Validators.required, Validators.min(0), Validators.max(5000)],
+          ],
+          recordStatus: [isUpdated ? 'Update' : team.recordStatus || 'New'],
         })
       );
-  
+
       if (isUpdated) {
         this.matchesArray.controls.forEach((control: AbstractControl) => {
           const match = (control as FormGroup).value;
@@ -404,25 +435,30 @@ export class BuildPredefinedTournamentPage implements OnInit {
         });
       }
     });
-  
+
     // Step 4: Handle match deletions and status updates
-    const validTeamFrontendIds = new Set(updatedTeams.map(team => team.teamFrontendId));
+    const validTeamFrontendIds = new Set(updatedTeams.map((team) => team.teamFrontendId));
     const matchesToKeep: AbstractControl[] = [];
-  
+
     this.matchesArray.controls.forEach((control: AbstractControl) => {
       const match = (control as FormGroup).value;
-  
+
       const homeTeam = updatedTeamMap.get(match.homeTeamFrontendId);
       const awayTeam = updatedTeamMap.get(match.awayTeamFrontendId);
-  
-      if (!validTeamFrontendIds.has(match.homeTeamFrontendId) || !validTeamFrontendIds.has(match.awayTeamFrontendId)) {
+
+      if (
+        !validTeamFrontendIds.has(match.homeTeamFrontendId) ||
+        !validTeamFrontendIds.has(match.awayTeamFrontendId)
+      ) {
         //console.log(`Deleting match: ${match.homeTeam} vs ${match.awayTeam}`);
       } else if (homeTeam?.recordStatus === 'Delete' || awayTeam?.recordStatus === 'Delete') {
         //console.log(`Marking match as 'Delete': ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Delete' });
         matchesToKeep.push(control);
-      } else if (previousTeamMap.get(match.homeTeamFrontendId)?.recordStatus === 'Delete' ||
-                 previousTeamMap.get(match.awayTeamFrontendId)?.recordStatus === 'Delete') {
+      } else if (
+        previousTeamMap.get(match.homeTeamFrontendId)?.recordStatus === 'Delete' ||
+        previousTeamMap.get(match.awayTeamFrontendId)?.recordStatus === 'Delete'
+      ) {
         //console.log(`Restoring match: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Update' });
         matchesToKeep.push(control);
@@ -430,43 +466,46 @@ export class BuildPredefinedTournamentPage implements OnInit {
         matchesToKeep.push(control);
       }
     });
-  
+
     // Step 5: Rebuild matchesArray with only valid matches
     this.matchesArray.clear();
-    matchesToKeep.forEach(control => this.matchesArray.push(control));
+    matchesToKeep.forEach((control) => this.matchesArray.push(control));
+
+    // TODO Later:
+    // this.recalculateOddsForMatchesAffectedByEloChange(previousTeams, updatedTeams);
   }
-      
+
   handleStagesUpdated(stagesData: { previousStages: Stage[]; updatedStages: Stage[] }): void {
     const { previousStages, updatedStages } = stagesData;
-  
+
     // Step 1: Create lookup maps for previous and updated stages
-    const previousStageMap = new Map(previousStages.map(stage => [stage.stageFrontendId, stage]));
-    const updatedStageMap = new Map(updatedStages.map(stage => [stage.stageFrontendId, stage]));
-  
+    const previousStageMap = new Map(previousStages.map((stage) => [stage.stageFrontendId, stage]));
+    const updatedStageMap = new Map(updatedStages.map((stage) => [stage.stageFrontendId, stage]));
+
     // Step 2: Identify removed stages and mark them as "Delete"
-    previousStages.forEach(stage => {
+    previousStages.forEach((stage) => {
       if (!updatedStageMap.has(stage.stageFrontendId)) {
         updatedStages.push({ ...stage, recordStatus: 'Delete' });
       }
     });
-  
+
     // Step 3: Update stagesArray and detect changes
     this.stagesArray.clear();
-    updatedStages.forEach(stage => {
+    updatedStages.forEach((stage) => {
       const previousStage = previousStageMap.get(stage.stageFrontendId);
-      const isUpdated = previousStage &&
-        (previousStage.stageName !== stage.stageName || previousStage.order !== stage.order);
-  
+      const isUpdated =
+        previousStage && (previousStage.stageName !== stage.stageName || previousStage.order !== stage.order);
+
       this.stagesArray.push(
         this.fb.group({
           stageFrontendId: [stage.stageFrontendId],
           stageId: [stage.stageId],
           stageName: [stage.stageName, Validators.required],
           order: [stage.order, [Validators.required, Validators.min(1)]],
-          recordStatus: [isUpdated ? 'Update' : stage.recordStatus || 'New']
+          recordStatus: [isUpdated ? 'Update' : stage.recordStatus || 'New'],
         })
       );
-  
+
       if (isUpdated) {
         this.matchesArray.controls.forEach((control: AbstractControl) => {
           const match = (control as FormGroup).value;
@@ -476,15 +515,15 @@ export class BuildPredefinedTournamentPage implements OnInit {
         });
       }
     });
-  
+
     // Step 4: Handle match deletions and status updates
-    const validStageFrontendIds = new Set(updatedStages.map(stage => stage.stageFrontendId));
+    const validStageFrontendIds = new Set(updatedStages.map((stage) => stage.stageFrontendId));
     const matchesToKeep: AbstractControl[] = [];
-  
+
     this.matchesArray.controls.forEach((control: AbstractControl) => {
       const match = (control as FormGroup).value;
       const stage = updatedStageMap.get(match.stageFrontendId);
-  
+
       if (!validStageFrontendIds.has(match.stageFrontendId)) {
         //console.log(`Deleting match due to removed stage: ${match.homeTeam} vs ${match.awayTeam}`);
       } else if (stage?.recordStatus === 'Delete') {
@@ -499,85 +538,90 @@ export class BuildPredefinedTournamentPage implements OnInit {
         matchesToKeep.push(control);
       }
     });
-  
+
     // Step 5: Rebuild matchesArray with only valid matches
     this.matchesArray.clear();
-    matchesToKeep.forEach(control => this.matchesArray.push(control));
-  }  
-       
+    matchesToKeep.forEach((control) => this.matchesArray.push(control));
+  }
+
   handleMatchesUpdated(updatedMatches: Match[]): void {
     const previousMatches: Match[] = this.matchesArray.value;
-    const previousMatchMap = new Map(previousMatches.map(match => [match.matchFrontendId, match]));
-  
+    const previousMatchMap = new Map(previousMatches.map((match) => [match.matchFrontendId, match]));
+
     // Step 1: Identify deleted matches
-    previousMatches.forEach(match => {
-      if (!updatedMatches.some(updated => updated.matchFrontendId === match.matchFrontendId)) {
+    previousMatches.forEach((match) => {
+      if (!updatedMatches.some((updated) => updated.matchFrontendId === match.matchFrontendId)) {
         updatedMatches.push({ ...match, recordStatus: 'Delete' });
       }
     });
-  
+
     // Step 2: Detect updates & rebuild matchesArray
     this.matchesArray.clear();
-    updatedMatches.forEach(match => {
+    updatedMatches.forEach((match) => {
       const previousMatch = previousMatchMap.get(match.matchFrontendId);
-      const isUpdated = previousMatch && (
-        previousMatch.stageFrontendId !== match.stageFrontendId ||
-        previousMatch.homeTeamFrontendId !== match.homeTeamFrontendId ||
-        previousMatch.awayTeamFrontendId !== match.awayTeamFrontendId ||
-        previousMatch.matchStart !== match.matchStart ||
-        previousMatch.matchType !== match.matchType ||
-        previousMatch.homeWinOdds !== match.homeWinOdds ||
-        previousMatch.drawOdds !== match.drawOdds ||
-        previousMatch.awayWinOdds !== match.awayWinOdds ||
-        previousMatch.homeQualifies !== match.homeQualifies ||
-        previousMatch.awayQualifies !== match.awayQualifies ||
-        previousMatch.matchStatus !== match.matchStatus ||             
-        previousMatch.scoreHome !== match.scoreHome ||              
-        previousMatch.scoreAway !== match.scoreAway ||
-        previousMatch.qualifiedTeam !== match.qualifiedTeam            
+      const isUpdated =
+        previousMatch &&
+        (previousMatch.stageFrontendId !== match.stageFrontendId ||
+          previousMatch.homeTeamFrontendId !== match.homeTeamFrontendId ||
+          previousMatch.awayTeamFrontendId !== match.awayTeamFrontendId ||
+          previousMatch.matchStart !== match.matchStart ||
+          previousMatch.matchType !== match.matchType ||
+          previousMatch.homeWinOdds !== match.homeWinOdds ||
+          previousMatch.drawOdds !== match.drawOdds ||
+          previousMatch.awayWinOdds !== match.awayWinOdds ||
+          previousMatch.homeQualifies !== match.homeQualifies ||
+          previousMatch.awayQualifies !== match.awayQualifies ||
+          previousMatch.matchStatus !== match.matchStatus ||
+          previousMatch.scoreHome !== match.scoreHome ||
+          previousMatch.scoreAway !== match.scoreAway ||
+          previousMatch.qualifiedTeam !== match.qualifiedTeam);
+
+      this.matchesArray.push(
+        this.fb.group({
+          matchFrontendId: [match.matchFrontendId],
+          matchId: [match.matchId],
+          externalMatchId: [match.externalMatchId],
+          stageFrontendId: [match.stageFrontendId],
+          stageId: [match.stageId],
+          stageName: [match.stageName],
+          homeTeamId: [match.homeTeamId],
+          homeTeamFrontendId: [match.homeTeamFrontendId],
+          homeTeam: [match.homeTeam],
+          awayTeamId: [match.awayTeamId],
+          awayTeamFrontendId: [match.awayTeamFrontendId],
+          awayTeam: [match.awayTeam],
+          matchStart: [match.matchStart],
+          matchType: [match.matchType || 'Regular90Min'],
+          homeWinOdds: [match.homeWinOdds ?? 0],
+          drawOdds: [match.drawOdds ?? 0],
+          awayWinOdds: [match.awayWinOdds ?? 0],
+          homeQualifies: [match.homeQualifies ?? null],
+          awayQualifies: [match.awayQualifies ?? null],
+          isVisible: [match.isVisible ?? true],
+          matchStatus: [match.matchStatus || null],
+          scoreHome: [match.scoreHome ?? null],
+          scoreAway: [match.scoreAway ?? null],
+          qualifiedTeam: [match.qualifiedTeam ?? null],
+          recordStatus: [isUpdated ? 'Update' : match.recordStatus || 'New'],
+        })
       );
-  
-      this.matchesArray.push(this.fb.group({
-        matchFrontendId: [match.matchFrontendId],
-        matchId: [match.matchId],
-        externalMatchId: [match.externalMatchId],
-        stageFrontendId: [match.stageFrontendId],
-        stageId: [match.stageId],
-        stageName: [match.stageName],
-        homeTeamId: [match.homeTeamId],
-        homeTeamFrontendId: [match.homeTeamFrontendId],
-        homeTeam: [match.homeTeam],
-        awayTeamId: [match.awayTeamId],
-        awayTeamFrontendId: [match.awayTeamFrontendId],
-        awayTeam: [match.awayTeam],
-        matchStart: [match.matchStart],
-        matchType: [match.matchType || 'Regular90Min'],
-        homeWinOdds: [match.homeWinOdds ?? 0],
-        drawOdds: [match.drawOdds ?? 0],
-        awayWinOdds: [match.awayWinOdds ?? 0],
-        homeQualifies: [match.homeQualifies ?? null],
-        awayQualifies: [match.awayQualifies ?? null],
-        isVisible: [match.isVisible ?? true],
-        matchStatus: [match.matchStatus || null],
-        scoreHome: [match.scoreHome ?? null],
-        scoreAway: [match.scoreAway ?? null],
-        qualifiedTeam: [match.qualifiedTeam ?? null],
-        recordStatus: [isUpdated ? 'Update' : match.recordStatus || 'New']
-      }));
     });
-  
+
     // Step 3: Handle match restoration (UNDO)
-    updatedMatches.forEach(match => {
+    updatedMatches.forEach((match) => {
       if (match.recordStatus === 'Update') {
-        this.teamsArray.controls.forEach(control => {
+        this.teamsArray.controls.forEach((control) => {
           const team = control.value;
-          if ((team.teamFrontendId === match.homeTeamFrontendId || team.teamFrontendId === match.awayTeamFrontendId)
-            && team.recordStatus === 'Delete') {
+          if (
+            (team.teamFrontendId === match.homeTeamFrontendId ||
+              team.teamFrontendId === match.awayTeamFrontendId) &&
+            team.recordStatus === 'Delete'
+          ) {
             (control as FormGroup).patchValue({ recordStatus: 'Update' });
           }
         });
-  
-        this.stagesArray.controls.forEach(control => {
+
+        this.stagesArray.controls.forEach((control) => {
           const stage = control.value;
           if (stage.stageFrontendId === match.stageFrontendId && stage.recordStatus === 'Delete') {
             (control as FormGroup).patchValue({ recordStatus: 'Update' });
@@ -586,38 +630,38 @@ export class BuildPredefinedTournamentPage implements OnInit {
       }
     });
   }
-     
+
   async submitTournament(): Promise<void> {
     if (!this.tournamentForm.value.tournamentName?.trim()) {
       this.showToast('Tournament name is required!', 'danger');
       return;
     }
-  
+
     if (this.teamsArray.length < 2) {
       this.showToast('At least 2 teams are required to create a tournament!', 'danger');
       return;
     }
-  
+
     if (this.stagesArray.length === 0) {
       this.showToast('At least one stage is required!', 'danger');
       return;
     }
-  
+
     if (this.matchesArray.length < 1) {
       this.showToast('At least 1 match is required!', 'danger');
       return;
     }
-  
+
     const loading = await this.loadingController.create({
       message: 'Submitting tournament...',
       spinner: 'crescent',
     });
     await loading.present();
-  
+
     const startTime = Date.now();
-  
+
     const isEditing = !!this.tournamentId;
-  
+
     const tournamentData: Tournament = {
       tournamentId: isEditing ? this.tournamentId : null,
       externalTournamentId: this.tournamentForm.value.externalTournamentId || null,
@@ -634,18 +678,20 @@ export class BuildPredefinedTournamentPage implements OnInit {
 
       teams: this.teamsArray.value.map((team: Team) => ({
         teamId: isEditing ? team.teamId || null : null,
-        externalTeamId: team.externalTeamId || null,
+        predefinedTeamId: team.predefinedTeamId ?? null,
+        externalTeamId: team.externalTeamId ?? null,
         teamName: team.teamName,
-        recordStatus: team.recordStatus || 'New'
+        eloRating: Number(team.eloRating ?? 1000),
+        recordStatus: team.recordStatus || 'New',
       })),
 
       stages: this.stagesArray.value.map((stage: Stage) => ({
         stageId: isEditing ? stage.stageId || null : null,
         stageName: stage.stageName,
         order: stage.order,
-        recordStatus: stage.recordStatus || 'New'
+        recordStatus: stage.recordStatus || 'New',
       })),
-      
+
       matches: this.matchesArray.value.map((match: any) => ({
         matchId: isEditing ? match.matchId || null : null,
         externalMatchId: match.externalMatchId || null,
@@ -662,23 +708,23 @@ export class BuildPredefinedTournamentPage implements OnInit {
         awayWinOdds: match.awayWinOdds,
         homeQualifies: match.homeQualifies,
         awayQualifies: match.awayQualifies,
-        matchStatus: match.matchStatus || null,   
-        scoreHome: match.scoreHome ?? null,        
-        scoreAway: match.scoreAway ?? null,    
-        qualifiedTeam: match.qualifiedTeam ?? null, 
+        matchStatus: match.matchStatus || null,
+        scoreHome: match.scoreHome ?? null,
+        scoreAway: match.scoreAway ?? null,
+        qualifiedTeam: match.qualifiedTeam ?? null,
         isVisible: match.isVisible ?? true,
-        recordStatus: match.recordStatus || 'New'
+        recordStatus: match.recordStatus || 'New',
       })),
     };
-    
+
     const submitObservable = isEditing
       ? this.tournamentService.updatePredefinedTournament(tournamentData)
       : this.tournamentService.createPredefinedTournament(tournamentData);
-  
+
     submitObservable.subscribe({
       next: async (response) => {
         await this.router.navigate(['/tournaments/predefined']);
-  
+
         this.showToast(
           isEditing ? 'Tournament updated successfully!' : 'Tournament created successfully!',
           'success'
@@ -691,14 +737,14 @@ export class BuildPredefinedTournamentPage implements OnInit {
       complete: async () => {
         const elapsedTime = Date.now() - startTime;
         const delay = Math.max(0, 500 - elapsedTime);
-  
+
         setTimeout(async () => {
           await loading.dismiss();
         }, delay);
       },
     });
-  }  
-         
+  }
+
   async nextStep(): Promise<void> {
     const canProceed = await this.canProceed();
     if (canProceed && this.step < 5) {
@@ -706,7 +752,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
       this.step++;
     }
   }
-  
+
   prevStep(): void {
     if (this.step > 1) {
       this.scrollToTop();
@@ -714,7 +760,10 @@ export class BuildPredefinedTournamentPage implements OnInit {
     }
   }
 
-  async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary'): Promise<void> {
+  async showToast(
+    message: string,
+    color: 'success' | 'warning' | 'danger' | 'primary'
+  ): Promise<void> {
     const toast = await this.toastController.create({
       message,
       duration: 3000,
@@ -723,7 +772,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
     });
     await toast.present();
   }
-  
+
   async canProceed(): Promise<boolean> {
     switch (this.step) {
       case 1:
@@ -732,7 +781,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
           return false;
         }
         return true;
-  
+
       case 2:
         if (this.teamsArray.length <= 1) {
           await this.showToast('At least 2 teams are required!', 'danger');
@@ -746,14 +795,14 @@ export class BuildPredefinedTournamentPage implements OnInit {
           return false;
         }
         return true;
-  
+
       case 4:
         if (this.matchesArray.length === 0) {
           await this.showToast('At least 1 match is required!', 'danger');
           return false;
         }
         return true;
-  
+
       case 5:
         return true;
     }

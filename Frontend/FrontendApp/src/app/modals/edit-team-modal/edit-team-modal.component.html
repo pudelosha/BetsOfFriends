@@ -15,6 +15,17 @@
       <ion-input formControlName="teamName" [placeholder]="'TEAM_MODAL.TEAM_NAME_PLACEHOLDER' | translate"></ion-input>
     </div>
 
+    <!-- ELO Rating Input -->
+    <div class="form-group">
+      <ion-label class="selector-label">{{ 'TEAM_MODAL.ELO_LABEL' | translate }}</ion-label>
+      <ion-input
+        type="number"
+        inputmode="numeric"
+        formControlName="eloRating"
+        [placeholder]="'TEAM_MODAL.ELO_PLACEHOLDER' | translate">
+      </ion-input>
+    </div>
+
     <!-- Error placeholder: consistent height even when hidden -->
     <div class="error-wrapper">
       <div class="error-message" *ngIf="teamForm.get('teamName')?.hasError('required') && teamForm.get('teamName')?.touched">
@@ -22,6 +33,18 @@
       </div>
       <div class="error-message" *ngIf="teamForm.get('teamName')?.hasError('maxlength') && teamForm.get('teamName')?.touched">
         {{ 'TEAM_MODAL.TEAM_NAME_MAXLENGTH' | translate }}
+      </div>
+      <div class="error-message"
+        *ngIf="teamForm.get('eloRating')?.hasError('required') && teamForm.get('eloRating')?.touched">
+        {{ 'TEAM_MODAL.ELO_REQUIRED' | translate }}
+      </div>
+      <div class="error-message"
+        *ngIf="teamForm.get('eloRating')?.hasError('min') && teamForm.get('eloRating')?.touched">
+        {{ 'TEAM_MODAL.ELO_MIN' | translate }}
+      </div>
+      <div class="error-message"
+        *ngIf="teamForm.get('eloRating')?.hasError('max') && teamForm.get('eloRating')?.touched">
+        {{ 'TEAM_MODAL.ELO_MAX' | translate }}
       </div>
     </div>
 

@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ModalController } from '@ionic/angular';
 import { EditTeamModalComponent } from 'src/app/modals/edit-team-modal/edit-team-modal.component';
 import { AlertController } from '@ionic/angular';
-import { Team } from 'src/app/model/tournament-model';
+import { Team, RecordStatus } from 'src/app/model/tournament-model';
 import { TranslateModule } from '@ngx-translate/core';
 import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
 
@@ -74,13 +74,25 @@ export class StageTeamsManagementPage implements OnInit {
     modal.onDidDismiss().then(result => {
       if (result.data) {
         const newTeam: Team = {
-          teamFrontendId: this.generateFrontendId(),
+          teamFrontendId: result.data.teamFrontendId ?? this.generateFrontendId(),
           teamId: null,
+          externalTeamId: result.data.externalTeamId ?? null,
+          predefinedTeamId: result.data.predefinedTeamId ?? null,
           teamName: result.data.teamName.trim(),
-          recordStatus: 'New'
+          eloRating: result.data.eloRating ?? 1000,
+          recordStatus: 'New',
         };
 
-        this.teamsArray.push(this.fb.group(newTeam));
+        this.teamsArray.push(this.fb.group({
+          teamFrontendId: [newTeam.teamFrontendId],
+          teamId: [newTeam.teamId],
+          externalTeamId: [newTeam.externalTeamId],
+          predefinedTeamId: [newTeam.predefinedTeamId],
+          teamName: [newTeam.teamName, Validators.required],
+          eloRating: [newTeam.eloRating, [Validators.required, Validators.min(0), Validators.max(5000)]],
+          recordStatus: [newTeam.recordStatus],
+        }));
+
         this.emitTeams();
       }
     });
@@ -110,9 +122,18 @@ export class StageTeamsManagementPage implements OnInit {
         const updatedTeam = result.data;
         const teamGroup = this.teamsArray.at(index) as FormGroup;
 
-        if (updatedTeam.teamName.trim() !== teamGroup.get('teamName')?.value.trim()) {
+        const prevName = (teamGroup.get('teamName')?.value ?? '').trim();
+        const prevElo = Number(teamGroup.get('eloRating')?.value ?? 1000);
+
+        const nextName = (updatedTeam.teamName ?? '').trim();
+        const nextElo = Number(updatedTeam.eloRating ?? 1000);
+
+        const changed = prevName !== nextName || prevElo !== nextElo;
+
+        if (changed) {
           teamGroup.patchValue({
-            teamName: updatedTeam.teamName.trim(),
+            teamName: nextName,
+            eloRating: nextElo,
             recordStatus: 'Update'
           });
         }
@@ -175,8 +196,11 @@ export class StageTeamsManagementPage implements OnInit {
     const updatedTeams: Team[] = this.teamsArray.value.map((team: any) => ({
       teamFrontendId: team.teamFrontendId,
       teamId: team.teamId,
+      externalTeamId: team.externalTeamId ?? null,
+      predefinedTeamId: team.predefinedTeamId ?? null,
       teamName: team.teamName,
-      recordStatus: team.recordStatus ?? 'Uploaded'
+      eloRating: Number(team.eloRating ?? 1000),
+      recordStatus: (team.recordStatus ?? 'Uploaded') as RecordStatus,
     }));
 
     this.teamsUpdated.emit({

@@ -13,6 +13,7 @@
       <!-- Team Name -->
       <div class="team-details">
         <span class="team-name">{{ getTeamControl(i).get('teamName')?.value }}</span>
+        <span class="team-elo">ELO: {{ getTeamControl(i).get('eloRating')?.value ?? 1000 }}</span>
       </div>
 
       <!-- Buttons: Edit and Delete/Undo -->

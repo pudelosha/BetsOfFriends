@@ -28,7 +28,10 @@ export class EditTeamModalComponent implements OnInit {
     this.teamForm = this.fb.group({
       teamFrontendId: [''],
       teamId: [null],
+      externalTeamId: [null],
+      predefinedTeamId: [null],
       teamName: ['', [Validators.required, Validators.maxLength(50)]],
+      eloRating: [1000, [Validators.required, Validators.min(0), Validators.max(5000)]],
       recordStatus: ['New'],
     });
   }
@@ -38,12 +41,16 @@ export class EditTeamModalComponent implements OnInit {
       this.teamForm.patchValue({
         teamFrontendId: this.team.teamFrontendId || this.generateFrontendId(),
         teamId: this.team.teamId ?? null,
+        externalTeamId: this.team.externalTeamId ?? null,
+        predefinedTeamId: this.team.predefinedTeamId ?? null,
         teamName: this.team.teamName,
+        eloRating: this.team.eloRating ?? 1000, // <--- default
         recordStatus: this.team.recordStatus ?? 'Uploaded',
       });
     } else {
       this.teamForm.patchValue({ 
         teamFrontendId: this.generateFrontendId(),
+        eloRating: 1000, // <--- default
         recordStatus: 'New'
       });
     }
@@ -55,7 +62,7 @@ export class EditTeamModalComponent implements OnInit {
 
   async saveTeam(): Promise<void> {
     if (this.teamForm.invalid) {
-      await this.showToast('Please provide a valid team name!', 'danger');
+      await this.showToast('Please provide valid team data!', 'danger');
       return;
     }
 
@@ -73,10 +80,19 @@ export class EditTeamModalComponent implements OnInit {
 
     const isUpdated = this.isEditing && teamName !== currentTeamName;
 
+    const elo = Number(this.teamForm.value.eloRating);
+    if (Number.isNaN(elo)) {
+      await this.showToast('Please provide a valid ELO rating!', 'danger');
+      return;
+    }
+
     const updatedTeam: Team = {
       teamFrontendId: this.teamForm.value.teamFrontendId,
       teamId: this.teamForm.value.teamId,
+      externalTeamId: this.teamForm.value.externalTeamId ?? null,
+      predefinedTeamId: this.teamForm.value.predefinedTeamId ?? null,
       teamName: this.teamForm.value.teamName.trim(),
+      eloRating: elo,
       recordStatus: this.isEditing
         ? (isUpdated ? 'Update' : this.teamForm.value.recordStatus)
         : 'New',

@@ -65,8 +65,11 @@
 .team-details {
   flex: 3;
   display: flex;
-  align-items: center;
+  flex-direction: column;   // <-- stack name + elo
+  align-items: flex-start;  // <-- left align
+  justify-content: center;
   text-align: left;
+  gap: 2px;                 // small spacing between lines
 }
 
 .team-details .team-name {
@@ -75,6 +78,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 100%;              // helps ellipsis behave consistently
+}
+
+.team-details .team-elo {
+  font-size: 11px;          // optional: slightly smaller than name
+  opacity: 0.85;            // optional: subtle de-emphasis
+  line-height: 1.2;
 }
 
 .team-button-container {

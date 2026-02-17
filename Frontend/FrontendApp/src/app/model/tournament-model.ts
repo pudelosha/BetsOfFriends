@@ -5,6 +5,7 @@ export interface Team {
   teamId: number | null;
   predefinedTeamId?: number | null;
   teamName: string;
+  eloRating?: number;
   recordStatus: RecordStatus;
 }
 
