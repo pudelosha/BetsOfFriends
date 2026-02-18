@@ -21,3 +21,6 @@ Backend/appsettings.*.local.json
 # ===============================
 Thumbs.db
 .DS_Store
+
+Backend/appsettings.json
+
