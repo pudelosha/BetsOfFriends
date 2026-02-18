@@ -1,9 +1,23 @@
+# ===============================
+# Node / Frontend
+# ===============================
 node_modules/
+dist/
+
+# ===============================
+# .NET
+# ===============================
 bin/
 obj/
-Backend/.vs/
-/Empty/myApp
-/Backend/wwwroot
-/Backend/wwwroot/chunk-CIXZIGX5.js
-/Backend/wwwroot/main-SHQCJGRU.js
-/Backend/wwwroot/styles-VI72KM3Y.css
+.vs/
+
+# ===============================
+# Backend secrets (LOCAL ONLY)
+# ===============================
+Backend/appsettings.*.local.json
+
+# ===============================
+# OS
+# ===============================
+Thumbs.db
+.DS_Store
