@@ -44,10 +44,15 @@ namespace Backend.Model.Entities
         public TeamQualified? Qualified { get; set; }
 
         // Betting Odds
+        [Column(TypeName = "decimal(6,2)")]
         public decimal HomeWinOdds { get; set; }
+        [Column(TypeName = "decimal(6,2)")]
         public decimal DrawOdds { get; set; }
+        [Column(TypeName = "decimal(6,2)")]
         public decimal AwayWinOdds { get; set; }
+        [Column(TypeName = "decimal(6,2)")]
         public decimal? HomeQualifies { get; set; }
+        [Column(TypeName = "decimal(6,2)")]
         public decimal? AwayQualifies { get; set; }
 
         public MatchStatus Status { get; set; } = MatchStatus.Timed;

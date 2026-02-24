@@ -55,6 +55,7 @@ namespace Backend.Model.Entities
 
         [Range(0, int.MaxValue)]
         public int? NonSubmittedBetPenalty { get; set; }
+        public bool CalculateBetsWithHomeAdvantage { get; set; } = false;
 
         public TournamentVisibility Visibility { get; set; } = TournamentVisibility.Private;
         public TournamentUpdate Update { get; set; } = TournamentUpdate.Manual;

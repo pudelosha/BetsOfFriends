@@ -18,6 +18,7 @@ namespace Backend.Model.Entities
         public string TournamentName { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
         public TournamentUpdate Update { get; set; } = TournamentUpdate.Manual;
+        public bool CalculateBetsWithHomeAdvantage { get; set; } = false;
 
         public ICollection<PredefinedTeam> PredefinedTeams { get; set; } = new List<PredefinedTeam>();
         public ICollection<PredefinedMatch> PredefinedMatches { get; set; } = new List<PredefinedMatch>();

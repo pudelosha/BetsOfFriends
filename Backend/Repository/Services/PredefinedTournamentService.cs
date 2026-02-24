@@ -34,10 +34,12 @@ namespace Backend.Repository.Services
                     Season = tournamentDto.Season,
                     ExternalSeasonId = tournamentDto.SeasonId,
                     EndDate = tournamentDto.TournamentEnd,
-                    IsActive = false,   // be default new tournament is not visible
+                    IsActive = false,   // by default new tournament is not visible
                     CreatedBy = tournamentDto.CreatedBy,
                     CreatedAt = DateTime.UtcNow,
-                    Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var u) ? u : TournamentUpdate.Manual
+                    Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var u)
+                        ? u
+                        : TournamentUpdate.Manual
                 };
 
                 _context.PredefinedTournaments.Add(tournament);
@@ -48,12 +50,14 @@ namespace Backend.Repository.Services
                 {
                     TeamName = t.TeamName,
                     ExternalTeamId = t.ExternalTeamId,
+                    EloRating = t.EloRating,
                     PredefinedTournamentId = tournament.TournamentId
                 }).ToList();
 
                 _context.PredefinedTeams.AddRange(teams);
                 await _context.SaveChangesAsync();
 
+                // Map by TeamName (as your logic expects)
                 var teamMap = await _context.PredefinedTeams
                     .Where(t => t.PredefinedTournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(t => t.TeamName, t => t.TeamId);
@@ -85,11 +89,13 @@ namespace Backend.Repository.Services
                     if (!stageMap.TryGetValue(m.StageName, out var stageId))
                         throw new Exception($"Stage '{m.StageName}' not found.");
 
-                    if (!Enum.TryParse(m.MatchType, out CustomMatch.MatchType parsedType))
+                    if (!Enum.TryParse(m.MatchType, true, out CustomMatch.MatchType parsedType))
                         parsedType = CustomMatch.MatchType.Regular90Min;
 
-                    if (!Enum.TryParse(m.MatchStatus, out CustomMatch.MatchStatus parsedStatus))
-                        parsedStatus = CustomMatch.MatchStatus.Timed;
+                    // MatchStatus in DTO can be null; default safely
+                    CustomMatch.MatchStatus parsedStatus = CustomMatch.MatchStatus.Timed;
+                    if (!string.IsNullOrWhiteSpace(m.MatchStatus) && Enum.TryParse(m.MatchStatus, true, out CustomMatch.MatchStatus s))
+                        parsedStatus = s;
 
                     return new PredefinedMatch
                     {
@@ -132,12 +138,15 @@ namespace Backend.Repository.Services
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Step 1: Fetch the tournament from the database
+                if (tournamentDto.TournamentId == null)
+                    throw new ArgumentException("TournamentId is required for update.");
+
+                // Fetch tournament with children
                 var tournament = await _context.PredefinedTournaments
                     .Include(t => t.PredefinedTeams)
                     .Include(t => t.PredefinedStages)
                     .Include(t => t.PredefinedMatches)
-                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentDto.TournamentId);
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentDto.TournamentId.Value);
 
                 if (tournament == null)
                 {
@@ -145,29 +154,34 @@ namespace Backend.Repository.Services
                     return false;
                 }
 
-                // Step 2: Update tournament details
+                // ---- Step 1: Update tournament header ----
                 tournament.TournamentName = tournamentDto.TournamentName;
                 tournament.ExternalTournamentId = tournamentDto.ExternalTournamentId;
                 tournament.Season = tournamentDto.Season;
                 tournament.ExternalSeasonId = tournamentDto.SeasonId;
                 tournament.EndDate = tournamentDto.TournamentEnd;
-                //tournament.IsActive = tournamentDto.IsActive;
                 tournament.CreatedBy = tournamentDto.CreatedBy;
-                tournament.Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var updateEnum) ? updateEnum : TournamentUpdate.Manual;
 
-                // Step 3: Handle Teams
-                var existingTeams = tournament.PredefinedTeams.ToDictionary(t => t.TeamId);
+                tournament.Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var updateEnum)
+                    ? updateEnum
+                    : TournamentUpdate.Manual;
+
+                // ---- Step 2: Teams (Update + optional Add/Delete) ----
+                var existingTeamsById = tournament.PredefinedTeams.ToDictionary(t => t.TeamId);
+
                 var teamsToRemove = tournamentDto.Teams.Where(t => t.RecordStatus == "Delete").ToList();
                 var teamsToUpdate = tournamentDto.Teams.Where(t => t.RecordStatus == "Update").ToList();
-                var newTeams = tournamentDto.Teams.Where(t => t.RecordStatus == "New").ToList();
+                var teamsToAdd = tournamentDto.Teams.Where(t => t.RecordStatus == "New").ToList();
 
-                // Delete teams & cascade match deletions
-                foreach (var team in teamsToRemove)
+                // Delete teams (and remove related matches as you had)
+                foreach (var dtoTeam in teamsToRemove)
                 {
-                    if (team.TeamId.HasValue && existingTeams.TryGetValue(team.TeamId.Value, out var existingTeam))
+                    if (!dtoTeam.TeamId.HasValue) continue;
+
+                    if (existingTeamsById.TryGetValue(dtoTeam.TeamId.Value, out var existingTeam))
                     {
                         var relatedMatches = tournament.PredefinedMatches
-                            .Where(m => m.HomeTeamId == team.TeamId || m.AwayTeamId == team.TeamId)
+                            .Where(m => m.HomeTeamId == existingTeam.TeamId || m.AwayTeamId == existingTeam.TeamId)
                             .ToList();
 
                         _context.PredefinedMatches.RemoveRange(relatedMatches);
@@ -175,149 +189,178 @@ namespace Backend.Repository.Services
                     }
                 }
 
-                // Update teams
-                foreach (var team in teamsToUpdate)
+                // Update teams (Name + External + ELO)
+                foreach (var dtoTeam in teamsToUpdate)
                 {
-                    if (team.TeamId.HasValue && existingTeams.TryGetValue(team.TeamId.Value, out var existingTeam))
+                    if (!dtoTeam.TeamId.HasValue) continue;
+
+                    if (existingTeamsById.TryGetValue(dtoTeam.TeamId.Value, out var existingTeam))
                     {
-                        existingTeam.TeamName = team.TeamName;
-                        existingTeam.ExternalTeamId = team.ExternalTeamId;
+                        existingTeam.TeamName = dtoTeam.TeamName;
+                        existingTeam.ExternalTeamId = dtoTeam.ExternalTeamId;
+
+                        // ELO update (default to 1000 if missing)
+                        existingTeam.EloRating = dtoTeam.EloRating;
                     }
                 }
 
                 // Add new teams
-                foreach (var newTeam in newTeams)
+                foreach (var dtoTeam in teamsToAdd)
                 {
                     tournament.PredefinedTeams.Add(new PredefinedTeam
                     {
-                        TeamName = newTeam.TeamName,
-                        PredefinedTournamentId = tournament.TournamentId
+                        TeamName = dtoTeam.TeamName,
+                        ExternalTeamId = dtoTeam.ExternalTeamId,
+                        PredefinedTournamentId = tournament.TournamentId,
+                        EloRating = dtoTeam.EloRating
                     });
                 }
 
                 await _context.SaveChangesAsync();
 
-                // Step 4: Map team names to IDs
-                var teamMap = await _context.PredefinedTeams
+                // ---- Step 3: Maps (team/stage) ----
+                // Prefer ID mapping; fallback to name mapping only if you must.
+                var teamMapByName = await _context.PredefinedTeams
                     .Where(t => t.PredefinedTournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(t => t.TeamName, t => t.TeamId);
 
-                // Step 5: Handle Stages
-                var existingStages = tournament.PredefinedStages.ToDictionary(s => s.StageId);
-                var stagesToRemove = tournamentDto.Stages.Where(s => s.RecordStatus == "Delete").ToList();
-                var stagesToUpdate = tournamentDto.Stages.Where(s => s.RecordStatus == "Update").ToList();
-                var newStages = tournamentDto.Stages.Where(s => s.RecordStatus == "New").ToList();
-
-                // Delete stages & cascade match deletions
-                foreach (var stage in stagesToRemove)
-                {
-                    if (stage.StageId.HasValue && existingStages.TryGetValue(stage.StageId.Value, out var existingStage))
-                    {
-                        var relatedMatches = tournament.PredefinedMatches
-                            .Where(m => m.StageId == stage.StageId)
-                            .ToList();
-
-                        _context.PredefinedMatches.RemoveRange(relatedMatches);
-                        _context.PredefinedMatchStages.Remove(existingStage);
-                    }
-                }
-
-                // Update stages
-                foreach (var stage in stagesToUpdate)
-                {
-                    if (stage.StageId.HasValue && existingStages.TryGetValue(stage.StageId.Value, out var existingStage))
-                    {
-                        existingStage.StageName = stage.StageName;
-                        existingStage.Order = stage.Order;
-                    }
-                }
-
-                // Add new stages
-                foreach (var newStage in newStages)
-                {
-                    tournament.PredefinedStages.Add(new PredefinedMatchStage
-                    {
-                        StageName = newStage.StageName,
-                        TournamentId = tournament.TournamentId,
-                        Order = newStage.Order
-                    });
-                }
-
-                await _context.SaveChangesAsync();
-
-                // Step 6: Map stage names to IDs
-                var stageMap = await _context.PredefinedMatchStages
+                var stageMapByName = await _context.PredefinedMatchStages
                     .Where(s => s.TournamentId == tournament.TournamentId)
                     .ToDictionaryAsync(s => s.StageName, s => s.StageId);
 
-                // Step 7: Handle Matches
-                var existingMatches = tournament.PredefinedMatches.ToDictionary(m => m.MatchId);
+                // ---- Step 4: Matches (ONLY Update rule for updates) ----
+                var existingMatchesById = tournament.PredefinedMatches.ToDictionary(m => m.MatchId);
+
                 var matchesToRemove = tournamentDto.Matches.Where(m => m.RecordStatus == "Delete").ToList();
                 var matchesToUpdate = tournamentDto.Matches.Where(m => m.RecordStatus == "Update").ToList();
-                var newMatches = tournamentDto.Matches.Where(m => m.RecordStatus == "New").ToList();
+                var matchesToAdd = tournamentDto.Matches.Where(m => m.RecordStatus == "New").ToList();
 
                 // Delete matches
-                foreach (var match in matchesToRemove)
+                foreach (var dtoMatch in matchesToRemove)
                 {
-                    if (match.MatchId.HasValue && existingMatches.TryGetValue(match.MatchId.Value, out var existingMatch))
+                    if (!dtoMatch.MatchId.HasValue) continue;
+
+                    if (existingMatchesById.TryGetValue(dtoMatch.MatchId.Value, out var existingMatch))
                     {
                         _context.PredefinedMatches.Remove(existingMatch);
                     }
                 }
 
-                // Update matches
-                foreach (var match in matchesToUpdate)
+                // Update matches (apply "Update" rule)
+                foreach (var dtoMatch in matchesToUpdate)
                 {
-                    if (match.MatchId.HasValue && existingMatches.TryGetValue(match.MatchId.Value, out var existingMatch))
+                    if (!dtoMatch.MatchId.HasValue) continue;
+
+                    if (!existingMatchesById.TryGetValue(dtoMatch.MatchId.Value, out var existingMatch))
+                        continue;
+
+                    // stage
+                    if (!stageMapByName.TryGetValue(dtoMatch.StageName, out var stageId))
+                        throw new Exception($"Stage '{dtoMatch.StageName}' not found.");
+
+                    // team ids: DTO should send IDs; if not, fallback to name map (optional)
+                    var homeTeamId = dtoMatch.HomeTeamId;
+                    var awayTeamId = dtoMatch.AwayTeamId;
+
+                    if (!homeTeamId.HasValue)
                     {
-                        existingMatch.StageId = stageMap.TryGetValue(match.StageName, out var stageId) ? stageId : throw new Exception($"Stage '{match.StageName}' not found.");
-                        existingMatch.HomeTeamId = match.HomeTeamId.Value;
-                        existingMatch.AwayTeamId = match.AwayTeamId.Value;
-                        existingMatch.MatchStart = DateTime.SpecifyKind(match.MatchStart, DateTimeKind.Utc);
-                        existingMatch.Type = Enum.Parse<CustomMatch.MatchType>(match.MatchType);
-                        existingMatch.HomeWinOdds = match.HomeWinOdds;
-                        existingMatch.DrawOdds = match.DrawOdds;
-                        existingMatch.AwayWinOdds = match.AwayWinOdds;
-                        existingMatch.HomeQualifies = match.HomeQualifies;
-                        existingMatch.AwayQualifies = match.AwayQualifies;
-                        existingMatch.HomeScore = match.ScoreHome;
-                        existingMatch.AwayScore = match.ScoreAway;
-                        existingMatch.Qualified = Enum.TryParse<TeamQualified>(match.QualifiedTeam, true, out var q) ? q : null;
-                        existingMatch.Status = Enum.Parse<CustomMatch.MatchStatus>(match.MatchStatus);
-                        existingMatch.IsVisible = match.IsVisible;
+                        if (!teamMapByName.TryGetValue(dtoMatch.HomeTeam, out var hid))
+                            throw new Exception($"Home team '{dtoMatch.HomeTeam}' not found.");
+                        homeTeamId = hid;
+                    }
+
+                    if (!awayTeamId.HasValue)
+                    {
+                        if (!teamMapByName.TryGetValue(dtoMatch.AwayTeam, out var aid))
+                            throw new Exception($"Away team '{dtoMatch.AwayTeam}' not found.");
+                        awayTeamId = aid;
+                    }
+
+                    existingMatch.StageId = stageId;
+                    existingMatch.HomeTeamId = homeTeamId.Value;
+                    existingMatch.AwayTeamId = awayTeamId.Value;
+                    existingMatch.MatchStart = DateTime.SpecifyKind(dtoMatch.MatchStart, DateTimeKind.Utc);
+
+                    // Type
+                    existingMatch.Type = Enum.TryParse<CustomMatch.MatchType>(dtoMatch.MatchType, true, out var mt)
+                        ? mt
+                        : CustomMatch.MatchType.Regular90Min;
+
+                    // Status (if null -> keep existing)
+                    if (!string.IsNullOrWhiteSpace(dtoMatch.MatchStatus) &&
+                        Enum.TryParse<CustomMatch.MatchStatus>(dtoMatch.MatchStatus, true, out var ms))
+                    {
+                        existingMatch.Status = ms;
+                    }
+
+                    existingMatch.IsVisible = dtoMatch.IsVisible;
+
+                    // Scores / qualified
+                    existingMatch.HomeScore = dtoMatch.ScoreHome;
+                    existingMatch.AwayScore = dtoMatch.ScoreAway;
+                    existingMatch.Qualified = Enum.TryParse<TeamQualified>(dtoMatch.QualifiedTeam, true, out var q) ? q : null;
+
+                    // --- Odds rule: update odds ONLY if match NOT started yet ---
+                    // (Using UTC now to match stored UTC MatchStart)
+                    var nowUtc = DateTime.UtcNow;
+                    var matchHasStarted = existingMatch.MatchStart <= nowUtc;
+
+                    if (!matchHasStarted)
+                    {
+                        existingMatch.HomeWinOdds = dtoMatch.HomeWinOdds <= 0 ? 1m : dtoMatch.HomeWinOdds;
+                        existingMatch.DrawOdds = dtoMatch.DrawOdds <= 0 ? 1m : dtoMatch.DrawOdds;
+                        existingMatch.AwayWinOdds = dtoMatch.AwayWinOdds <= 0 ? 1m : dtoMatch.AwayWinOdds;
+
+                        existingMatch.HomeQualifies = dtoMatch.HomeQualifies ?? existingMatch.HomeQualifies;
+                        existingMatch.AwayQualifies = dtoMatch.AwayQualifies ?? existingMatch.AwayQualifies;
                     }
                 }
 
-                // Add new matches
-                foreach (var newMatch in newMatches)
+                // Add new matches (keep as you already do, but safe defaults)
+                foreach (var dtoMatch in matchesToAdd)
                 {
-                    var homeTeamId = teamMap.TryGetValue(newMatch.HomeTeam, out var homeId)
-                        ? homeId
-                        : throw new Exception($"Home team '{newMatch.HomeTeam}' not found.");
-                    var awayTeamId = teamMap.TryGetValue(newMatch.AwayTeam, out var awayId)
-                        ? awayId
-                        : throw new Exception($"Away team '{newMatch.AwayTeam}' not found.");
-                    var stageId = stageMap.TryGetValue(newMatch.StageName, out var stgId)
-                        ? stgId
-                        : throw new Exception($"Stage '{newMatch.StageName}' not found.");
+                    if (!teamMapByName.TryGetValue(dtoMatch.HomeTeam, out var homeId))
+                        throw new Exception($"Home team '{dtoMatch.HomeTeam}' not found.");
+
+                    if (!teamMapByName.TryGetValue(dtoMatch.AwayTeam, out var awayId))
+                        throw new Exception($"Away team '{dtoMatch.AwayTeam}' not found.");
+
+                    if (!stageMapByName.TryGetValue(dtoMatch.StageName, out var stgId))
+                        throw new Exception($"Stage '{dtoMatch.StageName}' not found.");
+
+                    var type = Enum.TryParse<CustomMatch.MatchType>(dtoMatch.MatchType, true, out var mt)
+                        ? mt
+                        : CustomMatch.MatchType.Regular90Min;
+
+                    CustomMatch.MatchStatus status = CustomMatch.MatchStatus.Timed;
+                    if (!string.IsNullOrWhiteSpace(dtoMatch.MatchStatus) &&
+                        Enum.TryParse(dtoMatch.MatchStatus, true, out CustomMatch.MatchStatus s))
+                    {
+                        status = s;
+                    }
 
                     tournament.PredefinedMatches.Add(new PredefinedMatch
                     {
                         TournamentId = tournament.TournamentId,
-                        StageId = stageId,
-                        HomeTeamId = homeTeamId,
-                        AwayTeamId = awayTeamId,
-                        MatchStart = DateTime.SpecifyKind(newMatch.MatchStart, DateTimeKind.Utc),
-                        Type = Enum.Parse<CustomMatch.MatchType>(newMatch.MatchType),
-                        HomeWinOdds = newMatch.HomeWinOdds,
-                        DrawOdds = newMatch.DrawOdds,
-                        AwayWinOdds = newMatch.AwayWinOdds,
-                        HomeQualifies = newMatch.HomeQualifies,
-                        AwayQualifies = newMatch.AwayQualifies,
-                        HomeScore = newMatch.ScoreHome,
-                        AwayScore = newMatch.ScoreAway,
-                        Qualified = Enum.TryParse<TeamQualified>(newMatch.QualifiedTeam, true, out var q) ? q : null,
-                        IsVisible = newMatch.IsVisible
+                        StageId = stgId,
+                        HomeTeamId = homeId,
+                        AwayTeamId = awayId,
+                        MatchStart = DateTime.SpecifyKind(dtoMatch.MatchStart, DateTimeKind.Utc),
+                        Type = type,
+                        Status = status,
+                        IsVisible = dtoMatch.IsVisible,
+
+                        HomeWinOdds = dtoMatch.HomeWinOdds <= 0 ? 1m : dtoMatch.HomeWinOdds,
+                        DrawOdds = dtoMatch.DrawOdds <= 0 ? 1m : dtoMatch.DrawOdds,
+                        AwayWinOdds = dtoMatch.AwayWinOdds <= 0 ? 1m : dtoMatch.AwayWinOdds,
+
+                        HomeQualifies = dtoMatch.HomeQualifies ?? 0m,
+                        AwayQualifies = dtoMatch.AwayQualifies ?? 0m,
+
+                        ExternalMatchId = dtoMatch.ExternalMatchId,
+                        HomeScore = dtoMatch.ScoreHome,
+                        AwayScore = dtoMatch.ScoreAway,
+                        Qualified = Enum.TryParse<TeamQualified>(dtoMatch.QualifiedTeam, true, out var q2) ? q2 : null,
                     });
                 }
 
@@ -328,8 +371,8 @@ namespace Backend.Repository.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError($"Error updating predefined tournament ID {tournamentDto.TournamentId}: {ex.Message}");
-                throw;
+                _logger.LogError(ex, $"Error updating predefined tournament ID {tournamentDto.TournamentId}: {ex.Message}");
+                return false;
             }
         }
 
@@ -390,7 +433,8 @@ namespace Backend.Repository.Services
                     Teams = tournament.PredefinedTeams.Select(team => new PredefinedTeamDto
                     {
                         TeamId = team.TeamId,
-                        TeamName = team.TeamName
+                        TeamName = team.TeamName,
+                        EloRating = team.EloRating
                     }).ToList(),
                     Stages = tournament.PredefinedStages.Select(stage => new PredefinedStageDto
                     {

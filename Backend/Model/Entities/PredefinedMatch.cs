@@ -49,10 +49,15 @@ namespace Backend.Model.Entities
 
         public bool IsVisible { get; set; } = true;
 
+        [Column(TypeName = "decimal(6,2)")]
         public decimal HomeWinOdds { get; set; }
+        [Column(TypeName = "decimal(6,2)")]
         public decimal DrawOdds { get; set; }
+        [Column(TypeName = "decimal(6,2)")]
         public decimal AwayWinOdds { get; set; }
+        [Column(TypeName = "decimal(6,2)")]
         public decimal? HomeQualifies { get; set; }
+        [Column(TypeName = "decimal(6,2)")]
         public decimal? AwayQualifies { get; set; }
     }
 }

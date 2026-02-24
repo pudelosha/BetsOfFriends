@@ -142,22 +142,22 @@ namespace Backend.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_PrivateMessages_RecipientId",
-                table: "PrivateMessage",
+                table: "PrivateMessages",
                 column: "RecipientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PrivateMessages_SenderId",
-                table: "PrivateMessage",
+                table: "PrivateMessages",
                 column: "SenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TournamentMessages_TournamentId",
-                table: "TournamentMessage",
+                table: "TournamentMessages",
                 column: "TournamentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TournamentMessages_UserId",
-                table: "TournamentMessage",
+                table: "TournamentMessages",
                 column: "UserId");
         }
 

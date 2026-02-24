@@ -108,7 +108,17 @@ export class BuildPredefinedTournamentPage implements OnInit {
   }
 
   private resetFormData(): void {
-    this.tournamentForm.reset();
+    this.tournamentForm.reset({
+      tournamentId: null,
+      externalTournamentId: null,
+      tournamentName: '',
+      tournamentVisibility: 'Private',
+      updateMethod: 'Manual',
+      season: null,
+      seasonId: null,
+      tournamentStart: null,
+      tournamentEnd: null,
+    });
     this.teamsArray.clear();
     this.stagesArray.clear();
     this.matchesArray.clear();
@@ -471,7 +481,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
     this.matchesArray.clear();
     matchesToKeep.forEach((control) => this.matchesArray.push(control));
 
-    // TODO Later:
+    // Step 6: Update odds for matches affected by Elo changes:
     this.recalculateOddsForMatchesAffectedByEloChange(previousTeams, updatedTeams);
   }
 
@@ -813,7 +823,10 @@ export class BuildPredefinedTournamentPage implements OnInit {
     return 'T-' + Math.random().toString(36).substr(2, 9);
   }
 
-  private recalculateOddsForMatchesAffectedByEloChange(previousTeams: Team[], updatedTeams: Team[]): void {
+  private recalculateOddsForMatchesAffectedByEloChange(
+    previousTeams: Team[],
+    updatedTeams: Team[]
+  ): void {
     // Fixed constant for now (same as your Excel "-50" term)
     const HOME_ADVANTAGE = 50;
 
@@ -822,25 +835,27 @@ export class BuildPredefinedTournamentPage implements OnInit {
 
     // Build maps for ELO lookup by frontendId
     const prevEloByFrontendId = new Map<string, number>();
-    previousTeams.forEach(t => {
+    previousTeams.forEach((t) => {
       const elo = Number(t.eloRating ?? 1000);
       if (t.teamFrontendId) prevEloByFrontendId.set(t.teamFrontendId, elo);
     });
 
     const nextEloByFrontendId = new Map<string, number>();
-    updatedTeams.forEach(t => {
+    updatedTeams.forEach((t) => {
       const elo = Number(t.eloRating ?? 1000);
       if (t.teamFrontendId) nextEloByFrontendId.set(t.teamFrontendId, elo);
     });
 
     // Determine which teams actually changed ELO
     const changedTeamFrontendIds = new Set<string>();
-    updatedTeams.forEach(t => {
+    updatedTeams.forEach((t) => {
       const id = t.teamFrontendId;
       if (!id) return;
 
       const prev = prevEloByFrontendId.get(id);
       const next = nextEloByFrontendId.get(id);
+
+      // Treat missing prev as "no baseline" -> don't trigger odds recalc
       if (prev !== undefined && next !== undefined && prev !== next) {
         changedTeamFrontendIds.add(id);
       }
@@ -851,17 +866,24 @@ export class BuildPredefinedTournamentPage implements OnInit {
     // Iterate matches and update odds where needed
     this.matchesArray.controls.forEach((control: AbstractControl) => {
       const fg = control as FormGroup;
-      const match = fg.value;
+      const match = fg.value as any;
 
-      // Skip deleted/finalised matches
       const recordStatus: string | null = match.recordStatus ?? null;
-      if (recordStatus === 'Delete' || recordStatus === 'Finalised') return;
+      const matchStatus: string | null = match.matchStatus ?? null;
+
+      // Skip deleted or finished/finalised matches
+      const isFinished =
+        recordStatus === 'Finalised' || (matchStatus ?? '').toLowerCase() === 'finished';
+
+      if (recordStatus === 'Delete' || isFinished) return;
 
       const homeId: string | null = match.homeTeamFrontendId ?? null;
       const awayId: string | null = match.awayTeamFrontendId ?? null;
 
-      // Only recalc if either team's ELO changed
+      // Allow placeholders: if missing/temporary ids -> skip odds update
       if (!homeId || !awayId) return;
+
+      // Only recalc if either team's ELO changed
       if (!changedTeamFrontendIds.has(homeId) && !changedTeamFrontendIds.has(awayId)) return;
 
       // Resolve ELOs (if placeholders not yet resolvable -> skip)
@@ -871,8 +893,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
 
       // === Excel formulas ===
       // PowerRatio = 1 / (1 + 10^(((AwayElo - HomeElo - 50)/600)))
-      const powerRatio =
-        1 / (1 + Math.pow(10, ((awayElo - homeElo - HOME_ADVANTAGE) / 600)));
+      const powerRatio = 1 / (1 + Math.pow(10, (awayElo - homeElo - HOME_ADVANTAGE) / 600));
 
       // ProbDraw = MAX(0, MIN(0.33, 0.29 - ABS(0.5 - PowerRatio)*0.3))
       const probDraw = clamp(0.29 - Math.abs(0.5 - powerRatio) * 0.3, 0, 0.33);
@@ -883,24 +904,23 @@ export class BuildPredefinedTournamentPage implements OnInit {
       // ProbAway = 1 - ProbHome - ProbDraw
       const probAway = 1 - probHome - probDraw;
 
-      // Guard: avoid division by 0 / negative probs (can happen with edge inputs)
+      // Guard: avoid division by 0 / negative probs
       if (!(probHome > 0) || !(probDraw > 0) || !(probAway > 0)) return;
 
       // Odds = ROUND(1/Prob*(0.95 + RAND()/100), 2)
-      const jitter = () => (0.95 + Math.random() / 100);
+      const jitter = () => 0.95 + Math.random() / 100;
 
       const odds1 = round2((1 / probHome) * jitter());
       const oddsX = round2((1 / probDraw) * jitter());
       const odds2 = round2((1 / probAway) * jitter());
 
-      // Patch odds
       const patch: any = {
         homeWinOdds: odds1,
         drawOdds: oddsX,
         awayWinOdds: odds2,
       };
 
-      // RecordStatus handling: do not touch New, but mark Uploaded as Update
+      // Mark existing backend records as needing update (don’t change New)
       if (recordStatus === 'Uploaded') {
         patch.recordStatus = 'Update';
       }

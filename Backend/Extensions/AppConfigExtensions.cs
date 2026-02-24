@@ -8,7 +8,10 @@ namespace Backend.Extensions
         public static IServiceCollection AddDatabaseConfig(this IServiceCollection services, IConfiguration config, string env)
         {
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(config.GetConnectionString(env)));
+                options.UseSqlServer(
+                    config.GetConnectionString(env),
+                    sql => sql.MigrationsHistoryTable("__EFMigrationsHistory", "betsoffriends_db_admin")
+                ));
 
             return services;
         }

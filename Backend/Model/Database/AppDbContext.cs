@@ -287,7 +287,9 @@ namespace Backend.Model.Database
 
         private void ConfigureMessageEntities(ModelBuilder builder)
         {
-            // Private Messages
+            builder.Entity<PrivateMessage>().ToTable("PrivateMessages", "betsoffriends_db_admin");
+            builder.Entity<TournamentMessage>().ToTable("TournamentMessages", "betsoffriends_db_admin");
+
             builder.Entity<PrivateMessage>()
                 .HasOne(m => m.Sender)
                 .WithMany()
@@ -312,7 +314,6 @@ namespace Backend.Model.Database
                 .Property(m => m.IsDeletedByRecipient)
                 .HasDefaultValue(false);
 
-            // Tournament Board Messages
             builder.Entity<TournamentMessage>()
                 .HasOne(m => m.Tournament)
                 .WithMany()

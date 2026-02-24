@@ -16,6 +16,7 @@ namespace Backend.Model.Entities
         [Required]
         [MaxLength(50)]
         public string TeamName { get; set; }
+        public int EloRating { get; set; }
 
         public int TournamentId { get; set; }
         [ForeignKey("TournamentId")]

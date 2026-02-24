@@ -25,3 +25,11 @@ Thumbs.db
 Backend/appsettings.json
 **/*.pubxml.user
 
+# ===============================
+# .NET Publish Output
+# ===============================
+publish/
+publish-test/
+**/publish/
+**/publish-test/
+

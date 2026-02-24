@@ -84,6 +84,7 @@ namespace Backend.DTOs
         public int? PredefinedTeamId { get; set; }
         [Required, MaxLength(50)]
         public string TeamName { get; set; } = string.Empty;
+        public int EloRating { get; set; }
         [Required]
         public string RecordStatus { get; set; } = "New";
     }
