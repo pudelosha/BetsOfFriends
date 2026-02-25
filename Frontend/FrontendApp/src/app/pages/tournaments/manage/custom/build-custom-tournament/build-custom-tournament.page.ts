@@ -245,6 +245,10 @@ export class BuildCustomTournamentPage implements OnInit {
           teamId: [team.teamId],
           predefinedTeamId: [team.predefinedTeamId || null],
           teamName: [team.teamName, Validators.required],
+          eloRating: [
+            team.eloRating ?? 1000,
+            [Validators.required, Validators.min(0), Validators.max(5000)],
+          ],
           recordStatus: ['Uploaded', Validators.required]
         })
       );
@@ -384,7 +388,12 @@ export class BuildCustomTournamentPage implements OnInit {
           teamFrontendId: [team.teamFrontendId || this.generateFrontendId()],
           externalTeamId: [team.externalTeamId || null],
           teamId: [team.teamId],
+          predefinedTeamId: [team.predefinedTeamId || null],
           teamName: [team.teamName, Validators.required],
+          eloRating: [
+            team.eloRating ?? 1000,
+            [Validators.required, Validators.min(0), Validators.max(5000)],
+          ],
           recordStatus: [team.recordStatus || 'New']
         })
       );
@@ -474,13 +483,19 @@ export class BuildCustomTournamentPage implements OnInit {
     this.teamsArray.clear();
     updatedTeams.forEach(team => {
       const previousTeam = previousTeamMap.get(team.teamFrontendId);
-      const isUpdated = previousTeam && previousTeam.teamName !== team.teamName;
+      const isUpdated = previousTeam &&
+        (previousTeam.teamName !== team.teamName ||
+         Number(previousTeam.eloRating ?? 1000) !== Number(team.eloRating ?? 1000));
   
       this.teamsArray.push(
         this.fb.group({
           teamFrontendId: [team.teamFrontendId],
           teamId: [team.teamId],
           teamName: [team.teamName, Validators.required],
+          eloRating: [
+            Number(team.eloRating ?? 1000),
+            [Validators.required, Validators.min(0), Validators.max(5000)],
+          ],
           recordStatus: [isUpdated ? 'Update' : team.recordStatus || 'New']
         })
       );
@@ -725,6 +740,7 @@ export class BuildCustomTournamentPage implements OnInit {
         externalTeamId: team.externalTeamId || null,
         predefinedTeamId: team.predefinedTeamId || null,
         teamName: team.teamName,
+        eloRating: Number(team.eloRating ?? 1000),
         recordStatus: team.recordStatus || 'New'
       })),
 

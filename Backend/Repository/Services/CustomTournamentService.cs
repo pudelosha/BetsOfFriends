@@ -103,7 +103,8 @@ namespace Backend.Repository.Services
                 {
                     TeamName = t.TeamName,
                     TournamentId = tournament.TournamentId,
-                    PredefinedTeamId = t.PredefinedTeamId
+                    PredefinedTeamId = t.PredefinedTeamId,
+                    EloRating = t.EloRating
                 }).ToList();
 
                 _context.CustomTeams.AddRange(teams);
@@ -439,6 +440,7 @@ namespace Backend.Repository.Services
                     if (existingTeams.TryGetValue(team.TeamId.Value, out var existingTeam))
                     {
                         existingTeam.TeamName = team.TeamName;
+                        existingTeam.EloRating = team.EloRating;
                     }
                 }
 
@@ -448,7 +450,8 @@ namespace Backend.Repository.Services
                     {
                         TeamName = team.TeamName,
                         TournamentId = tournament.TournamentId,
-                        PredefinedTeamId = team.PredefinedTeamId // This can be null or a valid ID
+                        PredefinedTeamId = team.PredefinedTeamId, // This can be null or a valid ID
+                        EloRating = team.EloRating
                     });
                 }
 
@@ -709,7 +712,8 @@ namespace Backend.Repository.Services
                     {
                         TeamId = team.TeamId,
                         TeamName = team.TeamName,
-                        PredefinedTeamId = team.PredefinedTeamId
+                        PredefinedTeamId = team.PredefinedTeamId,
+                        EloRating = team.EloRating
                     }).ToList(),
                     Stages = tournament.Stages.Select(stage => new CustomStageDto
                     {

@@ -197,8 +197,7 @@ namespace Backend.Model.Database
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<CustomMatch>()
-                .HasIndex(m => new { m.TournamentId, m.HomeTeamId, m.AwayTeamId, m.MatchStart })
-                .IsUnique();
+                .HasIndex(m => new { m.TournamentId, m.HomeTeamId, m.AwayTeamId, m.MatchStart });
 
             builder.Entity<CustomMatch>()
                 .HasIndex(m => new { m.TournamentId, m.Status, m.MatchStart });
