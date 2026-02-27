@@ -90,14 +90,29 @@ public class FootballDataHostedService : BackgroundService
                     if (existingMatch == null)
                         continue;
 
+                    // --- NEW: detect team change (TBA -> real team) using incoming IDs ---
+                    var incomingHomeTeamId = await dbContext.PredefinedTeams
+                        .Where(t => t.PredefinedTournamentId == tournament.TournamentId && t.TeamName == updatedMatch.HomeTeam)
+                        .Select(t => t.TeamId)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    var incomingAwayTeamId = await dbContext.PredefinedTeams
+                        .Where(t => t.PredefinedTournamentId == tournament.TournamentId && t.TeamName == updatedMatch.AwayTeam)
+                        .Select(t => t.TeamId)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    bool teamChanged =
+                        incomingHomeTeamId != 0 && incomingAwayTeamId != 0 &&
+                        (existingMatch.HomeTeamId != incomingHomeTeamId ||
+                         existingMatch.AwayTeamId != incomingAwayTeamId);
+
                     bool hasChanges =
                         existingMatch.ExternalMatchId == updatedMatch.ExternalMatchId && (
                         existingMatch.Status.ToString() != updatedMatch.MatchStatus ||
                         existingMatch.MatchStart != updatedMatch.MatchStart ||
                         existingMatch.HomeScore != updatedMatch.ScoreHome ||
-                        existingMatch.AwayScore != updatedMatch.ScoreAway);
-                        //existingMatch.HomeTeam.TeamName != updatedMatch.HomeTeam ||
-                        //existingMatch.AwayTeam.TeamName != updatedMatch.AwayTeam);
+                        existingMatch.AwayScore != updatedMatch.ScoreAway ||
+                        teamChanged);
 
                     if (!hasChanges)
                         continue;
@@ -115,21 +130,11 @@ public class FootballDataHostedService : BackgroundService
                     existingMatch.HomeScore = updatedMatch.ScoreHome;
                     existingMatch.AwayScore = updatedMatch.ScoreAway;
 
-                    // Team ID matching by name
-                    var homeTeamId = await dbContext.PredefinedTeams
-                        .Where(t => t.PredefinedTournamentId == tournament.TournamentId && t.TeamName == updatedMatch.HomeTeam)
-                        .Select(t => t.TeamId)
-                        .FirstOrDefaultAsync(cancellationToken);
-
-                    var awayTeamId = await dbContext.PredefinedTeams
-                        .Where(t => t.PredefinedTournamentId == tournament.TournamentId && t.TeamName == updatedMatch.AwayTeam)
-                        .Select(t => t.TeamId)
-                        .FirstOrDefaultAsync(cancellationToken);
-
-                    if (homeTeamId != 0 && awayTeamId != 0)
+                    // Update predefined match team IDs (use incoming IDs we already computed)
+                    if (incomingHomeTeamId != 0 && incomingAwayTeamId != 0)
                     {
-                        existingMatch.HomeTeamId = homeTeamId;
-                        existingMatch.AwayTeamId = awayTeamId;
+                        existingMatch.HomeTeamId = incomingHomeTeamId;
+                        existingMatch.AwayTeamId = incomingAwayTeamId;
                     }
 
                     // Propagate changes to linked custom matches
@@ -143,26 +148,75 @@ public class FootballDataHostedService : BackgroundService
                     {
                         _logger.LogInformation($"Propagating updates to custom match {customMatch.MatchId}");
 
+                        // Always propagate these
                         customMatch.MatchStart = existingMatch.MatchStart;
                         customMatch.HomeScore = existingMatch.HomeScore;
                         customMatch.AwayScore = existingMatch.AwayScore;
                         customMatch.Status = existingMatch.Status;
 
-                        // Match team names to CustomTeams inside the same tournament
-                        var customHomeTeamId = await dbContext.CustomTeams
-                            .Where(t => t.TournamentId == customMatch.Tournament.TournamentId && t.TeamName == updatedMatch.HomeTeam)
-                            .Select(t => t.TeamId)
-                            .FirstOrDefaultAsync(cancellationToken);
+                        // --- NEW: update CustomMatch team IDs by mapping PredefinedTeamId -> CustomTeam.TeamId ---
+                        // This is the critical part for TBA -> real team updates.
 
-                        var customAwayTeamId = await dbContext.CustomTeams
-                            .Where(t => t.TournamentId == customMatch.Tournament.TournamentId && t.TeamName == updatedMatch.AwayTeam)
-                            .Select(t => t.TeamId)
-                            .FirstOrDefaultAsync(cancellationToken);
+                        var customTournamentId = customMatch.Tournament.TournamentId;
 
-                        if (customHomeTeamId != 0 && customAwayTeamId != 0)
+                        var newPredefinedHomeTeamId = existingMatch.HomeTeamId;
+                        var newPredefinedAwayTeamId = existingMatch.AwayTeamId;
+
+                        // HOME: find the custom team that references this predefined team
+                        if (newPredefinedHomeTeamId > 0)
                         {
-                            customMatch.HomeTeamId = customHomeTeamId;
-                            customMatch.AwayTeamId = customAwayTeamId;
+                            var mappedHomeTeam = await dbContext.CustomTeams
+                                .FirstOrDefaultAsync(t =>
+                                    t.TournamentId == customTournamentId &&
+                                    t.PredefinedTeamId == newPredefinedHomeTeamId, cancellationToken);
+
+                            if (mappedHomeTeam != null)
+                            {
+                                customMatch.HomeTeamId = mappedHomeTeam.TeamId;
+                            }
+                            else
+                            {
+                                // Fallback: reuse the placeholder team row currently used by the match
+                                var placeholderHome = await dbContext.CustomTeams
+                                    .FirstOrDefaultAsync(t =>
+                                        t.TournamentId == customTournamentId &&
+                                        t.TeamId == customMatch.HomeTeamId, cancellationToken);
+
+                                if (placeholderHome != null)
+                                {
+                                    placeholderHome.PredefinedTeamId = newPredefinedHomeTeamId;
+                                    placeholderHome.TeamName = updatedMatch.HomeTeam; // optional
+                                    customMatch.HomeTeamId = placeholderHome.TeamId;
+                                }
+                            }
+                        }
+
+                        // AWAY
+                        if (newPredefinedAwayTeamId > 0)
+                        {
+                            var mappedAwayTeam = await dbContext.CustomTeams
+                                .FirstOrDefaultAsync(t =>
+                                    t.TournamentId == customTournamentId &&
+                                    t.PredefinedTeamId == newPredefinedAwayTeamId, cancellationToken);
+
+                            if (mappedAwayTeam != null)
+                            {
+                                customMatch.AwayTeamId = mappedAwayTeam.TeamId;
+                            }
+                            else
+                            {
+                                var placeholderAway = await dbContext.CustomTeams
+                                    .FirstOrDefaultAsync(t =>
+                                        t.TournamentId == customTournamentId &&
+                                        t.TeamId == customMatch.AwayTeamId, cancellationToken);
+
+                                if (placeholderAway != null)
+                                {
+                                    placeholderAway.PredefinedTeamId = newPredefinedAwayTeamId;
+                                    placeholderAway.TeamName = updatedMatch.AwayTeam; // optional
+                                    customMatch.AwayTeamId = placeholderAway.TeamId;
+                                }
+                            }
                         }
                     }
 
