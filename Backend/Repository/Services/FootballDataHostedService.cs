@@ -83,6 +83,27 @@ public class FootballDataHostedService : BackgroundService
                     .GroupBy(t => t.TeamName)
                     .ToDictionary(g => g.Key, g => g.First());
 
+                // ============================================================
+                // Odds helpers (same shape as frontend; deterministic jitter to avoid churn)
+                // ============================================================
+                const double HOME_ADVANTAGE = 50.0;
+
+                static decimal Round2(decimal v) => Math.Round(v, 2, MidpointRounding.AwayFromZero);
+
+                static double Clamp(double v, double min, double max)
+                    => Math.Max(min, Math.Min(max, v));
+
+                static double JitterDeterministic(int matchId)
+                {
+                    unchecked
+                    {
+                        int h = matchId * 397;
+                        h ^= (h >> 16);
+                        var frac = (Math.Abs(h) % 10000) / 10000.0; // [0..0.9999]
+                        return 0.95 + (frac / 100.0);               // [0.95..0.959999]
+                    }
+                }
+
                 foreach (var updatedMatch in updatedDto.Matches)
                 {
                     if (updatedMatch.ExternalMatchId == null)
@@ -102,8 +123,6 @@ public class FootballDataHostedService : BackgroundService
                     // ============================================================
                     // 1) Resolve incoming EXTERNAL team IDs from API DTO (source of truth)
                     // ============================================================
-                    // If your updatedMatch already contains ExternalHomeTeamId/ExternalAwayTeamId,
-                    // use those instead of name lookup.
                     int? incomingExternalHomeTeamId = null;
                     int? incomingExternalAwayTeamId = null;
 
@@ -188,6 +207,48 @@ public class FootballDataHostedService : BackgroundService
                     if (incomingPredefinedAwayTeamId != 0)
                         existingMatch.AwayTeamId = incomingPredefinedAwayTeamId;
 
+                    // If team ids changed we should ensure navigation props are consistent for odds calc
+                    // (reload only when needed to avoid extra queries)
+                    if (incomingPredefinedHomeTeamId != 0 || incomingPredefinedAwayTeamId != 0)
+                    {
+                        existingMatch.HomeTeam = await dbContext.PredefinedTeams
+                            .FirstOrDefaultAsync(t => t.TeamId == existingMatch.HomeTeamId, cancellationToken);
+
+                        existingMatch.AwayTeam = await dbContext.PredefinedTeams
+                            .FirstOrDefaultAsync(t => t.TeamId == existingMatch.AwayTeamId, cancellationToken);
+                    }
+
+                    // ============================================================
+                    // 4b) Update odds in PREDEFINED match as well (future only)
+                    // ============================================================
+                    var nowUtcForPredefined = DateTime.UtcNow;
+
+                    bool predefinedNotStartedYet =
+                        existingMatch.MatchStart > nowUtcForPredefined &&
+                        existingMatch.Status != CustomMatch.MatchStatus.In_Play &&
+                        existingMatch.Status != CustomMatch.MatchStatus.Finished;
+
+                    if (predefinedNotStartedYet && existingMatch.HomeTeam != null && existingMatch.AwayTeam != null)
+                    {
+                        // Assumes PredefinedTeam has EloRating (same concept as CustomTeam)
+                        var hElo = (double)existingMatch.HomeTeam.EloRating;
+                        var aElo = (double)existingMatch.AwayTeam.EloRating;
+
+                        double powerRatio = 1.0 / (1.0 + Math.Pow(10.0, (aElo - hElo - HOME_ADVANTAGE) / 600.0));
+                        double probDraw = Clamp(0.29 - Math.Abs(0.5 - powerRatio) * 0.3, 0.0, 0.33);
+                        double probHome = (1.0 - probDraw) * powerRatio;
+                        double probAway = 1.0 - probHome - probDraw;
+
+                        if (probHome > 0 && probDraw > 0 && probAway > 0)
+                        {
+                            double jitter = JitterDeterministic(existingMatch.MatchId);
+
+                            existingMatch.HomeWinOdds = Round2((decimal)((1.0 / probHome) * jitter));
+                            existingMatch.DrawOdds = Round2((decimal)((1.0 / probDraw) * jitter));
+                            existingMatch.AwayWinOdds = Round2((decimal)((1.0 / probAway) * jitter));
+                        }
+                    }
+
                     // ============================================================
                     // 5) Propagate to linked custom matches
                     // ============================================================
@@ -270,6 +331,55 @@ public class FootballDataHostedService : BackgroundService
                                     placeholderAway.PredefinedTeamId = newPredefinedAwayId;
                                     placeholderAway.TeamName = updatedMatch.AwayTeam;
                                     customMatch.AwayTeamId = placeholderAway.TeamId;
+                                }
+                            }
+                        }
+
+                        // ============================================================
+                        // 5b) Recalculate odds for CUSTOM future (not started) matches only
+                        // ============================================================
+                        var nowUtc = DateTime.UtcNow;
+
+                        bool matchNotStartedYet =
+                            customMatch.MatchStart > nowUtc &&
+                            customMatch.Status != CustomMatch.MatchStatus.In_Play &&
+                            customMatch.Status != CustomMatch.MatchStatus.Finished;
+
+                        if (matchNotStartedYet)
+                        {
+                            // Resolve ELO for the CURRENT (possibly remapped) custom teams
+                            var homeElo = await dbContext.CustomTeams
+                                .Where(t => t.TeamId == customMatch.HomeTeamId)
+                                .Select(t => (int?)t.EloRating)
+                                .FirstOrDefaultAsync(cancellationToken);
+
+                            var awayElo = await dbContext.CustomTeams
+                                .Where(t => t.TeamId == customMatch.AwayTeamId)
+                                .Select(t => (int?)t.EloRating)
+                                .FirstOrDefaultAsync(cancellationToken);
+
+                            // if not resolvable (placeholders), skip odds update
+                            if (homeElo.HasValue && awayElo.HasValue)
+                            {
+                                double hElo = homeElo.Value;
+                                double aElo = awayElo.Value;
+
+                                double powerRatio = 1.0 / (1.0 + Math.Pow(10.0, (aElo - hElo - HOME_ADVANTAGE) / 600.0));
+                                double probDraw = Clamp(0.29 - Math.Abs(0.5 - powerRatio) * 0.3, 0.0, 0.33);
+                                double probHome = (1.0 - probDraw) * powerRatio;
+                                double probAway = 1.0 - probHome - probDraw;
+
+                                if (probHome > 0 && probDraw > 0 && probAway > 0)
+                                {
+                                    double jitter = JitterDeterministic(customMatch.MatchId);
+
+                                    var odds1 = Round2((decimal)((1.0 / probHome) * jitter));
+                                    var oddsX = Round2((decimal)((1.0 / probDraw) * jitter));
+                                    var odds2 = Round2((decimal)((1.0 / probAway) * jitter));
+
+                                    customMatch.HomeWinOdds = odds1;
+                                    customMatch.DrawOdds = oddsX;
+                                    customMatch.AwayWinOdds = odds2;
                                 }
                             }
                         }
