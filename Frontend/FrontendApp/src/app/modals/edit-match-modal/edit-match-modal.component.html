@@ -20,25 +20,19 @@
       </ion-select>
     </div>  
 
-    <!-- Home Team -->
-    <div class="match-row">
-      <ion-label class="selector-label">{{ 'MATCH_MODAL.HOME_TEAM' | translate }}</ion-label>
-      <ion-select formControlName="homeTeamFrontendId" [compareWith]="compareWith">
-        <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
-          {{ team.teamName }}
-        </ion-select-option>
-      </ion-select>
-    </div>
+  <!-- Home Team -->
+  <ion-select formControlName="homeTeamFrontendId" (ionChange)="onHomeTeamChange($event)">
+    <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
+      {{ team.teamName }}
+    </ion-select-option>
+  </ion-select>
 
-    <!-- Away Team -->
-    <div class="match-row">
-      <ion-label class="selector-label">{{ 'MATCH_MODAL.AWAY_TEAM' | translate }}</ion-label>
-      <ion-select formControlName="awayTeamFrontendId" [compareWith]="compareWith">
-        <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
-          {{ team.teamName }}
-        </ion-select-option>
-      </ion-select>
-    </div>
+  <!-- Away Team -->
+  <ion-select formControlName="awayTeamFrontendId" (ionChange)="onAwayTeamChange($event)">
+    <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
+      {{ team.teamName }}
+    </ion-select-option>
+  </ion-select>
 
     <!-- Match Type -->
     <div class="match-row">
