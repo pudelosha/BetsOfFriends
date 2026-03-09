@@ -252,4 +252,38 @@
     </ion-segment>
   </div>
 
+  <!-- Include Home Advantage -->
+<div class="grid-frame">
+  <ion-grid class="settings-grid">
+    <ion-row class="align-center">
+      <ion-col size="10" class="left-align">
+        <ion-label class="section-header">
+          {{ 'STAGE_INPUT_TYPE.HOME_ADVANTAGE' | translate }}
+        </ion-label>
+      </ion-col>
+      <ion-col size="2" class="right-align">
+        <ion-button fill="clear" size="small" id="homeAdvInfo">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </ion-button>
+        <ion-popover [keepContentsMounted]="true" trigger="homeAdvInfo">
+          <ng-template>
+            <ion-content class="ion-padding">
+              <p>{{ 'STAGE_INPUT_TYPE.HOME_ADVANTAGE_DESC' | translate }}</p>
+            </ion-content>
+          </ng-template>
+        </ion-popover>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-segment formControlName="includeHomeAdvantage">
+    <ion-segment-button [value]="true">
+      <ion-label>{{ 'STAGE_INPUT_TYPE.YES' | translate }}</ion-label>
+    </ion-segment-button>
+    <ion-segment-button [value]="false">
+      <ion-label>{{ 'STAGE_INPUT_TYPE.NO' | translate }}</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+</div>
+
 </form>

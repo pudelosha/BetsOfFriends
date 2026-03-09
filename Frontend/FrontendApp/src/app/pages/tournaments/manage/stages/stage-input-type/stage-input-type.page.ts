@@ -12,6 +12,7 @@ import { SelectCompetitionModalComponent } from 'src/app/modals/select-competiti
 import { ExternalDataService } from 'src/app/services/external-data.service';
 import { ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { IonGrid, IonRow, IonCol, IonLabel, IonButton, IonIcon, IonPopover, IonContent, IonSegment, IonSegmentButton, IonInput, IonSelect, IonSelectOption, IonDatetime, IonDatetimeButton, IonModal } from '@ionic/angular/standalone';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-stage-input-type',
@@ -47,7 +48,13 @@ export class StageInputTypePage implements OnInit {
     private externalDataService: ExternalDataService
   ) {}
 
-  ngOnInit(): void {  
+  ngOnInit(): void {
+
+    // Ensure home advantage toggle exists in the form
+    if (!this.tournamentForm.get('includeHomeAdvantage')) {
+      this.tournamentForm.addControl('includeHomeAdvantage', new FormControl(true));
+    }
+
     if (this.isCustomTournamentCreateMode) {
       this.tournamentForm.patchValue({
         tournamentVisibility: 'Private',
@@ -58,7 +65,7 @@ export class StageInputTypePage implements OnInit {
         updateMethod: 'Manual',
       });
     }
-  
+
     if (this.isCustomTournamentCreateMode) {
       this.loadPredefinedTournaments();
     }
@@ -622,24 +629,26 @@ export class StageInputTypePage implements OnInit {
 
   eraseForm(): void {
     this.tournamentForm.reset();
-  
+
     this.teamsExtracted.emit([]);
     this.stagesExtracted.emit([]);
     this.matchesExtracted.emit([]);
-  
+
     if (this.isCustomTournamentCreateMode) {
       this.tournamentForm.patchValue({
         tournamentVisibility: 'Private',
         updateMethod: 'Manual',
+        includeHomeAdvantage: true
       });
     }
-  
+
     if (!this.isEditMode && this.isPredefinedTournament) {
       this.tournamentForm.patchValue({
         updateMethod: 'Manual',
+        includeHomeAdvantage: true
       });
     }
-  
+
     this.showToast('All form data has been erased.', 'success');
   }
   

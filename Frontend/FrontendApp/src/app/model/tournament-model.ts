@@ -81,6 +81,7 @@ export interface Tournament {
   publicTournamentName?: string;
   tournamentVisibility: 'Private' | 'Public';
   updateMethod: 'Manual' | 'Semi' | 'Auto';
+  includeHomeAdvantage?: boolean;
   isActive: boolean,
   hasLiveUpdates?: boolean,
   createdBy: string;
