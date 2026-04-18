@@ -276,11 +276,13 @@
     </ion-row>
   </ion-grid>
 
-  <ion-segment formControlName="includeHomeAdvantage">
-    <ion-segment-button [value]="true">
+  <ion-segment
+    [value]="tournamentForm.get('includeHomeAdvantage')?.value ? 'true' : 'false'"
+    (ionChange)="onHomeAdvantageChange($event)">
+    <ion-segment-button value="true">
       <ion-label>{{ 'STAGE_INPUT_TYPE.YES' | translate }}</ion-label>
     </ion-segment-button>
-    <ion-segment-button [value]="false">
+    <ion-segment-button value="false">
       <ion-label>{{ 'STAGE_INPUT_TYPE.NO' | translate }}</ion-label>
     </ion-segment-button>
   </ion-segment>

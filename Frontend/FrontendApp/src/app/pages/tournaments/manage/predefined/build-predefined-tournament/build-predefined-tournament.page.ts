@@ -82,6 +82,10 @@ export class BuildPredefinedTournamentPage implements OnInit {
         this.titleService.setTitle('BUILD_PREDEFINED.TITLE');
       }
     });
+
+    this.tournamentForm.get('includeHomeAdvantage')?.valueChanges.subscribe(() => {
+      this.recalculateOddsForAllEligibleMatches();
+    });
   }
 
   ionViewWillEnter(): void {
@@ -106,6 +110,11 @@ export class BuildPredefinedTournamentPage implements OnInit {
 
   get isEditMode(): boolean {
     return !!this.tournamentId;
+  }
+
+  private isHomeAdvantageEnabled(): boolean {
+    console.log('includeHomeAdvantage:', this.tournamentForm.get('includeHomeAdvantage')?.value);
+    return this.tournamentForm.get('includeHomeAdvantage')?.value === true;
   }
 
   private resetFormData(): void {
@@ -199,13 +208,13 @@ export class BuildPredefinedTournamentPage implements OnInit {
         tournamentName: tournament.tournamentName,
         tournamentVisibility: tournament.tournamentVisibility,
         updateMethod: tournament.updateMethod,
+        includeHomeAdvantage: tournament.includeHomeAdvantage ?? true,
         season: tournament.season || null,
         seasonId: tournament.seasonId || null,
         tournamentStart: tournament.tournamentStart || null,
         tournamentEnd: tournament.tournamentEnd || null,
       });
 
-      // Step 1: Create a lookup map for teams (backendId -> frontendId & name)
       const teamMap = new Map<number, Team>();
 
       this.teamsArray.clear();
@@ -232,7 +241,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
         );
       });
 
-      // Step 2: Create a lookup map for stages (backendId -> frontendId & order)
       const stageMap = new Map<number, Stage>();
 
       this.stagesArray.clear();
@@ -254,7 +262,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
         );
       });
 
-      // Step 3: Populate Matches and assign frontend IDs correctly
       this.matchesArray.clear();
       tournament.matches.forEach((match) => {
         const homeTeam = teamMap.get(match.homeTeamId ?? 0);
@@ -395,23 +402,22 @@ export class BuildPredefinedTournamentPage implements OnInit {
         })
       );
     });
+
+    this.recalculateOddsForAllEligibleMatches();
   }
 
   handleTeamsUpdated(teamsData: { previousTeams: Team[]; updatedTeams: Team[] }): void {
     const { previousTeams, updatedTeams } = teamsData;
 
-    // Step 1: Create lookup maps for previous and updated teams
     const previousTeamMap = new Map(previousTeams.map((team) => [team.teamFrontendId, team]));
     const updatedTeamMap = new Map(updatedTeams.map((team) => [team.teamFrontendId, team]));
 
-    // Step 2: Identify removed teams and mark them as "Delete"
     previousTeams.forEach((team) => {
       if (!updatedTeamMap.has(team.teamFrontendId)) {
         updatedTeams.push({ ...team, recordStatus: 'Delete' });
       }
     });
 
-    // Step 3: Update teamsArray and handle name updates
     this.teamsArray.clear();
     updatedTeams.forEach((team) => {
       const previousTeam = previousTeamMap.get(team.teamFrontendId);
@@ -448,7 +454,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
       }
     });
 
-    // Step 4: Handle match deletions and status updates
     const validTeamFrontendIds = new Set(updatedTeams.map((team) => team.teamFrontendId));
     const matchesToKeep: AbstractControl[] = [];
 
@@ -462,16 +467,13 @@ export class BuildPredefinedTournamentPage implements OnInit {
         !validTeamFrontendIds.has(match.homeTeamFrontendId) ||
         !validTeamFrontendIds.has(match.awayTeamFrontendId)
       ) {
-        //console.log(`Deleting match: ${match.homeTeam} vs ${match.awayTeam}`);
       } else if (homeTeam?.recordStatus === 'Delete' || awayTeam?.recordStatus === 'Delete') {
-        //console.log(`Marking match as 'Delete': ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Delete' });
         matchesToKeep.push(control);
       } else if (
         previousTeamMap.get(match.homeTeamFrontendId)?.recordStatus === 'Delete' ||
         previousTeamMap.get(match.awayTeamFrontendId)?.recordStatus === 'Delete'
       ) {
-        //console.log(`Restoring match: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Update' });
         matchesToKeep.push(control);
       } else {
@@ -479,29 +481,24 @@ export class BuildPredefinedTournamentPage implements OnInit {
       }
     });
 
-    // Step 5: Rebuild matchesArray with only valid matches
     this.matchesArray.clear();
     matchesToKeep.forEach((control) => this.matchesArray.push(control));
 
-    // Step 6: Update odds for matches affected by Elo changes:
     this.recalculateOddsForMatchesAffectedByEloChange(previousTeams, updatedTeams);
   }
 
   handleStagesUpdated(stagesData: { previousStages: Stage[]; updatedStages: Stage[] }): void {
     const { previousStages, updatedStages } = stagesData;
 
-    // Step 1: Create lookup maps for previous and updated stages
     const previousStageMap = new Map(previousStages.map((stage) => [stage.stageFrontendId, stage]));
     const updatedStageMap = new Map(updatedStages.map((stage) => [stage.stageFrontendId, stage]));
 
-    // Step 2: Identify removed stages and mark them as "Delete"
     previousStages.forEach((stage) => {
       if (!updatedStageMap.has(stage.stageFrontendId)) {
         updatedStages.push({ ...stage, recordStatus: 'Delete' });
       }
     });
 
-    // Step 3: Update stagesArray and detect changes
     this.stagesArray.clear();
     updatedStages.forEach((stage) => {
       const previousStage = previousStageMap.get(stage.stageFrontendId);
@@ -528,7 +525,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
       }
     });
 
-    // Step 4: Handle match deletions and status updates
     const validStageFrontendIds = new Set(updatedStages.map((stage) => stage.stageFrontendId));
     const matchesToKeep: AbstractControl[] = [];
 
@@ -537,13 +533,10 @@ export class BuildPredefinedTournamentPage implements OnInit {
       const stage = updatedStageMap.get(match.stageFrontendId);
 
       if (!validStageFrontendIds.has(match.stageFrontendId)) {
-        //console.log(`Deleting match due to removed stage: ${match.homeTeam} vs ${match.awayTeam}`);
       } else if (stage?.recordStatus === 'Delete') {
-        //console.log(`Marking match as 'Delete' due to stage deletion: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Delete' });
         matchesToKeep.push(control);
       } else if (previousStageMap.get(match.stageFrontendId)?.recordStatus === 'Delete') {
-        //console.log(`Restoring match due to restored stage: ${match.homeTeam} vs ${match.awayTeam}`);
         (control as FormGroup).patchValue({ recordStatus: 'Update' });
         matchesToKeep.push(control);
       } else {
@@ -551,7 +544,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
       }
     });
 
-    // Step 5: Rebuild matchesArray with only valid matches
     this.matchesArray.clear();
     matchesToKeep.forEach((control) => this.matchesArray.push(control));
   }
@@ -560,14 +552,12 @@ export class BuildPredefinedTournamentPage implements OnInit {
     const previousMatches: Match[] = this.matchesArray.value;
     const previousMatchMap = new Map(previousMatches.map((match) => [match.matchFrontendId, match]));
 
-    // Step 1: Identify deleted matches
     previousMatches.forEach((match) => {
       if (!updatedMatches.some((updated) => updated.matchFrontendId === match.matchFrontendId)) {
         updatedMatches.push({ ...match, recordStatus: 'Delete' });
       }
     });
 
-    // Step 2: Detect updates & rebuild matchesArray
     this.matchesArray.clear();
     updatedMatches.forEach((match) => {
       const previousMatch = previousMatchMap.get(match.matchFrontendId);
@@ -619,7 +609,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
       );
     });
 
-    // Step 3: Handle match restoration (UNDO)
     updatedMatches.forEach((match) => {
       if (match.recordStatus === 'Update') {
         this.teamsArray.controls.forEach((control) => {
@@ -684,6 +673,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
       tournamentName: this.tournamentForm.value.tournamentName,
       tournamentVisibility: this.tournamentForm.value.tournamentVisibility,
       updateMethod: this.tournamentForm.value.updateMethod,
+      includeHomeAdvantage: this.isHomeAdvantageEnabled(),
       isActive: true,
       createdBy: this.tournamentForm.value.createdBy || 'Admin',
       createdAt: this.tournamentForm.value.createdAt || new Date().toISOString(),
@@ -825,17 +815,83 @@ export class BuildPredefinedTournamentPage implements OnInit {
     return 'T-' + Math.random().toString(36).substr(2, 9);
   }
 
-  private recalculateOddsForMatchesAffectedByEloChange(
-    previousTeams: Team[],
-    updatedTeams: Team[]
-  ): void {
-    // Fixed constant for now (same as your Excel "-50" term)
-    const HOME_ADVANTAGE = 50;
+  private recalculateOddsForAllEligibleMatches(): void {
+    const HOME_ADVANTAGE = this.isHomeAdvantageEnabled() ? 50 : 0;
 
     const round2 = (v: number) => Math.round(v * 100) / 100;
     const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
-    // Build maps for ELO lookup by frontendId
+    const eloByFrontendId = new Map<string, number>();
+    this.teamsArray.controls.forEach((control: AbstractControl) => {
+      const team = control.value;
+      const id = team.teamFrontendId;
+      const elo = Number(team.eloRating ?? 1000);
+
+      if (id) {
+        eloByFrontendId.set(id, elo);
+      }
+    });
+
+    this.matchesArray.controls.forEach((control: AbstractControl) => {
+      const fg = control as FormGroup;
+      const match = fg.value as any;
+
+      const recordStatus: string | null = match.recordStatus ?? null;
+      const matchStatus: string | null = match.matchStatus ?? null;
+
+      const isFinished =
+        recordStatus === 'Finalised' || (matchStatus ?? '').toLowerCase() === 'finished';
+
+      if (recordStatus === 'Delete' || isFinished) return;
+
+      const homeId: string | null = match.homeTeamFrontendId ?? null;
+      const awayId: string | null = match.awayTeamFrontendId ?? null;
+
+      if (!homeId || !awayId) return;
+
+      const homeElo = eloByFrontendId.get(homeId);
+      const awayElo = eloByFrontendId.get(awayId);
+
+      if (homeElo === undefined || awayElo === undefined) return;
+
+      const powerRatio = 1 / (1 + Math.pow(10, (awayElo - homeElo - HOME_ADVANTAGE) / 600));
+
+      const probDraw = clamp(0.29 - Math.abs(0.5 - powerRatio) * 0.3, 0, 0.33);
+      const probHome = (1 - probDraw) * powerRatio;
+      const probAway = 1 - probHome - probDraw;
+
+      if (!(probHome > 0) || !(probDraw > 0) || !(probAway > 0)) return;
+
+      const homeAwayJitter = 0.95 + Math.random() / 100;
+      const drawJitter = 0.95 + Math.random() / 100;
+
+      const odds1 = round2((1 / probHome) * homeAwayJitter);
+      const oddsX = round2((1 / probDraw) * drawJitter);
+      const odds2 = round2((1 / probAway) * homeAwayJitter);
+
+      const patch: any = {
+        homeWinOdds: odds1,
+        drawOdds: oddsX,
+        awayWinOdds: odds2,
+      };
+
+      if (recordStatus === 'Uploaded') {
+        patch.recordStatus = 'Update';
+      }
+
+      fg.patchValue(patch, { emitEvent: false });
+    });
+  }
+
+  private recalculateOddsForMatchesAffectedByEloChange(
+    previousTeams: Team[],
+    updatedTeams: Team[]
+  ): void {
+    const HOME_ADVANTAGE = this.isHomeAdvantageEnabled() ? 50 : 0;
+
+    const round2 = (v: number) => Math.round(v * 100) / 100;
+    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+
     const prevEloByFrontendId = new Map<string, number>();
     previousTeams.forEach((t) => {
       const elo = Number(t.eloRating ?? 1000);
@@ -848,7 +904,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
       if (t.teamFrontendId) nextEloByFrontendId.set(t.teamFrontendId, elo);
     });
 
-    // Determine which teams actually changed ELO
     const changedTeamFrontendIds = new Set<string>();
     updatedTeams.forEach((t) => {
       const id = t.teamFrontendId;
@@ -857,7 +912,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
       const prev = prevEloByFrontendId.get(id);
       const next = nextEloByFrontendId.get(id);
 
-      // Treat missing prev as "no baseline" -> don't trigger odds recalc
       if (prev !== undefined && next !== undefined && prev !== next) {
         changedTeamFrontendIds.add(id);
       }
@@ -865,7 +919,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
 
     if (changedTeamFrontendIds.size === 0) return;
 
-    // Iterate matches and update odds where needed
     this.matchesArray.controls.forEach((control: AbstractControl) => {
       const fg = control as FormGroup;
       const match = fg.value as any;
@@ -873,7 +926,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
       const recordStatus: string | null = match.recordStatus ?? null;
       const matchStatus: string | null = match.matchStatus ?? null;
 
-      // Skip deleted or finished/finalised matches
       const isFinished =
         recordStatus === 'Finalised' || (matchStatus ?? '').toLowerCase() === 'finished';
 
@@ -882,39 +934,28 @@ export class BuildPredefinedTournamentPage implements OnInit {
       const homeId: string | null = match.homeTeamFrontendId ?? null;
       const awayId: string | null = match.awayTeamFrontendId ?? null;
 
-      // Allow placeholders: if missing/temporary ids -> skip odds update
       if (!homeId || !awayId) return;
 
-      // Only recalc if either team's ELO changed
       if (!changedTeamFrontendIds.has(homeId) && !changedTeamFrontendIds.has(awayId)) return;
 
-      // Resolve ELOs (if placeholders not yet resolvable -> skip)
       const homeElo = nextEloByFrontendId.get(homeId);
       const awayElo = nextEloByFrontendId.get(awayId);
       if (homeElo === undefined || awayElo === undefined) return;
 
-      // === Excel formulas ===
-      // PowerRatio = 1 / (1 + 10^(((AwayElo - HomeElo - 50)/600)))
       const powerRatio = 1 / (1 + Math.pow(10, (awayElo - homeElo - HOME_ADVANTAGE) / 600));
 
-      // ProbDraw = MAX(0, MIN(0.33, 0.29 - ABS(0.5 - PowerRatio)*0.3))
       const probDraw = clamp(0.29 - Math.abs(0.5 - powerRatio) * 0.3, 0, 0.33);
-
-      // ProbHome = (1 - ProbDraw) * PowerRatio
       const probHome = (1 - probDraw) * powerRatio;
-
-      // ProbAway = 1 - ProbHome - ProbDraw
       const probAway = 1 - probHome - probDraw;
 
-      // Guard: avoid division by 0 / negative probs
       if (!(probHome > 0) || !(probDraw > 0) || !(probAway > 0)) return;
 
-      // Odds = ROUND(1/Prob*(0.95 + RAND()/100), 2)
-      const jitter = () => 0.95 + Math.random() / 100;
+      const homeAwayJitter = 0.95 + Math.random() / 100;
+      const drawJitter = 0.95 + Math.random() / 100;
 
-      const odds1 = round2((1 / probHome) * jitter());
-      const oddsX = round2((1 / probDraw) * jitter());
-      const odds2 = round2((1 / probAway) * jitter());
+      const odds1 = round2((1 / probHome) * homeAwayJitter);
+      const oddsX = round2((1 / probDraw) * drawJitter);
+      const odds2 = round2((1 / probAway) * homeAwayJitter);
 
       const patch: any = {
         homeWinOdds: odds1,
@@ -922,7 +963,6 @@ export class BuildPredefinedTournamentPage implements OnInit {
         awayWinOdds: odds2,
       };
 
-      // Mark existing backend records as needing update (don’t change New)
       if (recordStatus === 'Uploaded') {
         patch.recordStatus = 'Update';
       }

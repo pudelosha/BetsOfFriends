@@ -54,6 +54,7 @@ export class EditMatchModalComponent implements OnInit {
   @Input() index?: number;
   @Input() teams: Team[] = [];
   @Input() stages: Stage[] = [];
+  @Input() includeHomeAdvantage: boolean = true;
 
   matchForm: FormGroup;
 
@@ -127,7 +128,6 @@ export class EditMatchModalComponent implements OnInit {
       });
     }
 
-    // Recalculate odds when user changes selected teams in dropdowns
     const homeCtrl = this.matchForm.get('homeTeamFrontendId');
     const awayCtrl = this.matchForm.get('awayTeamFrontendId');
 
@@ -136,7 +136,6 @@ export class EditMatchModalComponent implements OnInit {
     homeCtrl?.valueChanges.subscribe(recalc);
     awayCtrl?.valueChanges.subscribe(recalc);
 
-    // Optional: run once for edit mode if both teams are already selected
     this.recalculateOddsFromSelectedTeams();
   }
 
@@ -162,40 +161,31 @@ export class EditMatchModalComponent implements OnInit {
     awayQualifiesControl?.updateValueAndValidity();
   }
 
-  // Odds calculator (same logic as in BuildPredefinedTournamentPage)
   private calculateOdds(homeElo: number, awayElo: number) {
-    const HOME_ADVANTAGE = 50;
+    const HOME_ADVANTAGE = this.includeHomeAdvantage ? 50 : 0;
 
     const round2 = (v: number) => Math.round(v * 100) / 100;
     const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
-    // PowerRatio = 1 / (1 + 10^(((AwayElo - HomeElo - 50)/600)))
     const powerRatio =
       1 / (1 + Math.pow(10, (awayElo - homeElo - HOME_ADVANTAGE) / 600));
 
-    // ProbDraw = MAX(0, MIN(0.33, 0.29 - ABS(0.5 - PowerRatio)*0.3))
     const probDraw = clamp(0.29 - Math.abs(0.5 - powerRatio) * 0.3, 0, 0.33);
-
-    // ProbHome = (1 - ProbDraw) * PowerRatio
     const probHome = (1 - probDraw) * powerRatio;
-
-    // ProbAway = 1 - ProbHome - ProbDraw
     const probAway = 1 - probHome - probDraw;
 
-    // Guard
     if (!(probHome > 0) || !(probDraw > 0) || !(probAway > 0)) return null;
 
-    // Odds = ROUND(1/Prob*(0.95 + RAND()/100), 2)
-    const jitter = () => 0.95 + Math.random() / 100;
+    const homeAwayJitter = 0.95 + Math.random() / 100;
+    const drawJitter = 0.95 + Math.random() / 100;
 
     return {
-      homeWinOdds: round2((1 / probHome) * jitter()),
-      drawOdds: round2((1 / probDraw) * jitter()),
-      awayWinOdds: round2((1 / probAway) * jitter()),
+      homeWinOdds: round2((1 / probHome) * homeAwayJitter),
+      drawOdds: round2((1 / probDraw) * drawJitter),
+      awayWinOdds: round2((1 / probAway) * homeAwayJitter),
     };
   }
 
-  // Recalculate odds from dropdown-selected teams
   private recalculateOddsFromSelectedTeams(): void {
     const homeId = this.matchForm.value.homeTeamFrontendId;
     const awayId = this.matchForm.value.awayTeamFrontendId;
@@ -203,7 +193,6 @@ export class EditMatchModalComponent implements OnInit {
     if (!homeId || !awayId) return;
     if (homeId === awayId) return;
 
-    // Don't auto-change odds for finished matches
     const matchStatus = (this.matchForm.value.matchStatus ?? '').toLowerCase();
     if (matchStatus === 'finished') return;
 
@@ -214,9 +203,10 @@ export class EditMatchModalComponent implements OnInit {
     const homeElo = Number(home.eloRating ?? 1000);
     const awayElo = Number(away.eloRating ?? 1000);
 
+    console.log('includeHomeAdvantage', this.includeHomeAdvantage);
     console.log('homeId', homeId, 'awayId', awayId);
-  console.log('homeTeam', home, 'awayTeam', away);
-  console.log('homeElo', homeElo, 'awayElo', awayElo);
+    console.log('homeTeam', home, 'awayTeam', away);
+    console.log('homeElo', homeElo, 'awayElo', awayElo);
 
     const odds = this.calculateOdds(homeElo, awayElo);
     if (!odds) return;
@@ -330,10 +320,10 @@ export class EditMatchModalComponent implements OnInit {
   }
 
   onHomeTeamChange(ev: any): void {
-  const v = ev?.detail?.value ?? null;
-  this.matchForm.get('homeTeamFrontendId')?.setValue(v, { emitEvent: true });
-  this.recalculateOddsFromSelectedTeams();
-}
+    const v = ev?.detail?.value ?? null;
+    this.matchForm.get('homeTeamFrontendId')?.setValue(v, { emitEvent: true });
+    this.recalculateOddsFromSelectedTeams();
+  }
 
   onAwayTeamChange(ev: any): void {
     const v = ev?.detail?.value ?? null;

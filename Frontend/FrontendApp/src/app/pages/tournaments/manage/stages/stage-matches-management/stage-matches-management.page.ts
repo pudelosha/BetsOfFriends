@@ -20,6 +20,7 @@ export class StageMatchesManagementPage implements OnInit {
   @Input() matchesArray!: FormArray;
   @Input() teamsArray!: Team[];
   @Input() stagesArray!: Stage[];
+  @Input() includeHomeAdvantage: boolean = true;
   @Output() matchesUpdated = new EventEmitter<Match[]>();
 
   isMobile = false;
@@ -71,6 +72,7 @@ export class StageMatchesManagementPage implements OnInit {
         index: undefined,
         teams: availableTeams,
         stages: availableStages,
+        includeHomeAdvantage: this.includeHomeAdvantage,
       },
     });
   
@@ -134,6 +136,7 @@ export class StageMatchesManagementPage implements OnInit {
         index,
         teams: availableTeams,
         stages: availableStages,
+        includeHomeAdvantage: this.includeHomeAdvantage,
       },
     });
   

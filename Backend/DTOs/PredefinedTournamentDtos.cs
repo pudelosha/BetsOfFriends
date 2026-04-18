@@ -20,6 +20,9 @@ namespace Backend.DTOs
         [Required]
         public bool IsActive { get; set; }
 
+        [Required]
+        public bool IncludeHomeAdvantage { get; set; }
+
         // Frontend: 'Private' | 'Public'
         [Required, RegularExpression("^(Private|Public)$")]
         public string TournamentVisibility { get; set; } = "Private";

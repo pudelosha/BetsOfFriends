@@ -17,6 +17,9 @@ namespace Backend.DTOs
         public bool IsActive { get; set; }
 
         [Required]
+        public bool IncludeHomeAdvantage { get; set; }
+
+        [Required]
         public string TournamentVisibility { get; set; } = "Private";
 
         [Required]

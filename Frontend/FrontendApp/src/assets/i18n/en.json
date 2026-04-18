@@ -548,7 +548,11 @@
     "UPDATE_BETS_FROM_FILE": "Update bets from file",
     "IMPORT_TOURNAMENT": "Import tournament",
     "UPDATE_TOURNAMENT": "Update tournament",
-    "ERASE_FORM": "Erase All Form Data"
+    "ERASE_FORM": "Erase All Form Data",
+    "HOME_ADVANTAGE": "ELO Home Advantage",
+    "YES": "True",
+    "NO": "False",
+    "HOME_ADVANTAGE_DESC": "If enabled, odds will include the home advantage based on teams' ELO rankings."
   },
   "USERS_LIST": {
     "ACTIVE_PARTICIPANTS": "Active Participants",

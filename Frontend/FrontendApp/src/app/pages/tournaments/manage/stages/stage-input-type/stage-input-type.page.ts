@@ -50,9 +50,14 @@ export class StageInputTypePage implements OnInit {
 
   ngOnInit(): void {
 
-    // Ensure home advantage toggle exists in the form
+    // Ensure home advantage toggle exists in the form as a BOOLEAN
     if (!this.tournamentForm.get('includeHomeAdvantage')) {
       this.tournamentForm.addControl('includeHomeAdvantage', new FormControl(true));
+    } else {
+      const currentValue = this.tournamentForm.get('includeHomeAdvantage')?.value;
+      this.tournamentForm.patchValue({
+        includeHomeAdvantage: currentValue === true || currentValue === 'true'
+      });
     }
 
     if (this.isCustomTournamentCreateMode) {
@@ -69,6 +74,11 @@ export class StageInputTypePage implements OnInit {
     if (this.isCustomTournamentCreateMode) {
       this.loadPredefinedTournaments();
     }
+  }
+
+  onHomeAdvantageChange(event: any): void {
+    const value = event?.detail?.value === 'true';
+    this.tournamentForm.get('includeHomeAdvantage')?.setValue(value);
   }
           
   loadPredefinedTournaments(): void {

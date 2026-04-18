@@ -67,6 +67,7 @@ namespace Backend.Repository.Services
                     PredefinedTournamentId = tournamentDto.PredefinedTournamentId,
                     Visibility = Enum.TryParse<TournamentVisibility>(tournamentDto.TournamentVisibility, true, out var parsedVisibility) ? parsedVisibility : TournamentVisibility.Private,
                     Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var parsedUpdate) ? parsedUpdate : TournamentUpdate.Manual,
+                    CalculateBetsWithHomeAdvantage = tournamentDto.IncludeHomeAdvantage,
                     AllowExactResultBonus = tournamentDto.Settings?.AllowExactResultBonus ?? false,
                     ExactResultBonusCalculation = Enum.TryParse<CustomTournament.ExactResultBonusCalculationType>(tournamentDto.Settings?.ExactResultBonusCalculation, true, out var exactBonusCalculation) ? exactBonusCalculation : CustomTournament.ExactResultBonusCalculationType.Fixed,
                     ExactResultBonus = tournamentDto.Settings?.ExactResultBonus,
@@ -398,6 +399,7 @@ namespace Backend.Repository.Services
                 tournament.Season = tournamentDto.Season;
                 tournament.EndDate = tournamentDto.TournamentEnd;
                 tournament.IsActive = tournamentDto.IsActive;
+                tournament.CalculateBetsWithHomeAdvantage = tournamentDto.IncludeHomeAdvantage;
                 tournament.Visibility = Enum.TryParse<TournamentVisibility>(tournamentDto.TournamentVisibility, true, out var visibilityEnum)
                     ? visibilityEnum
                     : TournamentVisibility.Private;
@@ -708,6 +710,7 @@ namespace Backend.Repository.Services
                     TournamentVisibility = tournament.Visibility.ToString(),
                     UpdateMethod = tournament.Update.ToString(),
                     IsActive = tournament.IsActive,
+                    IncludeHomeAdvantage = tournament.CalculateBetsWithHomeAdvantage,
                     Teams = tournament.Teams.Select(team => new CustomTeamDto
                     {
                         TeamId = team.TeamId,
@@ -2062,6 +2065,7 @@ namespace Backend.Repository.Services
                 TournamentVisibility = tournament.Visibility.ToString(),
                 UpdateMethod = tournament.Update.ToString(),
                 IsActive = tournament.IsActive,
+                IncludeHomeAdvantage = tournament.CalculateBetsWithHomeAdvantage,
                 Users = new(),
                 Settings = null
             };

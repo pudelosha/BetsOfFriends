@@ -39,6 +39,7 @@
         [matchesArray]="matchesArray"
         [teamsArray]="teamsArray.value"
         [stagesArray]="stagesArray.value"
+        [includeHomeAdvantage]="tournamentForm.get('includeHomeAdvantage')?.value === true"
         (matchesUpdated)="handleMatchesUpdated($event)">
       </app-stage-matches-management>
     </div>

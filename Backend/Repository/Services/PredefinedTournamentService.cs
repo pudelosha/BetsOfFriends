@@ -37,6 +37,7 @@ namespace Backend.Repository.Services
                     IsActive = false,   // by default new tournament is not visible
                     CreatedBy = tournamentDto.CreatedBy,
                     CreatedAt = DateTime.UtcNow,
+                    CalculateBetsWithHomeAdvantage = tournamentDto.IncludeHomeAdvantage,
                     Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var u)
                         ? u
                         : TournamentUpdate.Manual
@@ -161,6 +162,7 @@ namespace Backend.Repository.Services
                 tournament.ExternalSeasonId = tournamentDto.SeasonId;
                 tournament.EndDate = tournamentDto.TournamentEnd;
                 tournament.CreatedBy = tournamentDto.CreatedBy;
+                tournament.CalculateBetsWithHomeAdvantage = tournamentDto.IncludeHomeAdvantage;
 
                 tournament.Update = Enum.TryParse<TournamentUpdate>(tournamentDto.UpdateMethod, true, out var updateEnum)
                     ? updateEnum
@@ -197,7 +199,7 @@ namespace Backend.Repository.Services
                     if (existingTeamsById.TryGetValue(dtoTeam.TeamId.Value, out var existingTeam))
                     {
                         existingTeam.TeamName = dtoTeam.TeamName;
-                        existingTeam.ExternalTeamId = dtoTeam.ExternalTeamId;
+                        //existingTeam.ExternalTeamId = dtoTeam.ExternalTeamId;
 
                         // ELO update (default to 1000 if missing)
                         existingTeam.EloRating = dtoTeam.EloRating;
@@ -210,7 +212,7 @@ namespace Backend.Repository.Services
                     tournament.PredefinedTeams.Add(new PredefinedTeam
                     {
                         TeamName = dtoTeam.TeamName,
-                        ExternalTeamId = dtoTeam.ExternalTeamId,
+                        //ExternalTeamId = dtoTeam.ExternalTeamId,
                         PredefinedTournamentId = tournament.TournamentId,
                         EloRating = dtoTeam.EloRating
                     });
@@ -428,6 +430,7 @@ namespace Backend.Repository.Services
                     TournamentName = tournament.TournamentName,
                     CreatedBy = tournament.CreatedBy,
                     CreatedAt = DateTime.SpecifyKind(tournament.CreatedAt, DateTimeKind.Utc),
+                    IncludeHomeAdvantage = tournament.CalculateBetsWithHomeAdvantage,
                     UpdateMethod = tournament.Update.ToString(),
                     IsActive = tournament.IsActive,
                     Teams = tournament.PredefinedTeams.Select(team => new PredefinedTeamDto

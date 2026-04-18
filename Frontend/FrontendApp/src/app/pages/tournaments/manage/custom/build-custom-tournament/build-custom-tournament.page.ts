@@ -57,7 +57,8 @@ export class BuildCustomTournamentPage implements OnInit {
       tournamentName: ['', [Validators.required, Validators.maxLength(50)]],
       publicTournamentName: [null],
       tournamentVisibility: ['Private', Validators.required],
-      updateMethod: ['Manual', Validators.required], 
+      updateMethod: ['Manual', Validators.required],
+      includeHomeAdvantage: [true],
       season: [null],              
       tournamentEnd: [null],      
       teams: this.fb.array([], Validators.required),
@@ -92,6 +93,10 @@ export class BuildCustomTournamentPage implements OnInit {
         this.loadTournament();
       }
     });
+
+    this.tournamentForm.get('includeHomeAdvantage')?.valueChanges.subscribe(() => {
+      this.recalculateOddsForAllEligibleMatches();
+    });
   }
 
   ionViewWillEnter(): void {
@@ -109,6 +114,7 @@ export class BuildCustomTournamentPage implements OnInit {
       this.tournamentForm.patchValue({
         tournamentVisibility: 'Private',
         updateMethod: 'Manual',
+        includeHomeAdvantage: true,
       });
   
       setTimeout(() => {
@@ -120,9 +126,35 @@ export class BuildCustomTournamentPage implements OnInit {
   get isEditMode(): boolean {
     return !!this.tournamentId;
   }
+
+  private isHomeAdvantageEnabled(): boolean {
+    return this.tournamentForm.get('includeHomeAdvantage')?.value === true;
+  }
   
   private resetFormData(): void {
-    this.tournamentForm.reset();
+    this.tournamentForm.reset({
+      tournamentId: null,
+      externalTournamentId: null,
+      predefinedTournamentId: null,
+      tournamentName: '',
+      publicTournamentName: null,
+      tournamentVisibility: 'Private',
+      updateMethod: 'Manual',
+      includeHomeAdvantage: true,
+      season: null,
+      tournamentEnd: null,
+      settings: {
+        allowExactResultBonus: false,
+        exactResultBonusCalculation: 'Fixed',
+        exactResultBonus: null,
+        allowWhoQualifiesBets: false,
+        allowBetsWithBooster: false,
+        maxBetBooster: 1,
+        totalBoosterPool: null,
+        allowNonSubmittedBetsPenalty: false,
+        nonSubmittedBetPenalty: null,
+      },
+    });
     this.teamsArray.clear();
     this.stagesArray.clear();
     this.matchesArray.clear();
@@ -209,6 +241,7 @@ export class BuildCustomTournamentPage implements OnInit {
       tournamentVisibility: tournament.tournamentVisibility || 'Private',
       publicTournamentName: tournament.publicTournamentName || '',
       updateMethod: tournament.updateMethod || 'Manual',
+      includeHomeAdvantage: tournament.includeHomeAdvantage ?? true,
       season: tournament.season || null,                   
       tournamentEnd: tournament.tournamentEnd || null        
     });
@@ -425,6 +458,8 @@ export class BuildCustomTournamentPage implements OnInit {
         recordStatus: match.recordStatus || 'New'
       }));
     });
+
+    this.recalculateOddsForAllEligibleMatches();
   }
   
   handleUsersUpdated(users: User[]): void {  
@@ -541,7 +576,9 @@ export class BuildCustomTournamentPage implements OnInit {
   
     // Step 5: Rebuild matchesArray with only valid matches
     this.matchesArray.clear();
-    matchesToKeep.forEach(control => this.matchesArray.push(control));  
+    matchesToKeep.forEach(control => this.matchesArray.push(control));
+
+    this.recalculateOddsForMatchesAffectedByEloChange(previousTeams, updatedTeams);
   }
       
   handleStagesUpdated(stagesData: { previousStages: Stage[]; updatedStages: Stage[] }): void {
@@ -729,6 +766,7 @@ export class BuildCustomTournamentPage implements OnInit {
       publicTournamentName: this.tournamentForm.value.publicTournamentName?.trim() || undefined,
       tournamentVisibility: this.tournamentForm.value.tournamentVisibility || 'Private',
       updateMethod: this.tournamentForm.value.updateMethod || 'Manual',
+      includeHomeAdvantage: this.isHomeAdvantageEnabled(),
       season: this.tournamentForm.value.season || null,
       tournamentEnd: this.tournamentForm.value.tournamentEnd || null,
       isActive: true,
@@ -847,6 +885,10 @@ export class BuildCustomTournamentPage implements OnInit {
       const updatedTournament: Tournament = await firstValueFrom(
         this.tournamentService.checkForTournamentUpdates(tournamentId)
       );
+
+      this.tournamentForm.patchValue({
+        includeHomeAdvantage: updatedTournament.includeHomeAdvantage ?? this.tournamentForm.value.includeHomeAdvantage
+      });
     
       this.mergeUpdatedEntities(this.teamsArray, updatedTournament.teams, 'teamId');
       this.mergeUpdatedEntities(this.stagesArray, updatedTournament.stages, 'stageId');
@@ -996,5 +1038,161 @@ export class BuildCustomTournamentPage implements OnInit {
 
   private generateFrontendId(): string {
     return 'T-' + Math.random().toString(36).substr(2, 9);
+  }
+
+  private recalculateOddsForAllEligibleMatches(): void {
+    const HOME_ADVANTAGE = this.isHomeAdvantageEnabled() ? 50 : 0;
+
+    const round2 = (v: number) => Math.round(v * 100) / 100;
+    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+
+    const eloByFrontendId = new Map<string, number>();
+    this.teamsArray.controls.forEach((control: AbstractControl) => {
+      const team = control.value;
+      const id = team.teamFrontendId;
+      const elo = Number(team.eloRating ?? 1000);
+
+      if (id) {
+        eloByFrontendId.set(id, elo);
+      }
+    });
+
+    this.matchesArray.controls.forEach((control: AbstractControl) => {
+      const fg = control as FormGroup;
+      const match = fg.value as any;
+
+      const recordStatus: string | null = match.recordStatus ?? null;
+      const matchStatus: string | null = match.matchStatus ?? null;
+
+      const isFinished =
+        recordStatus === 'Finalised' || (matchStatus ?? '').toLowerCase() === 'finished';
+
+      if (recordStatus === 'Delete' || isFinished) return;
+
+      const homeId: string | null = match.homeTeamFrontendId ?? null;
+      const awayId: string | null = match.awayTeamFrontendId ?? null;
+
+      if (!homeId || !awayId) return;
+
+      const homeElo = eloByFrontendId.get(homeId);
+      const awayElo = eloByFrontendId.get(awayId);
+
+      if (homeElo === undefined || awayElo === undefined) return;
+
+      const powerRatio = 1 / (1 + Math.pow(10, (awayElo - homeElo - HOME_ADVANTAGE) / 600));
+
+      const probDraw = clamp(0.29 - Math.abs(0.5 - powerRatio) * 0.3, 0, 0.33);
+      const probHome = (1 - probDraw) * powerRatio;
+      const probAway = 1 - probHome - probDraw;
+
+      if (!(probHome > 0) || !(probDraw > 0) || !(probAway > 0)) return;
+
+      const homeAwayJitter = 0.95 + Math.random() / 100;
+      const drawJitter = 0.95 + Math.random() / 100;
+
+      const odds1 = round2((1 / probHome) * homeAwayJitter);
+      const oddsX = round2((1 / probDraw) * drawJitter);
+      const odds2 = round2((1 / probAway) * homeAwayJitter);
+
+      const patch: any = {
+        homeWinOdds: odds1,
+        drawOdds: oddsX,
+        awayWinOdds: odds2,
+      };
+
+      if (recordStatus === 'Uploaded') {
+        patch.recordStatus = 'Update';
+      }
+
+      fg.patchValue(patch, { emitEvent: false });
+    });
+  }
+
+  private recalculateOddsForMatchesAffectedByEloChange(
+    previousTeams: Team[],
+    updatedTeams: Team[]
+  ): void {
+    const HOME_ADVANTAGE = this.isHomeAdvantageEnabled() ? 50 : 0;
+
+    const round2 = (v: number) => Math.round(v * 100) / 100;
+    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+
+    const prevEloByFrontendId = new Map<string, number>();
+    previousTeams.forEach((t) => {
+      const elo = Number(t.eloRating ?? 1000);
+      if (t.teamFrontendId) prevEloByFrontendId.set(t.teamFrontendId, elo);
+    });
+
+    const nextEloByFrontendId = new Map<string, number>();
+    updatedTeams.forEach((t) => {
+      const elo = Number(t.eloRating ?? 1000);
+      if (t.teamFrontendId) nextEloByFrontendId.set(t.teamFrontendId, elo);
+    });
+
+    const changedTeamFrontendIds = new Set<string>();
+    updatedTeams.forEach((t) => {
+      const id = t.teamFrontendId;
+      if (!id) return;
+
+      const prev = prevEloByFrontendId.get(id);
+      const next = nextEloByFrontendId.get(id);
+
+      if (prev !== undefined && next !== undefined && prev !== next) {
+        changedTeamFrontendIds.add(id);
+      }
+    });
+
+    if (changedTeamFrontendIds.size === 0) return;
+
+    this.matchesArray.controls.forEach((control: AbstractControl) => {
+      const fg = control as FormGroup;
+      const match = fg.value as any;
+
+      const recordStatus: string | null = match.recordStatus ?? null;
+      const matchStatus: string | null = match.matchStatus ?? null;
+
+      const isFinished =
+        recordStatus === 'Finalised' || (matchStatus ?? '').toLowerCase() === 'finished';
+
+      if (recordStatus === 'Delete' || isFinished) return;
+
+      const homeId: string | null = match.homeTeamFrontendId ?? null;
+      const awayId: string | null = match.awayTeamFrontendId ?? null;
+
+      if (!homeId || !awayId) return;
+
+      if (!changedTeamFrontendIds.has(homeId) && !changedTeamFrontendIds.has(awayId)) return;
+
+      const homeElo = nextEloByFrontendId.get(homeId);
+      const awayElo = nextEloByFrontendId.get(awayId);
+      if (homeElo === undefined || awayElo === undefined) return;
+
+      const powerRatio = 1 / (1 + Math.pow(10, (awayElo - homeElo - HOME_ADVANTAGE) / 600));
+
+      const probDraw = clamp(0.29 - Math.abs(0.5 - powerRatio) * 0.3, 0, 0.33);
+      const probHome = (1 - probDraw) * powerRatio;
+      const probAway = 1 - probHome - probDraw;
+
+      if (!(probHome > 0) || !(probDraw > 0) || !(probAway > 0)) return;
+
+      const homeAwayJitter = 0.95 + Math.random() / 100;
+      const drawJitter = 0.95 + Math.random() / 100;
+
+      const odds1 = round2((1 / probHome) * homeAwayJitter);
+      const oddsX = round2((1 / probDraw) * drawJitter);
+      const odds2 = round2((1 / probAway) * homeAwayJitter);
+
+      const patch: any = {
+        homeWinOdds: odds1,
+        drawOdds: oddsX,
+        awayWinOdds: odds2,
+      };
+
+      if (recordStatus === 'Uploaded') {
+        patch.recordStatus = 'Update';
+      }
+
+      fg.patchValue(patch);
+    });
   }
 }

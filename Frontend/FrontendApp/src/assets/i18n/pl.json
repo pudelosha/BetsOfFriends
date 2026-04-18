@@ -548,7 +548,11 @@
     "UPDATE_BETS_FROM_FILE": "Zaktualizuj zakłady z pliku",
     "IMPORT_TOURNAMENT": "Importuj turniej",
     "UPDATE_TOURNAMENT": "Aktualizuj turniej",
-    "ERASE_FORM": "Wyczyść cały formularz"
+    "ERASE_FORM": "Wyczyść cały formularz",
+    "HOME_ADVANTAGE": "ELO Przewaga własnego boiska",
+    "YES": "Tak",
+    "NO": "Nie",
+    "HOME_ADVANTAGE_DESC": "Jeśli włączone, kursy będą uwzględniać przewagę własnego boiska na podstawie rankingów ELO drużyn."
   },
   "USERS_LIST": {
     "ACTIVE_PARTICIPANTS": "Aktywni uczestnicy",
