@@ -12,18 +12,19 @@ obj/
 .vs/
 
 # ===============================
-# Backend secrets (LOCAL ONLY)
+# Backend secrets / local config
 # ===============================
+Backend/appsettings.json
 Backend/appsettings.local.json
 Backend/appsettings.*.local.json
+Backend/Backend.csproj.user
 
 # ===============================
-# OS
+# Visual Studio publish profiles
 # ===============================
-Thumbs.db
-.DS_Store
-
-Backend/appsettings.json
+Backend/Properties/PublishProfiles/*.pubxml
+Backend/Properties/PublishProfiles/*.pubxml.user
+**/*.pubxml
 **/*.pubxml.user
 
 # ===============================
@@ -35,11 +36,7 @@ publish-test/
 **/publish-test/
 
 # ===============================
-# Backend secrets / publish profiles
+# OS
 # ===============================
-Backend/appsettings.json
-Backend/appsettings.local.json
-Backend/appsettings.*.local.json
-Backend/Properties/PublishProfiles/*.pubxml
-Backend/Properties/PublishProfiles/*.pubxml.user
-**/*.pubxml.user
+Thumbs.db
+.DS_Store
