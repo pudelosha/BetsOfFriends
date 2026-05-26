@@ -257,6 +257,11 @@
     "TEAM_NAME_PLACEHOLDER": "Inserisci nome squadra",
     "TEAM_NAME_REQUIRED": "Nome richiesto.",
     "TEAM_NAME_MAXLENGTH": "Max 50 caratteri.",
+    "ELO_LABEL": "Valutazione ELO",
+    "ELO_PLACEHOLDER": "Inserisci la valutazione ELO",
+    "ELO_REQUIRED": "La valutazione ELO è obbligatoria.",
+    "ELO_MIN": "La valutazione ELO deve essere almeno 0.",
+    "ELO_MAX": "La valutazione ELO non può superare 5000.",
     "SAVE": "Salva"
   },
   "USER_MODAL": {
@@ -507,6 +512,7 @@
   "APPLY_PENALTY_NO_BET": "Penalità per Mancata Scommessa",
   "PENALTY_INFO": "Se attivo, penalità per scommesse mancanti.",
   "PENALTY_POINTS": "Punti Penalità",
+  "ENTER_BONUS_VALUE": "Inserisci il valore del bonus",
   "ENTER_PENALTY_VALUE": "Inserisci valore penalità"
 },
 "STAGE_MATCHES_MANAGEMENT": {
@@ -548,7 +554,11 @@
   "UPDATE_BETS_FROM_FILE": "Aggiorna scommesse da file",
   "IMPORT_TOURNAMENT": "Importa Torneo",
   "UPDATE_TOURNAMENT": "Aggiorna Torneo",
-  "ERASE_FORM": "Cancella Tutto"
+  "ERASE_FORM": "Cancella Tutto",
+  "HOME_ADVANTAGE": "Vantaggio casa ELO",
+  "YES": "Sì",
+  "NO": "No",
+  "HOME_ADVANTAGE_DESC": "Se abilitato, le quote includeranno il vantaggio di giocare in casa in base ai ranking ELO delle squadre."
 },
 "USERS_LIST": {
   "ACTIVE_PARTICIPANTS": "Partecipanti Attivi",
@@ -631,6 +641,7 @@
   "TITLE": "Seleziona Competizione",
   "CLOSE": "Chiudi",
   "CONFIRM": "Conferma",
+  "COMPETITION": "Competizione",
   "COMPETITION_CODE": "Codice Competizione",
   "SEASON": "Stagione",
   "INVALID_COMPETITION": "Codice competizione richiesto.",

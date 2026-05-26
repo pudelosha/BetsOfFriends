@@ -19,6 +19,10 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent, IonButton, IonSpinner } from '@ionic/angular/standalone';
+import {
+  calculateEloMatchOdds,
+  calculateEloQualificationOdds,
+} from 'src/app/pages/tournaments/shared/odds-utils';
 
 @Component({
   selector: 'app-build-custom-tournament',
@@ -790,30 +794,34 @@ export class BuildCustomTournamentPage implements OnInit {
         recordStatus: stage.recordStatus || 'New'
       })),
 
-      matches: this.matchesArray.value.map((match: any) => ({
-        matchId: isEditing ? match.matchId || null : null,
-        externalMatchId: match.externalMatchId || null,
-        predefinedMatchId: match.predefinedMatchId || null,
-        stageId: isEditing ? match.stageId || null : null,
-        stageName: match.stageName,
-        homeTeamId: isEditing ? match.homeTeamId || null : null,
-        awayTeamId: isEditing ? match.awayTeamId || null : null,
-        homeTeam: match.homeTeam,
-        awayTeam: match.awayTeam,
-        matchType: match.matchType || 'Regular90Min',
-        matchStart: new Date(match.matchStart).toISOString(),
-        homeWinOdds: match.homeWinOdds,
-        drawOdds: match.drawOdds,
-        awayWinOdds: match.awayWinOdds,
-        homeQualifies: match.homeQualifies,
-        awayQualifies: match.awayQualifies,
-        recordStatus: match.recordStatus || 'New',
-        isVisible: match.isVisible ?? true,
-        matchStatus: match.matchStatus || null,
-        scoreHome: match.scoreHome ?? null,
-        scoreAway: match.scoreAway ?? null,
-        qualifiedTeam: match.qualifiedTeam ?? null
-      })),
+      matches: this.matchesArray.value.map((match: any) => {
+        const isQualificationMatch = match.matchType === 'ExtendedWithQualification';
+
+        return {
+          matchId: isEditing ? match.matchId || null : null,
+          externalMatchId: match.externalMatchId || null,
+          predefinedMatchId: match.predefinedMatchId || null,
+          stageId: isEditing ? match.stageId || null : null,
+          stageName: match.stageName,
+          homeTeamId: isEditing ? match.homeTeamId || null : null,
+          awayTeamId: isEditing ? match.awayTeamId || null : null,
+          homeTeam: match.homeTeam,
+          awayTeam: match.awayTeam,
+          matchType: match.matchType || 'Regular90Min',
+          matchStart: new Date(match.matchStart).toISOString(),
+          homeWinOdds: match.homeWinOdds,
+          drawOdds: match.drawOdds,
+          awayWinOdds: match.awayWinOdds,
+          homeQualifies: isQualificationMatch ? match.homeQualifies : null,
+          awayQualifies: isQualificationMatch ? match.awayQualifies : null,
+          recordStatus: match.recordStatus || 'New',
+          isVisible: match.isVisible ?? true,
+          matchStatus: match.matchStatus || null,
+          scoreHome: match.scoreHome ?? null,
+          scoreAway: match.scoreAway ?? null,
+          qualifiedTeam: match.qualifiedTeam ?? null
+        };
+      }),
 
       users: this.usersArray.value.map((user: User) => ({
         assignmentId: user.assignmentId || null,
@@ -1040,12 +1048,7 @@ export class BuildCustomTournamentPage implements OnInit {
     return 'T-' + Math.random().toString(36).substr(2, 9);
   }
 
-  private recalculateOddsForAllEligibleMatches(): void {
-    const HOME_ADVANTAGE = this.isHomeAdvantageEnabled() ? 50 : 0;
-
-    const round2 = (v: number) => Math.round(v * 100) / 100;
-    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
-
+  private getEloByFrontendId(): Map<string, number> {
     const eloByFrontendId = new Map<string, number>();
     this.teamsArray.controls.forEach((control: AbstractControl) => {
       const team = control.value;
@@ -1057,17 +1060,62 @@ export class BuildCustomTournamentPage implements OnInit {
       }
     });
 
+    return eloByFrontendId;
+  }
+
+  private shouldSkipOddsRecalculation(match: any): boolean {
+    const recordStatus: string | null = match.recordStatus ?? null;
+    const matchStatus: string | null = match.matchStatus ?? null;
+
+    const isFinished =
+      recordStatus === 'Finalised' || (matchStatus ?? '').toLowerCase() === 'finished';
+
+    return recordStatus === 'Delete' || isFinished;
+  }
+
+  private patchCalculatedOdds(
+    fg: FormGroup,
+    match: any,
+    homeElo: number,
+    awayElo: number
+  ): void {
+    const includeHomeAdvantage = this.isHomeAdvantageEnabled();
+    const matchOdds = calculateEloMatchOdds(homeElo, awayElo, includeHomeAdvantage);
+    if (!matchOdds) return;
+
+    const patch: any = {
+      homeWinOdds: matchOdds.homeWinOdds,
+      drawOdds: matchOdds.drawOdds,
+      awayWinOdds: matchOdds.awayWinOdds,
+    };
+
+    if (match.matchType === 'ExtendedWithQualification') {
+      const qualificationOdds = calculateEloQualificationOdds(homeElo, awayElo, includeHomeAdvantage);
+
+      if (qualificationOdds) {
+        patch.homeQualifies = qualificationOdds.homeQualifies;
+        patch.awayQualifies = qualificationOdds.awayQualifies;
+      }
+    } else {
+      patch.homeQualifies = null;
+      patch.awayQualifies = null;
+    }
+
+    if (match.recordStatus === 'Uploaded') {
+      patch.recordStatus = 'Update';
+    }
+
+    fg.patchValue(patch, { emitEvent: false });
+  }
+
+  private recalculateOddsForAllEligibleMatches(): void {
+    const eloByFrontendId = this.getEloByFrontendId();
+
     this.matchesArray.controls.forEach((control: AbstractControl) => {
       const fg = control as FormGroup;
       const match = fg.value as any;
 
-      const recordStatus: string | null = match.recordStatus ?? null;
-      const matchStatus: string | null = match.matchStatus ?? null;
-
-      const isFinished =
-        recordStatus === 'Finalised' || (matchStatus ?? '').toLowerCase() === 'finished';
-
-      if (recordStatus === 'Delete' || isFinished) return;
+      if (this.shouldSkipOddsRecalculation(match)) return;
 
       const homeId: string | null = match.homeTeamFrontendId ?? null;
       const awayId: string | null = match.awayTeamFrontendId ?? null;
@@ -1079,32 +1127,7 @@ export class BuildCustomTournamentPage implements OnInit {
 
       if (homeElo === undefined || awayElo === undefined) return;
 
-      const powerRatio = 1 / (1 + Math.pow(10, (awayElo - homeElo - HOME_ADVANTAGE) / 600));
-
-      const probDraw = clamp(0.29 - Math.abs(0.5 - powerRatio) * 0.3, 0, 0.33);
-      const probHome = (1 - probDraw) * powerRatio;
-      const probAway = 1 - probHome - probDraw;
-
-      if (!(probHome > 0) || !(probDraw > 0) || !(probAway > 0)) return;
-
-      const homeAwayJitter = 0.95 + Math.random() / 100;
-      const drawJitter = 0.95 + Math.random() / 100;
-
-      const odds1 = round2((1 / probHome) * homeAwayJitter);
-      const oddsX = round2((1 / probDraw) * drawJitter);
-      const odds2 = round2((1 / probAway) * homeAwayJitter);
-
-      const patch: any = {
-        homeWinOdds: odds1,
-        drawOdds: oddsX,
-        awayWinOdds: odds2,
-      };
-
-      if (recordStatus === 'Uploaded') {
-        patch.recordStatus = 'Update';
-      }
-
-      fg.patchValue(patch, { emitEvent: false });
+      this.patchCalculatedOdds(fg, match, homeElo, awayElo);
     });
   }
 
@@ -1112,11 +1135,6 @@ export class BuildCustomTournamentPage implements OnInit {
     previousTeams: Team[],
     updatedTeams: Team[]
   ): void {
-    const HOME_ADVANTAGE = this.isHomeAdvantageEnabled() ? 50 : 0;
-
-    const round2 = (v: number) => Math.round(v * 100) / 100;
-    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
-
     const prevEloByFrontendId = new Map<string, number>();
     previousTeams.forEach((t) => {
       const elo = Number(t.eloRating ?? 1000);
@@ -1148,13 +1166,7 @@ export class BuildCustomTournamentPage implements OnInit {
       const fg = control as FormGroup;
       const match = fg.value as any;
 
-      const recordStatus: string | null = match.recordStatus ?? null;
-      const matchStatus: string | null = match.matchStatus ?? null;
-
-      const isFinished =
-        recordStatus === 'Finalised' || (matchStatus ?? '').toLowerCase() === 'finished';
-
-      if (recordStatus === 'Delete' || isFinished) return;
+      if (this.shouldSkipOddsRecalculation(match)) return;
 
       const homeId: string | null = match.homeTeamFrontendId ?? null;
       const awayId: string | null = match.awayTeamFrontendId ?? null;
@@ -1167,32 +1179,7 @@ export class BuildCustomTournamentPage implements OnInit {
       const awayElo = nextEloByFrontendId.get(awayId);
       if (homeElo === undefined || awayElo === undefined) return;
 
-      const powerRatio = 1 / (1 + Math.pow(10, (awayElo - homeElo - HOME_ADVANTAGE) / 600));
-
-      const probDraw = clamp(0.29 - Math.abs(0.5 - powerRatio) * 0.3, 0, 0.33);
-      const probHome = (1 - probDraw) * powerRatio;
-      const probAway = 1 - probHome - probDraw;
-
-      if (!(probHome > 0) || !(probDraw > 0) || !(probAway > 0)) return;
-
-      const homeAwayJitter = 0.95 + Math.random() / 100;
-      const drawJitter = 0.95 + Math.random() / 100;
-
-      const odds1 = round2((1 / probHome) * homeAwayJitter);
-      const oddsX = round2((1 / probDraw) * drawJitter);
-      const odds2 = round2((1 / probAway) * homeAwayJitter);
-
-      const patch: any = {
-        homeWinOdds: odds1,
-        drawOdds: oddsX,
-        awayWinOdds: odds2,
-      };
-
-      if (recordStatus === 'Uploaded') {
-        patch.recordStatus = 'Update';
-      }
-
-      fg.patchValue(patch);
+      this.patchCalculatedOdds(fg, match, homeElo, awayElo);
     });
   }
 }

@@ -21,6 +21,10 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { Team, Stage } from 'src/app/model/tournament-model';
+import {
+  calculateEloMatchOdds,
+  calculateEloQualificationOdds,
+} from 'src/app/pages/tournaments/shared/odds-utils';
 
 @Component({
   selector: 'app-edit-match-modal',
@@ -100,6 +104,8 @@ export class EditMatchModalComponent implements OnInit {
 
     this.matchForm.get('matchType')?.valueChanges.subscribe((value) => {
       this.toggleQualificationOddsValidation(value);
+      this.recalculateOddsFromSelectedTeams();
+      this.recalculateQualificationOddsFromSelectedTeams();
     });
   }
 
@@ -131,12 +137,16 @@ export class EditMatchModalComponent implements OnInit {
     const homeCtrl = this.matchForm.get('homeTeamFrontendId');
     const awayCtrl = this.matchForm.get('awayTeamFrontendId');
 
-    const recalc = () => this.recalculateOddsFromSelectedTeams();
+    const recalc = () => {
+      this.recalculateOddsFromSelectedTeams();
+      this.recalculateQualificationOddsFromSelectedTeams();
+    };
 
     homeCtrl?.valueChanges.subscribe(recalc);
     awayCtrl?.valueChanges.subscribe(recalc);
 
     this.recalculateOddsFromSelectedTeams();
+    this.recalculateQualificationOddsFromSelectedTeams();
   }
 
   compareWith(o1: any, o2: any): boolean {
@@ -153,37 +163,43 @@ export class EditMatchModalComponent implements OnInit {
     } else {
       homeQualifiesControl?.clearValidators();
       awayQualifiesControl?.clearValidators();
-      homeQualifiesControl?.setValue(null);
-      awayQualifiesControl?.setValue(null);
+      homeQualifiesControl?.setValue(null, { emitEvent: false });
+      awayQualifiesControl?.setValue(null, { emitEvent: false });
     }
 
     homeQualifiesControl?.updateValueAndValidity();
     awayQualifiesControl?.updateValueAndValidity();
   }
 
-  private calculateOdds(homeElo: number, awayElo: number) {
-    const HOME_ADVANTAGE = this.includeHomeAdvantage ? 50 : 0;
+  private recalculateQualificationOddsFromSelectedTeams(): void {
+    const matchType = this.matchForm.value.matchType;
+    if (matchType !== 'ExtendedWithQualification') return;
 
-    const round2 = (v: number) => Math.round(v * 100) / 100;
-    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+    const homeId = this.matchForm.value.homeTeamFrontendId;
+    const awayId = this.matchForm.value.awayTeamFrontendId;
+    if (!homeId || !awayId) return;
+    if (homeId === awayId) return;
 
-    const powerRatio =
-      1 / (1 + Math.pow(10, (awayElo - homeElo - HOME_ADVANTAGE) / 600));
+    const matchStatus = (this.matchForm.value.matchStatus ?? '').toLowerCase();
+    if (matchStatus === 'finished') return;
 
-    const probDraw = clamp(0.29 - Math.abs(0.5 - powerRatio) * 0.3, 0, 0.33);
-    const probHome = (1 - probDraw) * powerRatio;
-    const probAway = 1 - probHome - probDraw;
+    const home = this.teams.find(t => t.teamFrontendId === homeId);
+    const away = this.teams.find(t => t.teamFrontendId === awayId);
+    if (!home || !away) return;
 
-    if (!(probHome > 0) || !(probDraw > 0) || !(probAway > 0)) return null;
+    const homeElo = Number(home.eloRating ?? 1000);
+    const awayElo = Number(away.eloRating ?? 1000);
 
-    const homeAwayJitter = 0.95 + Math.random() / 100;
-    const drawJitter = 0.95 + Math.random() / 100;
+    const quals = calculateEloQualificationOdds(homeElo, awayElo, this.includeHomeAdvantage);
+    if (!quals) return;
 
-    return {
-      homeWinOdds: round2((1 / probHome) * homeAwayJitter),
-      drawOdds: round2((1 / probDraw) * drawJitter),
-      awayWinOdds: round2((1 / probAway) * homeAwayJitter),
-    };
+    this.matchForm.patchValue(
+      {
+        homeQualifies: quals.homeQualifies,
+        awayQualifies: quals.awayQualifies,
+      },
+      { emitEvent: false }
+    );
   }
 
   private recalculateOddsFromSelectedTeams(): void {
@@ -203,12 +219,7 @@ export class EditMatchModalComponent implements OnInit {
     const homeElo = Number(home.eloRating ?? 1000);
     const awayElo = Number(away.eloRating ?? 1000);
 
-    console.log('includeHomeAdvantage', this.includeHomeAdvantage);
-    console.log('homeId', homeId, 'awayId', awayId);
-    console.log('homeTeam', home, 'awayTeam', away);
-    console.log('homeElo', homeElo, 'awayElo', awayElo);
-
-    const odds = this.calculateOdds(homeElo, awayElo);
+    const odds = calculateEloMatchOdds(homeElo, awayElo, this.includeHomeAdvantage);
     if (!odds) return;
 
     this.matchForm.patchValue(
@@ -260,6 +271,8 @@ export class EditMatchModalComponent implements OnInit {
         this.match.homeQualifies !== this.matchForm.value.homeQualifies ||
         this.match.awayQualifies !== this.matchForm.value.awayQualifies);
 
+    const isQualificationMatch = this.matchForm.value.matchType === 'ExtendedWithQualification';
+
     const matchData = {
       matchFrontendId: this.matchForm.value.matchFrontendId,
       matchId: this.match?.matchId || null,
@@ -282,8 +295,8 @@ export class EditMatchModalComponent implements OnInit {
       homeWinOdds: this.matchForm.value.homeWinOdds ?? null,
       drawOdds: this.matchForm.value.drawOdds ?? null,
       awayWinOdds: this.matchForm.value.awayWinOdds ?? null,
-      homeQualifies: this.matchForm.value.homeQualifies ?? null,
-      awayQualifies: this.matchForm.value.awayQualifies ?? null,
+      homeQualifies: isQualificationMatch ? this.matchForm.value.homeQualifies ?? null : null,
+      awayQualifies: isQualificationMatch ? this.matchForm.value.awayQualifies ?? null : null,
 
       isVisible: this.matchForm.value.isVisible ?? true,
 
@@ -322,12 +335,10 @@ export class EditMatchModalComponent implements OnInit {
   onHomeTeamChange(ev: any): void {
     const v = ev?.detail?.value ?? null;
     this.matchForm.get('homeTeamFrontendId')?.setValue(v, { emitEvent: true });
-    this.recalculateOddsFromSelectedTeams();
   }
 
   onAwayTeamChange(ev: any): void {
     const v = ev?.detail?.value ?? null;
     this.matchForm.get('awayTeamFrontendId')?.setValue(v, { emitEvent: true });
-    this.recalculateOddsFromSelectedTeams();
   }
 }

@@ -257,6 +257,11 @@
     "TEAM_NAME_PLACEHOLDER": "Wprowadź nazwę drużyny",
     "TEAM_NAME_REQUIRED": "Nazwa drużyny jest wymagana.",
     "TEAM_NAME_MAXLENGTH": "Nazwa drużyny nie może przekraczać 50 znaków.",
+    "ELO_LABEL": "Ranking ELO",
+    "ELO_PLACEHOLDER": "Wprowadź ranking ELO",
+    "ELO_REQUIRED": "Ranking ELO jest wymagany.",
+    "ELO_MIN": "Ranking ELO musi wynosić co najmniej 0.",
+    "ELO_MAX": "Ranking ELO nie może przekraczać 5000.",
     "SAVE": "Zapisz"
   },
   "USER_MODAL": {
@@ -507,6 +512,7 @@
     "APPLY_PENALTY_NO_BET": "Zastosuj karę za brak zakładu",
     "PENALTY_INFO": "Jeśli włączone, brak zakładów będzie skutkował karą.",
     "PENALTY_POINTS": "Punkty karne",
+    "ENTER_BONUS_VALUE": "Wprowadź wartość premii",
     "ENTER_PENALTY_VALUE": "Wprowadź wartość kary"
   },
   "STAGE_MATCHES_MANAGEMENT": {
@@ -635,6 +641,7 @@
     "TITLE": "Wybierz rozgrywki",
     "CLOSE": "Zamknij",
     "CONFIRM": "Potwierdź",
+    "COMPETITION": "Rozgrywki",
     "COMPETITION_CODE": "Kod rozgrywek",
     "SEASON": "Sezon",
     "INVALID_COMPETITION": "Wymagany jest kod rozgrywek.",

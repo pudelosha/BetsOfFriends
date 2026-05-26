@@ -257,6 +257,11 @@
     "TEAM_NAME_PLACEHOLDER": "Name eingeben",
     "TEAM_NAME_REQUIRED": "Teamname erforderlich.",
     "TEAM_NAME_MAXLENGTH": "Max. 50 Zeichen.",
+    "ELO_LABEL": "ELO-Bewertung",
+    "ELO_PLACEHOLDER": "ELO-Bewertung eingeben",
+    "ELO_REQUIRED": "ELO-Bewertung ist erforderlich.",
+    "ELO_MIN": "ELO-Bewertung muss mindestens 0 sein.",
+    "ELO_MAX": "ELO-Bewertung darf 5000 nicht überschreiten.",
     "SAVE": "Speichern"
   },
   "USER_MODAL": {
@@ -507,6 +512,7 @@
     "APPLY_PENALTY_NO_BET": "Strafe bei fehlendem Tipp",
     "PENALTY_INFO": "Aktiviert: Strafe bei vergessenen Tipps.",
     "PENALTY_POINTS": "Strafpunkte",
+    "ENTER_BONUS_VALUE": "Bonuswert eingeben",
     "ENTER_PENALTY_VALUE": "Strafwert eingeben"
   },
   "STAGE_MATCHES_MANAGEMENT": {
@@ -548,7 +554,11 @@
     "UPDATE_BETS_FROM_FILE": "Tipps aus Datei aktualisieren",
     "IMPORT_TOURNAMENT": "Turnier importieren",
     "UPDATE_TOURNAMENT": "Turnier aktualisieren",
-    "ERASE_FORM": "Alle Formulardaten löschen"
+    "ERASE_FORM": "Alle Formulardaten löschen",
+    "HOME_ADVANTAGE": "ELO-Heimvorteil",
+    "YES": "Ja",
+    "NO": "Nein",
+    "HOME_ADVANTAGE_DESC": "Wenn aktiviert, berücksichtigen die Quoten den Heimvorteil basierend auf den ELO-Ranglisten der Teams."
   },
   "USERS_LIST": {
     "ACTIVE_PARTICIPANTS": "Aktive Teilnehmer",
@@ -631,6 +641,7 @@
     "TITLE": "Wettbewerb wählen",
     "CLOSE": "Schließen",
     "CONFIRM": "Bestätigen",
+    "COMPETITION": "Wettbewerb",
     "COMPETITION_CODE": "Wettbewerbscode",
     "SEASON": "Saison",
     "INVALID_COMPETITION": "Wettbewerbscode erforderlich.",

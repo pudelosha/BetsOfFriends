@@ -21,6 +21,36 @@ namespace Backend.Repository.Services
             _logger = logger;
         }
 
+        private static bool IsQualificationMatch(CustomMatch.MatchType matchType)
+        {
+            return matchType == CustomMatch.MatchType.ExtendedWithQualification;
+        }
+
+        private static bool HasValidQualificationOdds(decimal? homeQualifies, decimal? awayQualifies)
+        {
+            return homeQualifies.HasValue &&
+                   awayQualifies.HasValue &&
+                   homeQualifies.Value > 0m &&
+                   awayQualifies.Value > 0m;
+        }
+
+        private static (decimal? HomeQualifies, decimal? AwayQualifies) NormalizeQualificationOdds(
+            PredefinedMatchDto match,
+            CustomMatch.MatchType matchType)
+        {
+            if (!IsQualificationMatch(matchType))
+                return (null, null);
+
+            if (HasValidQualificationOdds(match.HomeQualifies, match.AwayQualifies))
+                return (match.HomeQualifies.Value, match.AwayQualifies.Value);
+
+            var label = match.MatchId.HasValue
+                ? $"match ID {match.MatchId.Value}"
+                : $"{match.HomeTeam} vs {match.AwayTeam}";
+
+            throw new ArgumentException($"Qualification odds must be greater than zero for {label}.");
+        }
+
         public async Task<bool> CreatePredefinedTournamentAsync(PredefinedTournamentDto tournamentDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -93,6 +123,8 @@ namespace Backend.Repository.Services
                     if (!Enum.TryParse(m.MatchType, true, out CustomMatch.MatchType parsedType))
                         parsedType = CustomMatch.MatchType.Regular90Min;
 
+                    var qualificationOdds = NormalizeQualificationOdds(m, parsedType);
+
                     // MatchStatus in DTO can be null; default safely
                     CustomMatch.MatchStatus parsedStatus = CustomMatch.MatchStatus.Timed;
                     if (!string.IsNullOrWhiteSpace(m.MatchStatus) && Enum.TryParse(m.MatchStatus, true, out CustomMatch.MatchStatus s))
@@ -109,8 +141,8 @@ namespace Backend.Repository.Services
                         HomeWinOdds = m.HomeWinOdds,
                         DrawOdds = m.DrawOdds,
                         AwayWinOdds = m.AwayWinOdds,
-                        HomeQualifies = m.HomeQualifies ?? 0,
-                        AwayQualifies = m.AwayQualifies ?? 0,
+                        HomeQualifies = qualificationOdds.HomeQualifies,
+                        AwayQualifies = qualificationOdds.AwayQualifies,
                         Status = parsedStatus,
                         IsVisible = m.IsVisible,
                         ExternalMatchId = m.ExternalMatchId,
@@ -284,9 +316,10 @@ namespace Backend.Repository.Services
                     existingMatch.MatchStart = DateTime.SpecifyKind(dtoMatch.MatchStart, DateTimeKind.Utc);
 
                     // Type
-                    existingMatch.Type = Enum.TryParse<CustomMatch.MatchType>(dtoMatch.MatchType, true, out var mt)
+                    var parsedType = Enum.TryParse<CustomMatch.MatchType>(dtoMatch.MatchType, true, out var mt)
                         ? mt
                         : CustomMatch.MatchType.Regular90Min;
+                    existingMatch.Type = parsedType;
 
                     // Status (if null -> keep existing)
                     if (!string.IsNullOrWhiteSpace(dtoMatch.MatchStatus) &&
@@ -313,8 +346,20 @@ namespace Backend.Repository.Services
                         existingMatch.DrawOdds = dtoMatch.DrawOdds <= 0 ? 1m : dtoMatch.DrawOdds;
                         existingMatch.AwayWinOdds = dtoMatch.AwayWinOdds <= 0 ? 1m : dtoMatch.AwayWinOdds;
 
-                        existingMatch.HomeQualifies = dtoMatch.HomeQualifies ?? existingMatch.HomeQualifies;
-                        existingMatch.AwayQualifies = dtoMatch.AwayQualifies ?? existingMatch.AwayQualifies;
+                        var qualificationOdds = NormalizeQualificationOdds(dtoMatch, parsedType);
+                        existingMatch.HomeQualifies = qualificationOdds.HomeQualifies;
+                        existingMatch.AwayQualifies = qualificationOdds.AwayQualifies;
+                    }
+                    else if (!IsQualificationMatch(parsedType))
+                    {
+                        existingMatch.HomeQualifies = null;
+                        existingMatch.AwayQualifies = null;
+                    }
+                    else if (!HasValidQualificationOdds(existingMatch.HomeQualifies, existingMatch.AwayQualifies))
+                    {
+                        var qualificationOdds = NormalizeQualificationOdds(dtoMatch, parsedType);
+                        existingMatch.HomeQualifies = qualificationOdds.HomeQualifies;
+                        existingMatch.AwayQualifies = qualificationOdds.AwayQualifies;
                     }
                 }
 
@@ -333,6 +378,8 @@ namespace Backend.Repository.Services
                     var type = Enum.TryParse<CustomMatch.MatchType>(dtoMatch.MatchType, true, out var mt)
                         ? mt
                         : CustomMatch.MatchType.Regular90Min;
+
+                    var qualificationOdds = NormalizeQualificationOdds(dtoMatch, type);
 
                     CustomMatch.MatchStatus status = CustomMatch.MatchStatus.Timed;
                     if (!string.IsNullOrWhiteSpace(dtoMatch.MatchStatus) &&
@@ -356,8 +403,8 @@ namespace Backend.Repository.Services
                         DrawOdds = dtoMatch.DrawOdds <= 0 ? 1m : dtoMatch.DrawOdds,
                         AwayWinOdds = dtoMatch.AwayWinOdds <= 0 ? 1m : dtoMatch.AwayWinOdds,
 
-                        HomeQualifies = dtoMatch.HomeQualifies ?? 0m,
-                        AwayQualifies = dtoMatch.AwayQualifies ?? 0m,
+                        HomeQualifies = qualificationOdds.HomeQualifies,
+                        AwayQualifies = qualificationOdds.AwayQualifies,
 
                         ExternalMatchId = dtoMatch.ExternalMatchId,
                         HomeScore = dtoMatch.ScoreHome,

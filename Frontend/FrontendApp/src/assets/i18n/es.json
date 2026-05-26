@@ -257,6 +257,11 @@
   "TEAM_NAME_PLACEHOLDER": "Ingresa nombre",
   "TEAM_NAME_REQUIRED": "Nombre requerido.",
   "TEAM_NAME_MAXLENGTH": "Máximo 50 caracteres.",
+  "ELO_LABEL": "Clasificación ELO",
+  "ELO_PLACEHOLDER": "Ingresa la clasificación ELO",
+  "ELO_REQUIRED": "La clasificación ELO es obligatoria.",
+  "ELO_MIN": "La clasificación ELO debe ser al menos 0.",
+  "ELO_MAX": "La clasificación ELO no puede superar 5000.",
   "SAVE": "Guardar"
 },
 "USER_MODAL": {
@@ -507,6 +512,7 @@
   "APPLY_PENALTY_NO_BET": "Aplicar Penalización por No Apostar",
   "PENALTY_INFO": "Si está activado, la falta de apuestas implica penalización.",
   "PENALTY_POINTS": "Puntos de Penalización",
+  "ENTER_BONUS_VALUE": "Ingresa el valor del bonus",
   "ENTER_PENALTY_VALUE": "Ingresa valor de penalización"
 },
 "STAGE_MATCHES_MANAGEMENT": {
@@ -548,7 +554,11 @@
   "UPDATE_BETS_FROM_FILE": "Actualizar apuestas desde archivo",
   "IMPORT_TOURNAMENT": "Importar torneo",
   "UPDATE_TOURNAMENT": "Actualizar torneo",
-  "ERASE_FORM": "Borrar todos los datos del formulario"
+  "ERASE_FORM": "Borrar todos los datos del formulario",
+  "HOME_ADVANTAGE": "Ventaja de local ELO",
+  "YES": "Sí",
+  "NO": "No",
+  "HOME_ADVANTAGE_DESC": "Si está activado, las cuotas incluirán la ventaja de local según las clasificaciones ELO de los equipos."
 },
 "USERS_LIST": {
   "ACTIVE_PARTICIPANTS": "Participantes activos",
@@ -631,6 +641,7 @@
   "TITLE": "Seleccionar competición",
   "CLOSE": "Cerrar",
   "CONFIRM": "Confirmar",
+  "COMPETITION": "Competición",
   "COMPETITION_CODE": "Código de competición",
   "SEASON": "Temporada",
   "INVALID_COMPETITION": "El código de competición es obligatorio.",

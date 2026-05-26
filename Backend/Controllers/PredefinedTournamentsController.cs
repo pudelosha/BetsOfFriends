@@ -29,6 +29,13 @@ namespace Backend.Controllers
                 return BadRequest(ModelState);
             }
 
+            var qualificationOddsError = GetQualificationOddsValidationError(tournamentDto);
+            if (qualificationOddsError != null)
+            {
+                _logger.LogWarning(qualificationOddsError);
+                return BadRequest(new { message = qualificationOddsError });
+            }
+
             foreach (var match in tournamentDto.Matches)
             {
                 _logger.LogInformation($"Received match: {match.MatchId}, Date: {match.MatchStart:o} (Raw: {match.MatchStart})");
@@ -51,12 +58,42 @@ namespace Backend.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var qualificationOddsError = GetQualificationOddsValidationError(tournamentDto);
+            if (qualificationOddsError != null)
+            {
+                _logger.LogWarning(qualificationOddsError);
+                return BadRequest(new { message = qualificationOddsError });
+            }
+
             bool success = await _tournamentService.UpdatePredefinedTournamentAsync(tournamentDto);
 
             if (!success)
                 return NotFound("Tournament not found.");
 
             return Ok("Tournament updated successfully.");
+        }
+
+        private static string? GetQualificationOddsValidationError(PredefinedTournamentDto tournamentDto)
+        {
+            foreach (var match in tournamentDto.Matches.Where(m => m.RecordStatus != "Delete"))
+            {
+                if (!IsQualificationMatch(match.MatchType)) continue;
+
+                if (match.HomeQualifies is > 0 && match.AwayQualifies is > 0) continue;
+
+                var label = match.MatchId.HasValue
+                    ? $"match ID {match.MatchId.Value}"
+                    : $"{match.HomeTeam} vs {match.AwayTeam}";
+
+                return $"Qualification odds must be greater than zero for {label}.";
+            }
+
+            return null;
+        }
+
+        private static bool IsQualificationMatch(string matchType)
+        {
+            return string.Equals(matchType, "ExtendedWithQualification", StringComparison.OrdinalIgnoreCase);
         }
 
         [Authorize(Roles = "SuperAdmin")]

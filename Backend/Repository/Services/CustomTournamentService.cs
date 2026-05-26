@@ -49,6 +49,36 @@ namespace Backend.Repository.Services
             _userManager = userManager;
         }
 
+        private static bool IsQualificationMatch(CustomMatch.MatchType matchType)
+        {
+            return matchType == CustomMatch.MatchType.ExtendedWithQualification;
+        }
+
+        private static bool HasValidQualificationOdds(decimal? homeQualifies, decimal? awayQualifies)
+        {
+            return homeQualifies.HasValue &&
+                   awayQualifies.HasValue &&
+                   homeQualifies.Value > 0m &&
+                   awayQualifies.Value > 0m;
+        }
+
+        private static (decimal? HomeQualifies, decimal? AwayQualifies) NormalizeQualificationOdds(
+            CustomMatchDto match,
+            CustomMatch.MatchType matchType)
+        {
+            if (!IsQualificationMatch(matchType))
+                return (null, null);
+
+            if (HasValidQualificationOdds(match.HomeQualifies, match.AwayQualifies))
+                return (match.HomeQualifies.Value, match.AwayQualifies.Value);
+
+            var label = match.MatchId.HasValue
+                ? $"match ID {match.MatchId.Value}"
+                : $"{match.HomeTeam} vs {match.AwayTeam}";
+
+            throw new ArgumentException($"Qualification odds must be greater than zero for {label}.");
+        }
+
         public async Task<TournamentCreationResultDto> CreateCustomTournamentAsync(CustomTournamentDto tournamentDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -143,7 +173,10 @@ namespace Backend.Repository.Services
                     if (!stageMap.TryGetValue(m.StageName, out var stageId))
                         throw new Exception($"Stage '{m.StageName}' not found.");
 
-                    Enum.TryParse<CustomMatch.MatchType>(m.MatchType, true, out var parsedType);
+                    var parsedType = Enum.TryParse<CustomMatch.MatchType>(m.MatchType, true, out var mt)
+                        ? mt
+                        : CustomMatch.MatchType.Regular90Min;
+                    var qualificationOdds = NormalizeQualificationOdds(m, parsedType);
                     Enum.TryParse<CustomMatch.MatchStatus>(m.MatchStatus, true, out var parsedStatus);
 
                     return new CustomMatch
@@ -158,8 +191,8 @@ namespace Backend.Repository.Services
                         HomeWinOdds = m.HomeWinOdds,
                         DrawOdds = m.DrawOdds,
                         AwayWinOdds = m.AwayWinOdds,
-                        HomeQualifies = m.HomeQualifies ?? 0,
-                        AwayQualifies = m.AwayQualifies ?? 0,
+                        HomeQualifies = qualificationOdds.HomeQualifies,
+                        AwayQualifies = qualificationOdds.AwayQualifies,
                         IsVisible = m.IsVisible,
                         PredefinedMatchId = m.PredefinedMatchId,
                         HomeScore = m.ScoreHome,
@@ -526,12 +559,17 @@ namespace Backend.Repository.Services
                         existingMatch.HomeTeamId = match.HomeTeamId ?? throw new Exception($"Home team ID missing for match {match.MatchId}");
                         existingMatch.AwayTeamId = match.AwayTeamId ?? throw new Exception($"Away team ID missing for match {match.MatchId}");
                         existingMatch.MatchStart = DateTime.SpecifyKind(match.MatchStart, DateTimeKind.Utc);
-                        existingMatch.Type = Enum.Parse<CustomMatch.MatchType>(match.MatchType);
+                        var parsedType = Enum.TryParse<CustomMatch.MatchType>(match.MatchType, true, out var mt)
+                            ? mt
+                            : CustomMatch.MatchType.Regular90Min;
+                        var qualificationOdds = NormalizeQualificationOdds(match, parsedType);
+
+                        existingMatch.Type = parsedType;
                         existingMatch.HomeWinOdds = match.HomeWinOdds;
                         existingMatch.DrawOdds = match.DrawOdds;
                         existingMatch.AwayWinOdds = match.AwayWinOdds;
-                        existingMatch.HomeQualifies = match.HomeQualifies;
-                        existingMatch.AwayQualifies = match.AwayQualifies;
+                        existingMatch.HomeQualifies = qualificationOdds.HomeQualifies;
+                        existingMatch.AwayQualifies = qualificationOdds.AwayQualifies;
                         existingMatch.HomeScore = match.ScoreHome;
                         existingMatch.AwayScore = match.ScoreAway;
                         existingMatch.Qualified = Enum.TryParse<TeamQualified>(match.QualifiedTeam, true, out var q) ? q : null;
@@ -553,6 +591,11 @@ namespace Backend.Repository.Services
                         ? stgId
                         : throw new Exception($"Stage '{newMatch.StageName}' not found.");
 
+                    var parsedType = Enum.TryParse<CustomMatch.MatchType>(newMatch.MatchType, true, out var mt)
+                        ? mt
+                        : CustomMatch.MatchType.Regular90Min;
+                    var qualificationOdds = NormalizeQualificationOdds(newMatch, parsedType);
+
                     tournament.Matches.Add(new CustomMatch
                     {
                         TournamentId = tournament.TournamentId,
@@ -560,12 +603,12 @@ namespace Backend.Repository.Services
                         HomeTeamId = homeTeamId,
                         AwayTeamId = awayTeamId,
                         MatchStart = DateTime.SpecifyKind(newMatch.MatchStart, DateTimeKind.Utc),
-                        Type = Enum.Parse<CustomMatch.MatchType>(newMatch.MatchType),
+                        Type = parsedType,
                         HomeWinOdds = newMatch.HomeWinOdds,
                         DrawOdds = newMatch.DrawOdds,
                         AwayWinOdds = newMatch.AwayWinOdds,
-                        HomeQualifies = newMatch.HomeQualifies,
-                        AwayQualifies = newMatch.AwayQualifies,
+                        HomeQualifies = qualificationOdds.HomeQualifies,
+                        AwayQualifies = qualificationOdds.AwayQualifies,
                         HomeScore = newMatch.ScoreHome,
                         AwayScore = newMatch.ScoreAway,
                         Qualified = Enum.TryParse<TeamQualified>(newMatch.QualifiedTeam, true, out var q) ? q : null,

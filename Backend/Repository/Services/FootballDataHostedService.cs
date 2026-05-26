@@ -93,14 +93,14 @@ public class FootballDataHostedService : BackgroundService
                 static double Clamp(double v, double min, double max)
                     => Math.Max(min, Math.Min(max, v));
 
-                static double JitterDeterministic(int matchId)
+                static double JitterDeterministic(int matchId, int salt = 0)
                 {
                     unchecked
                     {
-                        int h = matchId * 397;
+                        int h = (matchId * 397) ^ (salt * 104729);
                         h ^= (h >> 16);
-                        var frac = (Math.Abs(h) % 10000) / 10000.0; // [0..0.9999]
-                        return 0.95 + (frac / 100.0);               // [0.95..0.959999]
+                        var frac = ((uint)h % 10000) / 10000.0; // [0..0.9999]
+                        return 0.95 + (frac / 100.0);           // [0.95..0.959999]
                     }
                 }
 
@@ -246,6 +246,21 @@ public class FootballDataHostedService : BackgroundService
                             existingMatch.HomeWinOdds = Round2((decimal)((1.0 / probHome) * jitter));
                             existingMatch.DrawOdds = Round2((decimal)((1.0 / probDraw) * jitter));
                             existingMatch.AwayWinOdds = Round2((decimal)((1.0 / probAway) * jitter));
+
+                            if (existingMatch.Type == CustomMatch.MatchType.ExtendedWithQualification)
+                            {
+                                var probHomeQualifies = probHome + probDraw * 0.5;
+                                var probAwayQualifies = 1.0 - probHomeQualifies;
+
+                                if (probHomeQualifies > 0 && probAwayQualifies > 0)
+                                {
+                                    var homeQualifiesJitter = JitterDeterministic(existingMatch.MatchId, 1);
+                                    var awayQualifiesJitter = JitterDeterministic(existingMatch.MatchId, 2);
+
+                                    existingMatch.HomeQualifies = Round2((decimal)((1.0 / probHomeQualifies) * homeQualifiesJitter));
+                                    existingMatch.AwayQualifies = Round2((decimal)((1.0 / probAwayQualifies) * awayQualifiesJitter));
+                                }
+                            }
                         }
                     }
 
@@ -380,6 +395,21 @@ public class FootballDataHostedService : BackgroundService
                                     customMatch.HomeWinOdds = odds1;
                                     customMatch.DrawOdds = oddsX;
                                     customMatch.AwayWinOdds = odds2;
+
+                                    if (customMatch.Type == CustomMatch.MatchType.ExtendedWithQualification)
+                                    {
+                                        var probHomeQualifies = probHome + probDraw * 0.5;
+                                        var probAwayQualifies = 1.0 - probHomeQualifies;
+
+                                        if (probHomeQualifies > 0 && probAwayQualifies > 0)
+                                        {
+                                            var homeQualifiesJitter = JitterDeterministic(customMatch.MatchId, 1);
+                                            var awayQualifiesJitter = JitterDeterministic(customMatch.MatchId, 2);
+
+                                            customMatch.HomeQualifies = Round2((decimal)((1.0 / probHomeQualifies) * homeQualifiesJitter));
+                                            customMatch.AwayQualifies = Round2((decimal)((1.0 / probAwayQualifies) * awayQualifiesJitter));
+                                        }
+                                    }
                                 }
                             }
                         }

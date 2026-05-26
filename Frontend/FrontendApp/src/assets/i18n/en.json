@@ -257,6 +257,11 @@
     "TEAM_NAME_PLACEHOLDER": "Enter team name",
     "TEAM_NAME_REQUIRED": "Team name is required.",
     "TEAM_NAME_MAXLENGTH": "Team name cannot exceed 50 characters.",
+    "ELO_LABEL": "ELO Rating",
+    "ELO_PLACEHOLDER": "Enter ELO rating",
+    "ELO_REQUIRED": "ELO rating is required.",
+    "ELO_MIN": "ELO rating must be at least 0.",
+    "ELO_MAX": "ELO rating cannot exceed 5000.",
     "SAVE": "Save"
   },
   "USER_MODAL": {
@@ -507,6 +512,7 @@
     "APPLY_PENALTY_NO_BET": "Apply Penalty for No Bet",
     "PENALTY_INFO": "If enabled, missing bets will incur a penalty.",
     "PENALTY_POINTS": "Penalty Points",
+    "ENTER_BONUS_VALUE": "Enter bonus value",
     "ENTER_PENALTY_VALUE": "Enter penalty value"
   },
   "STAGE_MATCHES_MANAGEMENT": {
@@ -635,6 +641,7 @@
       "TITLE": "Select Competition",
       "CLOSE": "Close",
       "CONFIRM": "Confirm",
+      "COMPETITION": "Competition",
       "COMPETITION_CODE": "Competition Code",
       "SEASON": "Season",
       "INVALID_COMPETITION": "Competition code is required.",

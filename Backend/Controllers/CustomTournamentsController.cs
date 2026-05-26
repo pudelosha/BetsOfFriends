@@ -45,6 +45,13 @@ namespace Backend.Controllers
                 return BadRequest(ModelState);
             }
 
+            var qualificationOddsError = GetQualificationOddsValidationError(tournamentDto);
+            if (qualificationOddsError != null)
+            {
+                _logger.LogWarning(qualificationOddsError);
+                return BadRequest(new { message = qualificationOddsError });
+            }
+
             var userId = _userService.GetUserIdFromClaims(User);
 
             if (string.IsNullOrEmpty(userId))
@@ -263,6 +270,13 @@ namespace Backend.Controllers
                     return BadRequest(ModelState);
                 }
 
+                var qualificationOddsError = GetQualificationOddsValidationError(tournamentDto);
+                if (qualificationOddsError != null)
+                {
+                    _logger.LogWarning(qualificationOddsError);
+                    return BadRequest(new { message = qualificationOddsError });
+                }
+
                 var userId = _userService.GetUserIdFromClaims(User);
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -310,6 +324,29 @@ namespace Backend.Controllers
                 _logger.LogError(ex, $"An error occurred while updating the custom tournament ID {tournamentDto.TournamentId}.");
                 return StatusCode(500, "An error occurred while updating the tournament.");
             }
+        }
+
+        private static string? GetQualificationOddsValidationError(CustomTournamentDto tournamentDto)
+        {
+            foreach (var match in tournamentDto.Matches.Where(m => m.RecordStatus != "Delete"))
+            {
+                if (!IsQualificationMatch(match.MatchType)) continue;
+
+                if (match.HomeQualifies is > 0 && match.AwayQualifies is > 0) continue;
+
+                var label = match.MatchId.HasValue
+                    ? $"match ID {match.MatchId.Value}"
+                    : $"{match.HomeTeam} vs {match.AwayTeam}";
+
+                return $"Qualification odds must be greater than zero for {label}.";
+            }
+
+            return null;
+        }
+
+        private static bool IsQualificationMatch(string matchType)
+        {
+            return string.Equals(matchType, "ExtendedWithQualification", StringComparison.OrdinalIgnoreCase);
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]

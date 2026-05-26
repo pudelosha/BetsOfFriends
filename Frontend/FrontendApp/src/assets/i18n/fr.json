@@ -257,6 +257,11 @@
     "TEAM_NAME_PLACEHOLDER": "Entrer un nom",
     "TEAM_NAME_REQUIRED": "Nom requis.",
     "TEAM_NAME_MAXLENGTH": "Max 50 caractères.",
+    "ELO_LABEL": "Classement ELO",
+    "ELO_PLACEHOLDER": "Entrez le classement ELO",
+    "ELO_REQUIRED": "Le classement ELO est requis.",
+    "ELO_MIN": "Le classement ELO doit être au moins 0.",
+    "ELO_MAX": "Le classement ELO ne peut pas dépasser 5000.",
     "SAVE": "Enregistrer"
   },
   "USER_MODAL": {
@@ -507,6 +512,7 @@
   "APPLY_PENALTY_NO_BET": "Pénalité si pas de pari",
   "PENALTY_INFO": "Applique une pénalité pour paris manquants.",
   "PENALTY_POINTS": "Points de pénalité",
+  "ENTER_BONUS_VALUE": "Entrez la valeur du bonus",
   "ENTER_PENALTY_VALUE": "Entrez la pénalité"
 },
 "STAGE_MATCHES_MANAGEMENT": {
@@ -548,7 +554,11 @@
   "UPDATE_BETS_FROM_FILE": "Mettre à jour les paris depuis un fichier",
   "IMPORT_TOURNAMENT": "Importer un tournoi",
   "UPDATE_TOURNAMENT": "Mettre à jour le tournoi",
-  "ERASE_FORM": "Effacer tout le formulaire"
+  "ERASE_FORM": "Effacer tout le formulaire",
+  "HOME_ADVANTAGE": "Avantage à domicile ELO",
+  "YES": "Oui",
+  "NO": "Non",
+  "HOME_ADVANTAGE_DESC": "Si activé, les cotes tiendront compte de l'avantage à domicile selon les classements ELO des équipes."
 },
 "USERS_LIST": {
   "ACTIVE_PARTICIPANTS": "Participants actifs",
@@ -631,6 +641,7 @@
   "TITLE": "Sélectionner une compétition",
   "CLOSE": "Fermer",
   "CONFIRM": "Confirmer",
+  "COMPETITION": "Compétition",
   "COMPETITION_CODE": "Code compétition",
   "SEASON": "Saison",
   "INVALID_COMPETITION": "Le code est requis.",
