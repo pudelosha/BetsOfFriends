@@ -40,3 +40,8 @@ publish-test/
 # ===============================
 Thumbs.db
 .DS_Store
+
+# Local backups
+*-backup/
+*-old-after-cleanup/
+*backup*/
