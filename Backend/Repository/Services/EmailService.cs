@@ -127,6 +127,27 @@ public class EmailService : IEmailService
         _logger.LogInformation($"Password reset email sent to {user.Email}");
     }
 
+    public async Task SendNotificationEmailAsync(ApplicationUser user, string title, string message, string route)
+    {
+        if (string.IsNullOrWhiteSpace(user.Email))
+        {
+            _logger.LogWarning("Notification email skipped because user {UserId} has no email address.", user.Id);
+            return;
+        }
+
+        var notificationLink = BuildFrontendUrl(route);
+        var placeholders = new Dictionary<string, string>
+        {
+            { "TITLE", WebUtility.HtmlEncode(title) },
+            { "MESSAGE_HTML", WebUtility.HtmlEncode(message).Replace("\n", "<br />") },
+            { "NOTIFICATION_LINK", notificationLink },
+            { "ACTION_TEXT", "Open Bets of Friends" }
+        };
+
+        var emailBody = await _emailTemplateService.GetEmailTemplateAsync("Notification", placeholders);
+        await SendEmailAsync(user.Email, title, emailBody);
+    }
+
     private async Task SendEmailAsync(string to, string subject, string body)
     {
         var smtpServer = _configuration["EmailSettings:SmtpServer"];
@@ -176,11 +197,26 @@ public class EmailService : IEmailService
     }
     public string GenerateTournamentInviteLink(string email, int tournamentId)
     {
+        return BuildFrontendUrl("/my-tournaments");
+    }
+
+    private string BuildFrontendUrl(string route)
+    {
         var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
         var frontendBaseUrl = environment == "Development"
             ? _configuration["App:ClientBaseUrlDev"]
             : _configuration["App:ClientBaseUrlProd"];
 
-        return $"{frontendBaseUrl}/my-tournaments";
+        if (string.IsNullOrWhiteSpace(frontendBaseUrl))
+        {
+            frontendBaseUrl = "https://app.betsoffriends.com";
+        }
+
+        if (string.IsNullOrWhiteSpace(route))
+        {
+            return frontendBaseUrl.TrimEnd('/');
+        }
+
+        return $"{frontendBaseUrl.TrimEnd('/')}/{route.TrimStart('/')}";
     }
 }

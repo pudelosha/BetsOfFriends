@@ -34,7 +34,10 @@ public class NotificationService : INotificationService
     {
         // Get users who have a "ToPlace" bet for this match (means they haven't submitted it yet)
         var usersWithToPlaceBets = await _dbContext.Bets
-            .Where(b => b.MatchId == match.MatchId && b.Status == Bet.BetStatus.ToPlace)
+            .Where(b =>
+                b.MatchId == match.MatchId &&
+                b.Status == Bet.BetStatus.ToPlace &&
+                b.Match.Tournament.Participants.Any(a => a.UserId == b.UserId && a.Status == AssignmentStatus.Accepted))
             .Include(b => b.User)
             .Select(b => b.User)
             .Distinct()
@@ -67,36 +70,193 @@ public class NotificationService : INotificationService
 
     public async Task NotifyMatchClosureAsync(CustomMatch match)
     {
-        var tournamentId = match.TournamentId;
+        var fullMatch = await _dbContext.CustomMatches
+            .Include(m => m.HomeTeam)
+            .Include(m => m.AwayTeam)
+            .Include(m => m.Stage)
+            .FirstOrDefaultAsync(m => m.MatchId == match.MatchId);
 
-        // Get all tournament participants
+        if (fullMatch == null)
+        {
+            _logger.LogWarning($"Match ID {match.MatchId} not found. Skipping result recalculation notifications.");
+            return;
+        }
+
+        var tournamentId = fullMatch.TournamentId;
+
         var participants = await _dbContext.CustomTournamentUserAssignments
-            .Where(a => a.TournamentId == tournamentId)
+            .Where(a => a.TournamentId == tournamentId && a.Status == AssignmentStatus.Accepted)
             .Select(a => a.User)
             .ToListAsync();
 
         if (!participants.Any())
         {
-            _logger.LogWarning($"No participants found for Tournament ID {tournamentId}. Skipping match closure notifications.");
+            _logger.LogWarning($"No accepted participants found for Tournament ID {tournamentId}. Skipping result recalculation notifications.");
             return;
         }
 
-        string stageName = match.Stage?.StageName ?? await _dbContext.CustomMatchStages
-            .Where(s => s.StageId == match.StageId)
-            .Select(s => s.StageName)
-            .FirstOrDefaultAsync();
+        _logger.LogInformation($"Sending result recalculation notifications to {participants.Count} users for Match ID {fullMatch.MatchId}");
 
-        string encodedStage = Uri.EscapeDataString(stageName ?? "");
-
-        _logger.LogInformation($"Sending match closure notifications to {participants.Count} users for Match ID {match.MatchId}");
+        var homeTeamName = fullMatch.HomeTeam?.TeamName ?? "Home team";
+        var awayTeamName = fullMatch.AwayTeam?.TeamName ?? "Away team";
 
         await ProcessNotificationsAsync(
             participants,
-            $"Match Closed: {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName}",
-            $"The match {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName} has been finalized.\n" +
-            $"Final Score: {match.HomeScore}-{match.AwayScore}.\nCheck your bets and standings!",
-            $"/my-bets?tab=finalised&stage={encodedStage}&tournamentId={tournamentId}",
+            $"Tournament results updated",
+            $"Results were recalculated after {homeTeamName} vs {awayTeamName}. Final score: {fullMatch.HomeScore}-{fullMatch.AwayScore}.",
+            "/results",
             user => (user.ReceiveEmailMatchClosed, user.ReceivePushMatchClosed)
+        );
+    }
+
+    public async Task NotifyDailyTournamentUpdatesAsync(DateTime nowUtc)
+    {
+        const string title = "Daily tournament update";
+
+        var windowEndUtc = nowUtc.AddHours(24);
+        var rows = await _dbContext.CustomTournamentUserAssignments
+            .Where(a => a.Status == AssignmentStatus.Accepted)
+            .SelectMany(a => a.Tournament.Matches
+                .Where(m =>
+                    m.Status == CustomMatch.MatchStatus.Timed &&
+                    m.MatchStart >= nowUtc &&
+                    m.MatchStart < windowEndUtc)
+                .Select(m => new
+                {
+                    a.UserId,
+                    a.User,
+                    m.MatchId
+                }))
+            .ToListAsync();
+
+        var groupedUsers = rows
+            .GroupBy(r => r.UserId)
+            .Select(g => new
+            {
+                User = g.First().User,
+                Count = g.Select(r => r.MatchId).Distinct().Count()
+            })
+            .Where(x => x.Count > 0)
+            .ToList();
+
+        if (!groupedUsers.Any())
+        {
+            _logger.LogInformation("No upcoming matches found for daily tournament updates.");
+            return;
+        }
+
+        var userIds = groupedUsers.Select(g => g.User.Id).ToList();
+        var dayStartUtc = nowUtc.Date;
+        var dayEndUtc = dayStartUtc.AddDays(1);
+
+        var alreadyNotifiedUserIds = await _dbContext.NotificationRecipients
+            .Where(nr =>
+                userIds.Contains(nr.UserId) &&
+                nr.Notification.Title == title &&
+                nr.Notification.CreatedAt >= dayStartUtc &&
+                nr.Notification.CreatedAt < dayEndUtc)
+            .Select(nr => nr.UserId)
+            .Distinct()
+            .ToListAsync();
+
+        var alreadyNotified = alreadyNotifiedUserIds.ToHashSet();
+        var usersToNotify = groupedUsers
+            .Where(g => !alreadyNotified.Contains(g.User.Id))
+            .ToList();
+
+        foreach (var countGroup in usersToNotify.GroupBy(g => g.Count))
+        {
+            var count = countGroup.Key;
+            var matchLabel = count == 1 ? "match" : "matches";
+
+            await ProcessNotificationsAsync(
+                countGroup.Select(g => g.User).ToList(),
+                title,
+                $"You have {count} tournament {matchLabel} in the next 24 hours.",
+                "/my-bets?tab=to-place",
+                user => (user.ReceiveEmailDailyUpdates, user.ReceivePushDailyUpdates)
+            );
+        }
+    }
+
+    public async Task NotifyNewGamesToBetAsync(CustomMatch match)
+    {
+        var fullMatch = await _dbContext.CustomMatches
+            .Include(m => m.HomeTeam)
+            .Include(m => m.AwayTeam)
+            .Include(m => m.Stage)
+            .FirstOrDefaultAsync(m => m.MatchId == match.MatchId);
+
+        if (fullMatch == null)
+        {
+            _logger.LogWarning($"Match ID {match.MatchId} not found. Skipping new game notifications.");
+            return;
+        }
+
+        var participants = await _dbContext.CustomTournamentUserAssignments
+            .Where(a => a.TournamentId == fullMatch.TournamentId && a.Status == AssignmentStatus.Accepted)
+            .Select(a => a.User)
+            .ToListAsync();
+
+        if (!participants.Any())
+        {
+            _logger.LogInformation($"No accepted participants found for Tournament ID {fullMatch.TournamentId}. Skipping new game notifications.");
+            return;
+        }
+
+        var stageNameEncoded = Uri.EscapeDataString(fullMatch.Stage?.StageName ?? "");
+        var homeTeamName = fullMatch.HomeTeam?.TeamName ?? "Home team";
+        var awayTeamName = fullMatch.AwayTeam?.TeamName ?? "Away team";
+
+        await ProcessNotificationsAsync(
+            participants,
+            "New match available",
+            $"{homeTeamName} vs {awayTeamName} is now open for betting.",
+            $"/my-bets?tab=to-place&stage={stageNameEncoded}&tournamentId={fullMatch.TournamentId}",
+            user => (user.ReceiveEmailNewGames, user.ReceivePushNewGames)
+        );
+    }
+
+    public async Task NotifyTournamentInvitationsAsync(int tournamentId, IEnumerable<string> userEmails)
+    {
+        var emails = userEmails
+            .Where(email => !string.IsNullOrWhiteSpace(email))
+            .Select(email => email.Trim().ToLowerInvariant())
+            .Distinct()
+            .ToList();
+
+        if (!emails.Any())
+        {
+            return;
+        }
+
+        var tournamentName = await _dbContext.CustomTournaments
+            .Where(t => t.TournamentId == tournamentId)
+            .Select(t => t.Name)
+            .FirstOrDefaultAsync();
+
+        if (string.IsNullOrWhiteSpace(tournamentName))
+        {
+            _logger.LogWarning($"Tournament ID {tournamentId} not found. Skipping invitation notifications.");
+            return;
+        }
+
+        var recipients = await _dbContext.Users
+            .Where(u => u.Email != null && emails.Contains(u.Email.ToLower()))
+            .ToListAsync();
+
+        if (!recipients.Any())
+        {
+            _logger.LogInformation($"No registered users found for tournament invitation notifications in Tournament ID {tournamentId}.");
+            return;
+        }
+
+        await ProcessNotificationsAsync(
+            recipients,
+            "Tournament invitation",
+            $"You have been invited to {tournamentName}.",
+            "/my-tournaments",
+            user => (user.ReceiveEmailTournamentInvitation, user.ReceivePushTournamentInvitation)
         );
     }
 
@@ -349,8 +509,8 @@ public class NotificationService : INotificationService
                 UserId = user.Id,
                 NotificationId = notification.Id, // Use the generated ID
                 IsRead = false,
-                SentEmail = emailConsent,
-                SentPush = pushConsent
+                SentEmail = false,
+                SentPush = false
             };
 
             notificationRecipients.Add(recipient);
@@ -360,10 +520,9 @@ public class NotificationService : INotificationService
             {
                 try
                 {
-                    //TODO fix later
-                    //string emailBody = await _emailTemplateService.GetEmailTemplateAsync(title, message);
-                    //await _emailService.SendEmailAsync(user.Email, title, emailBody);
-                    _logger.LogInformation($"Email sent to {user.Email}");
+                    await _emailService.SendNotificationEmailAsync(user, title, message, route);
+                    recipient.SentEmail = true;
+                    _logger.LogInformation($"Notification email sent to {user.Email}");
                 }
                 catch (Exception ex)
                 {
@@ -376,9 +535,8 @@ public class NotificationService : INotificationService
             {
                 try
                 {
-                    //TODO fix later
-                    //await _pushNotificationService.SendPushAsync(user.Id, title, message);
-                    _logger.LogInformation($"Push notification sent to UserId: {user.Id}");
+                    recipient.SentPush = await _pushNotificationService.SendPushAsync(user.Id, title, message, route);
+                    _logger.LogInformation($"Push notification processed for UserId: {user.Id}. Sent: {recipient.SentPush}");
                 }
                 catch (Exception ex)
                 {

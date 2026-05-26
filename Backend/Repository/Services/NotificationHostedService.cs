@@ -10,6 +10,8 @@ namespace Backend.Repository.Services
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<NotificationHostedService> _logger;
         private readonly TimeSpan _interval = TimeSpan.FromMinutes(1);
+        private readonly TimeSpan _dailyTournamentUpdateTime = TimeSpan.FromHours(12);
+        private DateOnly? _lastDailyTournamentUpdateDate;
 
         public NotificationHostedService(
             IServiceProvider serviceProvider,
@@ -30,7 +32,7 @@ namespace Backend.Repository.Services
                     var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
 
                     await SendMatchStartRemindersAsync(notificationService, dbContext, TimeSpan.FromHours(1));
-                    await SendMatchStartRemindersAsync(notificationService, dbContext, TimeSpan.FromHours(24));
+                    await SendDailyTournamentUpdatesIfDueAsync(notificationService);
                     await DeleteOldNotificationsAsync(dbContext);
                 }
                 catch (Exception ex)
@@ -40,6 +42,25 @@ namespace Backend.Repository.Services
 
                 await Task.Delay(_interval, stoppingToken);
             }
+        }
+
+        private async Task SendDailyTournamentUpdatesIfDueAsync(INotificationService notificationService)
+        {
+            var localNow = DateTime.Now;
+            var today = DateOnly.FromDateTime(localNow);
+
+            if (_lastDailyTournamentUpdateDate == today)
+            {
+                return;
+            }
+
+            if (localNow.TimeOfDay < _dailyTournamentUpdateTime)
+            {
+                return;
+            }
+
+            await notificationService.NotifyDailyTournamentUpdatesAsync(DateTime.UtcNow);
+            _lastDailyTournamentUpdateDate = today;
         }
 
         public async Task SendMatchStartRemindersAsync(

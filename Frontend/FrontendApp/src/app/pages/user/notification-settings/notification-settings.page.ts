@@ -4,7 +4,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ToastController, LoadingController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-import { NotificationService } from 'src/app/services/notification.service';
+import { NotificationService, NotificationSettings } from 'src/app/services/notification.service';
+import { PushNotificationService } from 'src/app/services/push-notification.service';
 import { IonContent, IonGrid, IonRow, IonCol, IonToggle, IonButton } from '@ionic/angular/standalone';
 
 @Component({
@@ -16,13 +17,22 @@ import { IonContent, IonGrid, IonRow, IonCol, IonToggle, IonButton } from '@ioni
 })
 export class NotificationSettingsPage implements OnInit {
   notificationForm!: FormGroup;
+  private readonly pushControlNames = [
+    'receivePushMatchClosed',
+    'receivePushDailyUpdates',
+    'receivePushTournamentInvitation',
+    'receivePushPendingBets',
+    'receivePushNewGames',
+    'receivePushSpecialOffers',
+  ];
 
   constructor(
     private fb: FormBuilder,
     private toastCtrl: ToastController,
     private loadingCtrl: LoadingController,
     private titleService: TitleService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private pushNotificationService: PushNotificationService
   ) {}
 
   ngOnInit() {
@@ -65,10 +75,25 @@ export class NotificationSettingsPage implements OnInit {
   async onSubmit() {
     if (!this.notificationForm.valid) return;
 
+    if (this.hasAnyPushEnabled()) {
+      const pushResult = await this.pushNotificationService.ensureSubscription();
+
+      if (!pushResult.success) {
+        this.disablePushControls();
+        await this.showToast(pushResult.message ?? 'Push notifications are unavailable.', 'warning');
+      }
+    } else {
+      try {
+        await this.pushNotificationService.unsubscribeCurrentDevice();
+      } catch {
+        await this.showToast('Failed to remove push subscription for this browser.', 'warning');
+      }
+    }
+
     const loading = await this.loadingCtrl.create({ message: 'Saving settings...' });
     await loading.present();
 
-    this.notificationService.updateNotificationSettings(this.notificationForm.value).subscribe({
+    this.notificationService.updateNotificationSettings(this.notificationForm.value as NotificationSettings).subscribe({
       next: async () => {
         await loading.dismiss();
         this.showToast('Notification settings saved.', 'success');
@@ -88,5 +113,18 @@ export class NotificationSettingsPage implements OnInit {
       position: 'bottom',
     });
     await toast.present();
+  }
+
+  private hasAnyPushEnabled(): boolean {
+    return this.pushControlNames.some(controlName => this.notificationForm.get(controlName)?.value === true);
+  }
+
+  private disablePushControls(): void {
+    const patch = this.pushControlNames.reduce<Record<string, boolean>>((value, controlName) => {
+      value[controlName] = false;
+      return value;
+    }, {});
+
+    this.notificationForm.patchValue(patch);
   }
 }

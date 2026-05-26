@@ -25,4 +25,29 @@
         public bool ReceiveEmailSpecialOffers { get; set; }
         public bool ReceivePushSpecialOffers { get; set; }
     }
+
+    public class PushPublicKeyDto
+    {
+        public bool Enabled { get; set; }
+        public string? PublicKey { get; set; }
+    }
+
+    public class PushSubscriptionDto
+    {
+        public string Endpoint { get; set; } = string.Empty;
+        public long? ExpirationTime { get; set; }
+        public PushSubscriptionKeysDto Keys { get; set; } = new();
+        public string? UserAgent { get; set; }
+    }
+
+    public class PushSubscriptionKeysDto
+    {
+        public string P256dh { get; set; } = string.Empty;
+        public string Auth { get; set; } = string.Empty;
+    }
+
+    public class PushSubscriptionDeleteDto
+    {
+        public string Endpoint { get; set; } = string.Empty;
+    }
 }

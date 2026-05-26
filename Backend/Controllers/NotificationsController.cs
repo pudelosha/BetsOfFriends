@@ -13,15 +13,18 @@ namespace Backend.Controllers
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationService _notificationService;
+        private readonly IPushNotificationService _pushNotificationService;
         private readonly IUserService _userService;
         private readonly ILogger<NotificationsController> _logger;
 
         public NotificationsController(
             INotificationService notificationService,
+            IPushNotificationService pushNotificationService,
             IUserService userService,
             ILogger<NotificationsController> logger)
         {
             _notificationService = notificationService;
+            _pushNotificationService = pushNotificationService;
             _userService = userService;
             _logger = logger;
         }
@@ -193,6 +196,67 @@ namespace Backend.Controllers
             {
                 _logger.LogError(ex, "Error updating notification settings.");
                 return StatusCode(500, new { Message = "An error occurred while updating settings." });
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("push/public-key")]
+        public IActionResult GetPushPublicKey()
+        {
+            return Ok(new PushPublicKeyDto
+            {
+                Enabled = _pushNotificationService.IsConfigured,
+                PublicKey = _pushNotificationService.GetPublicKey()
+            });
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("push/subscriptions")]
+        public async Task<IActionResult> SavePushSubscription([FromBody] PushSubscriptionDto subscription)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                await _pushNotificationService.UpsertSubscriptionAsync(userId, subscription);
+                return Ok(new { Message = "Push subscription saved successfully." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving push subscription.");
+                return StatusCode(500, new { Message = "An error occurred while saving push subscription." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpDelete("push/subscriptions")]
+        public async Task<IActionResult> DeletePushSubscription([FromBody] PushSubscriptionDeleteDto subscription)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                await _pushNotificationService.RemoveSubscriptionAsync(userId, subscription);
+                return Ok(new { Message = "Push subscription deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting push subscription.");
+                return StatusCode(500, new { Message = "An error occurred while deleting push subscription." });
             }
         }
     }

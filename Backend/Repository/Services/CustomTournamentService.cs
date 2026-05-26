@@ -1803,7 +1803,7 @@ namespace Backend.Repository.Services
                 if (targetAssignment == null)
                     return ActionResultDto.ErrorResult("No invitation found for this user.");
 
-                await _emailService.SendTournamentInvitationEmailAsync(targetUserEmail, tournament.Name, tournamentId);
+                await _notificationService.NotifyTournamentInvitationsAsync(tournamentId, new[] { targetUserEmail });
 
                 return ActionResultDto.SuccessResult($"Invitation resent to {targetUserEmail}.");
             }

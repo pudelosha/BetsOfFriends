@@ -10,6 +10,9 @@ namespace Backend.Repository.Interfaces
         Task NotifyAdminsJoinRequestAsync(CustomTournamentUserAssignment joinRequest);
         Task NotifyUserJoinRequestApprovedAsync(CustomTournamentUserAssignment assignment);
         Task NotifyMatchStartingSoonAsync(CustomMatch match, TimeSpan threshold);
+        Task NotifyDailyTournamentUpdatesAsync(DateTime nowUtc);
+        Task NotifyNewGamesToBetAsync(CustomMatch match);
+        Task NotifyTournamentInvitationsAsync(int tournamentId, IEnumerable<string> userEmails);
         Task NotifySuperAdminsAboutSupportMessageAsync(SupportMessage message);
 
 

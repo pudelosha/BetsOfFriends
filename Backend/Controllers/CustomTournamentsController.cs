@@ -19,12 +19,14 @@ namespace Backend.Controllers
         private readonly IEmailService _emailService;
         private readonly ITournamentSelectionService _tournamentSelectionService;
         private readonly IBetService _betService;
+        private readonly INotificationService _notificationService;
 
         public CustomTournamentsController(ICustomTournamentService tournamentService,
             ILogger<CustomTournamentsController> logger, 
             IUserService userService, 
             IEmailService emailService,
             IBetService betService,
+            INotificationService notificationService,
             ITournamentSelectionService tournamentSelectionService)
         {
             _tournamentService = tournamentService;
@@ -32,6 +34,7 @@ namespace Backend.Controllers
             _userService = userService;
             _betService = betService;
             _emailService = emailService;
+            _notificationService = notificationService;
             _tournamentSelectionService = tournamentSelectionService;
         }
 
@@ -110,19 +113,6 @@ namespace Backend.Controllers
                 }
             }
 
-            foreach (var email in result.ExistingEmails)
-            {
-                try
-                {
-                    _logger.LogInformation("Sending tournament invite email to existing user: {Email}", email);
-                    emailTasks.Add(_emailService.SendTournamentInvitationEmailAsync(email, tournamentDto.TournamentName, result.TournamentId));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to send tournament invite to {Email}", email);
-                }
-            }
-
             // Wait for all successful tasks (ones that reached the emailService)
             try
             {
@@ -137,6 +127,10 @@ namespace Backend.Controllers
 
             // Step 4: Set tournament as selected for creator
             await _tournamentSelectionService.SetSelectedTournamentAsync(result.CreatorUserId, result.TournamentId);
+
+            await _notificationService.NotifyTournamentInvitationsAsync(
+                result.TournamentId,
+                result.ExistingEmails);
 
             return Ok(new { message = "Tournament created successfully!" });
         }
@@ -310,12 +304,11 @@ namespace Backend.Controllers
                     }
                 }
 
-                foreach (var email in result.ExistingEmails)
-                {
-                    emailTasks.Add(_emailService.SendTournamentInvitationEmailAsync(email, result.TournamentName, result.TournamentId));
-                }
-
                 await Task.WhenAll(emailTasks);
+
+                await _notificationService.NotifyTournamentInvitationsAsync(
+                    result.TournamentId,
+                    result.ExistingEmails);
 
                 return Ok("Tournament updated successfully.");
             }

@@ -1,0 +1,16 @@
+{
+  "name": "Bets of Friends",
+  "short_name": "Bets",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5260ff",
+  "icons": [
+    {
+      "src": "assets/icon/favicon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

@@ -38,6 +38,16 @@
                 "glob": "web.config",
                 "input": "src",
                 "output": "."
+              },
+              {
+                "glob": "manifest.webmanifest",
+                "input": "src",
+                "output": "."
+              },
+              {
+                "glob": "push-sw.js",
+                "input": "src",
+                "output": "."
               }
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
@@ -115,6 +125,16 @@
               },
               {
                 "glob": "web.config",
+                "input": "src",
+                "output": "."
+              },
+              {
+                "glob": "manifest.webmanifest",
+                "input": "src",
+                "output": "."
+              },
+              {
+                "glob": "push-sw.js",
                 "input": "src",
                 "output": "."
               }

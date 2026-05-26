@@ -27,6 +27,7 @@ namespace Backend.Model.Database
         // Notifications
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<NotificationRecipient> NotificationRecipients { get; set; }
+        public DbSet<UserPushSubscription> UserPushSubscriptions { get; set; }
 
         // Messages
         public DbSet<TournamentMessage> TournamentMessages { get; set; }
@@ -255,6 +256,26 @@ namespace Backend.Model.Database
             builder.Entity<NotificationRecipient>()
                 .Property(nr => nr.IsRead)
                 .HasDefaultValue(false);
+
+            builder.Entity<UserPushSubscription>()
+                .HasKey(s => s.Id);
+
+            builder.Entity<UserPushSubscription>()
+                .HasIndex(s => s.EndpointHash)
+                .IsUnique();
+
+            builder.Entity<UserPushSubscription>()
+                .HasIndex(s => new { s.UserId, s.IsActive });
+
+            builder.Entity<UserPushSubscription>()
+                .HasOne(s => s.User)
+                .WithMany()
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserPushSubscription>()
+                .Property(s => s.IsActive)
+                .HasDefaultValue(true);
         }
 
         private void ConfigurePredefinedReferencesInCustomEntities(ModelBuilder builder)

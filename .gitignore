@@ -14,6 +14,7 @@ obj/
 # ===============================
 # Backend secrets (LOCAL ONLY)
 # ===============================
+Backend/appsettings.local.json
 Backend/appsettings.*.local.json
 
 # ===============================

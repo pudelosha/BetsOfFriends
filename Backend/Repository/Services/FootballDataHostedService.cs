@@ -30,9 +30,10 @@ public class FootballDataHostedService : BackgroundService
                 var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 var footballDataService = scope.ServiceProvider.GetRequiredService<IFootballDataService>();
                 var betService = scope.ServiceProvider.GetRequiredService<IBetService>();
+                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
 
                 // Always run every minute
-                await CheckTournamentChangesAsync(dbContext, footballDataService, betService, stoppingToken);
+                await CheckTournamentChangesAsync(dbContext, footballDataService, betService, notificationService, stoppingToken);
 
                 // Run hourly
                 if (DateTime.UtcNow - _lastTournamentCheck >= _tournamentCheckInterval)
@@ -54,6 +55,7 @@ public class FootballDataHostedService : BackgroundService
         AppDbContext dbContext,
         IFootballDataService footballDataService,
         IBetService betService,
+        INotificationService notificationService,
         CancellationToken cancellationToken)
     {
         _logger.LogInformation("Checking predefined tournament changes...");
@@ -147,6 +149,12 @@ public class FootballDataHostedService : BackgroundService
                     bool teamChanged =
                         incomingExternalHomeTeamId != existingExternalHomeTeamId ||
                         incomingExternalAwayTeamId != existingExternalAwayTeamId;
+
+                    bool becameRealMatch =
+                        teamChanged &&
+                        (!existingExternalHomeTeamId.HasValue || !existingExternalAwayTeamId.HasValue) &&
+                        incomingExternalHomeTeamId.HasValue &&
+                        incomingExternalAwayTeamId.HasValue;
 
                     // ============================================================
                     // 2) Resolve incoming PREDEFINED TeamIds by ExternalTeamId (not by name)
@@ -423,12 +431,28 @@ public class FootballDataHostedService : BackgroundService
                     // ============================================================
                     foreach (var customMatch in relatedCustomMatches)
                     {
+                        if (becameRealMatch &&
+                            customMatch.MatchStart > DateTime.UtcNow &&
+                            customMatch.Status == CustomMatch.MatchStatus.Timed)
+                        {
+                            try
+                            {
+                                await betService.GenerateBetsForNewMatchAsync(customMatch.MatchId, customMatch.TournamentId);
+                                await notificationService.NotifyNewGamesToBetAsync(customMatch);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, $"Failed to send new game notification for match {customMatch.MatchId}");
+                            }
+                        }
+
                         if (customMatch.Status == CustomMatch.MatchStatus.Finished)
                         {
                             _logger.LogInformation($"Triggering bet recalculation for custom match {customMatch.MatchId}");
                             try
                             {
                                 await betService.RecalculateBetsForMatchAsync(customMatch.MatchId);
+                                await notificationService.NotifyMatchClosureAsync(customMatch);
                             }
                             catch (Exception ex)
                             {
