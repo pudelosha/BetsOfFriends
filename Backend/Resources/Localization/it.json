@@ -1,0 +1,75 @@
+{
+  "Email": {
+    "Greeting": "Ciao,",
+    "Signature": "Cordiali saluti,<br />Team Bets of Friends",
+    "NotificationConsent": "Ricevi questa email perche hai attivato questo tipo di notifica nelle impostazioni di Bets of Friends.",
+    "IgnoreUnexpected": "Se non ti aspettavi questa email, puoi ignorarla.",
+    "AccountSetupSecondary": "Dopo aver configurato l'account, potrai accedere al torneo e partecipare.",
+    "ConfirmSecondary": "Se non ti sei registrato, puoi ignorare questa email.",
+    "PasswordResetSecondary": "Se non hai richiesto questa operazione, puoi ignorare questa email.",
+    "Action": {
+      "OpenApp": "Apri Bets of Friends",
+      "AcceptInvitation": "Accetta invito",
+      "SetupAccount": "Configura account",
+      "ConfirmAccount": "Conferma account",
+      "ResetPassword": "Reimposta password"
+    },
+    "TournamentInvite": {
+      "Title": "Sei invitato a {{TOURNAMENT_NAME}}!",
+      "Body": "Sei stato invitato a partecipare al torneo <strong>{{TOURNAMENT_NAME}}</strong>."
+    },
+    "AccountSetup": {
+      "Title": "Configura il tuo account per {{TOURNAMENT_NAME}}",
+      "Body": "Sei stato invitato a partecipare al torneo <strong>{{TOURNAMENT_NAME}}</strong>, ma prima devi configurare il tuo account."
+    },
+    "Confirm": {
+      "Title": "Conferma il tuo account",
+      "Body": "Grazie per la registrazione. Conferma il tuo indirizzo email per attivare l'account."
+    },
+    "PasswordReset": {
+      "Title": "Reimposta la password",
+      "Body": "Hai richiesto di reimpostare la password."
+    }
+  },
+  "Notifications": {
+    "PendingBet": {
+      "Title1Hour": "Promemoria: partita tra 1 ora",
+      "Message1Hour": "Non hai ancora inviato il pronostico per {{HOME_TEAM}} vs {{AWAY_TEAM}}. La partita inizia tra meno di 1 ora.",
+      "Title24Hours": "Promemoria: partita tra 24 ore",
+      "Message24Hours": "Non hai ancora inviato il pronostico per {{HOME_TEAM}} vs {{AWAY_TEAM}}. La partita inizia tra meno di 24 ore."
+    },
+    "ResultsUpdated": {
+      "Title": "Risultati del torneo aggiornati",
+      "Message": "I risultati sono stati ricalcolati dopo {{HOME_TEAM}} vs {{AWAY_TEAM}}. Risultato finale: {{SCORE}}."
+    },
+    "DailyUpdate": {
+      "Title": "Aggiornamento giornaliero del torneo",
+      "MessageOne": "Hai {{COUNT}} partita di torneo nelle prossime 24 ore.",
+      "MessageMany": "Hai {{COUNT}} partite di torneo nelle prossime 24 ore."
+    },
+    "NewGame": {
+      "Title": "Nuova partita disponibile",
+      "Message": "{{HOME_TEAM}} vs {{AWAY_TEAM}} e ora aperta per i pronostici."
+    },
+    "TournamentInvitation": {
+      "Title": "Invito al torneo",
+      "Message": "Sei stato invitato a {{TOURNAMENT_NAME}}."
+    },
+    "UserJoined": {
+      "Title": "Utente entrato: {{DISPLAY_NAME}}",
+      "Message": "{{DISPLAY_NAME}} ha accettato l'invito ed e entrato nel tuo torneo."
+    },
+    "JoinRequest": {
+      "Title": "Nuova richiesta di partecipazione",
+      "Message": "{{USER_NAME}} ha richiesto di unirsi al tuo torneo {{TOURNAMENT_NAME}}. Controlla la richiesta nella dashboard."
+    },
+    "JoinApproved": {
+      "Title": "Richiesta approvata",
+      "Message": "La tua richiesta di unirti al torneo {{TOURNAMENT_NAME}} e stata approvata. Ora puoi scommettere."
+    },
+    "SupportMessage": {
+      "Title": "Nuovo messaggio di supporto da {{EMAIL}}",
+      "Message": "Oggetto: {{SUBJECT}}"
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "Email": {
+    "Greeting": "Bonjour,",
+    "Signature": "Cordialement,<br />L'equipe Bets of Friends",
+    "NotificationConsent": "Vous recevez cet email car vous avez active ce type de notification dans vos parametres Bets of Friends.",
+    "IgnoreUnexpected": "Si vous n'attendiez pas cet email, vous pouvez l'ignorer.",
+    "AccountSetupSecondary": "Apres avoir configure votre compte, vous pourrez acceder au tournoi et participer.",
+    "ConfirmSecondary": "Si vous ne vous etes pas inscrit, vous pouvez ignorer cet email.",
+    "PasswordResetSecondary": "Si vous n'avez pas demande cela, vous pouvez ignorer cet email.",
+    "Action": {
+      "OpenApp": "Ouvrir Bets of Friends",
+      "AcceptInvitation": "Accepter l'invitation",
+      "SetupAccount": "Configurer le compte",
+      "ConfirmAccount": "Confirmer le compte",
+      "ResetPassword": "Reinitialiser le mot de passe"
+    },
+    "TournamentInvite": {
+      "Title": "Vous etes invite a {{TOURNAMENT_NAME}} !",
+      "Body": "Vous avez ete invite a rejoindre le tournoi <strong>{{TOURNAMENT_NAME}}</strong>."
+    },
+    "AccountSetup": {
+      "Title": "Configurez votre compte pour {{TOURNAMENT_NAME}}",
+      "Body": "Vous avez ete invite a rejoindre le tournoi <strong>{{TOURNAMENT_NAME}}</strong>, mais vous devez d'abord configurer votre compte."
+    },
+    "Confirm": {
+      "Title": "Confirmez votre compte",
+      "Body": "Merci pour votre inscription. Veuillez confirmer votre adresse email pour activer votre compte."
+    },
+    "PasswordReset": {
+      "Title": "Reinitialiser votre mot de passe",
+      "Body": "Vous avez demande la reinitialisation de votre mot de passe."
+    }
+  },
+  "Notifications": {
+    "PendingBet": {
+      "Title1Hour": "Rappel : match dans 1 heure",
+      "Message1Hour": "Vous n'avez pas encore envoye votre pari pour {{HOME_TEAM}} contre {{AWAY_TEAM}}. Le match commence dans moins d'une heure.",
+      "Title24Hours": "Rappel : match dans 24 heures",
+      "Message24Hours": "Vous n'avez pas encore envoye votre pari pour {{HOME_TEAM}} contre {{AWAY_TEAM}}. Le match commence dans moins de 24 heures."
+    },
+    "ResultsUpdated": {
+      "Title": "Resultats du tournoi mis a jour",
+      "Message": "Les resultats ont ete recalcules apres {{HOME_TEAM}} contre {{AWAY_TEAM}}. Score final : {{SCORE}}."
+    },
+    "DailyUpdate": {
+      "Title": "Mise a jour quotidienne du tournoi",
+      "MessageOne": "Vous avez {{COUNT}} match de tournoi dans les prochaines 24 heures.",
+      "MessageMany": "Vous avez {{COUNT}} matchs de tournoi dans les prochaines 24 heures."
+    },
+    "NewGame": {
+      "Title": "Nouveau match disponible",
+      "Message": "{{HOME_TEAM}} contre {{AWAY_TEAM}} est maintenant ouvert aux paris."
+    },
+    "TournamentInvitation": {
+      "Title": "Invitation au tournoi",
+      "Message": "Vous avez ete invite a {{TOURNAMENT_NAME}}."
+    },
+    "UserJoined": {
+      "Title": "Utilisateur rejoint : {{DISPLAY_NAME}}",
+      "Message": "{{DISPLAY_NAME}} a accepte l'invitation et rejoint votre tournoi."
+    },
+    "JoinRequest": {
+      "Title": "Nouvelle demande d'inscription",
+      "Message": "{{USER_NAME}} a demande a rejoindre votre tournoi {{TOURNAMENT_NAME}}. Consultez la demande dans le tableau de bord."
+    },
+    "JoinApproved": {
+      "Title": "Demande d'inscription approuvee",
+      "Message": "Votre demande pour rejoindre le tournoi {{TOURNAMENT_NAME}} a ete approuvee. Vous pouvez maintenant parier."
+    },
+    "SupportMessage": {
+      "Title": "Nouveau message de support de {{EMAIL}}",
+      "Message": "Sujet : {{SUBJECT}}"
+    }
+  }
+}

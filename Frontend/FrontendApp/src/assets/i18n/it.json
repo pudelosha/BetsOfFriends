@@ -126,7 +126,19 @@
     "NEW_GAMES": "Nuove partite",
     "PROMOTIONS": "Promozioni",
     "SPECIAL_OFFERS": "Offerte Speciali",
-    "SAVE": "Salva Impostazioni"
+    "SAVE": "Salva Impostazioni",
+    "EMAIL": "Email",
+    "PUSH": "Push",
+    "LOADING_SETTINGS": "Caricamento impostazioni...",
+    "SAVING_SETTINGS": "Salvataggio impostazioni...",
+    "LOAD_FAILED": "Impossibile caricare le impostazioni.",
+    "SAVE_FAILED": "Impossibile salvare le impostazioni.",
+    "SAVED": "Impostazioni notifiche salvate.",
+    "PUSH_UNSUPPORTED": "Le notifiche push non sono supportate da questo browser.",
+    "PUSH_NOT_CONFIGURED": "Le notifiche push non sono ancora configurate.",
+    "PUSH_PERMISSION_DENIED": "Il permesso per le notifiche push non è stato concesso.",
+    "PUSH_UNAVAILABLE": "Le notifiche push non sono disponibili.",
+    "PUSH_REMOVE_FAILED": "Impossibile rimuovere l'abbonamento push per questo browser."
   },
   "SETUP": {
     "TITLE": "Configura Account",

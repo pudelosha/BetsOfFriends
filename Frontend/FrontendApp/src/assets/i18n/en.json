@@ -126,7 +126,19 @@
     "NEW_GAMES": "New games to bet",
     "PROMOTIONS": "Promotions",
     "SPECIAL_OFFERS": "Special offers",
-    "SAVE": "Save Settings"
+    "SAVE": "Save Settings",
+    "EMAIL": "Email",
+    "PUSH": "Push",
+    "LOADING_SETTINGS": "Loading settings...",
+    "SAVING_SETTINGS": "Saving settings...",
+    "LOAD_FAILED": "Failed to load settings.",
+    "SAVE_FAILED": "Failed to save settings.",
+    "SAVED": "Notification settings saved.",
+    "PUSH_UNSUPPORTED": "Push notifications are not supported in this browser.",
+    "PUSH_NOT_CONFIGURED": "Push notifications are not configured yet.",
+    "PUSH_PERMISSION_DENIED": "Push notification permission was not granted.",
+    "PUSH_UNAVAILABLE": "Push notifications are unavailable.",
+    "PUSH_REMOVE_FAILED": "Failed to remove push subscription for this browser."
   },
   "SETUP": {
     "TITLE": "Setup Your Account",

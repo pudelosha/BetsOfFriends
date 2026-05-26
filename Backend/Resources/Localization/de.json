@@ -1,0 +1,75 @@
+{
+  "Email": {
+    "Greeting": "Hallo,",
+    "Signature": "Viele Gruesse,<br />Bets of Friends Team",
+    "NotificationConsent": "Du erhaeltst diese E-Mail, weil du diese Benachrichtigungsart in deinen Bets of Friends Einstellungen aktiviert hast.",
+    "IgnoreUnexpected": "Wenn du diese E-Mail nicht erwartet hast, kannst du sie ignorieren.",
+    "AccountSetupSecondary": "Nach der Einrichtung deines Kontos kannst du auf das Turnier zugreifen und teilnehmen.",
+    "ConfirmSecondary": "Wenn du dich nicht registriert hast, kannst du diese E-Mail ignorieren.",
+    "PasswordResetSecondary": "Wenn du dies nicht angefordert hast, kannst du diese E-Mail ignorieren.",
+    "Action": {
+      "OpenApp": "Bets of Friends oeffnen",
+      "AcceptInvitation": "Einladung annehmen",
+      "SetupAccount": "Konto einrichten",
+      "ConfirmAccount": "Konto bestaetigen",
+      "ResetPassword": "Passwort zuruecksetzen"
+    },
+    "TournamentInvite": {
+      "Title": "Du bist zu {{TOURNAMENT_NAME}} eingeladen!",
+      "Body": "Du wurdest eingeladen, am Turnier <strong>{{TOURNAMENT_NAME}}</strong> teilzunehmen."
+    },
+    "AccountSetup": {
+      "Title": "Richte dein Konto fuer {{TOURNAMENT_NAME}} ein",
+      "Body": "Du wurdest zum Turnier <strong>{{TOURNAMENT_NAME}}</strong> eingeladen, musst aber zuerst dein Konto einrichten."
+    },
+    "Confirm": {
+      "Title": "Bestaetige dein Konto",
+      "Body": "Danke fuer deine Registrierung. Bitte bestaetige deine E-Mail-Adresse, um dein Konto zu aktivieren."
+    },
+    "PasswordReset": {
+      "Title": "Passwort zuruecksetzen",
+      "Body": "Du hast das Zuruecksetzen deines Passworts angefordert."
+    }
+  },
+  "Notifications": {
+    "PendingBet": {
+      "Title1Hour": "Erinnerung: Spiel beginnt in 1 Stunde",
+      "Message1Hour": "Du hast deinen Tipp fuer {{HOME_TEAM}} gegen {{AWAY_TEAM}} noch nicht abgegeben. Das Spiel beginnt in weniger als 1 Stunde.",
+      "Title24Hours": "Erinnerung: Spiel beginnt in 24 Stunden",
+      "Message24Hours": "Du hast deinen Tipp fuer {{HOME_TEAM}} gegen {{AWAY_TEAM}} noch nicht abgegeben. Das Spiel beginnt in weniger als 24 Stunden."
+    },
+    "ResultsUpdated": {
+      "Title": "Turnierergebnisse aktualisiert",
+      "Message": "Die Ergebnisse wurden nach {{HOME_TEAM}} gegen {{AWAY_TEAM}} neu berechnet. Endstand: {{SCORE}}."
+    },
+    "DailyUpdate": {
+      "Title": "Taegliches Turnier-Update",
+      "MessageOne": "Du hast {{COUNT}} Turnierspiel in den naechsten 24 Stunden.",
+      "MessageMany": "Du hast {{COUNT}} Turnierspiele in den naechsten 24 Stunden."
+    },
+    "NewGame": {
+      "Title": "Neues Spiel verfuegbar",
+      "Message": "{{HOME_TEAM}} gegen {{AWAY_TEAM}} ist jetzt zum Tippen offen."
+    },
+    "TournamentInvitation": {
+      "Title": "Turniereinladung",
+      "Message": "Du wurdest zu {{TOURNAMENT_NAME}} eingeladen."
+    },
+    "UserJoined": {
+      "Title": "Benutzer beigetreten: {{DISPLAY_NAME}}",
+      "Message": "{{DISPLAY_NAME}} hat die Turniereinladung angenommen und ist deinem Turnier beigetreten."
+    },
+    "JoinRequest": {
+      "Title": "Neue Beitrittsanfrage",
+      "Message": "{{USER_NAME}} moechte deinem Turnier {{TOURNAMENT_NAME}} beitreten. Pruefe die Anfrage im Dashboard."
+    },
+    "JoinApproved": {
+      "Title": "Beitrittsanfrage genehmigt",
+      "Message": "Deine Anfrage fuer das Turnier {{TOURNAMENT_NAME}} wurde genehmigt. Du kannst jetzt tippen."
+    },
+    "SupportMessage": {
+      "Title": "Neue Support-Nachricht von {{EMAIL}}",
+      "Message": "Betreff: {{SUBJECT}}"
+    }
+  }
+}

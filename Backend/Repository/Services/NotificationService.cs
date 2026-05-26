@@ -10,6 +10,7 @@ public class NotificationService : INotificationService
     private readonly AppDbContext _dbContext;
     private readonly IEmailService _emailService;
     private readonly IEmailTemplateService _emailTemplateService;
+    private readonly ILocalizationService _localizationService;
     private readonly IPushNotificationService _pushNotificationService;
     private readonly ILogger<NotificationService> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
@@ -19,6 +20,7 @@ public class NotificationService : INotificationService
         UserManager<ApplicationUser> userManager,
         IEmailService emailService,
         IEmailTemplateService emailTemplateService,
+        ILocalizationService localizationService,
         IPushNotificationService pushNotificationService,
         ILogger<NotificationService> logger)
     {
@@ -26,6 +28,7 @@ public class NotificationService : INotificationService
         _emailService = emailService;
         _userManager = userManager;
         _emailTemplateService = emailTemplateService;
+        _localizationService = localizationService;
         _pushNotificationService = pushNotificationService;
         _logger = logger;
     }
@@ -49,19 +52,24 @@ public class NotificationService : INotificationService
             return;
         }
 
-        var timeStr = threshold.TotalHours == 1 ? "1 hour" : "24 hours";
+        var isOneHour = threshold.TotalHours == 1;
 
-        _logger.LogInformation($"Sending match start reminders to {usersWithToPlaceBets.Count} users for Match ID {match.MatchId} (threshold: {timeStr})");
+        _logger.LogInformation($"Sending match start reminders to {usersWithToPlaceBets.Count} users for Match ID {match.MatchId} (threshold: {threshold.TotalHours}h)");
 
         // Build dynamic URL
         var tournamentId = match.TournamentId;
         var stageNameEncoded = Uri.EscapeDataString(match.Stage?.StageName ?? ""); // fallback to empty
         var url = $"/my-bets?tab=to-place&stage={stageNameEncoded}&tournamentId={tournamentId}";
 
-        await ProcessNotificationsAsync(
+        await ProcessLocalizedNotificationsAsync(
             usersWithToPlaceBets,
-            $"Reminder: Match starts in {timeStr}",
-            $"You haven't submitted your bet for {match.HomeTeam.TeamName} vs {match.AwayTeam.TeamName}. The match starts in less than {timeStr}!",
+            isOneHour ? "Notifications.PendingBet.Title1Hour" : "Notifications.PendingBet.Title24Hours",
+            isOneHour ? "Notifications.PendingBet.Message1Hour" : "Notifications.PendingBet.Message24Hours",
+            new Dictionary<string, string>
+            {
+                { "HOME_TEAM", match.HomeTeam?.TeamName ?? "Home team" },
+                { "AWAY_TEAM", match.AwayTeam?.TeamName ?? "Away team" }
+            },
             url,
             u => (u.ReceiveEmailPendingBets, u.ReceivePushPendingBets)
         );
@@ -100,10 +108,16 @@ public class NotificationService : INotificationService
         var homeTeamName = fullMatch.HomeTeam?.TeamName ?? "Home team";
         var awayTeamName = fullMatch.AwayTeam?.TeamName ?? "Away team";
 
-        await ProcessNotificationsAsync(
+        await ProcessLocalizedNotificationsAsync(
             participants,
-            $"Tournament results updated",
-            $"Results were recalculated after {homeTeamName} vs {awayTeamName}. Final score: {fullMatch.HomeScore}-{fullMatch.AwayScore}.",
+            "Notifications.ResultsUpdated.Title",
+            "Notifications.ResultsUpdated.Message",
+            new Dictionary<string, string>
+            {
+                { "HOME_TEAM", homeTeamName },
+                { "AWAY_TEAM", awayTeamName },
+                { "SCORE", $"{fullMatch.HomeScore}-{fullMatch.AwayScore}" }
+            },
             "/results",
             user => (user.ReceiveEmailMatchClosed, user.ReceivePushMatchClosed)
         );
@@ -111,8 +125,6 @@ public class NotificationService : INotificationService
 
     public async Task NotifyDailyTournamentUpdatesAsync(DateTime nowUtc)
     {
-        const string title = "Daily tournament update";
-
         var windowEndUtc = nowUtc.AddHours(24);
         var rows = await _dbContext.CustomTournamentUserAssignments
             .Where(a => a.Status == AssignmentStatus.Accepted)
@@ -152,7 +164,7 @@ public class NotificationService : INotificationService
         var alreadyNotifiedUserIds = await _dbContext.NotificationRecipients
             .Where(nr =>
                 userIds.Contains(nr.UserId) &&
-                nr.Notification.Title == title &&
+                nr.Notification.Route == "/my-bets?tab=to-place" &&
                 nr.Notification.CreatedAt >= dayStartUtc &&
                 nr.Notification.CreatedAt < dayEndUtc)
             .Select(nr => nr.UserId)
@@ -167,12 +179,11 @@ public class NotificationService : INotificationService
         foreach (var countGroup in usersToNotify.GroupBy(g => g.Count))
         {
             var count = countGroup.Key;
-            var matchLabel = count == 1 ? "match" : "matches";
-
-            await ProcessNotificationsAsync(
+            await ProcessLocalizedNotificationsAsync(
                 countGroup.Select(g => g.User).ToList(),
-                title,
-                $"You have {count} tournament {matchLabel} in the next 24 hours.",
+                "Notifications.DailyUpdate.Title",
+                count == 1 ? "Notifications.DailyUpdate.MessageOne" : "Notifications.DailyUpdate.MessageMany",
+                new Dictionary<string, string> { { "COUNT", count.ToString() } },
                 "/my-bets?tab=to-place",
                 user => (user.ReceiveEmailDailyUpdates, user.ReceivePushDailyUpdates)
             );
@@ -208,10 +219,15 @@ public class NotificationService : INotificationService
         var homeTeamName = fullMatch.HomeTeam?.TeamName ?? "Home team";
         var awayTeamName = fullMatch.AwayTeam?.TeamName ?? "Away team";
 
-        await ProcessNotificationsAsync(
+        await ProcessLocalizedNotificationsAsync(
             participants,
-            "New match available",
-            $"{homeTeamName} vs {awayTeamName} is now open for betting.",
+            "Notifications.NewGame.Title",
+            "Notifications.NewGame.Message",
+            new Dictionary<string, string>
+            {
+                { "HOME_TEAM", homeTeamName },
+                { "AWAY_TEAM", awayTeamName }
+            },
             $"/my-bets?tab=to-place&stage={stageNameEncoded}&tournamentId={fullMatch.TournamentId}",
             user => (user.ReceiveEmailNewGames, user.ReceivePushNewGames)
         );
@@ -251,10 +267,11 @@ public class NotificationService : INotificationService
             return;
         }
 
-        await ProcessNotificationsAsync(
+        await ProcessLocalizedNotificationsAsync(
             recipients,
-            "Tournament invitation",
-            $"You have been invited to {tournamentName}.",
+            "Notifications.TournamentInvitation.Title",
+            "Notifications.TournamentInvitation.Message",
+            new Dictionary<string, string> { { "TOURNAMENT_NAME", tournamentName } },
             "/my-tournaments",
             user => (user.ReceiveEmailTournamentInvitation, user.ReceivePushTournamentInvitation)
         );
@@ -291,10 +308,11 @@ public class NotificationService : INotificationService
 
         _logger.LogInformation($"Sending tournament invite acceptance notifications to {admins.Count} admin(s) for Tournament ID {tournamentId}. Accepted by: {displayName}");
 
-        await ProcessNotificationsAsync(
+        await ProcessLocalizedNotificationsAsync(
             admins,
-            $"User Joined: {displayName}",
-            $"{displayName} has accepted the tournament invite and joined your tournament.",
+            "Notifications.UserJoined.Title",
+            "Notifications.UserJoined.Message",
+            new Dictionary<string, string> { { "DISPLAY_NAME", displayName } },
             "/tournaments/participants",
             user => (user.ReceiveEmailTournamentInvitation, user.ReceivePushTournamentInvitation)
         );
@@ -357,10 +375,15 @@ public class NotificationService : INotificationService
 
         _logger.LogInformation($"Sending join request notifications to {admins.Count} admins for Tournament ID {tournamentId}");
 
-        await ProcessNotificationsAsync(
+        await ProcessLocalizedNotificationsAsync(
             admins,
-            $"New Join Request for Tournament",
-            $"User '{populatedJoinRequest.UserName}' has requested to join your tournament '{populatedJoinRequest.Tournament.Name}'. Review the request in the dashboard.",
+            "Notifications.JoinRequest.Title",
+            "Notifications.JoinRequest.Message",
+            new Dictionary<string, string>
+            {
+                { "USER_NAME", populatedJoinRequest.UserName ?? populatedJoinRequest.User.Email ?? "User" },
+                { "TOURNAMENT_NAME", populatedJoinRequest.Tournament.Name }
+            },
             "/tournaments/participants",
             user => (user.ReceiveEmailTournamentInvitation, user.ReceivePushTournamentInvitation)
         );
@@ -381,10 +404,11 @@ public class NotificationService : INotificationService
 
         _logger.LogInformation($"Sending join approval notification to user {fullAssignment.User.Id} for Tournament ID {fullAssignment.TournamentId}");
 
-        await ProcessNotificationsAsync(
+        await ProcessLocalizedNotificationsAsync(
             new List<ApplicationUser> { fullAssignment.User },
-            $"Join Request Approved",
-            $"Your request to join tournament '{fullAssignment.Tournament.Name}' has been approved! You can now start betting.",
+            "Notifications.JoinApproved.Title",
+            "Notifications.JoinApproved.Message",
+            new Dictionary<string, string> { { "TOURNAMENT_NAME", fullAssignment.Tournament.Name } },
             "/my-bets",
             u => (u.ReceiveEmailTournamentInvitation, u.ReceivePushTournamentInvitation)
         );
@@ -414,14 +438,15 @@ public class NotificationService : INotificationService
             ? message.Subject.Substring(0, 40) + "..."
             : message.Subject;
 
-        var notificationTitle = $"New Support Message from {message.Email}";
-        var notificationBody = $"Subject: {subjectPreview}";
-
-        // Step 2: Notify super admins
-        await ProcessNotificationsAsync(
+        await ProcessLocalizedNotificationsAsync(
             superAdmins,
-            notificationTitle,
-            notificationBody,
+            "Notifications.SupportMessage.Title",
+            "Notifications.SupportMessage.Message",
+            new Dictionary<string, string>
+            {
+                { "EMAIL", message.Email },
+                { "SUBJECT", subjectPreview }
+            },
             "/admin/support-messages",
             u => (true, false)
         );
@@ -483,7 +508,50 @@ public class NotificationService : INotificationService
             return;
         }
 
-        _logger.LogInformation($"Processing notifications for {recipients.Count} users.");
+        await ProcessNotificationGroupAsync(recipients, title, message, route, getConsent, "en");
+    }
+
+    private async Task ProcessLocalizedNotificationsAsync(
+        List<ApplicationUser> recipients,
+        string titleKey,
+        string messageKey,
+        IReadOnlyDictionary<string, string> placeholders,
+        string route,
+        Func<ApplicationUser, (bool emailConsent, bool pushConsent)> getConsent)
+    {
+        if (recipients == null || !recipients.Any())
+        {
+            _logger.LogWarning("ProcessLocalizedNotificationsAsync was called with an empty recipient list.");
+            return;
+        }
+
+        var languageByUserId = await GetRecipientLanguagesAsync(recipients);
+
+        foreach (var languageGroup in recipients.GroupBy(user => languageByUserId.GetValueOrDefault(user.Id, "en")))
+        {
+            var language = languageGroup.Key;
+            var title = _localizationService.Translate(titleKey, language, placeholders);
+            var message = _localizationService.Translate(messageKey, language, placeholders);
+
+            await ProcessNotificationGroupAsync(
+                languageGroup.ToList(),
+                title,
+                message,
+                route,
+                getConsent,
+                language);
+        }
+    }
+
+    private async Task ProcessNotificationGroupAsync(
+        List<ApplicationUser> recipients,
+        string title,
+        string message,
+        string route,
+        Func<ApplicationUser, (bool emailConsent, bool pushConsent)> getConsent,
+        string language)
+    {
+        _logger.LogInformation($"Processing notifications for {recipients.Count} users in language {language}.");
 
         // Step 1: Create a single Notification entry
         var notification = new Notification
@@ -520,7 +588,7 @@ public class NotificationService : INotificationService
             {
                 try
                 {
-                    await _emailService.SendNotificationEmailAsync(user, title, message, route);
+                    await _emailService.SendNotificationEmailAsync(user, title, message, route, language);
                     recipient.SentEmail = true;
                     _logger.LogInformation($"Notification email sent to {user.Email}");
                 }
@@ -550,6 +618,24 @@ public class NotificationService : INotificationService
         await _dbContext.SaveChangesAsync();
 
         _logger.LogInformation($"Successfully processed notifications for {recipients.Count} users.");
+    }
+
+    private async Task<Dictionary<string, string>> GetRecipientLanguagesAsync(List<ApplicationUser> recipients)
+    {
+        var userIds = recipients
+            .Select(user => user.Id)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct()
+            .ToList();
+
+        return await _dbContext.Users
+            .Where(user => userIds.Contains(user.Id))
+            .Select(user => new
+            {
+                user.Id,
+                Language = user.Language != null ? user.Language.ShortName : "en"
+            })
+            .ToDictionaryAsync(user => user.Id, user => user.Language ?? "en");
     }
 
     public async Task<NotificationSettingsDto?> GetNotificationSettingsAsync(string userId)

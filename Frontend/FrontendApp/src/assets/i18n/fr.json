@@ -126,7 +126,19 @@
     "NEW_GAMES": "Nouveaux matchs",
     "PROMOTIONS": "Promos",
     "SPECIAL_OFFERS": "Offres spéciales",
-    "SAVE": "Enregistrer"
+    "SAVE": "Enregistrer",
+    "EMAIL": "E-mail",
+    "PUSH": "Push",
+    "LOADING_SETTINGS": "Chargement des paramètres...",
+    "SAVING_SETTINGS": "Enregistrement des paramètres...",
+    "LOAD_FAILED": "Impossible de charger les paramètres.",
+    "SAVE_FAILED": "Impossible d'enregistrer les paramètres.",
+    "SAVED": "Paramètres de notification enregistrés.",
+    "PUSH_UNSUPPORTED": "Les notifications push ne sont pas prises en charge par ce navigateur.",
+    "PUSH_NOT_CONFIGURED": "Les notifications push ne sont pas encore configurées.",
+    "PUSH_PERMISSION_DENIED": "L'autorisation des notifications push n'a pas été accordée.",
+    "PUSH_UNAVAILABLE": "Les notifications push sont indisponibles.",
+    "PUSH_REMOVE_FAILED": "Impossible de supprimer l'abonnement push pour ce navigateur."
   },
   "SETUP": {
     "TITLE": "Configurer le compte",

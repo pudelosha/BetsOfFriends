@@ -126,7 +126,19 @@
     "NEW_GAMES": "Neue Spiele",
     "PROMOTIONS": "Aktionen",
     "SPECIAL_OFFERS": "Sonderangebote",
-    "SAVE": "Speichern"
+    "SAVE": "Speichern",
+    "EMAIL": "E-Mail",
+    "PUSH": "Push",
+    "LOADING_SETTINGS": "Einstellungen werden geladen...",
+    "SAVING_SETTINGS": "Einstellungen werden gespeichert...",
+    "LOAD_FAILED": "Einstellungen konnten nicht geladen werden.",
+    "SAVE_FAILED": "Einstellungen konnten nicht gespeichert werden.",
+    "SAVED": "Benachrichtigungseinstellungen gespeichert.",
+    "PUSH_UNSUPPORTED": "Push-Benachrichtigungen werden in diesem Browser nicht unterstützt.",
+    "PUSH_NOT_CONFIGURED": "Push-Benachrichtigungen sind noch nicht konfiguriert.",
+    "PUSH_PERMISSION_DENIED": "Die Berechtigung für Push-Benachrichtigungen wurde nicht erteilt.",
+    "PUSH_UNAVAILABLE": "Push-Benachrichtigungen sind nicht verfügbar.",
+    "PUSH_REMOVE_FAILED": "Das Push-Abonnement für diesen Browser konnte nicht entfernt werden."
   },
   "SETUP": {
     "TITLE": "Konto einrichten",

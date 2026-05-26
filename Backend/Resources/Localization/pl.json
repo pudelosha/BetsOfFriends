@@ -1,0 +1,75 @@
+{
+  "Email": {
+    "Greeting": "Czesc,",
+    "Signature": "Pozdrawiamy,<br />Zespol Bets of Friends",
+    "NotificationConsent": "Otrzymujesz ten email, poniewaz wlaczyles ten typ powiadomien w ustawieniach Bets of Friends.",
+    "IgnoreUnexpected": "Jesli nie spodziewales sie tej wiadomosci, mozesz ja zignorowac.",
+    "AccountSetupSecondary": "Po skonfigurowaniu konta bedziesz mogl wejsc do turnieju i zaczac uczestniczyc.",
+    "ConfirmSecondary": "Jesli nie rejestrowales konta, mozesz zignorowac te wiadomosc.",
+    "PasswordResetSecondary": "Jesli nie prosiles o reset hasla, mozesz zignorowac te wiadomosc.",
+    "Action": {
+      "OpenApp": "Otworz Bets of Friends",
+      "AcceptInvitation": "Zaakceptuj zaproszenie",
+      "SetupAccount": "Skonfiguruj konto",
+      "ConfirmAccount": "Potwierdz konto",
+      "ResetPassword": "Resetuj haslo"
+    },
+    "TournamentInvite": {
+      "Title": "Zaproszenie do {{TOURNAMENT_NAME}}!",
+      "Body": "Zostales zaproszony do turnieju <strong>{{TOURNAMENT_NAME}}</strong>."
+    },
+    "AccountSetup": {
+      "Title": "Skonfiguruj konto dla {{TOURNAMENT_NAME}}",
+      "Body": "Zostales zaproszony do turnieju <strong>{{TOURNAMENT_NAME}}</strong>, ale najpierw musisz skonfigurowac konto."
+    },
+    "Confirm": {
+      "Title": "Potwierdz konto",
+      "Body": "Dziekujemy za rejestracje. Potwierdz adres email, aby aktywowac konto."
+    },
+    "PasswordReset": {
+      "Title": "Reset hasla",
+      "Body": "Poprosiles o reset hasla."
+    }
+  },
+  "Notifications": {
+    "PendingBet": {
+      "Title1Hour": "Przypomnienie: mecz za 1 godzine",
+      "Message1Hour": "Nie wyslales jeszcze typu na {{HOME_TEAM}} vs {{AWAY_TEAM}}. Mecz zaczyna sie za mniej niz 1 godzine.",
+      "Title24Hours": "Przypomnienie: mecz za 24 godziny",
+      "Message24Hours": "Nie wyslales jeszcze typu na {{HOME_TEAM}} vs {{AWAY_TEAM}}. Mecz zaczyna sie za mniej niz 24 godziny."
+    },
+    "ResultsUpdated": {
+      "Title": "Wyniki turnieju zaktualizowane",
+      "Message": "Wyniki zostaly przeliczone po meczu {{HOME_TEAM}} vs {{AWAY_TEAM}}. Wynik koncowy: {{SCORE}}."
+    },
+    "DailyUpdate": {
+      "Title": "Codzienna aktualizacja turnieju",
+      "MessageOne": "Masz {{COUNT}} mecz turniejowy w ciagu najblizszych 24 godzin.",
+      "MessageMany": "Masz {{COUNT}} mecze turniejowe w ciagu najblizszych 24 godzin."
+    },
+    "NewGame": {
+      "Title": "Nowy mecz dostepny",
+      "Message": "{{HOME_TEAM}} vs {{AWAY_TEAM}} jest juz dostepny do typowania."
+    },
+    "TournamentInvitation": {
+      "Title": "Zaproszenie do turnieju",
+      "Message": "Zostales zaproszony do {{TOURNAMENT_NAME}}."
+    },
+    "UserJoined": {
+      "Title": "Uzytkownik dolaczyl: {{DISPLAY_NAME}}",
+      "Message": "{{DISPLAY_NAME}} zaakceptowal zaproszenie i dolaczyl do twojego turnieju."
+    },
+    "JoinRequest": {
+      "Title": "Nowa prosba o dolaczenie",
+      "Message": "{{USER_NAME}} poprosil o dolaczenie do turnieju {{TOURNAMENT_NAME}}. Sprawdz prosbe w panelu."
+    },
+    "JoinApproved": {
+      "Title": "Prosba o dolaczenie zaakceptowana",
+      "Message": "Twoja prosba o dolaczenie do turnieju {{TOURNAMENT_NAME}} zostala zaakceptowana. Mozesz juz typowac."
+    },
+    "SupportMessage": {
+      "Title": "Nowa wiadomosc supportu od {{EMAIL}}",
+      "Message": "Temat: {{SUBJECT}}"
+    }
+  }
+}

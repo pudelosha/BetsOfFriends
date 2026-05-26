@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ToastController, LoadingController } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { NotificationService, NotificationSettings } from 'src/app/services/notification.service';
 import { PushNotificationService } from 'src/app/services/push-notification.service';
@@ -32,7 +32,8 @@ export class NotificationSettingsPage implements OnInit {
     private loadingCtrl: LoadingController,
     private titleService: TitleService,
     private notificationService: NotificationService,
-    private pushNotificationService: PushNotificationService
+    private pushNotificationService: PushNotificationService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -57,7 +58,7 @@ export class NotificationSettingsPage implements OnInit {
   }
 
   async loadSettings() {
-    const loading = await this.loadingCtrl.create({ message: 'Loading settings...' });
+    const loading = await this.loadingCtrl.create({ message: this.translate.instant('NOTIFICATIONS.LOADING_SETTINGS') });
     await loading.present();
 
     this.notificationService.getNotificationSettings().subscribe({
@@ -67,7 +68,7 @@ export class NotificationSettingsPage implements OnInit {
       },
       error: async () => {
         await loading.dismiss();
-        this.showToast('Failed to load settings', 'danger');
+        this.showToastKey('NOTIFICATIONS.LOAD_FAILED', 'danger');
       }
     });
   }
@@ -80,27 +81,27 @@ export class NotificationSettingsPage implements OnInit {
 
       if (!pushResult.success) {
         this.disablePushControls();
-        await this.showToast(pushResult.message ?? 'Push notifications are unavailable.', 'warning');
+        await this.showToastKey(pushResult.messageKey ?? 'NOTIFICATIONS.PUSH_UNAVAILABLE', 'warning');
       }
     } else {
       try {
         await this.pushNotificationService.unsubscribeCurrentDevice();
       } catch {
-        await this.showToast('Failed to remove push subscription for this browser.', 'warning');
+        await this.showToastKey('NOTIFICATIONS.PUSH_REMOVE_FAILED', 'warning');
       }
     }
 
-    const loading = await this.loadingCtrl.create({ message: 'Saving settings...' });
+    const loading = await this.loadingCtrl.create({ message: this.translate.instant('NOTIFICATIONS.SAVING_SETTINGS') });
     await loading.present();
 
     this.notificationService.updateNotificationSettings(this.notificationForm.value as NotificationSettings).subscribe({
       next: async () => {
         await loading.dismiss();
-        this.showToast('Notification settings saved.', 'success');
+        this.showToastKey('NOTIFICATIONS.SAVED', 'success');
       },
       error: async () => {
         await loading.dismiss();
-        this.showToast('Failed to save settings.', 'danger');
+        this.showToastKey('NOTIFICATIONS.SAVE_FAILED', 'danger');
       }
     });
   }
@@ -113,6 +114,10 @@ export class NotificationSettingsPage implements OnInit {
       position: 'bottom',
     });
     await toast.present();
+  }
+
+  async showToastKey(key: string, color: string) {
+    await this.showToast(this.translate.instant(key), color);
   }
 
   private hasAnyPushEnabled(): boolean {

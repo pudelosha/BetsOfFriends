@@ -28,6 +28,10 @@
 		<CopyToPublishDirectory>Always</CopyToPublishDirectory>
 		<TargetPath>Resources\Emails\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
 	  </Content>
+	  <Content Update="Resources\Localization\**\*.*">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>

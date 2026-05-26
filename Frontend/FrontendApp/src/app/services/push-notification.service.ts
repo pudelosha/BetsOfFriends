@@ -4,7 +4,7 @@ import { NotificationService, PushSubscriptionPayload } from './notification.ser
 
 export interface PushRegistrationResult {
   success: boolean;
-  message?: string;
+  messageKey?: string;
 }
 
 @Injectable({
@@ -24,7 +24,7 @@ export class PushNotificationService {
     if (!this.isSupported) {
       return {
         success: false,
-        message: 'Push notifications are not supported in this browser.'
+        messageKey: 'NOTIFICATIONS.PUSH_UNSUPPORTED'
       };
     }
 
@@ -32,7 +32,7 @@ export class PushNotificationService {
     if (!pushConfig.enabled || !pushConfig.publicKey) {
       return {
         success: false,
-        message: 'Push notifications are not configured yet.'
+        messageKey: 'NOTIFICATIONS.PUSH_NOT_CONFIGURED'
       };
     }
 
@@ -40,7 +40,7 @@ export class PushNotificationService {
     if (permission !== 'granted') {
       return {
         success: false,
-        message: 'Push notification permission was not granted.'
+        messageKey: 'NOTIFICATIONS.PUSH_PERMISSION_DENIED'
       };
     }
 

@@ -16,6 +16,7 @@ namespace Backend.Extensions
             services.AddScoped<IRegisterService, RegisterService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+            services.AddScoped<ILocalizationService, LocalizationService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IBetService, BetService>();
             services.AddScoped<ICustomMatchService, CustomMatchService>();

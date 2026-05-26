@@ -126,7 +126,19 @@
     "NEW_GAMES": "Novos jogos para apostar",
     "PROMOTIONS": "Promoções",
     "SPECIAL_OFFERS": "Ofertas especiais",
-    "SAVE": "Salvar"
+    "SAVE": "Salvar",
+    "EMAIL": "Email",
+    "PUSH": "Push",
+    "LOADING_SETTINGS": "Carregando configurações...",
+    "SAVING_SETTINGS": "Salvando configurações...",
+    "LOAD_FAILED": "Não foi possível carregar as configurações.",
+    "SAVE_FAILED": "Não foi possível salvar as configurações.",
+    "SAVED": "Configurações de notificações salvas.",
+    "PUSH_UNSUPPORTED": "As notificações push não são suportadas neste navegador.",
+    "PUSH_NOT_CONFIGURED": "As notificações push ainda não estão configuradas.",
+    "PUSH_PERMISSION_DENIED": "A permissão para notificações push não foi concedida.",
+    "PUSH_UNAVAILABLE": "As notificações push não estão disponíveis.",
+    "PUSH_REMOVE_FAILED": "Não foi possível remover a subscrição push deste navegador."
   },
   "SETUP": {
     "TITLE": "Configure sua Conta",

@@ -126,7 +126,19 @@
     "NEW_GAMES": "Nowe mecze do obstawienia",
     "PROMOTIONS": "Promocje",
     "SPECIAL_OFFERS": "Oferty specjalne",
-    "SAVE": "Zapisz ustawienia"
+    "SAVE": "Zapisz ustawienia",
+    "EMAIL": "Email",
+    "PUSH": "Push",
+    "LOADING_SETTINGS": "Ładowanie ustawień...",
+    "SAVING_SETTINGS": "Zapisywanie ustawień...",
+    "LOAD_FAILED": "Nie udało się załadować ustawień.",
+    "SAVE_FAILED": "Nie udało się zapisać ustawień.",
+    "SAVED": "Ustawienia powiadomień zapisane.",
+    "PUSH_UNSUPPORTED": "Powiadomienia push nie są obsługiwane w tej przeglądarce.",
+    "PUSH_NOT_CONFIGURED": "Powiadomienia push nie są jeszcze skonfigurowane.",
+    "PUSH_PERMISSION_DENIED": "Nie udzielono zgody na powiadomienia push.",
+    "PUSH_UNAVAILABLE": "Powiadomienia push są niedostępne.",
+    "PUSH_REMOVE_FAILED": "Nie udało się usunąć subskrypcji push dla tej przeglądarki."
   },
   "SETUP": {
     "TITLE": "Skonfiguruj konto",

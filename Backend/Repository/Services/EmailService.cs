@@ -1,25 +1,28 @@
 ﻿using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
 
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<EmailService> _logger;
     private readonly IEmailTemplateService _emailTemplateService;
+    private readonly ILocalizationService _localizationService;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public EmailService(IConfiguration configuration, 
         ILogger<EmailService> logger, 
         IEmailTemplateService emailTemplateService,
+        ILocalizationService localizationService,
         UserManager<ApplicationUser> userManager)
     {
         _configuration = configuration;
         _logger = logger;
         _emailTemplateService = emailTemplateService;
+        _localizationService = localizationService;
         _userManager = userManager;
     }
 
@@ -32,18 +35,28 @@ public class EmailService : IEmailService
             : _configuration["App:ClientBaseUrlProd"];
 
         var inviteLink = $"{frontendBaseUrl}/my-tournaments";
+        var language = await GetUserLanguageByEmailAsync(email);
 
-        // Step 2: Prepare email content
-        var placeholders = new Dictionary<string, string>
+        var plainPlaceholders = new Dictionary<string, string>
         {
-            { "TOURNAMENT_NAME", tournamentName },
-            { "INVITE_LINK", inviteLink }
+            { "TOURNAMENT_NAME", tournamentName }
+        };
+        var htmlPlaceholders = new Dictionary<string, string>
+        {
+            { "TOURNAMENT_NAME", WebUtility.HtmlEncode(tournamentName) }
         };
 
-        var emailBody = await _emailTemplateService.GetEmailTemplateAsync("TournamentInvite", placeholders);
+        var subject = _localizationService.Translate("Email.TournamentInvite.Title", language, plainPlaceholders);
+        var emailBody = await BuildFramedEmailAsync(
+            language,
+            "Email.TournamentInvite.Title",
+            "Email.TournamentInvite.Body",
+            "Email.Action.AcceptInvitation",
+            inviteLink,
+            "Email.IgnoreUnexpected",
+            htmlPlaceholders);
 
-        // Step 3: Send the email
-        await SendEmailAsync(email, $"You're Invited to {tournamentName}!", emailBody);
+        await SendEmailAsync(email, subject, emailBody);
     }
 
     public async Task SendAccountSetupEmailAsync(ApplicationUser user, string tournamentName)
@@ -59,18 +72,28 @@ public class EmailService : IEmailService
             : _configuration["App:ClientBaseUrlProd"];
 
         var setupLink = $"{frontendBaseUrl}/setup-account?userId={user.Id}&token={encodedToken}";
+        var language = await GetUserLanguageAsync(user);
 
-        // Step 3: Prepare email content
-        var placeholders = new Dictionary<string, string>
+        var plainPlaceholders = new Dictionary<string, string>
         {
-            { "TOURNAMENT_NAME", tournamentName },
-            { "SETUP_LINK", setupLink }
+            { "TOURNAMENT_NAME", tournamentName }
+        };
+        var htmlPlaceholders = new Dictionary<string, string>
+        {
+            { "TOURNAMENT_NAME", WebUtility.HtmlEncode(tournamentName) }
         };
 
-        var emailBody = await _emailTemplateService.GetEmailTemplateAsync("AccountSetup", placeholders);
+        var subject = _localizationService.Translate("Email.AccountSetup.Title", language, plainPlaceholders);
+        var emailBody = await BuildFramedEmailAsync(
+            language,
+            "Email.AccountSetup.Title",
+            "Email.AccountSetup.Body",
+            "Email.Action.SetupAccount",
+            setupLink,
+            "Email.AccountSetupSecondary",
+            htmlPlaceholders);
 
-        // Step 4: Send the email
-        await SendEmailAsync(user.Email, $"Set Up Your Account for {tournamentName}", emailBody);
+        await SendEmailAsync(user.Email, subject, emailBody);
     }
 
     public async Task SendConfirmationEmailAsync(ApplicationUser user)
@@ -91,15 +114,17 @@ public class EmailService : IEmailService
 
         _logger.LogInformation($"Generated confirmation link for user {user.Email}: {confirmationLink}");
 
-        // Prepare and send email
-        var placeholders = new Dictionary<string, string>
-        {
-            { "CONFIRMATION_LINK", confirmationLink }
-        };
+        var language = await GetUserLanguageAsync(user);
+        var subject = _localizationService.Translate("Email.Confirm.Title", language);
+        string emailBody = await BuildFramedEmailAsync(
+            language,
+            "Email.Confirm.Title",
+            "Email.Confirm.Body",
+            "Email.Action.ConfirmAccount",
+            confirmationLink,
+            "Email.ConfirmSecondary");
 
-        string emailBody = await _emailTemplateService.GetEmailTemplateAsync("ConfirmEmail", placeholders);
-
-        await SendEmailAsync(user.Email, "Confirm Your Account", emailBody);
+        await SendEmailAsync(user.Email, subject, emailBody);
     }
 
     public async Task SendPasswordResetEmailAsync(ApplicationUser user)
@@ -116,18 +141,22 @@ public class EmailService : IEmailService
 
         var resetLink = $"{frontendBaseUrl}/reset-password?userId={user.Id}&token={encodedToken}";
 
-        var placeholders = new Dictionary<string, string>
-        {
-            { "RESET_LINK", resetLink }
-        };
+        var language = await GetUserLanguageAsync(user);
+        var subject = _localizationService.Translate("Email.PasswordReset.Title", language);
+        string emailBody = await BuildFramedEmailAsync(
+            language,
+            "Email.PasswordReset.Title",
+            "Email.PasswordReset.Body",
+            "Email.Action.ResetPassword",
+            resetLink,
+            "Email.PasswordResetSecondary");
 
-        string emailBody = await _emailTemplateService.GetEmailTemplateAsync("PasswordReset", placeholders);
-        await SendEmailAsync(user.Email, "Reset Your Password", emailBody);
+        await SendEmailAsync(user.Email, subject, emailBody);
 
         _logger.LogInformation($"Password reset email sent to {user.Email}");
     }
 
-    public async Task SendNotificationEmailAsync(ApplicationUser user, string title, string message, string route)
+    public async Task SendNotificationEmailAsync(ApplicationUser user, string title, string message, string route, string language)
     {
         if (string.IsNullOrWhiteSpace(user.Email))
         {
@@ -138,14 +167,43 @@ public class EmailService : IEmailService
         var notificationLink = BuildFrontendUrl(route);
         var placeholders = new Dictionary<string, string>
         {
+            { "GREETING", _localizationService.Translate("Email.Greeting", language) },
             { "TITLE", WebUtility.HtmlEncode(title) },
-            { "MESSAGE_HTML", WebUtility.HtmlEncode(message).Replace("\n", "<br />") },
-            { "NOTIFICATION_LINK", notificationLink },
-            { "ACTION_TEXT", "Open Bets of Friends" }
+            { "BODY_HTML", WebUtility.HtmlEncode(message).Replace("\n", "<br />") },
+            { "ACTION_LINK", WebUtility.HtmlEncode(notificationLink) },
+            { "ACTION_TEXT", WebUtility.HtmlEncode(_localizationService.Translate("Email.Action.OpenApp", language)) },
+            { "SECONDARY_TEXT", WebUtility.HtmlEncode(_localizationService.Translate("Email.NotificationConsent", language)) },
+            { "SIGNATURE", _localizationService.Translate("Email.Signature", language) }
         };
 
-        var emailBody = await _emailTemplateService.GetEmailTemplateAsync("Notification", placeholders);
+        var emailBody = await _emailTemplateService.GetEmailTemplateAsync("EmailFrame", placeholders);
         await SendEmailAsync(user.Email, title, emailBody);
+    }
+
+    private async Task<string> BuildFramedEmailAsync(
+        string language,
+        string titleKey,
+        string bodyKey,
+        string actionTextKey,
+        string actionLink,
+        string secondaryTextKey,
+        IReadOnlyDictionary<string, string>? placeholders = null)
+    {
+        var title = _localizationService.Translate(titleKey, language, placeholders);
+        var bodyHtml = _localizationService.Translate(bodyKey, language, placeholders);
+
+        var framePlaceholders = new Dictionary<string, string>
+        {
+            { "GREETING", _localizationService.Translate("Email.Greeting", language) },
+            { "TITLE", title },
+            { "BODY_HTML", bodyHtml },
+            { "ACTION_LINK", WebUtility.HtmlEncode(actionLink) },
+            { "ACTION_TEXT", WebUtility.HtmlEncode(_localizationService.Translate(actionTextKey, language)) },
+            { "SECONDARY_TEXT", WebUtility.HtmlEncode(_localizationService.Translate(secondaryTextKey, language)) },
+            { "SIGNATURE", _localizationService.Translate("Email.Signature", language) }
+        };
+
+        return await _emailTemplateService.GetEmailTemplateAsync("EmailFrame", framePlaceholders);
     }
 
     private async Task SendEmailAsync(string to, string subject, string body)
@@ -198,6 +256,27 @@ public class EmailService : IEmailService
     public string GenerateTournamentInviteLink(string email, int tournamentId)
     {
         return BuildFrontendUrl("/my-tournaments");
+    }
+
+    private async Task<string> GetUserLanguageAsync(ApplicationUser user)
+    {
+        if (!string.IsNullOrWhiteSpace(user.Language?.ShortName))
+        {
+            return user.Language.ShortName;
+        }
+
+        return await _userManager.Users
+            .Where(u => u.Id == user.Id)
+            .Select(u => u.Language != null ? u.Language.ShortName : "en")
+            .FirstOrDefaultAsync() ?? "en";
+    }
+
+    private async Task<string> GetUserLanguageByEmailAsync(string email)
+    {
+        return await _userManager.Users
+            .Where(u => u.Email == email)
+            .Select(u => u.Language != null ? u.Language.ShortName : "en")
+            .FirstOrDefaultAsync() ?? "en";
     }
 
     private string BuildFrontendUrl(string route)
