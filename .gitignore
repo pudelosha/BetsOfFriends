@@ -34,3 +34,12 @@ publish-test/
 **/publish/
 **/publish-test/
 
+# ===============================
+# Backend secrets / publish profiles
+# ===============================
+Backend/appsettings.json
+Backend/appsettings.local.json
+Backend/appsettings.*.local.json
+Backend/Properties/PublishProfiles/*.pubxml
+Backend/Properties/PublishProfiles/*.pubxml.user
+**/*.pubxml.user
