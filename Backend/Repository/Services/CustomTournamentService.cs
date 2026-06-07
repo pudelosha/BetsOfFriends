@@ -62,11 +62,30 @@ namespace Backend.Repository.Services
                    awayQualifies.Value > 0m;
         }
 
+        private static bool IsPlaceholderMatch(CustomMatchDto match)
+        {
+            return IsPlaceholderTeamName(match.HomeTeam) || IsPlaceholderTeamName(match.AwayTeam);
+        }
+
+        private static bool IsPlaceholderTeamName(string? teamName)
+        {
+            if (string.IsNullOrWhiteSpace(teamName))
+            {
+                return true;
+            }
+
+            var normalized = teamName.Trim();
+            return string.Equals(normalized, "TBA", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(normalized, "TBD", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(normalized, "To Be Announced", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(normalized, "To Be Advised", StringComparison.OrdinalIgnoreCase);
+        }
+
         private static (decimal? HomeQualifies, decimal? AwayQualifies) NormalizeQualificationOdds(
             CustomMatchDto match,
             CustomMatch.MatchType matchType)
         {
-            if (!IsQualificationMatch(matchType))
+            if (!IsQualificationMatch(matchType) || IsPlaceholderMatch(match))
                 return (null, null);
 
             if (HasValidQualificationOdds(match.HomeQualifies, match.AwayQualifies))
@@ -573,7 +592,10 @@ namespace Backend.Repository.Services
                         existingMatch.HomeScore = match.ScoreHome;
                         existingMatch.AwayScore = match.ScoreAway;
                         existingMatch.Qualified = Enum.TryParse<TeamQualified>(match.QualifiedTeam, true, out var q) ? q : null;
-                        existingMatch.Status = Enum.Parse<CustomMatch.MatchStatus>(match.MatchStatus);
+                        if (!string.IsNullOrWhiteSpace(match.MatchStatus) && Enum.TryParse<CustomMatch.MatchStatus>(match.MatchStatus, true, out var parsedStatus))
+                        {
+                            existingMatch.Status = parsedStatus;
+                        }
                         existingMatch.IsVisible = match.IsVisible;
                     }
                 }

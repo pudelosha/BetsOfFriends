@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
 import { NotificationDto } from 'src/app/model/notification';
@@ -16,7 +16,7 @@ import { IonList, IonItem } from '@ionic/angular/standalone';
   templateUrl: './latest-messages.page.html',
   styleUrls: ['./latest-messages.page.scss']
 })
-export class LatestMessagesPage implements OnInit {
+export class LatestMessagesPage implements OnChanges {
   @Input() refreshTrigger: number = 0;
   @Output() loadingStart = new EventEmitter<void>();
   @Output() loadingEnd = new EventEmitter<void>();
@@ -30,10 +30,6 @@ export class LatestMessagesPage implements OnInit {
     private toastController: ToastController,
     private router: Router
   ) {}
-
-  async ngOnInit() {
-    //await this.loadMessages();
-  }
 
   async ionViewWillEnter() {
     await this.loadMessages();

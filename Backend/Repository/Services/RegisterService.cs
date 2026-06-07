@@ -179,7 +179,7 @@ namespace Backend.Repository.Services
             if (!result.Succeeded)
             {
                 _logger.LogWarning($"Email confirmation failed for user ID {userId}. Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-                return new RegisterResultDto { Success = false, Errors = result.Errors };
+                return new RegisterResultDto { Success = false, Message = "Invalid or expired confirmation token.", Errors = result.Errors };
             }
 
             _logger.LogInformation($"Email confirmed successfully for user ID: {userId}");

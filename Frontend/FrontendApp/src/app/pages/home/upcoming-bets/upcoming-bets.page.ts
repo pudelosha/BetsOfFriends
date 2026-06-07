@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { UpcomingBet } from 'src/app/model/bet';
@@ -16,7 +16,7 @@ import { IonList, IonItem } from '@ionic/angular/standalone';
   templateUrl: './upcoming-bets.page.html',
   styleUrls: ['./upcoming-bets.page.scss']
 })
-export class UpcomingBetsPage implements OnInit {
+export class UpcomingBetsPage implements OnChanges {
   @Input() refreshTrigger: number = 0;
   @Output() loadingStart = new EventEmitter<void>();
   @Output() loadingEnd = new EventEmitter<void>();
@@ -34,10 +34,6 @@ export class UpcomingBetsPage implements OnInit {
     private toastController: ToastController
   ) {}
 
-  async ngOnInit() {
-    //await this.loadTournamentAndFetchBets();
-  }
-
   async ionViewWillEnter() {
     await this.loadTournamentAndFetchBets();
   }
@@ -50,16 +46,20 @@ export class UpcomingBetsPage implements OnInit {
 
   private async loadTournamentAndFetchBets() {
     this.loadingStart.emit();
-    this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+    this.isLoading = true;
 
-    if (this.tournamentId === null) {
+    try {
+      this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+
+      if (this.tournamentId === null) {
+        return;
+      }
+
+      await this.loadUpcomingBets();
+    } finally {
       this.isLoading = false;
       this.loadingEnd.emit();
-      return;
     }
-
-    await this.loadUpcomingBets();
-    this.loadingEnd.emit();
   }
 
   async loadUpcomingBets() {
@@ -78,8 +78,6 @@ export class UpcomingBetsPage implements OnInit {
     } catch (error) {
       console.error('Error fetching upcoming bets:', error);
       this.errorMessage = 'Failed to load upcoming bets.';
-    } finally {
-      this.isLoading = false;
     }
   }  
 

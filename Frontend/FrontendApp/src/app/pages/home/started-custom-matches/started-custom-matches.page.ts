@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ import { IonList, IonItem } from '@ionic/angular/standalone';
   templateUrl: './started-custom-matches.page.html',
   styleUrls: ['./started-custom-matches.page.scss']
 })
-export class StartedCustomMatchesPage implements OnInit {
+export class StartedCustomMatchesPage implements OnChanges {
   @Input() refreshTrigger: number = 0;
   @Output() loadingStart = new EventEmitter<void>();
   @Output() loadingEnd = new EventEmitter<void>();
@@ -33,10 +33,6 @@ export class StartedCustomMatchesPage implements OnInit {
     private toastController: ToastController
   ) {}
 
-  async ngOnInit() {
-    //await this.loadTournamentAndFetchMatches();
-  }
-
   async ionViewWillEnter() {
     await this.loadTournamentAndFetchMatches();
   }
@@ -49,16 +45,20 @@ export class StartedCustomMatchesPage implements OnInit {
 
   private async loadTournamentAndFetchMatches() {
     this.loadingStart.emit();
-    this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+    this.isLoading = true;
 
-    if (this.tournamentId === null) {
+    try {
+      this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+
+      if (this.tournamentId === null) {
+        return;
+      }
+
+      await this.loadStartedMatches();
+    } finally {
       this.isLoading = false;
       this.loadingEnd.emit();
-      return;
     }
-
-    await this.loadStartedMatches();
-    this.loadingEnd.emit();
   }
 
   async loadStartedMatches() {
@@ -84,8 +84,6 @@ export class StartedCustomMatchesPage implements OnInit {
     } catch (error) {
       console.error("Error loading started custom matches:", error);
       this.errorMessage = "Failed to load matches.";
-    } finally {
-      this.isLoading = false;
     }
   }
   

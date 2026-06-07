@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using System;
 
 namespace Backend.Extensions
 {
@@ -25,6 +26,12 @@ namespace Backend.Extensions
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
+
+            // Set token lifespan for data protection tokens (affects email confirmation and password reset)
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromDays(7);
+            });
 
             return services;
         }

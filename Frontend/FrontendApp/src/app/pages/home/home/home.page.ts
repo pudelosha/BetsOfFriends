@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LatestMessagesPage } from '../latest-messages/latest-messages.page';
@@ -21,45 +21,88 @@ import { TournamentMessageBoardPage } from "../tournament-message-board/tourname
   imports: [CommonModule, IonContent, ReactiveFormsModule, LatestMessagesPage, SelectedTournamentPage, UpcomingBetsPage, TournamentResultsPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage, TournamentMessageBoardPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnDestroy {
   refreshCounter = 0;
   private loadingCount = 0;
   private loading: HTMLIonLoadingElement | null = null;
+  private spinnerSync: Promise<void> = Promise.resolve();
 
   constructor(private loadingController: LoadingController,
               private titleService: TitleService
   ) {}
-
-  ngOnInit() {
-    //this.titleService.setTitle('HOME.TITLE');
-    //this.triggerRefresh();
-  }
 
   ionViewDidEnter() {
     this.titleService.setTitle('HOME.TITLE');
     this.triggerRefresh();
   }
 
+  ionViewWillLeave() {
+    this.loadingCount = 0;
+    this.queueSpinnerSync();
+  }
+
+  ngOnDestroy() {
+    this.loadingCount = 0;
+    this.queueSpinnerSync();
+  }
+
   triggerRefresh() {
     this.refreshCounter++;
   }
 
-  async showGlobalSpinner() {
+  showGlobalSpinner() {
     this.loadingCount++;
-    if (this.loadingCount === 1) {
-      this.loading = await this.loadingController.create({
+    this.queueSpinnerSync();
+  }
+
+  hideGlobalSpinner() {
+    this.loadingCount = Math.max(0, this.loadingCount - 1);
+    this.queueSpinnerSync();
+  }
+
+  private queueSpinnerSync() {
+    this.spinnerSync = this.spinnerSync
+      .then(() => this.syncSpinnerState())
+      .catch(error => {
+        console.error('Failed to update home loading spinner:', error);
+        this.loading = null;
+      });
+  }
+
+  private async syncSpinnerState() {
+    if (this.loadingCount > 0) {
+      if (this.loading) {
+        return;
+      }
+
+      const loading = await this.loadingController.create({
         message: 'Loading...',
         spinner: 'crescent',
       });
-      await this.loading.present();
+
+      if (this.loadingCount === 0) {
+        return;
+      }
+
+      this.loading = loading;
+      await loading.present();
+
+      if (this.loadingCount === 0) {
+        await this.dismissGlobalSpinner();
+      }
+      return;
     }
+
+    await this.dismissGlobalSpinner();
   }
 
-  async hideGlobalSpinner() {
-    this.loadingCount = Math.max(0, this.loadingCount - 1);
-    if (this.loadingCount === 0 && this.loading) {
-      await this.loading.dismiss();
-      this.loading = null;
+  private async dismissGlobalSpinner() {
+    const loading = this.loading;
+    if (!loading) {
+      return;
     }
+
+    this.loading = null;
+    await loading.dismiss();
   }
 }

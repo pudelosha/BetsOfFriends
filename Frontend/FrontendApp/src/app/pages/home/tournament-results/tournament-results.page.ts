@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
@@ -16,7 +16,7 @@ import { IonList, IonItem } from '@ionic/angular/standalone';
   templateUrl: './tournament-results.page.html',
   styleUrls: ['./tournament-results.page.scss']
 })
-export class TournamentResultsPage implements OnInit {
+export class TournamentResultsPage implements OnChanges {
   @Input() refreshTrigger: number = 0;
   @Output() loadingStart = new EventEmitter<void>();
   @Output() loadingEnd = new EventEmitter<void>();
@@ -32,10 +32,6 @@ export class TournamentResultsPage implements OnInit {
     private toastController: ToastController
   ) {}
 
-  async ngOnInit() {
-    //await this.loadTournamentAndFetchSummary();
-  }
-
   async ionViewWillEnter() {
     await this.loadTournamentAndFetchSummary();
   }
@@ -48,16 +44,20 @@ export class TournamentResultsPage implements OnInit {
 
   private async loadTournamentAndFetchSummary() {
     this.loadingStart.emit();
-    this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+    this.isLoading = true;
 
-    if (this.tournamentId === null) {
+    try {
+      this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+
+      if (this.tournamentId === null) {
+        return;
+      }
+
+      await this.loadTournamentSummary();
+    } finally {
       this.isLoading = false;
       this.loadingEnd.emit();
-      return;
     }
-
-    await this.loadTournamentSummary();
-    this.loadingEnd.emit();
   }
 
   async loadTournamentSummary() {
@@ -71,8 +71,6 @@ export class TournamentResultsPage implements OnInit {
     } catch (error) {
       console.error('Error fetching results:', error);
       await this.showToast('Failed to load tournament results', 'danger');
-    } finally {
-      this.isLoading = false;
     }
   }
 

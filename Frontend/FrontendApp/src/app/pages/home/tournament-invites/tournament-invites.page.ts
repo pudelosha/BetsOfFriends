@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentInvite } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
@@ -15,7 +15,7 @@ import { IonList, IonItem } from '@ionic/angular/standalone';
   templateUrl: './tournament-invites.page.html',
   styleUrls: ['./tournament-invites.page.scss']
 })
-export class TournamentInvitesPage implements OnInit {
+export class TournamentInvitesPage implements OnChanges {
   @Input() refreshTrigger: number = 0;
   @Output() loadingStart = new EventEmitter<void>();
   @Output() loadingEnd = new EventEmitter<void>();
@@ -29,10 +29,6 @@ export class TournamentInvitesPage implements OnInit {
     private toastController: ToastController,
     private router: Router
   ) {}
-
-  async ngOnInit() {
-    //await this.loadTournamentInvites();
-  }
 
   async ionViewWillEnter() {
     await this.loadTournamentInvites();

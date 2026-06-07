@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,7 +17,7 @@ import { IonList, IonItem } from '@ionic/angular/standalone';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule, IonList, IonItem],
 })
-export class TournamentMessageBoardPage implements OnInit, OnChanges {
+export class TournamentMessageBoardPage implements OnChanges {
   @Input() refreshTrigger: number = 0;
   @Output() loadingStart = new EventEmitter<void>();
   @Output() loadingEnd = new EventEmitter<void>();
@@ -31,8 +31,6 @@ export class TournamentMessageBoardPage implements OnInit, OnChanges {
     private modalController: ModalController,
     private toastController: ToastController
   ) {}
-
-  ngOnInit() {}
 
   async ionViewWillEnter() {
     await this.loadMessages();

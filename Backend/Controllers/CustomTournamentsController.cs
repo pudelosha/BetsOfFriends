@@ -324,6 +324,7 @@ namespace Backend.Controllers
             foreach (var match in tournamentDto.Matches.Where(m => m.RecordStatus != "Delete"))
             {
                 if (!IsQualificationMatch(match.MatchType)) continue;
+                if (IsPlaceholderMatch(match)) continue;
 
                 if (match.HomeQualifies is > 0 && match.AwayQualifies is > 0) continue;
 
@@ -335,6 +336,25 @@ namespace Backend.Controllers
             }
 
             return null;
+        }
+
+        private static bool IsPlaceholderMatch(CustomMatchDto match)
+        {
+            return IsPlaceholderTeamName(match.HomeTeam) || IsPlaceholderTeamName(match.AwayTeam);
+        }
+
+        private static bool IsPlaceholderTeamName(string? teamName)
+        {
+            if (string.IsNullOrWhiteSpace(teamName))
+            {
+                return true;
+            }
+
+            var normalized = teamName.Trim();
+            return string.Equals(normalized, "TBA", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(normalized, "TBD", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(normalized, "To Be Announced", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(normalized, "To Be Advised", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsQualificationMatch(string matchType)

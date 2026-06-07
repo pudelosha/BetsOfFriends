@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ import { IonList, IonItem } from '@ionic/angular/standalone';
   templateUrl: './started-predefined-matches.page.html',
   styleUrls: ['./started-predefined-matches.page.scss']
 })
-export class StartedPredefinedMatchesPage implements OnInit {
+export class StartedPredefinedMatchesPage implements OnChanges {
   @Input() refreshTrigger: number = 0;
   @Output() loadingStart = new EventEmitter<void>();
   @Output() loadingEnd = new EventEmitter<void>();
@@ -29,10 +29,6 @@ export class StartedPredefinedMatchesPage implements OnInit {
     private toastController: ToastController,
     private router: Router
   ) {}
-
-  async ngOnInit() {
-    //await this.loadStartedMatches();
-  }
 
   async ionViewWillEnter() {
     await this.loadStartedMatches();

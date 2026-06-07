@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonProgressBar } from '@ionic/angular/standalone';
@@ -16,7 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   imports: [IonProgressBar, CommonModule, FormsModule, TranslateModule],
 })
-export class SelectedTournamentPage implements OnInit, OnChanges {
+export class SelectedTournamentPage implements OnChanges {
   @Input() refreshTrigger: number = 0;
   @Output() loadingStart = new EventEmitter<void>();
   @Output() loadingEnd = new EventEmitter<void>();
@@ -30,10 +30,6 @@ export class SelectedTournamentPage implements OnInit, OnChanges {
     private tournamentSelectionService: TournamentSelectionService,
     private tournamentService: CustomTournamentService
   ) {}
-
-  async ngOnInit() {
-    //await this.loadTournamentAndFetchSummary();
-  }
 
   async ionViewWillEnter() {
     await this.loadTournamentAndFetchSummary();

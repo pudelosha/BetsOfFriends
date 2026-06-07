@@ -59,7 +59,11 @@ export class RegisterService {
     return this.http.get<{ success: boolean; message: string }>(`${this.apiUrl}/confirm-email`, {
       params: { userId, token },
     }).pipe(
-      catchError(() => of({ success: false, message: "Unable to confirm email. Try again later." }))
+      map(response => ({ success: response.success, message: response.message || 'Email confirmed.' })),
+      catchError((error) => {
+        const message = error && error.error && error.error.message ? error.error.message : 'Unable to confirm email. Try again later.';
+        return of({ success: false, message });
+      })
     );
   }
   
