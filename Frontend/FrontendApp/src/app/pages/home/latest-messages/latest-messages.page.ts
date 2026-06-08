@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
@@ -28,7 +28,8 @@ export class LatestMessagesPage implements OnChanges {
   constructor(
     private notificationService: NotificationService,
     private toastController: ToastController,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {}
 
   async ionViewWillEnter() {
@@ -48,7 +49,7 @@ export class LatestMessagesPage implements OnChanges {
       this.messages = await firstValueFrom(this.notificationService.getLatestNotifications()) as NotificationDto[];
     } catch (error) {
       console.error('Error fetching messages:', error);
-      this.errorMessage = 'Failed to load messages.';
+      this.errorMessage = this.t('TOASTS.NOTIFICATIONS_LOAD_FAILED');
     } finally {
       this.isLoading = false;
       this.loadingEnd.emit();
@@ -67,5 +68,9 @@ export class LatestMessagesPage implements OnChanges {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

@@ -6,8 +6,9 @@ import { ToastController, LoadingController } from '@ionic/angular';
 import { AuthService } from '../../../services/auth.service';
 import { ViewChild } from '@angular/core';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonContent, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +29,8 @@ export class LoginPage {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
+    private backendMessages: BackendMessageService,
+    private translate: TranslateService,
     private toastController: ToastController,
     private loadingController: LoadingController
   ) {
@@ -74,7 +77,7 @@ export class LoginPage {
     try {
       console.log('Creating loading spinner...');
       loading = await this.loadingController.create({
-        message: 'Logging in...',
+        message: this.translate.instant('AUTH_STATUS.LOGIN_LOADING'),
         spinner: 'crescent',
       });
   
@@ -83,7 +86,7 @@ export class LoginPage {
     } catch (err) {
       console.error('Error creating/presenting loading spinner:', err);
       this.isLoading = false;
-      this.showToast('Unexpected UI error. Try again.', 'danger');
+      this.showToast(this.translate.instant('AUTH_STATUS.UNEXPECTED_ERROR'), 'danger');
       return;
     }
   
@@ -99,10 +102,16 @@ export class LoginPage {
           this.isLoading = false;
   
           if (response.success) {
-            await this.showToast(response.message, 'success');
+            await this.showToast(
+              this.backendMessages.translateMessage(response.message, 'AUTH_STATUS.LOGIN_SUCCESS', true),
+              'success'
+            );
             this.router.navigate(['/home']);
           } else {
-            this.showToast(response.message || 'Login failed.', 'danger');
+            this.showToast(
+              this.backendMessages.translateMessage(response.message, 'AUTH_STATUS.LOGIN_FAILED'),
+              'danger'
+            );
           }
         }, delay);
       },
@@ -115,8 +124,11 @@ export class LoginPage {
           if (loading) await loading.dismiss();
           this.isLoading = false;
   
-          const errorMsg = error?.error?.message || 'An error occurred during login.';
-          this.showToast(errorMsg, 'danger');
+          const errorMsg = error?.message || error?.error?.message;
+          this.showToast(
+            this.backendMessages.translateMessage(errorMsg, 'AUTH_STATUS.UNEXPECTED_ERROR'),
+            'danger'
+          );
         }, delay);
       }
     });

@@ -4,6 +4,7 @@
     "Signature": "Saludos,<br />Equipo de Bets of Friends",
     "NotificationConsent": "Recibes este email porque activaste este tipo de notificacion en tu configuracion de Bets of Friends.",
     "IgnoreUnexpected": "Si no esperabas este email, puedes ignorarlo.",
+    "ActionLinkFallback": "<p>Si el boton no funciona, copia este enlace y pegalo en la barra de direcciones de tu navegador:<br /><span style=\"word-break:break-all;\">{{ACTION_LINK}}</span></p>",
     "AccountSetupSecondary": "Despues de configurar tu cuenta, podras acceder al torneo y participar.",
     "ConfirmSecondary": "Si no te registraste, puedes ignorar este email.",
     "PasswordResetSecondary": "Si no solicitaste esto, puedes ignorar este email.",

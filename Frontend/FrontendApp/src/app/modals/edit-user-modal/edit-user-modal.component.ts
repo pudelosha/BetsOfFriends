@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-edit-user-modal',
@@ -30,7 +30,8 @@ export class EditUserModalComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private fb: FormBuilder,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {
     this.userForm = this.fb.group({
       userName: [{ value: '', disabled: true }],
@@ -63,7 +64,7 @@ export class EditUserModalComponent implements OnInit {
   
   async saveUser(): Promise<void> {
     if (this.userForm.invalid) {
-      await this.showToast('Please provide valid user details!', 'danger');
+      await this.showToast(this.t('TOASTS.EDIT_USER_INVALID_DETAILS'), 'danger');
       return;
     }
   
@@ -89,7 +90,7 @@ export class EditUserModalComponent implements OnInit {
   
     await this.modalController.dismiss(finalUser);
     await this.showToast(
-      this.isEditing ? 'User updated successfully!' : 'New user added successfully!',
+      this.t(this.isEditing ? 'TOASTS.USER_UPDATED' : 'TOASTS.USER_ADDED'),
       'success'
     );
   }
@@ -106,5 +107,9 @@ export class EditUserModalComponent implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

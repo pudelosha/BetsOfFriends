@@ -6,7 +6,7 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { TournamentSummary } from 'src/app/model/tournament-model';
 import { ModalController } from '@ionic/angular';
 import { PlayerStatsModalComponent } from 'src/app/modals/player-stats-modal/player-stats-modal.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent, IonGrid, IonRow, IonCol, IonProgressBar, IonSpinner } from '@ionic/angular/standalone';
 
@@ -28,7 +28,8 @@ export class TournamentResultsPage implements OnInit {
     private toastController: ToastController,
     private loadingController: LoadingController,
     private modalController: ModalController,
-    private titleService: TitleService
+    private titleService: TitleService,
+    private translate: TranslateService
   ) {}
 
   async ngOnInit() {
@@ -44,7 +45,7 @@ export class TournamentResultsPage implements OnInit {
     this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
     
     if (this.tournamentId === null) {
-      await this.showToast('No tournament selected', 'warning');
+      await this.showToast(this.t('TOASTS.NO_TOURNAMENT_SELECTED'), 'warning');
       this.isLoading = false;
       return;
     }
@@ -59,7 +60,7 @@ export class TournamentResultsPage implements OnInit {
     }
   
     const loading = await this.loadingController.create({
-      message: 'Loading results...',
+      message: this.t('TOASTS.LOADING_RESULTS'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -87,7 +88,7 @@ export class TournamentResultsPage implements OnInit {
   
         setTimeout(async () => {
           await loading.dismiss();
-          await this.showToast('Error loading results', 'danger');
+          await this.showToast(this.t('TOASTS.RESULTS_LOAD_FAILED'), 'danger');
         }, delay);
       },
     });
@@ -135,5 +136,9 @@ export class TournamentResultsPage implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

@@ -6,7 +6,7 @@ import { ModalController } from '@ionic/angular';
 import { EditTeamModalComponent } from 'src/app/modals/edit-team-modal/edit-team-modal.component';
 import { AlertController } from '@ionic/angular';
 import { Team, RecordStatus } from 'src/app/model/tournament-model';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
 
 @Component({
@@ -26,7 +26,8 @@ export class StageTeamsManagementPage implements OnInit {
     private toastController: ToastController,
     private modalController: ModalController,
     private alertController: AlertController,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -153,18 +154,18 @@ export class StageTeamsManagementPage implements OnInit {
     if (currentStatus === 'Delete') {
       teamControl.patchValue({ recordStatus: 'Update' });
       this.emitTeams();
-      await this.showToast(`Team "${teamToRemove.teamName}" restored successfully!`, 'success');
+      await this.showToast(this.t('TOASTS.TEAM_RESTORED', { name: teamToRemove.teamName }), 'success');
     } else {
       const alert = await this.alertController.create({
-        header: 'Confirm Removal',
-        message: `Are you sure you want to delete the team "${teamToRemove.teamName}"?`,
+        header: this.t('TOASTS.CONFIRM_REMOVAL_TITLE'),
+        message: this.t('TOASTS.CONFIRM_REMOVE_TEAM', { name: teamToRemove.teamName }),
         buttons: [
           {
-            text: 'Cancel',
+            text: this.t('TOASTS.CANCEL'),
             role: 'cancel',
           },
           {
-            text: 'Delete',
+            text: this.t('TOASTS.DELETE'),
             role: 'destructive',
             handler: async () => {
               if (currentStatus === 'New') {
@@ -172,9 +173,9 @@ export class StageTeamsManagementPage implements OnInit {
               } else {
                 teamControl.patchValue({ recordStatus: 'Delete' });
               }
-  
+
               this.emitTeams();
-              await this.showToast(`Team "${teamToRemove.teamName}" removed successfully!`, 'success');
+              await this.showToast(this.t('TOASTS.TEAM_REMOVED', { name: teamToRemove.teamName }), 'success');
             },
           },
         ],
@@ -227,5 +228,9 @@ export class StageTeamsManagementPage implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

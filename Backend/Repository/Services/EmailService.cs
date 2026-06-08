@@ -54,7 +54,8 @@ public class EmailService : IEmailService
             "Email.Action.AcceptInvitation",
             inviteLink,
             "Email.IgnoreUnexpected",
-            htmlPlaceholders);
+            htmlPlaceholders,
+            includeActionLinkFallback: true);
 
         await SendEmailAsync(email, subject, emailBody);
     }
@@ -91,7 +92,8 @@ public class EmailService : IEmailService
             "Email.Action.SetupAccount",
             setupLink,
             "Email.AccountSetupSecondary",
-            htmlPlaceholders);
+            htmlPlaceholders,
+            includeActionLinkFallback: true);
 
         await SendEmailAsync(user.Email, subject, emailBody);
     }
@@ -122,7 +124,8 @@ public class EmailService : IEmailService
             "Email.Confirm.Body",
             "Email.Action.ConfirmAccount",
             confirmationLink,
-            "Email.ConfirmSecondary");
+            "Email.ConfirmSecondary",
+            includeActionLinkFallback: true);
 
         await SendEmailAsync(user.Email, subject, emailBody);
     }
@@ -149,7 +152,8 @@ public class EmailService : IEmailService
             "Email.PasswordReset.Body",
             "Email.Action.ResetPassword",
             resetLink,
-            "Email.PasswordResetSecondary");
+            "Email.PasswordResetSecondary",
+            includeActionLinkFallback: true);
 
         await SendEmailAsync(user.Email, subject, emailBody);
 
@@ -187,10 +191,20 @@ public class EmailService : IEmailService
         string actionTextKey,
         string actionLink,
         string secondaryTextKey,
-        IReadOnlyDictionary<string, string>? placeholders = null)
+        IReadOnlyDictionary<string, string>? placeholders = null,
+        bool includeActionLinkFallback = false)
     {
         var title = _localizationService.Translate(titleKey, language, placeholders);
         var bodyHtml = _localizationService.Translate(bodyKey, language, placeholders);
+        var actionLinkFallbackHtml = includeActionLinkFallback
+            ? _localizationService.Translate(
+                "Email.ActionLinkFallback",
+                language,
+                new Dictionary<string, string>
+                {
+                    { "ACTION_LINK", WebUtility.HtmlEncode(actionLink) }
+                })
+            : string.Empty;
 
         var framePlaceholders = new Dictionary<string, string>
         {
@@ -199,6 +213,7 @@ public class EmailService : IEmailService
             { "BODY_HTML", bodyHtml },
             { "ACTION_LINK", WebUtility.HtmlEncode(actionLink) },
             { "ACTION_TEXT", WebUtility.HtmlEncode(_localizationService.Translate(actionTextKey, language)) },
+            { "ACTION_LINK_FALLBACK_HTML", actionLinkFallbackHtml },
             { "SECONDARY_TEXT", WebUtility.HtmlEncode(_localizationService.Translate(secondaryTextKey, language)) },
             { "SIGNATURE", _localizationService.Translate("Email.Signature", language) }
         };

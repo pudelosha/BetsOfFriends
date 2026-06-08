@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Match } from 'src/app/model/match';
 import { PredefinedMatchService } from 'src/app/services/predefined-match.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
@@ -27,7 +27,8 @@ export class StartedPredefinedMatchesPage implements OnChanges {
   constructor(
     private matchService: PredefinedMatchService,
     private toastController: ToastController,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {}
 
   async ionViewWillEnter() {
@@ -52,11 +53,11 @@ export class StartedPredefinedMatchesPage implements OnChanges {
       );
   
       if (!this.startedMatches.length) {
-        this.errorMessage = 'No started matches found.';
+        this.errorMessage = this.t('TOASTS.NO_STARTED_MATCHES');
       }
     } catch (error) {
       console.error('Error loading started predefined matches:', error);
-      this.errorMessage = 'Failed to load matches.';
+      this.errorMessage = this.t('TOASTS.MATCHES_LOAD_FAILED');
     } finally {
       this.isLoading = false;
       this.loadingEnd.emit();
@@ -75,5 +76,9 @@ export class StartedPredefinedMatchesPage implements OnChanges {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

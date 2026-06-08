@@ -79,7 +79,7 @@ public class RegisterControllerTests
         var ok = Assert.IsType<OkObjectResult>(result);
         var payload = Assert.IsType<RegisterResultDto>(ok.Value);
         Assert.True(payload.Success);
-        Assert.Equal("Registration successful! Please check your email to confirm your account.", payload.Message);
+        Assert.Equal("Registration successful. Please check your email to confirm your account.", payload.Message);
         Assert.Equal(1, registerService.RegisterCalls);
     }
 

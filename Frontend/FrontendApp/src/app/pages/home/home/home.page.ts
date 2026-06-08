@@ -12,6 +12,7 @@ import { LoadingController } from '@ionic/angular';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent } from '@ionic/angular/standalone';
 import { TournamentMessageBoardPage } from "../tournament-message-board/tournament-message-board.page";
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
@@ -28,7 +29,8 @@ export class HomePage implements OnDestroy {
   private spinnerSync: Promise<void> = Promise.resolve();
 
   constructor(private loadingController: LoadingController,
-              private titleService: TitleService
+              private titleService: TitleService,
+              private translate: TranslateService
   ) {}
 
   ionViewDidEnter() {
@@ -76,7 +78,7 @@ export class HomePage implements OnDestroy {
       }
 
       const loading = await this.loadingController.create({
-        message: 'Loading...',
+        message: this.translate.instant('TOASTS.LOADING'),
         spinner: 'crescent',
       });
 

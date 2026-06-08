@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Stage } from 'src/app/model/tournament-model';
 
 @Component({
@@ -22,7 +22,8 @@ export class EditStageModalComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private fb: FormBuilder,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {
     this.stageForm = this.fb.group({
       stageFrontendId: [''],
@@ -58,7 +59,7 @@ export class EditStageModalComponent implements OnInit {
 
   async saveStage(): Promise<void> {
     if (this.stageForm.invalid) {
-      await this.showToast('Please provide a valid stage name!', 'danger');
+      await this.showToast(this.t('TOASTS.EDIT_STAGE_INVALID_NAME'), 'danger');
       return;
     }
 
@@ -76,7 +77,7 @@ export class EditStageModalComponent implements OnInit {
 
     await this.modalController.dismiss(updatedStage);
     await this.showToast(
-      this.isEditing ? 'Stage updated successfully!' : 'New stage added successfully!',
+      this.t(this.isEditing ? 'TOASTS.STAGE_UPDATED' : 'TOASTS.STAGE_ADDED'),
       'success'
     );
   }
@@ -93,5 +94,9 @@ export class EditStageModalComponent implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

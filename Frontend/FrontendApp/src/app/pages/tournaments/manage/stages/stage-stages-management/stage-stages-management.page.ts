@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ModalController, AlertController } from '@ionic/angular';
 import { EditStageModalComponent } from 'src/app/modals/edit-stage-modal/edit-stage-modal.component';
 import { Stage } from 'src/app/model/tournament-model';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
 
 @Component({
@@ -25,7 +25,8 @@ export class StageStagesManagementPage implements OnInit {
     private toastController: ToastController,
     private modalController: ModalController,
     private alertController: AlertController,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -133,15 +134,15 @@ export class StageStagesManagementPage implements OnInit {
     if (currentStatus === 'Delete') {
       stageControl.patchValue({ recordStatus: 'Update' });
       this.emitStages();
-      await this.showToast(`Stage "${stageToRemove.stageName}" restored successfully!`, 'success');
+      await this.showToast(this.t('TOASTS.STAGE_RESTORED', { name: stageToRemove.stageName }), 'success');
     } else {
       const alert = await this.alertController.create({
-        header: 'Confirm Removal',
-        message: `Are you sure you want to delete the stage "${stageToRemove.stageName}"?`,
+        header: this.t('TOASTS.CONFIRM_REMOVAL_TITLE'),
+        message: this.t('TOASTS.CONFIRM_REMOVE_STAGE', { name: stageToRemove.stageName }),
         buttons: [
-          { text: 'Cancel', role: 'cancel' },
+          { text: this.t('TOASTS.CANCEL'), role: 'cancel' },
           {
-            text: 'Delete',
+            text: this.t('TOASTS.DELETE'),
             role: 'destructive',
             handler: async () => {
               if (currentStatus === 'New') {
@@ -150,7 +151,7 @@ export class StageStagesManagementPage implements OnInit {
                 stageControl.patchValue({ recordStatus: 'Delete' });
               }
               this.emitStages();
-              await this.showToast(`Stage "${stageToRemove.stageName}" removed successfully!`, 'success');
+              await this.showToast(this.t('TOASTS.STAGE_REMOVED', { name: stageToRemove.stageName }), 'success');
             },
           },
         ],
@@ -223,5 +224,9 @@ export class StageStagesManagementPage implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

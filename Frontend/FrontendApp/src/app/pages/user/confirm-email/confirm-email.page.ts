@@ -5,8 +5,9 @@ import { CommonModule } from '@angular/common';
 import { RegisterService } from 'src/app/services/register.service';
 import { ViewChild } from '@angular/core';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-confirm-email',
@@ -26,6 +27,8 @@ export class ConfirmEmailPage {
   constructor(
     private route: ActivatedRoute,
     private registerService: RegisterService,
+    private backendMessages: BackendMessageService,
+    private translate: TranslateService,
     private toastController: ToastController,
     private router: Router
   ) {}
@@ -36,7 +39,7 @@ export class ConfirmEmailPage {
       const token = params['token'];
 
       if (!userId || !token) {
-        this.message = "Invalid confirmation link.";
+        this.message = this.translate.instant('AUTH_STATUS.INVALID_CONFIRMATION_LINK');
         this.isLoading = false;
         return;
       }
@@ -44,13 +47,17 @@ export class ConfirmEmailPage {
       this.registerService.confirmEmail(userId, token).subscribe({
         next: (response) => {
           this.confirmationSuccess = response.success;
-          this.message = response.message || "Your email has been confirmed.";
+          this.message = this.backendMessages.translateMessage(
+            response.message,
+            response.success ? 'AUTH_STATUS.EMAIL_CONFIRMED' : 'AUTH_STATUS.CONFIRMATION_FAILED',
+            response.success
+          );
           this.isLoading = false;
-          this.showToast(this.message, "success");
+          this.showToast(this.message, response.success ? "success" : "danger");
         },
         error: () => {
           this.confirmationSuccess = false;
-          this.message = "An error occurred while confirming your email.";
+          this.message = this.translate.instant('AUTH_STATUS.CONFIRMATION_FAILED');
           this.isLoading = false;
           this.showToast(this.message, "danger");
         }

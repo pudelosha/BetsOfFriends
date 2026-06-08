@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { ToastController } from '@ionic/angular';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
@@ -27,7 +27,8 @@ export class TournamentInvitesPage implements OnChanges {
   constructor(
     private tournamentService: CustomTournamentService,
     private toastController: ToastController,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {}
 
   async ionViewWillEnter() {
@@ -51,7 +52,7 @@ export class TournamentInvitesPage implements OnChanges {
       }
     } catch (error) {
       console.error('Error fetching tournament invites:', error);
-      this.errorMessage = 'Failed to load tournament invites.';
+      this.errorMessage = this.translate.instant('TOURNAMENT_INVITES.LOAD_FAILED');
     } finally {
       this.isLoading = false;
       this.loadingEnd.emit();

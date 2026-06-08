@@ -6,7 +6,7 @@ import { ModalController, AlertController } from '@ionic/angular';
 import { EditMatchModalComponent } from 'src/app/modals/edit-match-modal/edit-match-modal.component';
 import { buildMatchFormGroup } from '../../../shared/form-utils';
 import { Match, Team, Stage } from 'src/app/model/tournament-model';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
 
 @Component({
@@ -29,7 +29,8 @@ export class StageMatchesManagementPage implements OnInit {
     private fb: FormBuilder,
     private modalController: ModalController,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -205,15 +206,15 @@ export class StageMatchesManagementPage implements OnInit {
     if (currentStatus === 'Delete') {
       matchControl.patchValue({ recordStatus: 'Update' });
       this.emitMatches();
-      await this.showToast(`Match restored successfully!`, 'success');
+      await this.showToast(this.t('TOASTS.MATCH_RESTORED'), 'success');
     } else {
       const alert = await this.alertController.create({
-        header: 'Confirm Removal',
-        message: `Are you sure you want to delete the match "${matchToRemove.homeTeam} vs ${matchToRemove.awayTeam}"?`,
+        header: this.t('TOASTS.CONFIRM_REMOVAL_TITLE'),
+        message: this.t('TOASTS.CONFIRM_REMOVE_MATCH', { name: `${matchToRemove.homeTeam} vs ${matchToRemove.awayTeam}` }),
         buttons: [
-          { text: 'Cancel', role: 'cancel' },
+          { text: this.t('TOASTS.CANCEL'), role: 'cancel' },
           {
-            text: 'Delete',
+            text: this.t('TOASTS.DELETE'),
             role: 'destructive',
             handler: async () => {
               if (currentStatus === 'New') {
@@ -222,7 +223,7 @@ export class StageMatchesManagementPage implements OnInit {
                 matchControl.patchValue({ recordStatus: 'Delete' });
               }
               this.emitMatches();
-              await this.showToast(`Match removed successfully!`, 'success');
+              await this.showToast(this.t('TOASTS.MATCH_REMOVED'), 'success');
             },
           },
         ],
@@ -298,6 +299,10 @@ export class StageMatchesManagementPage implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 
   private generateFrontendId(): string {

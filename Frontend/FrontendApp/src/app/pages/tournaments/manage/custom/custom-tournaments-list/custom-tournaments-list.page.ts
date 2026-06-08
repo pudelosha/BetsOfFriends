@@ -5,7 +5,7 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
 import { Tournament } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 
@@ -26,7 +26,8 @@ export class CustomTournamentsListPage implements OnInit {
     private alertController: AlertController,
     private router: Router,
     private loadingController: LoadingController,
-    private titleService: TitleService 
+    private titleService: TitleService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -46,7 +47,7 @@ export class CustomTournamentsListPage implements OnInit {
 
   async loadTournaments() {
     const loading = await this.loadingController.create({
-      message: 'Loading tournaments...',
+      message: this.t('TOASTS.LOADING_TOURNAMENTS'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -60,7 +61,7 @@ export class CustomTournamentsListPage implements OnInit {
       error: (err) => {
         console.error('Error loading tournaments:', err);
         this.tournaments = [];
-        this.showToast('Failed to load tournaments.', 'danger');
+        this.showToast(this.t('TOASTS.TOURNAMENTS_LOAD_FAILED'), 'danger');
       },
       complete: async () => {
         const elapsedTime = Date.now() - startTime;
@@ -74,19 +75,19 @@ export class CustomTournamentsListPage implements OnInit {
   editTournament(tournament: Tournament): void {
     if (!tournament || !tournament.tournamentId) {
       console.error('Invalid tournament object:', tournament);
-      this.showToast('Invalid tournament data. Unable to edit.', 'danger');
+      this.showToast(this.t('TOASTS.TOURNAMENT_DATA_INVALID'), 'danger');
       return;
     }
 
     this.router.navigate([`/tournaments/update-custom/${tournament.tournamentId}`]).catch((error) => {
       console.error('Navigation to edit tournament failed:', error);
-      this.showToast('Failed to navigate to the tournament editor.', 'danger');
+      this.showToast(this.t('TOASTS.TOURNAMENT_EDITOR_NAV_FAILED'), 'danger');
     });
   }
 
   async recalculateBets(tournament: any) {
     const loading = await this.loadingController.create({
-      message: 'Recalculating bets...',
+      message: this.t('TOASTS.RECALCULATING_BETS'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -95,9 +96,9 @@ export class CustomTournamentsListPage implements OnInit {
 
     try {
       await firstValueFrom(this.tournamentService.recalculateBetsForTournament(tournament.tournamentId));
-      this.showToast('Bets recalculated successfully!', 'success');
+      this.showToast(this.t('TOASTS.BETS_RECALCULATED'), 'success');
     } catch (error) {
-      this.showToast('Error recalculating bets!', 'danger');
+      this.showToast(this.t('TOASTS.BETS_RECALCULATE_FAILED'), 'danger');
       console.error(error);
     } finally {
       const elapsedTime = Date.now() - startTime;
@@ -110,7 +111,7 @@ export class CustomTournamentsListPage implements OnInit {
     const newStatus = !tournament.isActive;
     
     const loading = await this.loadingController.create({
-      message: `Updating status...`,
+      message: this.t('TOASTS.UPDATING_STATUS'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -120,11 +121,11 @@ export class CustomTournamentsListPage implements OnInit {
     try {
       await this.tournamentService.updateCustomTournamentStatus(tournament.tournamentId, newStatus).toPromise();
       tournament.isActive = newStatus;
-      this.showToast(`Tournament ${newStatus ? 'enabled' : 'disabled'} successfully!`, 'success');
+      this.showToast(this.t(newStatus ? 'TOASTS.TOURNAMENT_ENABLED' : 'TOASTS.TOURNAMENT_DISABLED'), 'success');
     } catch (error) {
       tournament.isActive = !newStatus;
       console.error('Error toggling tournament status:', error);
-      this.showToast('Failed to toggle tournament status. Please try again.', 'danger');
+      this.showToast(this.t('TOASTS.TOURNAMENT_TOGGLE_FAILED'), 'danger');
     } finally {
       const elapsedTime = Date.now() - startTime;
       const delay = Math.max(0, 500 - elapsedTime);
@@ -134,15 +135,15 @@ export class CustomTournamentsListPage implements OnInit {
 
   async deleteTournament(tournament: any) {
     const alert = await this.alertController.create({
-        header: 'Confirm Deletion',
-        message: `Are you sure you want to delete ${tournament.tournamentName}?`,
+        header: this.t('TOASTS.CONFIRM_DELETE_TITLE'),
+        message: this.t('TOASTS.CONFIRM_DELETE_TOURNAMENT', { name: tournament.tournamentName }),
         buttons: [
-            { text: 'Cancel', role: 'cancel' },
+            { text: this.t('TOASTS.CANCEL'), role: 'cancel' },
             {
-                text: 'Delete',
+                text: this.t('TOASTS.DELETE'),
                 handler: async () => {
                     const loading = await this.loadingController.create({
-                        message: `Deleting tournament...`,
+                        message: this.t('TOASTS.DELETING_TOURNAMENT'),
                         spinner: 'crescent',
                     });
                     await loading.present();
@@ -154,9 +155,9 @@ export class CustomTournamentsListPage implements OnInit {
 
                         this.tournaments = this.tournaments.filter(t => t.tournamentId !== tournament.tournamentId);
 
-                        this.showToast('Tournament deleted successfully!', 'success');
+                        this.showToast(this.t('TOASTS.TOURNAMENT_DELETED'), 'success');
                     } catch (error) {
-                        this.showToast('Error deleting tournament!', 'danger');
+                        this.showToast(this.t('TOASTS.TOURNAMENT_DELETE_FAILED'), 'danger');
                         console.error(error);
                     } finally {
                         const elapsedTime = Date.now() - startTime;
@@ -182,5 +183,9 @@ export class CustomTournamentsListPage implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

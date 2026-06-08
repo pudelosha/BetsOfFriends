@@ -8,7 +8,7 @@ import { AcceptInvitationModalComponent } from 'src/app/modals/accept-invitation
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonSegment, IonList, IonItem, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSpinner, IonSegmentButton } from '@ionic/angular/standalone';
@@ -36,6 +36,7 @@ export class MyTournamentsDashboardPage implements OnInit {
     private router: Router,
     private cdRef: ChangeDetectorRef,
     private loadingController: LoadingController,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -52,7 +53,7 @@ export class MyTournamentsDashboardPage implements OnInit {
     this.isLoading = true;
   
     const loading = await this.loadingController.create({
-      message: 'Loading tournaments...',
+      message: this.t('TOASTS.LOADING_TOURNAMENTS'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -67,7 +68,7 @@ export class MyTournamentsDashboardPage implements OnInit {
         }));
       },
       error: (error) => {
-        this.showToast('Failed to load tournaments. Please try again later.', 'danger');
+        this.showToast(this.t('TOASTS.TOURNAMENTS_LOAD_FAILED'), 'danger');
         console.error('Error fetching tournaments:', error);
         this.tournaments = [];
       },
@@ -126,11 +127,11 @@ export class MyTournamentsDashboardPage implements OnInit {
       next: (updatedVisibility: boolean) => {
         tournament.isVisible = updatedVisibility;
         this.cdRef.detectChanges();
-        this.showToast(`Tournament visibility updated!`, 'success');
+        this.showToast(this.t('TOASTS.TOURNAMENT_VISIBILITY_UPDATED'), 'success');
       },
       error: (error) => {
         console.error('Error toggling visibility:', error);
-        this.showToast('Failed to update tournament visibility.', 'danger');
+        this.showToast(this.t('TOASTS.TOURNAMENT_VISIBILITY_UPDATE_FAILED'), 'danger');
       }
     });
   }
@@ -143,5 +144,9 @@ export class MyTournamentsDashboardPage implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

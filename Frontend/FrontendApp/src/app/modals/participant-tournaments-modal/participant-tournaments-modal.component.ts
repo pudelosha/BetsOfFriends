@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ModalController, ToastController, NavController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonSpinner, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
@@ -27,7 +27,8 @@ export class ParticipantTournamentsModalComponent implements OnInit {
     public modalController: ModalController,
     private router: Router,
     private toastController: ToastController,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -51,7 +52,7 @@ export class ParticipantTournamentsModalComponent implements OnInit {
   async selectTournament(tournament: UserActiveTournament) {
     this.tournamentSelectionService.setSelectedTournament(tournament.tournamentId);
   
-    await this.showToast(`${tournament.tournamentName} selected!`, 'success');
+    await this.showToast(this.t('TOASTS.SELECTED_TOURNAMENT', { name: tournament.tournamentName }), 'success');
     await this.modalController.dismiss();
   
     const cleanUrl = this.router.url.split('?')[0];
@@ -68,4 +69,8 @@ export class ParticipantTournamentsModalComponent implements OnInit {
     });
     await toast.present();
   } 
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
+  }
 }

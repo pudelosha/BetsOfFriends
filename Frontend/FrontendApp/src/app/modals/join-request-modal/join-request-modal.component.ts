@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonTextarea, IonSpinner } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { firstValueFrom } from 'rxjs';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-join-request-modal',
@@ -26,7 +27,9 @@ export class JoinRequestModalComponent implements OnInit {
     private modalController: ModalController,
     private fb: FormBuilder,
     private tournamentService: CustomTournamentService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService,
+    private backendMessages: BackendMessageService
   ) {
     this.requestForm = this.fb.group({
       nickname: ['', [Validators.required, Validators.maxLength(20)]],
@@ -52,11 +55,11 @@ export class JoinRequestModalComponent implements OnInit {
         this.tournamentService.requestToJoinTournament(this.tournamentId, nickname, message)
       );
 
-      await this.showToast('Request submitted successfully.', 'success');
+      await this.showToast(this.t('JOIN_MODAL.REQUEST_SUBMITTED'), 'success');
       this.modalController.dismiss({ requested: true });
     } catch (error: any) {
       console.error('Error submitting join request:', error);
-      this.nicknameError = error?.error?.message || 'An unexpected error occurred.';
+      this.nicknameError = this.backendMessages.translateMessage(this.extractBackendMessage(error), 'JOIN_MODAL.REQUEST_FAILED');
     } finally {
       this.isLoading = false;
     }
@@ -74,5 +77,14 @@ export class JoinRequestModalComponent implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
+  }
+
+  private extractBackendMessage(error: unknown): string | undefined {
+    const maybeHttpError = error as { error?: { message?: string; Message?: string } };
+    return maybeHttpError?.error?.message || maybeHttpError?.error?.Message;
   }
 }

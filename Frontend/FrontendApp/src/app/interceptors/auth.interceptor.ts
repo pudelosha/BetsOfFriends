@@ -5,7 +5,13 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = localStorage.getItem('authToken');
+    let token: string | null = null;
+
+    try {
+      token = localStorage.getItem('authToken');
+    } catch (error) {
+      console.warn('AuthInterceptor: Unable to access auth token storage', error);
+    }
 
     if (token) {
       req = req.clone({

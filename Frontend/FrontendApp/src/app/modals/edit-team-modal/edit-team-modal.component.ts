@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Team } from 'src/app/model/tournament-model';
 
 @Component({
@@ -23,7 +23,8 @@ export class EditTeamModalComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private fb: FormBuilder,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {
     this.teamForm = this.fb.group({
       teamFrontendId: [''],
@@ -62,7 +63,7 @@ export class EditTeamModalComponent implements OnInit {
 
   async saveTeam(): Promise<void> {
     if (this.teamForm.invalid) {
-      await this.showToast('Please provide valid team data!', 'danger');
+      await this.showToast(this.t('TOASTS.EDIT_TEAM_INVALID_DATA'), 'danger');
       return;
     }
 
@@ -74,7 +75,7 @@ export class EditTeamModalComponent implements OnInit {
       : this.allTeamNames;
 
     if (existingTeamNames.includes(teamName)) {
-      await this.showToast('Team name already exists. Please choose a different name.', 'danger');
+      await this.showToast(this.t('TOASTS.TEAM_NAME_EXISTS'), 'danger');
       return;
     }
 
@@ -82,7 +83,7 @@ export class EditTeamModalComponent implements OnInit {
 
     const elo = Number(this.teamForm.value.eloRating);
     if (Number.isNaN(elo)) {
-      await this.showToast('Please provide a valid ELO rating!', 'danger');
+      await this.showToast(this.t('TOASTS.TEAM_ELO_INVALID'), 'danger');
       return;
     }
 
@@ -100,7 +101,7 @@ export class EditTeamModalComponent implements OnInit {
 
     await this.modalController.dismiss(updatedTeam);
     await this.showToast(
-      this.isEditing ? 'Team updated successfully!' : 'New team added successfully!',
+      this.t(this.isEditing ? 'TOASTS.TEAM_UPDATED' : 'TOASTS.TEAM_ADDED'),
       'success'
     );
   }
@@ -117,5 +118,9 @@ export class EditTeamModalComponent implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

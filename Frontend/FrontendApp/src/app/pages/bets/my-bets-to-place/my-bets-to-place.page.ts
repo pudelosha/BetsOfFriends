@@ -9,7 +9,7 @@ import { Bet, BetUpdateDto, BetStats } from 'src/app/model/bet';
 import { firstValueFrom } from 'rxjs';
 import { BetsOverviewModalComponent } from 'src/app/modals/bets-overview-modal/bets-overview-modal.component';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonSpinner, IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
 
 @Component({
@@ -32,7 +32,8 @@ export class MyBetsToPlacePage implements OnInit {
     private betService: BetService,
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -59,7 +60,7 @@ export class MyBetsToPlacePage implements OnInit {
     this.errorMessage = '';
   
     const loading = await this.loadingController.create({
-      message: 'Loading bets...',
+      message: this.t('TOASTS.LOADING_BETS'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -71,7 +72,7 @@ export class MyBetsToPlacePage implements OnInit {
     if (!tournamentId) {
       console.warn("No tournament selected.");
       this.isLoading = false;
-      this.errorMessage = "No tournament selected.";
+      this.errorMessage = this.t('TOASTS.NO_TOURNAMENT_SELECTED');
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
@@ -85,15 +86,15 @@ export class MyBetsToPlacePage implements OnInit {
       );
   
       if (!this.bets.length) {
-        this.errorMessage = "No bets available for this stage.";
+        this.errorMessage = this.t('TOASTS.NO_BETS_FOR_STAGE');
       }
     } catch (error: unknown) {
       console.error("API error:", error);
   
       if (error instanceof HttpErrorResponse) {
-        this.errorMessage = `An error occurred: ${error.message}`;
+        this.errorMessage = this.t('TOASTS.ERROR_OCCURRED', { message: error.message });
       } else {
-        this.errorMessage = "An unexpected error occurred";
+        this.errorMessage = this.t('TOASTS.UNEXPECTED_ERROR');
       }
     } finally {
       const elapsedTime = Date.now() - startTime;
@@ -138,10 +139,10 @@ export class MyBetsToPlacePage implements OnInit {
   
         this.bets = this.bets.filter(b => b.betId !== bet.betId);
   
-        this.showToast("Bet placed successfully!", "success");
+        this.showToast(this.t('TOASTS.BET_PLACED'), "success");
       } catch (error) {
         console.error("Error placing bet:", error);
-        this.showToast("Failed to place bet. Please try again.", "danger");
+        this.showToast(this.t('TOASTS.BET_PLACE_FAILED'), "danger");
       }
     }
   }   
@@ -160,7 +161,7 @@ export class MyBetsToPlacePage implements OnInit {
   
     } catch (error) {
       console.error("Error fetching bet overview data:", error);
-      this.showToast("Failed to load bet overview.", "danger");
+      this.showToast(this.t('TOASTS.BET_OVERVIEW_FAILED'), "danger");
     }
   }
       
@@ -172,5 +173,9 @@ export class MyBetsToPlacePage implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

@@ -6,7 +6,7 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { CustomMatchService } from 'src/app/services/custom-match.service';
 import { firstValueFrom } from 'rxjs';
 import { Match } from 'src/app/model/match';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
@@ -30,7 +30,8 @@ export class StartedCustomMatchesPage implements OnChanges {
     private matchService: CustomMatchService,
     private router: Router,
     private tournamentSelectionService: TournamentSelectionService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {}
 
   async ionViewWillEnter() {
@@ -68,7 +69,7 @@ export class StartedCustomMatchesPage implements OnChanges {
   
     if (this.tournamentId === null) {
       console.warn("No tournament ID provided.");
-      this.errorMessage = "No tournament ID provided.";
+      this.errorMessage = this.t('TOASTS.NO_TOURNAMENT_ID');
       this.isLoading = false;
       return;
     }
@@ -79,11 +80,11 @@ export class StartedCustomMatchesPage implements OnChanges {
       );
   
       if (!this.startedMatches.length) {
-        this.errorMessage = "No started matches found.";
+        this.errorMessage = this.t('TOASTS.NO_STARTED_MATCHES');
       }
     } catch (error) {
       console.error("Error loading started custom matches:", error);
-      this.errorMessage = "Failed to load matches.";
+      this.errorMessage = this.t('TOASTS.MATCHES_LOAD_FAILED');
     }
   }
   
@@ -95,6 +96,10 @@ export class StartedCustomMatchesPage implements OnChanges {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 
   navigateToCustomMatches() {

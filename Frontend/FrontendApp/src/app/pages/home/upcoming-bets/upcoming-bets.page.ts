@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { ToastController } from '@ionic/angular';
 import { BetService } from 'src/app/services/bet.service';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
@@ -31,7 +31,8 @@ export class UpcomingBetsPage implements OnChanges {
     private betService: BetService,
     private router: Router,
     private tournamentSelectionService: TournamentSelectionService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {}
 
   async ionViewWillEnter() {
@@ -77,7 +78,7 @@ export class UpcomingBetsPage implements OnChanges {
   
     } catch (error) {
       console.error('Error fetching upcoming bets:', error);
-      this.errorMessage = 'Failed to load upcoming bets.';
+      this.errorMessage = this.t('TOASTS.UPCOMING_BETS_LOAD_FAILED');
     }
   }  
 
@@ -101,5 +102,9 @@ export class UpcomingBetsPage implements OnChanges {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

@@ -4,7 +4,7 @@ import { NotificationService } from 'src/app/services/notification.service';
 import { Component, OnInit } from '@angular/core';
 import { ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { Router } from '@angular/router';
 import { IonContent, IonSpinner, IonList, IonItem, IonButton, IonIcon, IonAccordionGroup, IonAccordion, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
@@ -31,7 +31,8 @@ export class MessagesPage implements OnInit {
     private alertController: AlertController,
     private loadingController: LoadingController,
     private titleService: TitleService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -63,7 +64,7 @@ export class MessagesPage implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.showToast('Failed to load notifications', 'danger');
+        this.showToast(this.t('TOASTS.NOTIFICATIONS_LOAD_FAILED'), 'danger');
         this.isLoading = false;
       }
     });
@@ -109,15 +110,15 @@ export class MessagesPage implements OnInit {
 
   async confirmDelete(notification: NotificationDto) {
     const alert = await this.alertController.create({
-      header: 'Delete Notification',
-      message: 'Are you sure you want to delete this notification?',
+      header: this.t('TOASTS.DELETE_NOTIFICATION_TITLE'),
+      message: this.t('TOASTS.DELETE_NOTIFICATION_CONFIRM'),
       buttons: [
         {
-          text: 'Cancel',
+          text: this.t('TOASTS.CANCEL'),
           role: 'cancel'
         },
         {
-          text: 'Delete',
+          text: this.t('TOASTS.DELETE'),
           role: 'destructive',
           handler: () => this.deleteNotification(notification)
         }
@@ -129,7 +130,7 @@ export class MessagesPage implements OnInit {
 
   async deleteNotification(notification: NotificationDto) {
     const loading = await this.loadingController.create({
-      message: 'Deleting notification...',
+      message: this.t('TOASTS.DELETING_NOTIFICATION'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -146,7 +147,7 @@ export class MessagesPage implements OnInit {
   
         setTimeout(async () => {
           await loading.dismiss();
-          this.showToast('Notification deleted', 'success');
+          this.showToast(this.t('TOASTS.NOTIFICATION_DELETED'), 'success');
         }, delay);
       },
       error: async (error) => {
@@ -156,7 +157,7 @@ export class MessagesPage implements OnInit {
   
         setTimeout(async () => {
           await loading.dismiss();
-          this.showToast('Failed to delete notification', 'danger');
+          this.showToast(this.t('TOASTS.NOTIFICATION_DELETE_FAILED'), 'danger');
         }, delay);
       }
     });
@@ -170,5 +171,9 @@ export class MessagesPage implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

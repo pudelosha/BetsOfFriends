@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonLabel, IonPicker, IonPickerColumn, IonPickerColumnOption, IonItem, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Bet } from '../../model/bet';
 
 @Component({
@@ -37,7 +37,11 @@ export class EditBetModalComponent implements AfterViewInit {
   actualQualifiedTeam: 'Home' | 'Away' | null = null;
   playerQualifiedTeam: 'Home' | 'Away' | 'Neutral' | null = 'Neutral'
 
-  constructor(private modalCtrl: ModalController, private toastController: ToastController) {}
+  constructor(
+    private modalCtrl: ModalController,
+    private toastController: ToastController,
+    private translate: TranslateService
+  ) {}
 
   ngAfterViewInit() {}
 
@@ -61,7 +65,7 @@ export class EditBetModalComponent implements AfterViewInit {
                                   this._bet.qualifyAwayOdds !== null;
   
     if (qualificationRequired && this.playerQualifiedTeam === 'Neutral') {
-      this.showToast('Please select the team that qualifies.', 'warning');
+      this.showToast(this.t('TOASTS.SELECT_QUALIFYING_TEAM'), 'warning');
       return;
     }
   
@@ -87,5 +91,9 @@ export class EditBetModalComponent implements AfterViewInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

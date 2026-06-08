@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
 
 @Component({
@@ -16,10 +16,14 @@ import { IonContent, IonButton } from '@ionic/angular/standalone';
 export class LogoffPage {
   parallaxOffset = 0;
 
-  constructor(private router: Router, private toastController: ToastController) {}
+  constructor(
+    private router: Router,
+    private toastController: ToastController,
+    private translate: TranslateService
+  ) {}
 
   async ionViewWillEnter() {
-    await this.presentToast('You have been logged out.', 'success');
+    await this.presentToast(this.translate.instant('LOGOUT.MESSAGE'), 'success');
     
     setTimeout(() => {
       this.router.navigate(['/welcome']);

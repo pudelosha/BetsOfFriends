@@ -7,7 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { PredefinedMatchService } from 'src/app/services/predefined-match.service';
 import { Match } from 'src/app/model/match';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonSpinner, IonList, IonItem, IonButton } from '@ionic/angular/standalone';
 
 @Component({
@@ -29,7 +29,8 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
     private modalCtrl: ModalController,
     private matchService: PredefinedMatchService,
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -52,7 +53,7 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
     this.errorMessage = '';
   
     const loading = await this.loadingController.create({
-      message: 'Loading matches...',
+      message: this.t('TOASTS.LOADING_MATCHES'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -60,7 +61,7 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
     const startTime = Date.now();
   
     if (!this.tournamentId) {
-      this.errorMessage = "No tournament ID provided.";
+      this.errorMessage = this.t('TOASTS.NO_TOURNAMENT_ID');
       this.isLoading = false;
       await loading.dismiss();
       return;
@@ -72,13 +73,13 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
       );
   
       if (!this.matches.length) {
-        this.errorMessage = "No matches available for this stage.";
+        this.errorMessage = this.t('TOASTS.NO_MATCHES_FOR_STAGE');
       }
     } catch (error: unknown) {
       if (error instanceof HttpErrorResponse) {
-        this.errorMessage = `An error occurred: ${error.message}`;
+        this.errorMessage = this.t('TOASTS.ERROR_OCCURRED', { message: error.message });
       } else {
-        this.errorMessage = "An unexpected error occurred.";
+        this.errorMessage = this.t('TOASTS.UNEXPECTED_ERROR');
       }
     } finally {
       const elapsedTime = Date.now() - startTime;
@@ -110,9 +111,9 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
   
         await this.loadMatches();  
   
-        this.showToast("Match result updated successfully!", "success");
+        this.showToast(this.t('TOASTS.MATCH_RESULT_UPDATED'), "success");
       } catch (error) {
-        this.showToast("Failed to update match result. Please try again.", "danger");
+        this.showToast(this.t('TOASTS.MATCH_RESULT_UPDATE_FAILED'), "danger");
       }
     }
   }
@@ -125,5 +126,9 @@ export class ManagePredefinedStartedPage implements OnInit, OnChanges {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

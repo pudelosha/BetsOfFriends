@@ -19,7 +19,7 @@ import {
   IonItem,
   IonToggle
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Team, Stage } from 'src/app/model/tournament-model';
 import {
   calculateEloMatchOdds,
@@ -65,7 +65,8 @@ export class EditMatchModalComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private fb: FormBuilder,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {
     this.matchForm = this.fb.group({
       matchFrontendId: [null],
@@ -234,13 +235,13 @@ export class EditMatchModalComponent implements OnInit {
 
   async saveMatch() {
     if (this.matchForm.invalid) {
-      this.showToast('Please fill in all required fields!', 'danger');
+      this.showToast(this.t('TOASTS.EDIT_MATCH_REQUIRED_FIELDS'), 'danger');
       return;
     }
 
     if (this.matchForm.value.matchType === 'ExtendedWithQualification') {
       if (this.matchForm.value.homeQualifies === null || this.matchForm.value.awayQualifies === null) {
-        this.showToast('Please provide qualification odds for both teams!', 'danger');
+        this.showToast(this.t('TOASTS.EDIT_MATCH_QUALIFICATION_ODDS_REQUIRED'), 'danger');
         return;
       }
     }
@@ -250,12 +251,12 @@ export class EditMatchModalComponent implements OnInit {
     const selectedAwayTeam = this.teams.find(t => t.teamFrontendId === this.matchForm.value.awayTeamFrontendId);
 
     if (!selectedHomeTeam || !selectedAwayTeam) {
-      this.showToast('Invalid team selection!', 'danger');
+      this.showToast(this.t('TOASTS.EDIT_MATCH_INVALID_TEAM'), 'danger');
       return;
     }
 
     if (!selectedStage) {
-      this.showToast('Invalid stage selection!', 'danger');
+      this.showToast(this.t('TOASTS.EDIT_MATCH_INVALID_STAGE'), 'danger');
       return;
     }
 
@@ -311,7 +312,7 @@ export class EditMatchModalComponent implements OnInit {
     };
 
     await this.modalController.dismiss(matchData);
-    this.showToast(this.index !== undefined ? 'Match updated!' : 'New match added!', 'success');
+    this.showToast(this.t(this.index !== undefined ? 'TOASTS.MATCH_UPDATED' : 'TOASTS.MATCH_ADDED'), 'success');
   }
 
   closeModal() {
@@ -326,6 +327,10 @@ export class EditMatchModalComponent implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 
   private generateFrontendId(): string {

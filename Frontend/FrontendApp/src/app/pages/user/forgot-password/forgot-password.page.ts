@@ -6,8 +6,9 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ViewChild } from '@angular/core';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonContent, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -26,6 +27,8 @@ export class ForgotPasswordPage {
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
+    private backendMessages: BackendMessageService,
+    private translate: TranslateService,
     private toastController: ToastController,
     private router: Router,
     private loadingController: LoadingController
@@ -62,7 +65,7 @@ export class ForgotPasswordPage {
     const email = this.forgotPasswordForm.value.email;
   
     const loading = await this.loadingController.create({
-      message: 'Sending reset link...',
+      message: this.translate.instant('AUTH_STATUS.FORGOT_LOADING'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -78,7 +81,12 @@ export class ForgotPasswordPage {
           await loading.dismiss();
           this.isLoading = false;
   
-          this.showToast(response.message || 'Password reset link sent!', 'success');
+          const message = this.backendMessages.translateMessage(
+            response.message,
+            'AUTH_STATUS.PASSWORD_RESET_SENT',
+            true
+          );
+          this.showToast(message, 'success');
         }, delay);
       },
       error: async () => {
@@ -89,7 +97,7 @@ export class ForgotPasswordPage {
           await loading.dismiss();
           this.isLoading = false;
   
-          this.showToast('Something went wrong. Please try again.', 'danger');
+          this.showToast(this.translate.instant('AUTH_STATUS.UNEXPECTED_ERROR'), 'danger');
         }, delay);
       },
     });

@@ -7,7 +7,7 @@ import { Tournament, Team, Match, Stage } from 'src/app/model/tournament-model';
 import { PredefinedTournamentService } from 'src/app/services/predefined-tournament.service';
 import { ModalController } from '@ionic/angular';
 import { TournamentSelectionModalComponent } from 'src/app/modals/tournament-selection-modal/tournament-selection.modal';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SelectCompetitionModalComponent } from 'src/app/modals/select-competition-modal/select-competition-modal.component';
 import { ExternalDataService } from 'src/app/services/external-data.service';
 import { ToastController, AlertController, LoadingController } from '@ionic/angular';
@@ -45,7 +45,8 @@ export class StageInputTypePage implements OnInit {
     private modalController: ModalController,
     private alertController: AlertController,
     private loadingController: LoadingController,
-    private externalDataService: ExternalDataService
+    private externalDataService: ExternalDataService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -123,7 +124,7 @@ export class StageInputTypePage implements OnInit {
   
     if (this.selectedTournamentId !== null) {
       const loading = await this.loadingController.create({
-        message: 'Loading tournament...',
+        message: this.t('TOASTS.LOADING_TOURNAMENT'),
         spinner: 'crescent',
       });
       await loading.present();
@@ -156,11 +157,11 @@ export class StageInputTypePage implements OnInit {
             updateMethod: 'Auto',
           });
 
-          this.showToast('Tournament loaded successfully!', 'success');
+          this.showToast(this.t('TOASTS.TOURNAMENT_LOADED'), 'success');
         },
         error: async (err) => {
           console.error('Error fetching tournament:', err);
-          this.showToast('Failed to load tournament data!', 'danger');
+          this.showToast(this.t('TOASTS.TOURNAMENT_LOAD_FAILED'), 'danger');
         },
         complete: async () => {
           const elapsedTime = Date.now() - startTime;
@@ -171,7 +172,7 @@ export class StageInputTypePage implements OnInit {
         }
       });
     } else {
-      this.showToast('No tournament selected!', 'warning');
+      this.showToast(this.t('TOASTS.NO_TOURNAMENT_SELECTED'), 'warning');
     }
   }
   
@@ -213,7 +214,7 @@ export class StageInputTypePage implements OnInit {
       const seasonCode = data.seasonCode;
     
       const loading = await this.loadingController.create({
-        message: 'Importing competition data...',
+        message: this.t('TOASTS.IMPORTING_COMPETITION_DATA'),
         spinner: 'crescent',
       });
       await loading.present();
@@ -297,11 +298,11 @@ export class StageInputTypePage implements OnInit {
             tournamentEnd: tournament.tournamentEnd ?? null
           });
   
-          this.showToast('Competition matches loaded successfully!', 'success');
+          this.showToast(this.t('TOASTS.COMPETITION_LOADED'), 'success');
         },
         error: (err) => {
           console.error('Error fetching competition matches:', err);
-          this.showToast('Failed to load competition data.', 'danger');
+          this.showToast(this.t('TOASTS.COMPETITION_LOAD_FAILED'), 'danger');
         },
         complete: async () => {
           const elapsedTime = Date.now() - startTime;
@@ -313,21 +314,21 @@ export class StageInputTypePage implements OnInit {
       });
   
     } else {
-      this.showToast('No competition selected.', 'warning');
+      this.showToast(this.t('TOASTS.NO_COMPETITION_SELECTED'), 'warning');
     }
   }  
   
   async triggerTournamentUpdate(): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Confirm Update',
-      message: 'This will refresh your tournament with the latest data from the source. All matching records will be updated and marked accordingly.',
+      header: this.t('TOASTS.CONFIRM_UPDATE_TITLE'),
+      message: this.t('TOASTS.CONFIRM_UPDATE_MESSAGE'),
       buttons: [
         {
-          text: 'Cancel',
+          text: this.t('TOASTS.CANCEL'),
           role: 'cancel',
         },
         {
-          text: 'Update',
+          text: this.t('TOASTS.UPDATE'),
           handler: () => {
             this.tournamentUpdateRequested.emit();
           },
@@ -347,7 +348,7 @@ export class StageInputTypePage implements OnInit {
     const tournamentName = this.tournamentForm.get('tournamentName')?.value;
 
     if (!tournamentId ) {
-      await this.showToast('No tournament selected.', 'danger');
+      await this.showToast(this.t('TOASTS.NO_TOURNAMENT_SELECTED'), 'danger');
       return;
     }
   
@@ -361,11 +362,11 @@ export class StageInputTypePage implements OnInit {
           a.click();
           window.URL.revokeObjectURL(url);
   
-          await this.showToast('Excel file downloaded.', 'success');
+          await this.showToast(this.t('TOASTS.EXCEL_DOWNLOADED'), 'success');
         },
         error: async (err) => {
           console.error('Error downloading Excel file:', err);
-          await this.showToast('Failed to download Excel file.', 'danger');
+          await this.showToast(this.t('TOASTS.EXCEL_DOWNLOAD_FAILED'), 'danger');
         }
       });
   }
@@ -398,9 +399,9 @@ export class StageInputTypePage implements OnInit {
 
         this.tournamentForm.patchValue({ updateMethod: 'Manual'});
 
-        this.showToast('Excel file read successfully!', 'success');
+        this.showToast(this.t('TOASTS.EXCEL_READ_SUCCESS'), 'success');
       } catch (error) {
-        this.showToast('Error reading Excel file!', 'danger');
+        this.showToast(this.t('TOASTS.EXCEL_READ_FAILED'), 'danger');
         console.error('Excel read error:', error);
       }
     };
@@ -410,7 +411,7 @@ export class StageInputTypePage implements OnInit {
 
   readBetsExcelFile() {
     if (!this.betsFile) {
-      this.showToast('No file selected.', 'warning');
+      this.showToast(this.t('TOASTS.NO_FILE_SELECTED'), 'warning');
       return;
     }
   
@@ -423,7 +424,7 @@ export class StageInputTypePage implements OnInit {
   
         const sheet = workbook.Sheets['Matches'];
         if (!sheet) {
-          this.showToast('No "Matches" sheet found in Excel file.', 'danger');
+          this.showToast(this.t('TOASTS.EXCEL_NO_MATCHES_SHEET'), 'danger');
           return;
         }
   
@@ -455,10 +456,10 @@ export class StageInputTypePage implements OnInit {
         });
   
         this.matchesExtracted.emit(matches);
-        this.showToast(`${updates} matches updated from odds file.`, 'success');
+        this.showToast(this.t('TOASTS.ODDS_FILE_UPDATED', { count: updates }), 'success');
       } catch (error) {
         console.error('Error reading bets Excel file:', error);
-        this.showToast('Failed to read bets file.', 'danger');
+        this.showToast(this.t('TOASTS.BETS_FILE_READ_FAILED'), 'danger');
       }
     };
   
@@ -626,11 +627,11 @@ export class StageInputTypePage implements OnInit {
 
   async confirmEraseForm(): Promise<void> {
     const alert = await this.toastController.create({
-      header: 'Confirm Erase',
-      message: 'Are you sure you want to erase all data from the form? This action cannot be undone.',
+      header: this.t('TOASTS.CONFIRM_ERASE_TITLE'),
+      message: this.t('TOASTS.CONFIRM_ERASE_MESSAGE'),
       buttons: [
-        { text: 'Cancel', role: 'cancel' },
-        { text: 'Erase', role: 'destructive', handler: () => this.eraseForm() },
+        { text: this.t('TOASTS.CANCEL'), role: 'cancel' },
+        { text: this.t('TOASTS.ERASE'), role: 'destructive', handler: () => this.eraseForm() },
       ],
     });
 
@@ -659,7 +660,11 @@ export class StageInputTypePage implements OnInit {
       });
     }
 
-    this.showToast('All form data has been erased.', 'success');
+    this.showToast(this.t('TOASTS.FORM_ERASED'), 'success');
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
   
   generateFrontendId(): string {

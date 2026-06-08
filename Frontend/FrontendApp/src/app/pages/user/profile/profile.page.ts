@@ -11,10 +11,11 @@ import { LocationService } from 'src/app/services/location.service';
 import { firstValueFrom } from 'rxjs';
 import { LanguageService } from 'src/app/services/language.service';
 import { Language } from 'src/app/model/language';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, IonButton, IonSpinner } from '@ionic/angular/standalone';
 import { SelectCountryModalComponent } from 'src/app/modals/select-country-modal/select-country-modal.component';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-profile',
@@ -41,7 +42,9 @@ export class ProfilePage implements OnInit {
     private locationService: LocationService,
     private loadingController: LoadingController,
     private languageService: LanguageService,
-    private titleService: TitleService
+    private titleService: TitleService,
+    private translate: TranslateService,
+    private backendMessages: BackendMessageService
   ) {
     this.profileForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -83,7 +86,7 @@ export class ProfilePage implements OnInit {
       this.availableCountries = await firstValueFrom(this.locationService.getAvailableCountries());
     } catch (error) {
       console.error('Failed to load countries:', error);
-      this.presentToast('Could not load countries list.', 'danger');
+      this.presentToast(this.t('PROFILE.LOAD_COUNTRIES_FAILED'), 'danger');
     }
   }
 
@@ -92,7 +95,7 @@ export class ProfilePage implements OnInit {
       this.availableLanguages = await firstValueFrom(this.languageService.getAvailableLanguages());
     } catch (error) {
       console.error('Failed to load languages:', error);
-      this.presentToast('Could not load languages list.', 'danger');
+      this.presentToast(this.t('PROFILE.LOAD_LANGUAGES_FAILED'), 'danger');
     }
   }
 
@@ -119,35 +122,35 @@ export class ProfilePage implements OnInit {
     
   async changeEmail() {
     const alert = await this.alertCtrl.create({
-      header: 'Change Email',
+      header: this.t('PROFILE.CHANGE_EMAIL'),
       inputs: [
-        { name: 'newEmail', type: 'email', placeholder: 'Enter new email' },
-        { name: 'password', type: 'password', placeholder: 'Enter password' }
+        { name: 'newEmail', type: 'email', placeholder: this.t('PROFILE.NEW_EMAIL_PLACEHOLDER') },
+        { name: 'password', type: 'password', placeholder: this.t('PROFILE.PASSWORD_PLACEHOLDER') }
       ],
       buttons: [
-        { text: 'Cancel', role: 'cancel' },
+        { text: this.t('PROFILE.CANCEL'), role: 'cancel' },
         {
-          text: 'Change',
+          text: this.t('PROFILE.CHANGE'),
           handler: async (data) => {
             if (!this.isValidEmail(data.newEmail)) {
-              this.presentToast('Invalid email format.', 'warning');
+              this.presentToast(this.t('PROFILE.INVALID_EMAIL'), 'warning');
               return false;
             }
   
             if (!this.isValidPassword(data.password)) {
-              this.presentToast('Password must be at least 8 characters.', 'warning');
+              this.presentToast(this.t('PROFILE.PASSWORD_MIN_LENGTH'), 'warning');
               return false;
             }
   
             try {
               await firstValueFrom(this.userService.changeEmail(data.newEmail, data.password));
-              this.presentToast('Email updated successfully!', 'success');
+              this.presentToast(this.t('PROFILE.EMAIL_UPDATED'), 'success');
   
               this.profileForm.patchValue({ email: data.newEmail });
   
             } catch (error) {
               console.error('Error changing email:', error);
-              this.presentToast('Failed to update email. Check your password.', 'danger');
+              this.presentToast(this.backendMessages.translateMessage(this.extractBackendMessage(error), 'PROFILE.EMAIL_UPDATE_FAILED'), 'danger');
             }
   
             return true;
@@ -160,38 +163,38 @@ export class ProfilePage implements OnInit {
       
   async updatePasswordPopup() {
     const alert = await this.alertCtrl.create({
-      header: 'Update Password',
+      header: this.t('PROFILE.UPDATE_PASSWORD'),
       inputs: [
-        { name: 'currentPassword', type: 'password', placeholder: 'Enter current password' },
-        { name: 'newPassword', type: 'password', placeholder: 'Enter new password' },
-        { name: 'confirmPassword', type: 'password', placeholder: 'Confirm new password' }
+        { name: 'currentPassword', type: 'password', placeholder: this.t('PROFILE.CURRENT_PASSWORD_PLACEHOLDER') },
+        { name: 'newPassword', type: 'password', placeholder: this.t('PROFILE.NEW_PASSWORD_PLACEHOLDER') },
+        { name: 'confirmPassword', type: 'password', placeholder: this.t('PROFILE.CONFIRM_PASSWORD_PLACEHOLDER') }
       ],
       buttons: [
-        { text: 'Cancel', role: 'cancel' },
+        { text: this.t('PROFILE.CANCEL'), role: 'cancel' },
         {
-          text: 'Update',
+          text: this.t('PROFILE.UPDATE'),
           handler: async (data) => {
             if (!this.isValidPassword(data.currentPassword)) {
-              this.presentToast('Current password must be at least 8 characters.', 'warning');
+              this.presentToast(this.t('PROFILE.CURRENT_PASSWORD_MIN_LENGTH'), 'warning');
               return false;
             }
             if (!this.isValidPassword(data.newPassword)) {
-              this.presentToast('New password must be at least 8 characters.', 'warning');
+              this.presentToast(this.t('PROFILE.NEW_PASSWORD_MIN_LENGTH'), 'warning');
               return false;
             }
             if (data.newPassword !== data.confirmPassword) {
-              this.presentToast('Passwords do not match.', 'danger');
+              this.presentToast(this.t('PROFILE.PASSWORDS_DO_NOT_MATCH'), 'danger');
               return false;
             }
   
             try {
               await firstValueFrom(this.userService.updatePassword(data.currentPassword, data.newPassword));
   
-              this.authService.logout('Password updated successfully! Please log in again.');
+              this.authService.logout(this.t('PROFILE.PASSWORD_UPDATED_LOGOUT'));
   
             } catch (error) {
               console.error('Error updating password:', error);
-              this.presentToast('Failed to update password. Check your current password.', 'danger');
+              this.presentToast(this.backendMessages.translateMessage(this.extractBackendMessage(error), 'PROFILE.PASSWORD_UPDATE_FAILED'), 'danger');
             }
   
             return true;
@@ -209,24 +212,24 @@ export class ProfilePage implements OnInit {
   
   async confirmDeleteAccount() {
     const alert = await this.alertCtrl.create({
-      header: 'Delete Account',
-      message: 'Are you sure you want to delete your account? This action is irreversible.',
+      header: this.t('PROFILE.DELETE_ACCOUNT'),
+      message: this.t('PROFILE.DELETE_ACCOUNT_CONFIRMATION'),
       inputs: [
-        { name: 'password', type: 'password', placeholder: 'Enter password' }
+        { name: 'password', type: 'password', placeholder: this.t('PROFILE.PASSWORD_PLACEHOLDER') }
       ],
       buttons: [
-        { text: 'Cancel', role: 'cancel' },
+        { text: this.t('PROFILE.CANCEL'), role: 'cancel' },
         {
-          text: 'Delete',
+          text: this.t('PROFILE.DELETE'),
           cssClass: 'danger-button',
           handler: async (data) => {
             if (!this.isValidPassword(data.password)) {
-              await this.presentToast('Password must be at least 8 characters.', 'warning');
+              await this.presentToast(this.t('PROFILE.PASSWORD_MIN_LENGTH'), 'warning');
               return false;
             }
   
             const loading = await this.loadingController.create({
-              message: 'Deleting account...',
+              message: this.t('PROFILE.DELETING_ACCOUNT'),
               spinner: 'crescent',
             });
             await loading.present();
@@ -235,10 +238,10 @@ export class ProfilePage implements OnInit {
   
             try {
               await firstValueFrom(this.userService.deleteAccount(data.password));
-              await this.authService.logout('Your account has been deleted. We hope to see you again!', '/register');
+              await this.authService.logout(this.t('PROFILE.ACCOUNT_DELETED_LOGOUT'), '/register');
             } catch (error) {
               console.error('Error deleting account:', error);
-              await this.presentToast('Failed to delete account. Check your password.', 'danger');
+              await this.presentToast(this.backendMessages.translateMessage(this.extractBackendMessage(error), 'PROFILE.ACCOUNT_DELETE_FAILED'), 'danger');
             } finally {
               const elapsedTime = Date.now() - startTime;
               const delay = Math.max(0, 500 - elapsedTime);
@@ -261,7 +264,7 @@ export class ProfilePage implements OnInit {
     this.isLoading = true;
   
     const loading = await this.loadingController.create({
-      message: 'Loading profile...',
+      message: this.t('PROFILE.LOADING_PROFILE'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -284,7 +287,7 @@ export class ProfilePage implements OnInit {
       },
       error: async (error) => {
         console.error('Error loading profile:', error);
-        await this.presentToast('Failed to load profile.', 'danger');
+        await this.presentToast(this.t('PROFILE.LOAD_PROFILE_FAILED'), 'danger');
       },
       complete: async () => {
         const elapsedTime = Date.now() - startTime;
@@ -300,7 +303,7 @@ export class ProfilePage implements OnInit {
   
   async onSubmitProfile() {
     if (this.profileForm.invalid) {
-      await this.presentToast('Please correct the errors before submitting.', 'danger');
+      await this.presentToast(this.t('PROFILE.SUBMIT_ERRORS'), 'danger');
       return;
     }
   
@@ -326,7 +329,7 @@ export class ProfilePage implements OnInit {
     };
   
     const loading = await this.loadingController.create({
-      message: 'Updating profile...',
+      message: this.t('PROFILE.UPDATING_PROFILE'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -336,11 +339,11 @@ export class ProfilePage implements OnInit {
     this.userService.updateUserProfile(updatedProfile).subscribe({
       next: async () => {
         this.languageService.useLanguage(langCode);
-        await this.presentToast('Profile updated successfully!', 'success');
+        await this.presentToast(this.t('PROFILE.PROFILE_UPDATED'), 'success');
       },
       error: async (error) => {
         console.error('Error updating profile:', error);
-        await this.presentToast('Failed to update profile. Please try again.', 'danger');
+        await this.presentToast(this.backendMessages.translateMessage(this.extractBackendMessage(error), 'PROFILE.PROFILE_UPDATE_FAILED'), 'danger');
       },
       complete: async () => {
         const elapsedTime = Date.now() - startTime;
@@ -366,5 +369,14 @@ export class ProfilePage implements OnInit {
   
   private isValidPassword(password: string): boolean {
     return password.length >= 8;
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
+  }
+
+  private extractBackendMessage(error: unknown): string | undefined {
+    const maybeHttpError = error as { error?: { message?: string; Message?: string } };
+    return maybeHttpError?.error?.message || maybeHttpError?.error?.Message;
   }  
 }

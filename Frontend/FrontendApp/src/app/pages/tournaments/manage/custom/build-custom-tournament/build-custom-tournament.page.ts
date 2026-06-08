@@ -16,7 +16,7 @@ import { ViewChild } from '@angular/core';
 import { Match, Team, User, Stage, RecordStatus } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent, IonButton, IonSpinner } from '@ionic/angular/standalone';
 import {
@@ -52,7 +52,8 @@ export class BuildCustomTournamentPage implements OnInit {
     private tournamentService: CustomTournamentService,
     private loadingController: LoadingController,
     private tournamentSelectionService: TournamentSelectionService,
-    private titleService: TitleService
+    private titleService: TitleService,
+    private translate: TranslateService
   ) {
     this.tournamentForm = this.fb.group({
       tournamentId: [null],
@@ -212,7 +213,7 @@ export class BuildCustomTournamentPage implements OnInit {
     }
 
     const loading = await this.loadingController.create({
-      message: 'Loading tournament...',
+      message: this.t('TOASTS.LOADING_TOURNAMENT'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -733,27 +734,27 @@ export class BuildCustomTournamentPage implements OnInit {
 
   async submitTournament(): Promise<void> {
     if (!this.tournamentForm.value.tournamentName?.trim()) {
-      this.showToast('Tournament name is required!', 'danger');
+      this.showToast(this.t('TOASTS.TOURNAMENT_NAME_REQUIRED'), 'danger');
       return;
     }
   
     if (this.teamsArray.length < 2) {
-      this.showToast('At least 2 teams are required to create a tournament!', 'danger');
+      this.showToast(this.t('TOASTS.TEAMS_MIN_CREATE'), 'danger');
       return;
     }
 
     if (this.stagesArray.length === 0) {
-      this.showToast('At least one stage is required!', 'danger');
+      this.showToast(this.t('TOASTS.STAGE_REQUIRED'), 'danger');
       return;
     }
   
     if (this.matchesArray.length < 1) {
-      this.showToast('At least 1 match is required!', 'danger');
+      this.showToast(this.t('TOASTS.MATCH_REQUIRED'), 'danger');
       return;
     }
     
     const loading = await this.loadingController.create({
-      message: 'Submitting tournament...',
+      message: this.t('TOASTS.SUBMITTING_TOURNAMENT'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -855,14 +856,14 @@ export class BuildCustomTournamentPage implements OnInit {
         await this.tournamentSelectionService.loadSelectedTournamentFromBackend();
 
         await this.router.navigate(['/tournaments/custom']);
-  
+
         this.showToast(
-          isEditing ? 'Tournament updated successfully!' : 'Tournament created successfully!',
+          this.t(isEditing ? 'TOASTS.TOURNAMENT_UPDATED' : 'TOASTS.TOURNAMENT_CREATED'),
           'success'
         );
       },
       error: async (error) => {
-        this.showToast('Error submitting tournament!', 'danger');
+        this.showToast(this.t('TOASTS.TOURNAMENT_SUBMIT_FAILED'), 'danger');
       },
       complete: async () => {
         const elapsedTime = Date.now() - startTime;
@@ -877,7 +878,7 @@ export class BuildCustomTournamentPage implements OnInit {
 
   async handleTournamentUpdate(): Promise<void> {
     const loading = await this.loadingController.create({
-      message: 'Refreshing data...',
+      message: this.t('TOASTS.REFRESHING_DATA'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -885,7 +886,7 @@ export class BuildCustomTournamentPage implements OnInit {
     try {
       const tournamentId = this.tournamentForm.value.tournamentId;
       if (!tournamentId) {
-        this.showToast('Tournament ID is missing.', 'danger');
+        this.showToast(this.t('TOASTS.TOURNAMENT_ID_MISSING'), 'danger');
         await loading.dismiss();
         return;
       }
@@ -902,9 +903,9 @@ export class BuildCustomTournamentPage implements OnInit {
       this.mergeUpdatedEntities(this.stagesArray, updatedTournament.stages, 'stageId');
       this.mergeUpdatedEntities(this.matchesArray, updatedTournament.matches, 'matchId');
   
-      this.showToast('Tournament updated from source!', 'success');
+      this.showToast(this.t('TOASTS.TOURNAMENT_REFRESHED'), 'success');
     } catch (error) {
-      this.showToast('Failed to refresh tournament!', 'danger');
+      this.showToast(this.t('TOASTS.TOURNAMENT_REFRESH_FAILED'), 'danger');
     } finally {
       await loading.dismiss();
     }
@@ -986,7 +987,7 @@ export class BuildCustomTournamentPage implements OnInit {
         const name = this.tournamentForm.get('tournamentName')?.value?.trim();
   
         if (!name) {
-          await this.showToast('Tournament Name is required!', 'danger');
+          await this.showToast(this.t('TOASTS.TOURNAMENT_NAME_REQUIRED'), 'danger');
           return false;
         }
   
@@ -997,12 +998,12 @@ export class BuildCustomTournamentPage implements OnInit {
             );
 
             if (!response.available) {
-              await this.showToast('This tournament name is already taken.', 'danger');
+              await this.showToast(this.t('TOASTS.TOURNAMENT_NAME_TAKEN'), 'danger');
               return false;
             }
           } catch (error) {
             console.error('Error checking name availability:', error);
-            await this.showToast('Could not validate tournament name.', 'danger');
+            await this.showToast(this.t('TOASTS.TOURNAMENT_NAME_VALIDATE_FAILED'), 'danger');
             return false;
           }
         }
@@ -1011,28 +1012,28 @@ export class BuildCustomTournamentPage implements OnInit {
   
       case 2:
         if (!this.settingsGroup.valid) {
-          await this.showToast('Tournament settings are incomplete or invalid.', 'danger');
+          await this.showToast(this.t('TOASTS.TOURNAMENT_SETTINGS_INVALID'), 'danger');
           return false;
         }
         return true;
   
       case 3:
         if (this.teamsArray.length <= 1) {
-          await this.showToast('At least 2 teams are required!', 'danger');
+          await this.showToast(this.t('TOASTS.TEAMS_MIN'), 'danger');
           return false;
         }
         return true;
   
       case 4:
         if (this.stagesArray.length === 0) {
-          await this.showToast('At least one stage is required!', 'danger');
+          await this.showToast(this.t('TOASTS.STAGE_REQUIRED'), 'danger');
           return false;
         }
         return true;
   
       case 5:
         if (this.matchesArray.length === 0) {
-          await this.showToast('At least 1 match is required!', 'danger');
+          await this.showToast(this.t('TOASTS.MATCH_REQUIRED'), 'danger');
           return false;
         }
         return true;
@@ -1046,6 +1047,10 @@ export class BuildCustomTournamentPage implements OnInit {
 
   private generateFrontendId(): string {
     return 'T-' + Math.random().toString(36).substr(2, 9);
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 
   private getEloByFrontendId(): Map<string, number> {

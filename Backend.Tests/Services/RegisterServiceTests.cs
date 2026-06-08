@@ -53,7 +53,7 @@ public class RegisterServiceTests
     }
 
     [Fact]
-    public async Task RegisterUserAsync_WithUnknownLanguage_ReturnsLanguageErrorAndDoesNotCreateUser()
+    public async Task RegisterUserAsync_WithUnknownLanguage_FallsBackToEnglish()
     {
         using var host = new BackendTestHost();
         using var scope = host.CreateScope();
@@ -67,10 +67,38 @@ public class RegisterServiceTests
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var user = await userManager.FindByEmailAsync("bad-language@example.com");
 
-        Assert.False(result.Success);
-        Assert.Equal("Invalid language selection.", result.Message);
-        Assert.Null(user);
-        Assert.Empty(host.Emails.ConfirmationEmails);
+        Assert.True(result.Success);
+        Assert.Equal("Registration successful. Please check your email to confirm your account.", result.Message);
+        Assert.NotNull(user);
+        Assert.Equal(1, user!.LanguageId);
+        Assert.Single(host.Emails.ConfirmationEmails);
+    }
+
+    [Fact]
+    public async Task RegisterUserAsync_WhenConfirmationEmailFails_ReturnsSuccessWithResendMessage()
+    {
+        using var host = new BackendTestHost(services =>
+        {
+            services.AddSingleton<IEmailService, ThrowingConfirmationEmailService>();
+        });
+
+        using var scope = host.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IRegisterService>();
+
+        var result = await service.RegisterUserAsync(
+            "email-failure@example.com",
+            BackendTestHost.ValidPassword,
+            "en");
+
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var user = await userManager.FindByEmailAsync("email-failure@example.com");
+
+        Assert.True(result.Success);
+        Assert.Equal(
+            "Registration successful, but the confirmation email could not be sent. Please use resend activation email from the login page.",
+            result.Message);
+        Assert.NotNull(user);
+        Assert.False(user!.EmailConfirmed);
     }
 
     [Fact]
@@ -196,7 +224,7 @@ public class RegisterServiceTests
     }
 
     [Fact]
-    public async Task SetupAccountAsync_WithUnknownLanguage_ReturnsLanguageError()
+    public async Task SetupAccountAsync_WithUnknownLanguage_FallsBackToEnglish()
     {
         using var host = new BackendTestHost();
         using var scope = host.CreateScope();
@@ -211,7 +239,24 @@ public class RegisterServiceTests
             BackendTestHost.ValidPassword,
             "xx");
 
-        Assert.False(result.Success);
-        Assert.Equal("Invalid language code.", result.Message);
+        var refreshedUser = await userManager.FindByIdAsync(invitedUser.Id);
+
+        Assert.True(result.Success);
+        Assert.Equal("Account setup completed successfully!", result.Message);
+        Assert.Equal(1, refreshedUser!.LanguageId);
+    }
+
+    private sealed class ThrowingConfirmationEmailService : IEmailService
+    {
+        public Task SendConfirmationEmailAsync(ApplicationUser user)
+            => throw new InvalidOperationException("SMTP failed.");
+
+        public Task SendAccountSetupEmailAsync(ApplicationUser user, string tournamentName) => Task.CompletedTask;
+
+        public Task SendTournamentInvitationEmailAsync(string email, string tournamentName, int tournamentId) => Task.CompletedTask;
+
+        public Task SendPasswordResetEmailAsync(ApplicationUser user) => Task.CompletedTask;
+
+        public Task SendNotificationEmailAsync(ApplicationUser user, string title, string message, string route, string language) => Task.CompletedTask;
     }
 }

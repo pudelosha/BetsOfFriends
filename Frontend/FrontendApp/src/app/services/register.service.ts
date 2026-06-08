@@ -17,14 +17,10 @@ export class RegisterService {
   register(user: RegisterRequest): Observable<{ success: boolean; message: string; errors?: string[] }> {
     return this.http.post<RegisterResult>(`${this.apiUrl}/register`, user).pipe(
       tap((response) => console.log('Backend response:', response)),
-      map((response) => ({
-        success: response.success,
-        message: response.message || 'Registration successful! Please check your email.',
-        errors: response.errors ? response.errors.map(err => err.description) : undefined,
-      })),
+      map((response) => this.mapRegisterResult(response, 'Registration successful! Please check your email.')),
       catchError((error) => {
         console.error('Registration error:', error);
-        return of({ success: false, message: 'An error occurred. Please try again.', errors: undefined });
+        return of(this.mapHttpError(error, 'An error occurred. Please try again.'));
       })
     );
   }
@@ -72,15 +68,68 @@ export class RegisterService {
   
     return this.http.post<RegisterResult>(`${this.apiUrl}/setup-account`, requestBody).pipe(
       tap((response) => console.log('Backend response:', response)),
-      map((response) => ({
-        success: response.success,
-        message: response.message || 'Account setup successful! You can now log in.',
-        errors: response.errors ? response.errors.map(err => err.description) : undefined,
-      })),
+      map((response) => this.mapRegisterResult(response, 'Account setup successful! You can now log in.')),
       catchError((error) => {
         console.error('Account setup error:', error);
-        return of({ success: false, message: 'An error occurred while setting up the account. Please try again.', errors: undefined });
+        return of(this.mapHttpError(error, 'An error occurred while setting up the account. Please try again.'));
       })
     );
+  }
+
+  private mapRegisterResult(response: RegisterResult, fallbackMessage: string): { success: boolean; message: string; errors?: string[] } {
+    const errors = this.extractErrors(response.errors);
+    return {
+      success: response.success,
+      message: (!response.success ? errors?.join(' ') : undefined) || response.message || errors?.join(' ') || fallbackMessage,
+      errors,
+    };
+  }
+
+  private mapHttpError(error: any, fallbackMessage: string): { success: boolean; message: string; errors?: string[] } {
+    const errors = this.extractErrors(error?.error?.errors);
+    const message =
+      errors?.join(' ') ||
+      error?.error?.message ||
+      error?.error?.Message ||
+      error?.error?.title ||
+      (error?.status === 0 ? 'Unable to reach the server. Please check your connection and try again.' : fallbackMessage);
+
+    return { success: false, message, errors };
+  }
+
+  private extractErrors(errors: unknown): string[] | undefined {
+    if (!errors) return undefined;
+
+    if (Array.isArray(errors)) {
+      const descriptions = errors
+        .map(error => {
+          if (typeof error === 'string') return error;
+          if (error && typeof error === 'object') {
+            const value = error as { description?: string; Description?: string; code?: string; Code?: string };
+            return value.description || value.Description || value.code || value.Code;
+          }
+          return undefined;
+        })
+        .filter((error): error is string => !!error);
+
+      return descriptions.length > 0 ? descriptions : undefined;
+    }
+
+    if (typeof errors === 'object') {
+      const descriptions: string[] = [];
+
+      Object.values(errors as Record<string, unknown>).forEach((value: unknown) => {
+        const values = Array.isArray(value) ? value : [value];
+        values.forEach((item: unknown) => {
+          if (typeof item === 'string') {
+            descriptions.push(item);
+          }
+        });
+      });
+
+      return descriptions.length > 0 ? descriptions : undefined;
+    }
+
+    return undefined;
   }
 }

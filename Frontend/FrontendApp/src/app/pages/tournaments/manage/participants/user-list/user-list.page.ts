@@ -6,8 +6,9 @@ import { TournamentSelectionService } from 'src/app/services/tournament-selectio
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentParticipant } from 'src/app/model/tournament-model';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem, IonButton, IonSpinner } from '@ionic/angular/standalone';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-user-list',
@@ -29,7 +30,9 @@ export class UserListPage implements OnInit {
     private toastController: ToastController,
     private loadingController: LoadingController,
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private translate: TranslateService,
+    private backendMessages: BackendMessageService
   ) {}
 
   async ngOnInit() {
@@ -55,7 +58,7 @@ export class UserListPage implements OnInit {
 
   async loadParticipants() {
     const loading = await this.loadingController.create({
-      message: 'Loading participants...',
+      message: this.t('USERS_LIST.LOADING_PARTICIPANTS'),
       spinner: 'crescent'
     });
     await loading.present();
@@ -66,7 +69,7 @@ export class UserListPage implements OnInit {
       );
     } catch (error) {
       console.error('Error loading participants:', error);
-      await this.showToast('Failed to load participants.', 'danger');
+      await this.showToast(this.t('USERS_LIST.LOAD_FAILED'), 'danger');
     } finally {
       this.isLoading = false;
       await loading.dismiss();
@@ -75,15 +78,15 @@ export class UserListPage implements OnInit {
 
   async confirmExclude(email: string) {
     const alert = await this.alertController.create({
-      header: 'Exclude Participant',
-      message: `Are you sure you want to exclude ${email} from the tournament?`,
+      header: this.t('USERS_LIST.EXCLUDE_TITLE'),
+      message: this.t('USERS_LIST.EXCLUDE_CONFIRMATION', { email }),
       buttons: [
         {
-          text: 'Cancel',
+          text: this.t('USERS_LIST.CANCEL'),
           role: 'cancel'
         },
         {
-          text: 'Exclude',
+          text: this.t('USERS_LIST.EXCLUDE'),
           role: 'destructive',
           handler: () => {
             this.excludeParticipant(email);
@@ -100,15 +103,21 @@ export class UserListPage implements OnInit {
     this.tournamentService.excludeParticipant(this.tournamentId!, userEmail).subscribe({
       next: async (result) => {
         if (result.success) {
-          await this.showToast(result.message, 'success');
+          await this.showToast(this.t('USERS_LIST.EXCLUDED', { email: userEmail }), 'success');
           await this.loadParticipants();
         } else {
-          await this.showToast(result.message, 'danger');
+          await this.showToast(
+            this.backendMessages.translateMessage(result.message, 'USERS_LIST.EXCLUDE_FAILED'),
+            'danger'
+          );
         }
       },
       error: async (err) => {
         console.error('Error excluding participant:', err);
-        await this.showToast('Failed to exclude participant.', 'danger');
+        await this.showToast(
+          this.backendMessages.translateMessage(this.extractBackendMessage(err), 'USERS_LIST.EXCLUDE_FAILED'),
+          'danger'
+        );
       }
     });
   }  
@@ -121,5 +130,14 @@ export class UserListPage implements OnInit {
       color
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
+  }
+
+  private extractBackendMessage(error: unknown): string | undefined {
+    const maybeHttpError = error as { error?: { message?: string; Message?: string } };
+    return maybeHttpError?.error?.message || maybeHttpError?.error?.Message;
   }
 }

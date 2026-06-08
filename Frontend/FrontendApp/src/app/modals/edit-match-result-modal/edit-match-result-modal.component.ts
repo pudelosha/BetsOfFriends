@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonLabel, IonDatetime, IonItem, IonToggle, IonPicker, IonPickerColumn, IonPickerColumnOption, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Match } from 'src/app/model/match';
 
 @Component({
@@ -45,7 +45,11 @@ export class EditMatchResultModalComponent implements AfterViewInit {
   qualifySelection: string = 'neutral';
   goalOptions = Array.from({ length: 11 }, (_, i) => i); // 0 to 10
 
-  constructor(private modalCtrl: ModalController, private toastController: ToastController) {}
+  constructor(
+    private modalCtrl: ModalController,
+    private toastController: ToastController,
+    private translate: TranslateService
+  ) {}
 
   ngAfterViewInit() {}
 
@@ -64,7 +68,7 @@ export class EditMatchResultModalComponent implements AfterViewInit {
     }
 
     if (this.isFinished && this.matchType === 'ExtendedWithQualification' && this.qualifySelection === 'neutral') {
-      this.showToast('Please select the team that qualifies.', 'warning');
+      this.showToast(this.t('TOASTS.SELECT_QUALIFYING_TEAM'), 'warning');
       return;
     }
 
@@ -95,5 +99,9 @@ export class EditMatchResultModalComponent implements AfterViewInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

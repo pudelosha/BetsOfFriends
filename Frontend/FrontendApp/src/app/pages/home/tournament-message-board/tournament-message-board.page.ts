@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ModalController, ToastController } from '@ionic/angular';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
@@ -29,7 +29,8 @@ export class TournamentMessageBoardPage implements OnChanges {
     private tournamentSelectionService: TournamentSelectionService,
     private tournamentMessageService: TournamentMessageService,
     private modalController: ModalController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {}
 
   async ionViewWillEnter() {
@@ -87,14 +88,14 @@ export class TournamentMessageBoardPage implements OnChanges {
             this.tournamentMessageService.postMessage(tournamentId, data.content)
           );
           await this.loadMessages();
-          await this.showToast('Message posted successfully!', 'success');
+          await this.showToast(this.t('TOASTS.MESSAGE_POSTED'), 'success');
         }
       } catch (err: any) {
         console.error('Failed to post message', err);
         if (err?.status === 400 && err?.error?.errorMessage) {
           await this.showToast(err.error.errorMessage, 'warning');
         } else {
-          await this.showToast('Failed to post message.', 'danger');
+          await this.showToast(this.t('TOASTS.MESSAGE_POST_FAILED'), 'danger');
         }
       }
     }
@@ -108,5 +109,9 @@ export class TournamentMessageBoardPage implements OnChanges {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

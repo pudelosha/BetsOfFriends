@@ -9,6 +9,8 @@ namespace Backend.Repository.Services
 {
     public class RegisterService : IRegisterService
     {
+        private const string DefaultLanguageCode = "en";
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
@@ -37,6 +39,7 @@ namespace Backend.Repository.Services
 
         public async Task<RegisterResultDto> RegisterUserAsync(string email, string password, string language)
         {
+            email = NormalizeEmail(email);
             _logger.LogInformation($"Attempting to register user with email: {email}");
 
             var existingUser = await _userManager.FindByEmailAsync(email);
@@ -51,15 +54,15 @@ namespace Backend.Repository.Services
                 };
             }
 
-            var languageEntity = await _languageService.GetByShortNameAsync(language);
+            var languageEntity = await GetLanguageOrDefaultAsync(language);
             if (languageEntity == null)
             {
-                _logger.LogWarning($"Invalid language code provided: {language}");
+                _logger.LogError("Default language {DefaultLanguageCode} is not configured.", DefaultLanguageCode);
                 return new RegisterResultDto
                 {
                     Success = false,
-                    Message = "Invalid language selection.",
-                    Errors = new List<IdentityError> { new IdentityError { Description = "Invalid language code." } }
+                    Message = "Registration is temporarily unavailable. Please try again later.",
+                    Errors = new List<IdentityError> { new IdentityError { Description = "Default language is not configured." } }
                 };
             }
 
@@ -104,7 +107,19 @@ namespace Backend.Repository.Services
             }
 
             _logger.LogInformation($"Sending confirmation email to {email}");
-            await _emailService.SendConfirmationEmailAsync(user);
+            try
+            {
+                await _emailService.SendConfirmationEmailAsync(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "User {Email} was registered, but confirmation email could not be sent.", email);
+                return new RegisterResultDto
+                {
+                    Success = true,
+                    Message = "Registration successful, but the confirmation email could not be sent. Please use resend activation email from the login page."
+                };
+            }
 
             return new RegisterResultDto
             {
@@ -115,6 +130,7 @@ namespace Backend.Repository.Services
 
         public async Task<ApplicationUser?> RegisterInvitedUserAsync(string email)
         {
+            email = NormalizeEmail(email);
             _logger.LogInformation($"Registering invited user: {email}");
 
             var existingUser = await _userManager.FindByEmailAsync(email);
@@ -189,6 +205,7 @@ namespace Backend.Repository.Services
 
         public async Task<RegisterResultDto> ResendConfirmationEmailAsync(string email)
         {
+            email = NormalizeEmail(email);
             _logger.LogInformation($"Resending confirmation email to {email}");
 
             var user = await _userManager.FindByEmailAsync(email);
@@ -206,7 +223,15 @@ namespace Backend.Repository.Services
 
             _logger.LogInformation($"Sending new confirmation email to {email}");
 
-            await _emailService.SendConfirmationEmailAsync(user);
+            try
+            {
+                await _emailService.SendConfirmationEmailAsync(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Confirmation email could not be resent to {Email}.", email);
+                return new RegisterResultDto { Success = false, Message = "Could not send confirmation email. Please try again later." };
+            }
 
             return new RegisterResultDto { Success = true, Message = "Confirmation email sent successfully." };
         }
@@ -232,14 +257,14 @@ namespace Backend.Repository.Services
                 };
             }
 
-            var languageEntity = await _languageService.GetByShortNameAsync(language);
+            var languageEntity = await GetLanguageOrDefaultAsync(language);
             if (languageEntity == null)
             {
                 return new RegisterResultDto
                 {
                     Success = false,
-                    Message = "Invalid language code.",
-                    Errors = new List<IdentityError> { new IdentityError { Description = "Invalid language." } }
+                    Message = "Account setup is temporarily unavailable. Please try again later.",
+                    Errors = new List<IdentityError> { new IdentityError { Description = "Default language is not configured." } }
                 };
             }
 
@@ -249,6 +274,36 @@ namespace Backend.Repository.Services
             await _userManager.UpdateAsync(user);
 
             return new RegisterResultDto { Success = true, Message = "Account setup completed successfully!" };
+        }
+
+        private async Task<Language?> GetLanguageOrDefaultAsync(string? language)
+        {
+            var languageCode = NormalizeLanguageCode(language);
+            var languageEntity = await _languageService.GetByShortNameAsync(languageCode);
+            if (languageEntity != null)
+            {
+                return languageEntity;
+            }
+
+            _logger.LogWarning("Unsupported language code '{LanguageCode}' was provided. Falling back to {DefaultLanguageCode}.", languageCode, DefaultLanguageCode);
+            return await _languageService.GetByShortNameAsync(DefaultLanguageCode);
+        }
+
+        private static string NormalizeEmail(string email)
+        {
+            return email.Trim().ToLowerInvariant();
+        }
+
+        private static string NormalizeLanguageCode(string? language)
+        {
+            if (string.IsNullOrWhiteSpace(language))
+            {
+                return DefaultLanguageCode;
+            }
+
+            var normalized = language.Trim().ToLowerInvariant();
+            var separatorIndex = normalized.IndexOfAny(new[] { '-', '_' });
+            return separatorIndex > 0 ? normalized[..separatorIndex] : normalized;
         }
     }
 }

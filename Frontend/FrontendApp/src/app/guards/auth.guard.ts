@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ToastController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,8 @@ export class AuthGuard implements CanActivate {
   constructor(
     private authService: AuthService, 
     private router: Router, 
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private translate: TranslateService
   ) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
@@ -18,7 +20,7 @@ export class AuthGuard implements CanActivate {
     const isLoggedIn = this.authService.isLoggedIn();
     if (!isLoggedIn) {
       console.warn("AuthGuard: User is not logged in. Redirecting to welcome.");
-      this.showToast("You must be logged in to access this page.");
+      this.showToast(this.translate.instant('AUTH_GUARD.LOGIN_REQUIRED'));
       this.router.navigate(['/welcome']);
       return false;
     }
@@ -29,7 +31,7 @@ export class AuthGuard implements CanActivate {
     // If there are no roles, handle error scenario
     if (userRoles.length === 0) {
       console.error("AuthGuard: User has no assigned role. Redirecting to home.");
-      this.showToast("Your account has no assigned role. Contact support.");
+      this.showToast(this.translate.instant('AUTH_GUARD.NO_ROLE'));
       this.router.navigate(['/home']);
       return false;
     }
@@ -58,7 +60,7 @@ export class AuthGuard implements CanActivate {
 
     // If access is denied, redirect & show a toast
     console.warn(`AuthGuard: Access denied. User roles: ${userRoles}, Required role: ${requiredRole}`);
-    this.showToast("You don't have permission to access this page.");
+    this.showToast(this.translate.instant('AUTH_GUARD.PERMISSION_DENIED'));
     this.router.navigate(['/home']);
     return false;
   }

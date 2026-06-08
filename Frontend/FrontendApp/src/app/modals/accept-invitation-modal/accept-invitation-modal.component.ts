@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonLabel, IonInput, IonSpinner, IonIcon } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-accept-invitation-modal',
@@ -29,7 +30,9 @@ export class AcceptInvitationModalComponent implements OnInit {
     private fb: FormBuilder,
     private tournamentService: CustomTournamentService,
     private toastController: ToastController,
-    private tournamentSelectionService: TournamentSelectionService
+    private tournamentSelectionService: TournamentSelectionService,
+    private translate: TranslateService,
+    private backendMessages: BackendMessageService
   ) {
     this.nicknameForm = this.fb.group({
       nickname: ['', [Validators.required, Validators.maxLength(20)]],
@@ -51,7 +54,7 @@ export class AcceptInvitationModalComponent implements OnInit {
       const assignment = await firstValueFrom(this.tournamentService.getAssignmentDetails(this.tournamentId));
       this.nicknameForm.patchValue({ nickname: assignment.nickname });
     } catch (error) {
-      this.nicknameError = 'Failed to load current assignment.';
+      this.nicknameError = this.t('INVITE.LOAD_ASSIGNMENT_FAILED');
     }
   }
 
@@ -66,12 +69,15 @@ export class AcceptInvitationModalComponent implements OnInit {
         const response = await firstValueFrom(
           this.tournamentService.updateTournamentAssignment(this.tournamentId, nickname)
         );
-        this.showToast(response.message, 'success');
+        this.showToast(
+          this.backendMessages.translateMessage(response.message, 'INVITE.NICKNAME_UPDATED', true),
+          'success'
+        );
       } else {
         const response = await firstValueFrom(
           this.tournamentService.acceptTournamentInvitation(this.tournamentId, nickname)
         );
-        this.showToast(response.message, 'success');
+        this.showToast(this.t('INVITE.ACCEPTED', { nickname }), 'success');
         this.tournamentSelectionService.setSelectedTournament(this.tournamentId);
       }
 
@@ -79,7 +85,10 @@ export class AcceptInvitationModalComponent implements OnInit {
 
     } catch (error: any) {
       console.error('Error:', error);
-      this.nicknameError = error?.error?.message || 'An unexpected error occurred.';
+      this.nicknameError = this.backendMessages.translateMessage(
+        this.extractBackendMessage(error),
+        this.editMode ? 'INVITE.UPDATE_FAILED' : 'INVITE.ACCEPT_FAILED'
+      );
     } finally {
       this.isLoading = false;
     }
@@ -88,10 +97,10 @@ export class AcceptInvitationModalComponent implements OnInit {
   async quitTournament() {
     try {
       await firstValueFrom(this.tournamentService.quitTournament(this.tournamentId));
-      this.showToast(this.editMode ? 'You have left the tournament.' : 'You rejected the invitation.', 'success');
+      this.showToast(this.t(this.editMode ? 'INVITE.LEFT' : 'INVITE.REJECTED'), 'success');
       this.modalController.dismiss({ accepted: false, quit: true });
     } catch (error: any) {
-      this.nicknameError = error?.error?.message || 'Error leaving tournament.';
+      this.nicknameError = this.backendMessages.translateMessage(this.extractBackendMessage(error), 'INVITE.LEAVE_FAILED');
     }
   }
 
@@ -107,5 +116,14 @@ export class AcceptInvitationModalComponent implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
+  }
+
+  private extractBackendMessage(error: unknown): string | undefined {
+    const maybeHttpError = error as { error?: { message?: string; Message?: string } };
+    return maybeHttpError?.error?.message || maybeHttpError?.error?.Message;
   }
 }

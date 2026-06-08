@@ -6,7 +6,7 @@ import { TournamentPlayerResult } from 'src/app/model/tournament-model';
 import { firstValueFrom } from 'rxjs';
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem } from '@ionic/angular/standalone';
 
 @Component({
@@ -29,7 +29,8 @@ export class TournamentResultsPage implements OnChanges {
     private tournamentService: CustomTournamentService,
     private tournamentSelectionService: TournamentSelectionService,
     private router: Router,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {}
 
   async ionViewWillEnter() {
@@ -70,7 +71,7 @@ export class TournamentResultsPage implements OnChanges {
       this.players = await firstValueFrom(this.tournamentService.getTournamentPlayerResult(this.tournamentId));
     } catch (error) {
       console.error('Error fetching results:', error);
-      await this.showToast('Failed to load tournament results', 'danger');
+      await this.showToast(this.t('TOASTS.RESULTS_LOAD_FAILED'), 'danger');
     }
   }
 
@@ -86,5 +87,9 @@ export class TournamentResultsPage implements OnChanges {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

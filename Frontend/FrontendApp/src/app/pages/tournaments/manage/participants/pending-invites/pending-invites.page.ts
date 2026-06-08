@@ -5,8 +5,9 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { firstValueFrom } from 'rxjs';
 import { ToastController, LoadingController, AlertController } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem, IonButton, IonSpinner } from '@ionic/angular/standalone';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-pending-invites',
@@ -27,7 +28,9 @@ export class PendingInvitesPage implements OnInit {
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
     private loadingController: LoadingController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private translate: TranslateService,
+    private backendMessages: BackendMessageService
   ) {}
 
   async ngOnInit() {
@@ -50,7 +53,7 @@ export class PendingInvitesPage implements OnInit {
     }
 
     const loading = await this.loadingController.create({
-      message: 'Loading pending invites...',
+      message: this.t('PENDING_INVITES.LOADING_INVITES'),
       spinner: 'crescent'
     });
     await loading.present();
@@ -61,7 +64,7 @@ export class PendingInvitesPage implements OnInit {
       );
     } catch (error) {
       console.error('Error loading invited participants:', error);
-      await this.showToast('Failed to load invites.', 'danger');
+      await this.showToast(this.t('PENDING_INVITES.LOAD_FAILED'), 'danger');
     } finally {
       this.isLoading = false;
       loading.dismiss();
@@ -70,15 +73,15 @@ export class PendingInvitesPage implements OnInit {
 
   async confirmResendInvite(email: string) {
     const alert = await this.alertController.create({
-      header: 'Resend Invitation',
-      message: `Are you sure you want to resend the invitation to ${email}?`,
+      header: this.t('PENDING_INVITES.RESEND_TITLE'),
+      message: this.t('PENDING_INVITES.RESEND_CONFIRMATION', { email }),
       buttons: [
         {
-          text: 'Cancel',
+          text: this.t('PENDING_INVITES.CANCEL'),
           role: 'cancel'
         },
         {
-          text: 'Resend',
+          text: this.t('PENDING_INVITES.RESEND'),
           handler: () => {
             this.resendInvite(email);
           }
@@ -90,15 +93,15 @@ export class PendingInvitesPage implements OnInit {
   
   async confirmExcludeInvite(email: string) {
     const alert = await this.alertController.create({
-      header: 'Exclude Participant',
-      message: `Are you sure you want to exclude ${email} from the tournament?`,
+      header: this.t('USERS_LIST.EXCLUDE_TITLE'),
+      message: this.t('USERS_LIST.EXCLUDE_CONFIRMATION', { email }),
       buttons: [
         {
-          text: 'Cancel',
+          text: this.t('PENDING_INVITES.CANCEL'),
           role: 'cancel'
         },
         {
-          text: 'Exclude',
+          text: this.t('PENDING_INVITES.EXCLUDE'),
           role: 'destructive',
           handler: () => {
             this.excludeInvite(email);
@@ -113,14 +116,20 @@ export class PendingInvitesPage implements OnInit {
     this.tournamentService.resendParticipantInvite(this.tournamentId!, email).subscribe({
       next: async (result) => {
         if (result.success) {
-          await this.showToast(result.message, 'success');
+          await this.showToast(this.t('PENDING_INVITES.RESENT', { email }), 'success');
         } else {
-          await this.showToast(result.message, 'danger');
+          await this.showToast(
+            this.backendMessages.translateMessage(result.message, 'PENDING_INVITES.RESEND_FAILED'),
+            'danger'
+          );
         }
       },
       error: async (error) => {
         console.error('Error resending invite:', error);
-        await this.showToast('Failed to resend invite.', 'danger');
+        await this.showToast(
+          this.backendMessages.translateMessage(this.extractBackendMessage(error), 'PENDING_INVITES.RESEND_FAILED'),
+          'danger'
+        );
       }
     });
   }
@@ -131,15 +140,21 @@ export class PendingInvitesPage implements OnInit {
     this.tournamentService.excludeParticipant(this.tournamentId!, userEmail).subscribe({
       next: async (result) => {
         if (result.success) {
-          await this.showToast(result.message, 'success');
+          await this.showToast(this.t('USERS_LIST.EXCLUDED', { email: userEmail }), 'success');
           await this.loadPendingInvites();
         } else {
-          await this.showToast(result.message, 'danger');
+          await this.showToast(
+            this.backendMessages.translateMessage(result.message, 'USERS_LIST.EXCLUDE_FAILED'),
+            'danger'
+          );
         }
       },
       error: async (err) => {
         console.error('Error excluding participant:', err);
-        await this.showToast('Failed to exclude participant.', 'danger');
+        await this.showToast(
+          this.backendMessages.translateMessage(this.extractBackendMessage(err), 'USERS_LIST.EXCLUDE_FAILED'),
+          'danger'
+        );
       }
     });
   }
@@ -152,5 +167,14 @@ export class PendingInvitesPage implements OnInit {
       color
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
+  }
+
+  private extractBackendMessage(error: unknown): string | undefined {
+    const maybeHttpError = error as { error?: { message?: string; Message?: string } };
+    return maybeHttpError?.error?.message || maybeHttpError?.error?.Message;
   }
 }

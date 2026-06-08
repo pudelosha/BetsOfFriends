@@ -5,8 +5,10 @@ import { CommonModule } from '@angular/common';
 import { ToastController } from '@ionic/angular';
 import { RegisterService } from '../../../services/register.service';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonContent, IonItem, IonLabel, IonInput, IonButton, IonCheckbox } from '@ionic/angular/standalone';
+import { LanguageService } from 'src/app/services/language.service';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-setup-account',
@@ -27,6 +29,9 @@ export class SetupAccountPage {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private registerService: RegisterService,
+    private languageService: LanguageService,
+    private backendMessages: BackendMessageService,
+    private translate: TranslateService,
     private router: Router,
     private toastController: ToastController
   ) {
@@ -74,7 +79,7 @@ export class SetupAccountPage {
       this.token = params['token'];
       
       if (!this.userId || !this.token) {
-        this.message = 'Invalid or expired setup link.';
+        this.message = this.translate.instant('AUTH_STATUS.INVALID_SETUP_LINK');
         this.isLoading = false;
       } else {
         this.isLoading = false;
@@ -85,19 +90,25 @@ export class SetupAccountPage {
   async submit() {
     if (this.setupForm.valid) {
       const { password, consent } = this.setupForm.value;
-      const language = localStorage.getItem('lang') || 'en';
+      const language = this.languageService.currentLang;
       
       this.registerService.setupAccount(this.userId, this.token, password, language).subscribe({
         next: async (response) => {
           if (response.success) {
-            this.showToast('Your account has been set up successfully!', 'success');
+            this.showToast(
+              this.backendMessages.translateMessage(response.message, 'AUTH_STATUS.ACCOUNT_SETUP_SUCCESS', true),
+              'success'
+            );
             this.router.navigate(['/login']);
           } else {
-            this.showToast(response.message || 'Setup failed.', 'danger');
+            this.showToast(
+              this.backendMessages.translateMessage(response.message, 'AUTH_STATUS.ACCOUNT_SETUP_FAILED'),
+              'danger'
+            );
           }
         },
         error: () => {
-          this.showToast('An error occurred. Please try again.', 'danger');
+          this.showToast(this.translate.instant('AUTH_STATUS.UNEXPECTED_ERROR'), 'danger');
         }
       });
     }

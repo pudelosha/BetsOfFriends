@@ -5,10 +5,11 @@ import { CustomTournamentService } from 'src/app/services/custom-tournament.serv
 import { FormsModule } from '@angular/forms';
 import { PublicTournament } from 'src/app/model/tournament-model';
 import { JoinRequestModalComponent } from 'src/app/modals/join-request-modal/join-request-modal.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent, IonSearchbar, IonList, IonItem, IonButton } from '@ionic/angular/standalone';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-find-tournament',
@@ -25,7 +26,9 @@ export class FindTournamentPage implements OnInit {
   constructor(private tournamentService: CustomTournamentService,
               private modalController: ModalController,
               private toastController: ToastController,
-              private titleService: TitleService            
+              private titleService: TitleService,
+              private translate: TranslateService,
+              private backendMessages: BackendMessageService
   ) {}
 
   ngOnInit() {
@@ -72,7 +75,7 @@ export class FindTournamentPage implements OnInit {
     const { data } = await modal.onDidDismiss();
   
     if (data?.requested) {
-      await this.showToast('Join request submitted successfully.', 'success');
+      await this.showToast(this.t('FIND_TOURNAMENT.REQUEST_SUBMITTED'), 'success');
       this.loadTournaments();
     }
   }
@@ -81,10 +84,13 @@ export class FindTournamentPage implements OnInit {
     try {
       await firstValueFrom(this.tournamentService.quitTournament(tournament.tournamentId));
       tournament.joinRequested = false;
-      this.showToast('You have withdrawn your join request.', 'success');
+      this.showToast(this.t('FIND_TOURNAMENT.WITHDRAWN'), 'success');
     } catch (error: any) {
       console.error('Error withdrawing request:', error);
-      this.showToast(error?.error?.message || 'An error occurred.', 'danger');
+      this.showToast(
+        this.backendMessages.translateMessage(this.extractBackendMessage(error), 'FIND_TOURNAMENT.WITHDRAW_FAILED'),
+        'danger'
+      );
     }
   }
   
@@ -96,5 +102,14 @@ export class FindTournamentPage implements OnInit {
       color
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
+  }
+
+  private extractBackendMessage(error: unknown): string | undefined {
+    const maybeHttpError = error as { error?: { message?: string; Message?: string } };
+    return maybeHttpError?.error?.message || maybeHttpError?.error?.Message;
   }
 }

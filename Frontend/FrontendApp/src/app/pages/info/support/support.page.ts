@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SupportService } from 'src/app/services/support.service';
 import { ToastController } from '@ionic/angular';
 import { TitleService } from 'src/app/services/title.service';
@@ -28,7 +28,8 @@ export class SupportPage implements OnInit {
     private toastController: ToastController,
     private titleService: TitleService,
     private languageService: LanguageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -70,9 +71,9 @@ export class SupportPage implements OnInit {
         this.supportForm.controls['email'].disable();
       }
 
-      this.showToast('Message sent successfully', 'success');
+      this.showToast(this.translate.instant('SUPPORT.SUCCESS'), 'success');
     } catch (err) {
-      this.showToast('Failed to send message. Try again later.', 'danger');
+      this.showToast(this.translate.instant('SUPPORT.ERROR'), 'danger');
     } finally {
       this.isLoading = false;
     }

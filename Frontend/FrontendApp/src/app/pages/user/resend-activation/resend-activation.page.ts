@@ -6,8 +6,9 @@ import { RegisterService } from 'src/app/services/register.service';
 import { Router } from '@angular/router';
 import { ViewChild } from '@angular/core';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonContent, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-resend-activation',
@@ -26,6 +27,8 @@ export class ResendActivationPage {
   constructor(
     private fb: FormBuilder,
     private registerService: RegisterService,
+    private backendMessages: BackendMessageService,
+    private translate: TranslateService,
     private toastController: ToastController,
     private router: Router,
     private loadingController: LoadingController
@@ -73,7 +76,7 @@ export class ResendActivationPage {
     this.isLoading = true;
   
     const loading = await this.loadingController.create({
-      message: 'Resending activation email...',
+      message: this.translate.instant('AUTH_STATUS.RESEND_LOADING'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -89,7 +92,12 @@ export class ResendActivationPage {
           await loading.dismiss();
           this.isLoading = false;
   
-          this.showToast(response.message, response.success ? 'success' : 'danger');
+          const message = this.backendMessages.translateMessage(
+            response.message,
+            response.success ? 'AUTH_STATUS.CONFIRMATION_EMAIL_SENT' : 'AUTH_STATUS.UNEXPECTED_ERROR',
+            response.success
+          );
+          this.showToast(message, response.success ? 'success' : 'danger');
         }, delay);
       },
       error: async (error) => {
@@ -100,7 +108,7 @@ export class ResendActivationPage {
           await loading.dismiss();
           this.isLoading = false;
   
-          this.showToast('An unexpected error occurred.', 'danger');
+          this.showToast(this.translate.instant('AUTH_STATUS.UNEXPECTED_ERROR'), 'danger');
           console.error('Resend Activation Error:', error);
         }, delay);
       }

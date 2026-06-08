@@ -6,8 +6,9 @@ import { UserService } from '../../../services/user.service';
 import { ToastController, LoadingController } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 import { LanguageFabComponent } from '../../language/language-fab/language-fab.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonContent, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
+import { BackendMessageService } from 'src/app/services/backend-message.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -30,6 +31,8 @@ export class ResetPasswordPage implements OnInit {
     private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
+    private backendMessages: BackendMessageService,
+    private translate: TranslateService,
     private toastController: ToastController,
     private loadingController: LoadingController
   ) {
@@ -72,7 +75,7 @@ export class ResetPasswordPage implements OnInit {
     this.isLoading = true;
   
     const loading = await this.loadingController.create({
-      message: 'Resetting password...',
+      message: this.translate.instant('AUTH_STATUS.RESET_LOADING'),
       spinner: 'crescent',
     });
     await loading.present();
@@ -89,7 +92,11 @@ export class ResetPasswordPage implements OnInit {
           this.isLoading = false;
   
           const toast = await this.toastController.create({
-            message: response.message,
+            message: this.backendMessages.translateMessage(
+              response.message,
+              response.success ? 'AUTH_STATUS.PASSWORD_UPDATED' : 'AUTH_STATUS.UNEXPECTED_ERROR',
+              response.success
+            ),
             duration: 3000,
             position: 'bottom',
             color: response.success ? 'success' : 'danger'
@@ -110,7 +117,7 @@ export class ResetPasswordPage implements OnInit {
           this.isLoading = false;
   
           const toast = await this.toastController.create({
-            message: 'An error occurred. Please try again.',
+            message: this.translate.instant('AUTH_STATUS.UNEXPECTED_ERROR'),
             duration: 3000,
             position: 'bottom',
             color: 'danger'

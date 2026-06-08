@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonItem, IonLabel, IonTextarea } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-tournament-message-modal',
@@ -17,7 +17,8 @@ export class TournamentMessageModalComponent {
 
   constructor(
     private modalCtrl: ModalController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {}
 
   closeModal() {
@@ -26,12 +27,12 @@ export class TournamentMessageModalComponent {
 
   async submitMessage() {
     if (!this.messageContent.trim()) {
-      this.showToast('Please enter a message.', 'warning');
+      this.showToast(this.t('TOASTS.MESSAGE_REQUIRED'), 'warning');
       return;
     }
 
     if (this.messageContent.length > 100) {
-      this.showToast('Message too long.', 'warning');
+      this.showToast(this.t('TOASTS.MESSAGE_TOO_LONG'), 'warning');
       return;
     }
 
@@ -46,5 +47,9 @@ export class TournamentMessageModalComponent {
       color,
     });
     await toast.present();
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 }

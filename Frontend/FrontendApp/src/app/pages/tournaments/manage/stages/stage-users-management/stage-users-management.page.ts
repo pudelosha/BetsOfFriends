@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } fr
 import { CommonModule } from '@angular/common';
 import { ModalController, AlertController } from '@ionic/angular';
 import { EditUserModalComponent } from 'src/app/modals/edit-user-modal/edit-user-modal.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -27,7 +27,8 @@ export class StageUsersManagementPage implements OnInit {
     private toastController: ToastController,
     private modalController: ModalController,
     private alertController: AlertController,
-    private authService: AuthService
+    private authService: AuthService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -158,15 +159,15 @@ export class StageUsersManagementPage implements OnInit {
     const userToRemove = this.usersArray.at(index).value;
   
     const alert = await this.alertController.create({
-      header: 'Confirm Removal',
-      message: `Are you sure you want to delete the user "${userToRemove.userName}"?`,
+      header: this.t('TOASTS.CONFIRM_REMOVAL_TITLE'),
+      message: this.t('TOASTS.CONFIRM_REMOVE_USER', { name: userToRemove.userName }),
       buttons: [
         {
-          text: 'Cancel',
+          text: this.t('TOASTS.CANCEL'),
           role: 'cancel',
         },
         {
-          text: 'Delete',
+          text: this.t('TOASTS.DELETE'),
           role: 'destructive',
           handler: async () => {
             if (userToRemove.recordStatus === 'New') {
@@ -177,7 +178,7 @@ export class StageUsersManagementPage implements OnInit {
             }
   
             this.emitUsers();
-            await this.showToast(`User "${userToRemove.userName}" removed successfully!`, 'success');
+            await this.showToast(this.t('TOASTS.USER_REMOVED', { name: userToRemove.userName }), 'success');
           },
         },
       ],
@@ -225,15 +226,15 @@ async handleRemoveOrUndoUser(userControl: FormGroup): Promise<void> {
   if (currentStatus === 'Delete') {
     userControl.patchValue({ recordStatus: 'Update' });
     this.emitUsers();
-    await this.showToast(`User "${userEmail}" restored successfully!`, 'success');
+    await this.showToast(this.t('TOASTS.USER_RESTORED', { name: userEmail }), 'success');
   } else {
     const alert = await this.alertController.create({
-      header: 'Confirm Removal',
-      message: `Are you sure you want to delete user "${userEmail}"?`,
+      header: this.t('TOASTS.CONFIRM_REMOVAL_TITLE'),
+      message: this.t('TOASTS.CONFIRM_REMOVE_USER', { name: userEmail }),
       buttons: [
-        { text: 'Cancel', role: 'cancel' },
+        { text: this.t('TOASTS.CANCEL'), role: 'cancel' },
         {
-          text: 'Delete',
+          text: this.t('TOASTS.DELETE'),
           role: 'destructive',
           handler: async () => {
             const index = this.usersArray.controls.indexOf(userControl);
@@ -243,7 +244,7 @@ async handleRemoveOrUndoUser(userControl: FormGroup): Promise<void> {
               userControl.patchValue({ recordStatus: 'Delete' });
             }
             this.emitUsers();
-            await this.showToast(`User "${userEmail}" removed successfully!`, 'success');
+            await this.showToast(this.t('TOASTS.USER_REMOVED', { name: userEmail }), 'success');
           },
         },
       ],
@@ -262,4 +263,8 @@ private async showToast(message: string, color: 'success' | 'warning' | 'danger'
   });
   await toast.present();
   }
+
+private t(key: string, params?: Record<string, unknown>): string {
+  return this.translate.instant(key, params);
+}
 }
