@@ -293,22 +293,7 @@ namespace Backend.Controllers
                 await _betService.CreateBetsForTournamentAsync(result.TournamentId);
                 _logger.LogInformation($"Bets populated for updated tournament ID: {result.TournamentId}");
 
-                var emailTasks = new List<Task>();
-
-                foreach (var email in result.InvitedEmails)
-                {
-                    var user = await _userService.FindUserByEmailAsync(email);
-                    if (user != null)
-                    {
-                        emailTasks.Add(_emailService.SendAccountSetupEmailAsync(user, result.TournamentName));
-                    }
-                }
-
-                await Task.WhenAll(emailTasks);
-
-                await _notificationService.NotifyTournamentInvitationsAsync(
-                    result.TournamentId,
-                    result.ExistingEmails);
+                await SendUpdatedTournamentInvitationsAsync(result);
 
                 return Ok("Tournament updated successfully.");
             }
@@ -316,6 +301,41 @@ namespace Backend.Controllers
             {
                 _logger.LogError(ex, $"An error occurred while updating the custom tournament ID {tournamentDto.TournamentId}.");
                 return StatusCode(500, "An error occurred while updating the tournament.");
+            }
+        }
+
+        private async Task SendUpdatedTournamentInvitationsAsync(TournamentUpdateResultDto result)
+        {
+            var tournamentName = result.TournamentName ?? string.Empty;
+
+            foreach (var email in result.InvitedEmails)
+            {
+                try
+                {
+                    var user = await _userService.FindUserByEmailAsync(email);
+                    if (user == null)
+                    {
+                        _logger.LogWarning("Skipping account setup email for {Email}; user was not found after tournament update.", email);
+                        continue;
+                    }
+
+                    await _emailService.SendAccountSetupEmailAsync(user, tournamentName);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Tournament {TournamentId} was updated, but account setup email failed for {Email}.", result.TournamentId, email);
+                }
+            }
+
+            try
+            {
+                await _notificationService.NotifyTournamentInvitationsAsync(
+                    result.TournamentId,
+                    result.ExistingEmails);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Tournament {TournamentId} was updated, but invitation notifications failed.", result.TournamentId);
             }
         }
 

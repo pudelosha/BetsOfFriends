@@ -2,6 +2,7 @@ using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
 using Backend.Repository.Services;
+using Backend.Services.Interfaces;
 using Backend.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ public sealed class BackendTestHost : IDisposable
 {
     public const string ValidPassword = "ValidPassword123!";
 
-    public BackendTestHost()
+    public BackendTestHost(Action<IServiceCollection>? configureServices = null)
     {
         Emails = new TestEmailService();
         PushNotifications = new TestPushNotificationService();
@@ -51,10 +52,15 @@ public sealed class BackendTestHost : IDisposable
         services.AddScoped<ILanguageService, LanguageService>();
         services.AddScoped<ILocationService, LocationService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IBetService, BetService>();
+        services.AddScoped<ICustomTournamentService, CustomTournamentService>();
         services.AddScoped<IRegisterService, RegisterService>();
         services.AddScoped<ILocalizationService, LocalizationService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<ITournamentSelectionService, TournamentSelectionService>();
         services.AddScoped<IUserService, UserService>();
+
+        configureServices?.Invoke(services);
 
         Services = services.BuildServiceProvider();
 

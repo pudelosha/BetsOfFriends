@@ -535,10 +535,15 @@ namespace Backend.Repository.Services
                     .ToListAsync();
 
                 var userIdToUsername = userAssignments.ToDictionary(a => a.UserId, a => a.UserName);
+                var acceptedUserIds = userIdToUsername.Keys.ToHashSet();
 
-                // Filter bets to only include placed bets
-                var bets = match.Bets.Where(b => b.HomeGoals.HasValue && b.AwayGoals.HasValue).ToList();
-                var qualificationBets = match.Bets.Where(b => b.Qualified.HasValue).ToList();
+                // Filter bets to only include accepted participants who placed bets.
+                var bets = match.Bets
+                    .Where(b => acceptedUserIds.Contains(b.UserId) && b.HomeGoals.HasValue && b.AwayGoals.HasValue)
+                    .ToList();
+                var qualificationBets = match.Bets
+                    .Where(b => acceptedUserIds.Contains(b.UserId) && b.Qualified.HasValue)
+                    .ToList();
 
                 var totalBets = bets.Count;
                 var totalQualificationBets = qualificationBets.Count;

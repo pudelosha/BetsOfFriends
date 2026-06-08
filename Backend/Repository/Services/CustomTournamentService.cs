@@ -225,8 +225,8 @@ namespace Backend.Repository.Services
 
                 _logger.LogInformation($"Step 6: {matches.Count} matches inserted");
 
-                var invitedUsers = new HashSet<string>();
-                var existingUsers = new HashSet<string>();
+                var invitedUsers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var existingUsers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                 foreach (var userDto in tournamentDto.Users)
                 {
@@ -647,8 +647,9 @@ namespace Backend.Repository.Services
                 var usersToUpdate = tournamentDto.Users.Where(u => u.RecordStatus == "Update").ToList();
                 var newUsers = tournamentDto.Users.Where(u => u.RecordStatus == "New").ToList();
 
-                var invitedUsers = new HashSet<string>();
-                var existingUsers = new HashSet<string>();
+                var invitedUsers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var existingUsers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var removedUserIds = new HashSet<string>();
 
                 foreach (var user in usersToRemove)
                 {
@@ -662,6 +663,7 @@ namespace Backend.Repository.Services
                         }
 
                         _context.CustomTournamentUserAssignments.Remove(assignment);
+                        removedUserIds.Add(assignment.UserId);
                         _logger.LogInformation($"Removed tournament assignment for user {assignment.UserAdminName} ({assignment.UserId})");
                     }
                 }
@@ -676,28 +678,61 @@ namespace Backend.Repository.Services
                     }
                 }
 
+                var processedNewUserEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var assignedUserIds = new HashSet<string>(
+                    tournament.Participants
+                        .Where(p => !removedUserIds.Contains(p.UserId))
+                        .Select(p => p.UserId));
+
                 foreach (var newUserDto in newUsers)
                 {
-                    var existingUser = await _userService.FindUserByEmailAsync(newUserDto.UserEmail);
+                    if (string.IsNullOrWhiteSpace(newUserDto.UserEmail))
+                    {
+                        throw new Exception("Cannot invite a user without an email address.");
+                    }
+
+                    var normalizedEmail = newUserDto.UserEmail.Trim().ToLowerInvariant();
+                    if (!processedNewUserEmails.Add(normalizedEmail))
+                    {
+                        _logger.LogWarning("Skipping duplicate new participant row for {Email} in tournament {TournamentId}.", normalizedEmail, tournament.TournamentId);
+                        continue;
+                    }
+
+                    var existingUser = await _userService.FindUserByEmailAsync(normalizedEmail);
                     ApplicationUser userToAssign;
+                    var isNewlyRegistered = false;
 
                     if (existingUser == null)
                     {
-                        var newUser = await _registerService.RegisterInvitedUserAsync(newUserDto.UserEmail);
+                        var newUser = await _registerService.RegisterInvitedUserAsync(normalizedEmail);
                         if (newUser == null)
-                            throw new Exception($"Failed to create user with email: {newUserDto.UserEmail}");
+                            throw new Exception($"Failed to create user with email: {normalizedEmail}");
 
                         userToAssign = newUser;
-                        invitedUsers.Add(newUser.Email);
+                        isNewlyRegistered = true;
 
                         _logger.LogInformation($"Registered new user {newUser.Email} and assigned to tournament {tournament.TournamentId}");
                     }
                     else
                     {
                         userToAssign = existingUser;
-                        existingUsers.Add(existingUser.Email);
 
                         _logger.LogInformation($"Assigned existing user {existingUser.Email} to tournament {tournament.TournamentId}");
+                    }
+
+                    if (!assignedUserIds.Add(userToAssign.Id))
+                    {
+                        _logger.LogWarning("Skipping assignment insert for {Email}; user is already assigned to tournament {TournamentId}.", normalizedEmail, tournament.TournamentId);
+                        continue;
+                    }
+
+                    if (isNewlyRegistered)
+                    {
+                        invitedUsers.Add(normalizedEmail);
+                    }
+                    else
+                    {
+                        existingUsers.Add(normalizedEmail);
                     }
 
                     _context.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
@@ -1020,11 +1055,11 @@ namespace Backend.Repository.Services
                 _logger.LogInformation($"Fetching tournament summary for ID {tournamentId}, requested by user {userId}");
 
                 var isParticipant = await _context.CustomTournamentUserAssignments
-                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+                    .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId && a.Status == AssignmentStatus.Accepted);
 
                 if (!isParticipant)
                 {
-                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}.");
+                    _logger.LogWarning($"User {userId} is not an accepted participant in tournament {tournamentId}.");
                     return null;
                 }
 
@@ -1057,15 +1092,19 @@ namespace Backend.Repository.Services
                     return new List<TournamentSummaryDto>();
                 }
 
-                var userAssignments = await _context.CustomTournamentUserAssignments
-                    .Where(a => a.TournamentId == tournamentId)
-                    .ToDictionaryAsync(a => a.UserId, a => a.UserName ?? a.UserAdminName);
+                var acceptedAssignments = await _context.CustomTournamentUserAssignments
+                    .Where(a => a.TournamentId == tournamentId && a.Status == AssignmentStatus.Accepted)
+                    .ToListAsync();
+
+                var userAssignments = acceptedAssignments
+                    .ToDictionary(a => a.UserId, a => a.UserName ?? a.UserAdminName);
 
                 bool showExactResult = tournament.AllowExactResultBonus;
                 bool showQualified = tournament.AllowWhoQualifiesBets;
 
                 var summary = tournamentBets
                     .GroupBy(b => b.UserId)
+                    .Where(group => userAssignments.ContainsKey(group.Key))
                     .Select(group =>
                     {
                         var userId = group.Key;
@@ -1996,10 +2035,27 @@ namespace Backend.Repository.Services
 
                 _logger.LogInformation($"User {userId} successfully accepted invitation for tournament ID {tournamentId} with nickname {nickname}. Tournament set as default.");
 
-                await _tournamentSelectionService.SetSelectedTournamentAsync(userId, tournamentAssignment.TournamentId);
+                try
+                {
+                    var selected = await _tournamentSelectionService.SetSelectedTournamentAsync(userId, tournamentAssignment.TournamentId);
+                    if (!selected)
+                    {
+                        _logger.LogWarning("User {UserId} accepted tournament {TournamentId}, but setting it as selected returned false.", userId, tournamentId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "User {UserId} accepted tournament {TournamentId}, but setting the selected tournament failed.", userId, tournamentId);
+                }
 
-                // Notify admins
-                await _notificationService.NotifyUserAcceptedTournamentInviteAsync(tournamentAssignment);
+                try
+                {
+                    await _notificationService.NotifyUserAcceptedTournamentInviteAsync(tournamentAssignment);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "User {UserId} accepted tournament {TournamentId}, but admin notifications failed.", userId, tournamentId);
+                }
 
                 return new TournamentInvitationResponseDto
                 {
