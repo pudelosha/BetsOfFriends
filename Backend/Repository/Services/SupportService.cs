@@ -44,6 +44,13 @@ public class SupportService : ISupportService
         _context.SupportMessages.Add(message);
         await _context.SaveChangesAsync();
 
-        await _notificationService.NotifySuperAdminsAboutSupportMessageAsync(message);
+        try
+        {
+            await _notificationService.NotifySuperAdminsAboutSupportMessageAsync(message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Support message {SupportMessageId} was saved, but SuperAdmin notifications failed.", message.SupportMessageId);
+        }
     }
 }

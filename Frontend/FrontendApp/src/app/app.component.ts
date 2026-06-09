@@ -12,6 +12,8 @@ import { Platform } from '@ionic/angular';
 import { IonMenu, IonApp, IonHeader, IonToolbar, IonTitle, IonRow, IonGrid, IonCol, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet, IonFab, IonFabButton, IonFabList } from '@ionic/angular/standalone';
 import { version } from 'src/environments/version';
 import { LanguageService } from 'src/app/services/language.service';
+import { UserService } from 'src/app/services/user.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +38,7 @@ export class AppComponent {
               private titleService: TitleService,
               private platform: Platform,
               private languageService: LanguageService,
+              private userService: UserService,
               private modalController: ModalController) {}
 
   ngOnInit() {
@@ -45,6 +48,9 @@ export class AppComponent {
     this.authService.getAuthStatus().subscribe((loggedIn) => {
       this.isLoggedIn = loggedIn;
       this.updateUserRoles();
+      if (loggedIn) {
+        void this.syncLanguageFromProfile();
+      }
     });
 
     this.titleService.title$.subscribe(title => {
@@ -66,6 +72,24 @@ export class AppComponent {
 
   switchLang(lang: string) {
     this.languageService.useLanguage(lang);
+  }
+
+  private async syncLanguageFromProfile(): Promise<void> {
+    const tokenAtStart = this.authService.getToken();
+    if (!tokenAtStart) {
+      return;
+    }
+
+    try {
+      const profile = await firstValueFrom(this.userService.getUserProfile());
+      const profileLanguage = profile?.language?.trim();
+
+      if (profileLanguage && this.authService.getToken() === tokenAtStart) {
+        this.languageService.updateFromBackend(profileLanguage);
+      }
+    } catch (error) {
+      console.warn('Failed to sync language from user profile:', error);
+    }
   }
 
   get isNative(): boolean {

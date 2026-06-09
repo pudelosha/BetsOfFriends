@@ -83,6 +83,71 @@ public class CustomTournamentServiceTests
     }
 
     [Fact]
+    public async Task RequestToJoinTournamentAsync_ReturnsSuccessWhenAdminNotificationFailsAfterRequestIsSaved()
+    {
+        using var host = new BackendTestHost(services =>
+        {
+            services.AddScoped<INotificationService, ThrowingJoinRequestNotificationService>();
+        });
+
+        var creator = await host.CreateUserAsync("creator-join@example.com");
+        var requester = await host.CreateUserAsync("requester-join@example.com");
+
+        int tournamentId;
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var tournament = new CustomTournament
+            {
+                Name = "Public Join Cup",
+                PublicName = "Public Join Cup",
+                CreatedByUserId = creator.Id,
+                IsActive = true,
+                Visibility = CustomTournament.TournamentVisibility.Public
+            };
+
+            dbContext.CustomTournaments.Add(tournament);
+            await dbContext.SaveChangesAsync();
+            tournamentId = tournament.TournamentId;
+
+            dbContext.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
+            {
+                TournamentId = tournamentId,
+                UserId = creator.Id,
+                UserAdminName = "Creator",
+                UserName = "Creator",
+                Status = AssignmentStatus.Accepted,
+                Role = UserTournamentRole.Admin
+            });
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ICustomTournamentService>();
+
+            var response = await service.RequestToJoinTournamentAsync(requester.Id, tournamentId, "Requester", string.Empty);
+
+            Assert.True(response.Success);
+            Assert.Equal("You have successfully requested to join the tournament as 'Requester'.", response.Message);
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var assignment = await dbContext.CustomTournamentUserAssignments
+                .SingleAsync(a => a.TournamentId == tournamentId && a.UserId == requester.Id);
+
+            Assert.Equal(AssignmentStatus.Requested, assignment.Status);
+            Assert.Equal("Requester", assignment.UserName);
+            Assert.False(assignment.IsSelected);
+        }
+    }
+
+    [Fact]
     public async Task GetTournamentSummaryAsync_ReturnsResultsOnlyForAcceptedParticipants()
     {
         using var host = new BackendTestHost();
@@ -212,6 +277,50 @@ public class CustomTournamentServiceTests
             => throw new InvalidOperationException("Notification failed after accept.");
 
         public Task NotifyAdminsJoinRequestAsync(CustomTournamentUserAssignment joinRequest) => Task.CompletedTask;
+
+        public Task NotifyUserJoinRequestApprovedAsync(CustomTournamentUserAssignment assignment) => Task.CompletedTask;
+
+        public Task NotifyMatchStartingSoonAsync(CustomMatch match, TimeSpan threshold) => Task.CompletedTask;
+
+        public Task NotifyDailyTournamentUpdatesAsync(DateTime nowUtc) => Task.CompletedTask;
+
+        public Task NotifyNewGamesToBetAsync(CustomMatch match) => Task.CompletedTask;
+
+        public Task NotifyTournamentInvitationsAsync(int tournamentId, IEnumerable<string> userEmails) => Task.CompletedTask;
+
+        public Task NotifySuperAdminsAboutSupportMessageAsync(SupportMessage message) => Task.CompletedTask;
+
+        public Task ProcessNotificationsAsync(
+            List<ApplicationUser> recipients,
+            string title,
+            string message,
+            string route,
+            Func<ApplicationUser, (bool emailConsent, bool pushConsent)> getConsent) => Task.CompletedTask;
+
+        public Task<List<NotificationDto>> GetUserNotificationsAsync(string userId, int? limit = null)
+            => Task.FromResult(new List<NotificationDto>());
+
+        public Task<bool> MarkNotificationAsReadAsync(int notificationId, string userId)
+            => Task.FromResult(false);
+
+        public Task<bool> DeleteNotificationAsync(int notificationId, string userId)
+            => Task.FromResult(false);
+
+        public Task<NotificationSettingsDto?> GetNotificationSettingsAsync(string userId)
+            => Task.FromResult<NotificationSettingsDto?>(null);
+
+        public Task<bool> UpdateNotificationSettingsAsync(string userId, NotificationSettingsDto settingsDto)
+            => Task.FromResult(true);
+    }
+
+    private sealed class ThrowingJoinRequestNotificationService : INotificationService
+    {
+        public Task NotifyMatchClosureAsync(CustomMatch match) => Task.CompletedTask;
+
+        public Task NotifyUserAcceptedTournamentInviteAsync(CustomTournamentUserAssignment assignment) => Task.CompletedTask;
+
+        public Task NotifyAdminsJoinRequestAsync(CustomTournamentUserAssignment joinRequest)
+            => throw new InvalidOperationException("Notification failed after join request.");
 
         public Task NotifyUserJoinRequestApprovedAsync(CustomTournamentUserAssignment assignment) => Task.CompletedTask;
 

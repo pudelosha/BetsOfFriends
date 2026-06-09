@@ -2132,7 +2132,14 @@ namespace Backend.Repository.Services
 
                 _logger.LogInformation($"User {userId} successfully requested to join tournament {tournamentId} as '{nickname}'.");
 
-                await _notificationService.NotifyAdminsJoinRequestAsync(assignment);
+                try
+                {
+                    await _notificationService.NotifyAdminsJoinRequestAsync(assignment);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "User {UserId} requested to join tournament {TournamentId}, but admin notifications failed.", userId, tournamentId);
+                }
 
                 return new TournamentInvitationResponseDto
                 {
