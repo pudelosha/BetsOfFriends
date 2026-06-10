@@ -600,6 +600,71 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("extra-predictions/{tournamentId}")]
+        public async Task<IActionResult> GetCustomTournamentExtraPredictions(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var predictions = await _tournamentService.GetCustomTournamentExtraPredictionsAsync(tournamentId, userId);
+
+                if (predictions == null)
+                {
+                    return NotFound(new { Message = "Tournament not found or access denied." });
+                }
+
+                return Ok(predictions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching extra predictions for tournament {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while fetching extra predictions." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPut("extra-predictions/{tournamentId}")]
+        public async Task<IActionResult> UpsertCustomTournamentExtraPrediction(
+            int tournamentId,
+            [FromBody] CustomTournamentExtraPredictionUpdateDto request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var result = await _tournamentService.UpsertCustomTournamentExtraPredictionAsync(tournamentId, userId, request);
+
+                if (!result.Success)
+                {
+                    return string.Equals(result.Message, "The first tournament match has already started.", StringComparison.OrdinalIgnoreCase)
+                        ? Conflict(result)
+                        : BadRequest(result);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error saving extra prediction for tournament {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while saving extra prediction." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("invites/pending")]
         public async Task<IActionResult> GetPendingTournamentInvites()
         {

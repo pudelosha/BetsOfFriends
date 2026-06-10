@@ -1,0 +1,144 @@
+ion-content {
+  --padding-start: 0 !important;
+  --padding-end: 0 !important;
+}
+
+.no-side-padding {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.extra-predictions-container {
+  width: 100%;
+}
+
+.loading-spinner {
+  display: block;
+  margin: 24px auto;
+}
+
+.extra-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.extra-actions ion-button {
+  font-size: 12px;
+  min-height: 32px;
+}
+
+.lock-badge {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  font-size: 11px;
+  min-height: 24px;
+  padding: 5px 7px;
+  white-space: nowrap;
+}
+
+.predictions-table {
+  overflow: hidden;
+  width: 100%;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.table-row {
+  align-items: stretch;
+  border-bottom: 1px solid #ddd;
+  display: grid;
+  grid-template-columns: minmax(96px, 1.2fr) repeat(3, minmax(78px, 1fr)) minmax(118px, 1.2fr);
+  min-width: 520px;
+}
+
+.table-row:last-child {
+  border-bottom: 0;
+}
+
+.table-row > div {
+  align-items: center;
+  color: #333;
+  display: flex;
+  font-size: 11px;
+  min-height: 34px;
+  padding: 5px 6px;
+}
+
+.table-header > div {
+  background: #f0f0f0;
+  color: #555;
+  font-size: 10px;
+  font-weight: 700;
+  min-height: 30px;
+  text-transform: uppercase;
+}
+
+.current-user > div {
+  background: #f9fbff;
+}
+
+.user-cell {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user-cell strong,
+.user-cell span {
+  display: block;
+  line-height: 16px;
+  width: 100%;
+}
+
+.user-cell span {
+  color: var(--ion-color-primary);
+  font-size: 10px;
+}
+
+.top-scorer-cell {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.top-scorer-cell span,
+.top-scorer-cell small {
+  display: block;
+  line-height: 14px;
+  width: 100%;
+}
+
+.top-scorer-cell small {
+  color: #777;
+  font-size: 10px;
+}
+
+.empty-state {
+  color: gray;
+  font-size: 1em;
+  margin-top: 20px;
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .extra-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .extra-actions ion-button {
+    width: 100%;
+  }
+
+  .lock-badge {
+    justify-content: center;
+  }
+}

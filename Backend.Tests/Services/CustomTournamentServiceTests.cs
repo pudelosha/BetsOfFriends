@@ -363,6 +363,106 @@ public class CustomTournamentServiceTests
         }
     }
 
+    [Fact]
+    public async Task UpsertCustomTournamentExtraPredictionAsync_WithFutureFirstMatch_SavesPrediction()
+    {
+        using var host = new BackendTestHost();
+        var creator = await host.CreateUserAsync("extra-creator@example.com");
+        var player = await host.CreateUserAsync("extra-player@example.com");
+        var seed = await SeedExtraPredictionTournamentAsync(host, creator, player, DateTime.UtcNow.AddHours(2));
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ICustomTournamentService>();
+
+            var result = await service.UpsertCustomTournamentExtraPredictionAsync(
+                seed.TournamentId,
+                player.Id,
+                new CustomTournamentExtraPredictionUpdateDto
+                {
+                    WinnerTeamId = seed.WinnerTeamId,
+                    SecondPlaceTeamId = seed.SecondPlaceTeamId,
+                    ThirdPlaceTeamId = seed.ThirdPlaceTeamId,
+                    TopScorerTeamId = seed.TopScorerTeamId,
+                    TopScorerName = "Test Scorer"
+                });
+
+            Assert.True(result.Success);
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var prediction = await dbContext.CustomTournamentExtraPredictions
+                .SingleAsync(p => p.TournamentId == seed.TournamentId && p.UserId == player.Id);
+
+            Assert.Equal(seed.WinnerTeamId, prediction.WinnerTeamId);
+            Assert.Equal(seed.SecondPlaceTeamId, prediction.SecondPlaceTeamId);
+            Assert.Equal(seed.ThirdPlaceTeamId, prediction.ThirdPlaceTeamId);
+            Assert.Equal(seed.TopScorerTeamId, prediction.TopScorerTeamId);
+            Assert.Equal("Test Scorer", prediction.TopScorerName);
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ICustomTournamentService>();
+            var overview = await service.GetCustomTournamentExtraPredictionsAsync(seed.TournamentId, player.Id);
+
+            Assert.NotNull(overview);
+            Assert.False(overview.IsLocked);
+            Assert.Equal(4, overview.Teams.Count);
+
+            var playerRow = overview.Predictions.Single(p => p.IsCurrentUser);
+            Assert.True(playerRow.HasPrediction);
+            Assert.Equal(seed.WinnerTeamId, playerRow.WinnerTeamId);
+            Assert.Equal("Test Scorer", playerRow.TopScorerName);
+        }
+    }
+
+    [Fact]
+    public async Task UpsertCustomTournamentExtraPredictionAsync_WhenFirstMatchStarted_RejectsPrediction()
+    {
+        using var host = new BackendTestHost();
+        var creator = await host.CreateUserAsync("extra-locked-creator@example.com");
+        var player = await host.CreateUserAsync("extra-locked-player@example.com");
+        var seed = await SeedExtraPredictionTournamentAsync(host, creator, player, DateTime.UtcNow.AddMinutes(-1));
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ICustomTournamentService>();
+
+            var result = await service.UpsertCustomTournamentExtraPredictionAsync(
+                seed.TournamentId,
+                player.Id,
+                new CustomTournamentExtraPredictionUpdateDto
+                {
+                    WinnerTeamId = seed.WinnerTeamId,
+                    SecondPlaceTeamId = seed.SecondPlaceTeamId,
+                    ThirdPlaceTeamId = seed.ThirdPlaceTeamId,
+                    TopScorerTeamId = seed.TopScorerTeamId,
+                    TopScorerName = "Too Late"
+                });
+
+            Assert.False(result.Success);
+            Assert.Equal("The first tournament match has already started.", result.Message);
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            Assert.False(await dbContext.CustomTournamentExtraPredictions.AnyAsync(p => p.TournamentId == seed.TournamentId));
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ICustomTournamentService>();
+            var overview = await service.GetCustomTournamentExtraPredictionsAsync(seed.TournamentId, player.Id);
+
+            Assert.NotNull(overview);
+            Assert.True(overview.IsLocked);
+        }
+    }
+
     private static Bet CreateClosedBet(int matchId, string userId, decimal basePayout)
     {
         return new Bet
@@ -389,6 +489,98 @@ public class CustomTournamentServiceTests
             Calculated = false
         };
     }
+
+    private static async Task<ExtraPredictionSeed> SeedExtraPredictionTournamentAsync(
+        BackendTestHost host,
+        ApplicationUser creator,
+        ApplicationUser player,
+        DateTime matchStart)
+    {
+        using var scope = host.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        var tournament = new CustomTournament
+        {
+            Name = $"Extra Prediction Cup {Guid.NewGuid():N}",
+            CreatedByUserId = creator.Id,
+            IsActive = true
+        };
+
+        dbContext.CustomTournaments.Add(tournament);
+        await dbContext.SaveChangesAsync();
+
+        dbContext.CustomTournamentUserAssignments.AddRange(
+            new CustomTournamentUserAssignment
+            {
+                TournamentId = tournament.TournamentId,
+                UserId = creator.Id,
+                UserAdminName = "Creator",
+                UserName = "Creator",
+                Status = AssignmentStatus.Accepted,
+                Role = UserTournamentRole.Admin
+            },
+            new CustomTournamentUserAssignment
+            {
+                TournamentId = tournament.TournamentId,
+                UserId = player.Id,
+                UserAdminName = "Player",
+                UserName = "Player",
+                Status = AssignmentStatus.Accepted,
+                Role = UserTournamentRole.Player
+            });
+
+        var teams = new[]
+        {
+            new CustomTeam { TournamentId = tournament.TournamentId, TeamName = "Winner" },
+            new CustomTeam { TournamentId = tournament.TournamentId, TeamName = "Second" },
+            new CustomTeam { TournamentId = tournament.TournamentId, TeamName = "Third" },
+            new CustomTeam { TournamentId = tournament.TournamentId, TeamName = "Scorer Team" }
+        };
+
+        dbContext.CustomTeams.AddRange(teams);
+        await dbContext.SaveChangesAsync();
+
+        var stage = new CustomMatchStage
+        {
+            TournamentId = tournament.TournamentId,
+            StageName = "Group",
+            Order = 1
+        };
+
+        dbContext.CustomMatchStages.Add(stage);
+        await dbContext.SaveChangesAsync();
+
+        dbContext.CustomMatches.Add(new CustomMatch
+        {
+            TournamentId = tournament.TournamentId,
+            StageId = stage.StageId,
+            HomeTeamId = teams[0].TeamId,
+            AwayTeamId = teams[1].TeamId,
+            MatchStart = DateTime.SpecifyKind(matchStart, DateTimeKind.Utc),
+            Type = CustomMatch.MatchType.Regular90Min,
+            Status = CustomMatch.MatchStatus.Timed,
+            HomeWinOdds = 1.5m,
+            DrawOdds = 3.5m,
+            AwayWinOdds = 2.5m,
+            IsVisible = true
+        });
+
+        await dbContext.SaveChangesAsync();
+
+        return new ExtraPredictionSeed(
+            tournament.TournamentId,
+            teams[0].TeamId,
+            teams[1].TeamId,
+            teams[2].TeamId,
+            teams[3].TeamId);
+    }
+
+    private sealed record ExtraPredictionSeed(
+        int TournamentId,
+        int WinnerTeamId,
+        int SecondPlaceTeamId,
+        int ThirdPlaceTeamId,
+        int TopScorerTeamId);
 
     private sealed class ThrowingAcceptedInviteNotificationService : INotificationService
     {

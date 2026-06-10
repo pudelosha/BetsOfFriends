@@ -8,6 +8,7 @@ import { ActionResult } from '../model/action-result';
 import { map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { MatchInsight } from '../model/match';
+import { CustomTournamentExtraPredictionFormValue, CustomTournamentExtraPredictionsOverview } from '../model/custom-tournament-extra-prediction';
 
 @Injectable({
   providedIn: 'root'
@@ -173,5 +174,13 @@ export class CustomTournamentService {
 
   getMatchInsights(tournamentId: number) {
     return this.http.get<MatchInsight[]>(`${this.apiUrl}/match-insights/${tournamentId}`);
+  }
+
+  getCustomTournamentExtraPredictions(tournamentId: number): Observable<CustomTournamentExtraPredictionsOverview> {
+    return this.http.get<CustomTournamentExtraPredictionsOverview>(`${this.apiUrl}/extra-predictions/${tournamentId}`);
+  }
+
+  saveCustomTournamentExtraPrediction(tournamentId: number, prediction: CustomTournamentExtraPredictionFormValue): Observable<ActionResult> {
+    return this.http.put<ActionResult>(`${this.apiUrl}/extra-predictions/${tournamentId}`, prediction);
   }
 }

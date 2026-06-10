@@ -10,7 +10,11 @@ namespace Backend.Extensions
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
                     config.GetConnectionString(env),
-                    sql => sql.MigrationsHistoryTable("__EFMigrationsHistory", "betsoffriends_db_admin")
+                    sql =>
+                    {
+                        sql.MigrationsHistoryTable("__EFMigrationsHistory", "betsoffriends_db_admin");
+                        sql.UseCompatibilityLevel(120);
+                    }
                 ));
 
             return services;

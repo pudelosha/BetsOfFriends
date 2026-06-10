@@ -123,10 +123,9 @@ namespace Backend.Repository.Services
             {
                 _logger.LogInformation($"Found {oldNotifications.Count} old notifications. Deleting...");
 
-                // Get all related NotificationRecipients
-                var oldNotificationIds = oldNotifications.Select(n => n.Id).ToList();
+                // Avoid SQL Server OPENJSON/compatibility-level issues from local collection Contains().
                 var oldRecipients = await dbContext.NotificationRecipients
-                    .Where(r => oldNotificationIds.Contains(r.NotificationId))
+                    .Where(r => r.Notification.CreatedAt < cutoffDate)
                     .ToListAsync();
 
                 dbContext.NotificationRecipients.RemoveRange(oldRecipients);

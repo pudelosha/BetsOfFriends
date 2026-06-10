@@ -98,6 +98,24 @@ namespace Backend.Repository.Services
             throw new ArgumentException($"Qualification odds must be greater than zero for {label}.");
         }
 
+        private async Task<bool> IsExtraPredictionLockedAsync(int tournamentId)
+        {
+            var now = DateTime.UtcNow;
+            var startedStatuses = new[]
+            {
+                CustomMatch.MatchStatus.In_Play,
+                CustomMatch.MatchStatus.Paused,
+                CustomMatch.MatchStatus.Finished,
+                CustomMatch.MatchStatus.Suspended,
+                CustomMatch.MatchStatus.Awarded
+            };
+
+            return await _context.CustomMatches
+                .AnyAsync(m => m.TournamentId == tournamentId
+                    && m.IsVisible
+                    && (m.MatchStart <= now || startedStatuses.Contains(m.Status)));
+        }
+
         public async Task<TournamentCreationResultDto> CreateCustomTournamentAsync(CustomTournamentDto tournamentDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -379,6 +397,16 @@ namespace Backend.Repository.Services
                     _logger.LogInformation($"Deleted {bets.Count} bets linked directly via match to tournament ID: {tournamentId}");
                 }
 
+                var extraPredictions = await _context.CustomTournamentExtraPredictions
+                    .Where(p => p.TournamentId == tournamentId)
+                    .ToListAsync();
+
+                if (extraPredictions.Any())
+                {
+                    _context.CustomTournamentExtraPredictions.RemoveRange(extraPredictions);
+                    _logger.LogInformation($"Deleted {extraPredictions.Count} extra predictions for tournament ID: {tournamentId}");
+                }
+
                 // Step 4: Delete Matches
                 if (tournament.Matches.Any())
                 {
@@ -484,6 +512,23 @@ namespace Backend.Repository.Services
 
                 foreach (var team in teamsToRemove)
                 {
+                    if (!team.TeamId.HasValue || !existingTeams.ContainsKey(team.TeamId.Value))
+                    {
+                        continue;
+                    }
+
+                    var relatedExtraPredictions = await _context.CustomTournamentExtraPredictions
+                        .Where(p => p.TournamentId == tournament.TournamentId
+                            && (p.WinnerTeamId == team.TeamId
+                                || p.SecondPlaceTeamId == team.TeamId
+                                || p.ThirdPlaceTeamId == team.TeamId
+                                || p.TopScorerTeamId == team.TeamId))
+                        .ToListAsync();
+                    if (relatedExtraPredictions.Any())
+                    {
+                        _context.CustomTournamentExtraPredictions.RemoveRange(relatedExtraPredictions);
+                    }
+
                     var relatedMatches = _context.CustomMatches.Where(m => m.HomeTeamId == team.TeamId || m.AwayTeamId == team.TeamId).ToList();
                     _context.CustomMatches.RemoveRange(relatedMatches);
                     _context.CustomTeams.Remove(existingTeams[team.TeamId.Value]);
@@ -660,6 +705,14 @@ namespace Backend.Repository.Services
                         {
                             _logger.LogWarning($"Attempted to remove the tournament creator: {assignment.UserAdminName} ({assignment.UserId}) — skipping.");
                             continue;
+                        }
+
+                        var userExtraPredictions = await _context.CustomTournamentExtraPredictions
+                            .Where(p => p.TournamentId == tournament.TournamentId && p.UserId == assignment.UserId)
+                            .ToListAsync();
+                        if (userExtraPredictions.Any())
+                        {
+                            _context.CustomTournamentExtraPredictions.RemoveRange(userExtraPredictions);
                         }
 
                         _context.CustomTournamentUserAssignments.Remove(assignment);
@@ -959,6 +1012,14 @@ namespace Backend.Repository.Services
                     var batch = betsToRemove.Skip(i).Take(batchSize).ToList();
                     _context.Bets.RemoveRange(batch);
                     await _context.SaveChangesAsync();
+                }
+
+                var extraPredictions = await _context.CustomTournamentExtraPredictions
+                    .Where(p => p.TournamentId == tournamentId && p.UserId == userId)
+                    .ToListAsync();
+                if (extraPredictions.Any())
+                {
+                    _context.CustomTournamentExtraPredictions.RemoveRange(extraPredictions);
                 }
 
                 // Step 5: Remove assignment
@@ -1390,6 +1451,174 @@ namespace Backend.Repository.Services
             return result;
         }
 
+        public async Task<CustomTournamentExtraPredictionsDto?> GetCustomTournamentExtraPredictionsAsync(int tournamentId, string userId)
+        {
+            var isAcceptedParticipant = await _context.CustomTournamentUserAssignments
+                .AnyAsync(a => a.TournamentId == tournamentId
+                    && a.UserId == userId
+                    && a.Status == AssignmentStatus.Accepted);
+
+            if (!isAcceptedParticipant)
+            {
+                _logger.LogWarning($"User {userId} is not an accepted participant of tournament {tournamentId}.");
+                return null;
+            }
+
+            var teams = await _context.CustomTeams
+                .AsNoTracking()
+                .Where(t => t.TournamentId == tournamentId)
+                .OrderBy(t => t.TeamName)
+                .Select(t => new CustomTournamentExtraPredictionTeamDto
+                {
+                    TeamId = t.TeamId,
+                    TeamName = t.TeamName
+                })
+                .ToListAsync();
+
+            var participants = await _context.CustomTournamentUserAssignments
+                .AsNoTracking()
+                .Include(a => a.User)
+                .Where(a => a.TournamentId == tournamentId && a.Status == AssignmentStatus.Accepted)
+                .OrderBy(a => a.UserName ?? a.UserAdminName)
+                .ToListAsync();
+
+            var predictions = await _context.CustomTournamentExtraPredictions
+                .AsNoTracking()
+                .Where(p => p.TournamentId == tournamentId)
+                .ToListAsync();
+
+            var predictionMap = predictions.ToDictionary(p => p.UserId);
+            var isLocked = await IsExtraPredictionLockedAsync(tournamentId);
+
+            return new CustomTournamentExtraPredictionsDto
+            {
+                TournamentId = tournamentId,
+                IsLocked = isLocked,
+                Teams = teams,
+                Predictions = participants.Select(participant =>
+                {
+                    predictionMap.TryGetValue(participant.UserId, out var prediction);
+
+                    return new CustomTournamentExtraPredictionRowDto
+                    {
+                        TournamentId = tournamentId,
+                        UserName = participant.UserName ?? participant.UserAdminName ?? participant.User.Email ?? "Unknown",
+                        IsCurrentUser = participant.UserId == userId,
+                        HasPrediction = prediction != null,
+                        WinnerTeamId = prediction?.WinnerTeamId,
+                        SecondPlaceTeamId = prediction?.SecondPlaceTeamId,
+                        ThirdPlaceTeamId = prediction?.ThirdPlaceTeamId,
+                        TopScorerTeamId = prediction?.TopScorerTeamId,
+                        TopScorerName = prediction?.TopScorerName ?? string.Empty,
+                        UpdatedAt = prediction == null
+                            ? null
+                            : DateTime.SpecifyKind(prediction.UpdatedAt ?? prediction.CreatedAt, DateTimeKind.Utc)
+                    };
+                }).ToList()
+            };
+        }
+
+        public async Task<ActionResultDto> UpsertCustomTournamentExtraPredictionAsync(
+            int tournamentId,
+            string userId,
+            CustomTournamentExtraPredictionUpdateDto request)
+        {
+            var isAcceptedParticipant = await _context.CustomTournamentUserAssignments
+                .AnyAsync(a => a.TournamentId == tournamentId
+                    && a.UserId == userId
+                    && a.Status == AssignmentStatus.Accepted);
+
+            if (!isAcceptedParticipant)
+            {
+                return ActionResultDto.ErrorResult("Tournament not found or access denied.");
+            }
+
+            if (await IsExtraPredictionLockedAsync(tournamentId))
+            {
+                return ActionResultDto.ErrorResult("The first tournament match has already started.");
+            }
+
+            var podiumTeamIds = new[]
+                {
+                    request.WinnerTeamId,
+                    request.SecondPlaceTeamId,
+                    request.ThirdPlaceTeamId
+                }
+                .Where(teamId => teamId.HasValue)
+                .Select(teamId => teamId!.Value)
+                .ToList();
+
+            if (podiumTeamIds.Distinct().Count() != podiumTeamIds.Count)
+            {
+                return ActionResultDto.ErrorResult("The same team cannot be selected more than once on the podium.");
+            }
+
+            var selectedTeamIds = podiumTeamIds
+                .Concat(request.TopScorerTeamId.HasValue ? new[] { request.TopScorerTeamId.Value } : Array.Empty<int>())
+                .Distinct()
+                .ToList();
+
+            var validTeamIds = await _context.CustomTeams
+                .Where(t => t.TournamentId == tournamentId && selectedTeamIds.Contains(t.TeamId))
+                .Select(t => t.TeamId)
+                .ToListAsync();
+
+            if (validTeamIds.Count != selectedTeamIds.Count)
+            {
+                return ActionResultDto.ErrorResult("One or more selected teams do not belong to this tournament.");
+            }
+
+            var topScorerName = string.IsNullOrWhiteSpace(request.TopScorerName)
+                ? null
+                : request.TopScorerName.Trim();
+
+            var prediction = await _context.CustomTournamentExtraPredictions
+                .FirstOrDefaultAsync(p => p.TournamentId == tournamentId && p.UserId == userId);
+
+            var hasAnyPredictionValue = request.WinnerTeamId.HasValue
+                || request.SecondPlaceTeamId.HasValue
+                || request.ThirdPlaceTeamId.HasValue
+                || request.TopScorerTeamId.HasValue
+                || !string.IsNullOrWhiteSpace(topScorerName);
+
+            if (!hasAnyPredictionValue)
+            {
+                if (prediction != null)
+                {
+                    _context.CustomTournamentExtraPredictions.Remove(prediction);
+                    await _context.SaveChangesAsync();
+                }
+
+                return ActionResultDto.SuccessResult("Extra predictions cleared.");
+            }
+
+            if (prediction == null)
+            {
+                prediction = new CustomTournamentExtraPrediction
+                {
+                    TournamentId = tournamentId,
+                    UserId = userId,
+                    CreatedBy = userId
+                };
+
+                _context.CustomTournamentExtraPredictions.Add(prediction);
+            }
+            else
+            {
+                prediction.UpdatedBy = userId;
+            }
+
+            prediction.WinnerTeamId = request.WinnerTeamId;
+            prediction.SecondPlaceTeamId = request.SecondPlaceTeamId;
+            prediction.ThirdPlaceTeamId = request.ThirdPlaceTeamId;
+            prediction.TopScorerTeamId = request.TopScorerTeamId;
+            prediction.TopScorerName = topScorerName;
+
+            await _context.SaveChangesAsync();
+
+            return ActionResultDto.SuccessResult("Extra predictions saved.");
+        }
+
         public async Task<List<TournamentPlayerResultDto>> GetTournamentPlayerResultAsync(int tournamentId, string userId)
         {
             try
@@ -1795,6 +2024,14 @@ namespace Backend.Repository.Services
                     var batch = betsToRemove.Skip(i).Take(batchSize).ToList();
                     _context.Bets.RemoveRange(batch);
                     await _context.SaveChangesAsync(); // Flush between batches (optional)
+                }
+
+                var extraPredictions = await _context.CustomTournamentExtraPredictions
+                    .Where(p => p.TournamentId == tournamentId && p.UserId == userToExclude.Id)
+                    .ToListAsync();
+                if (extraPredictions.Any())
+                {
+                    _context.CustomTournamentExtraPredictions.RemoveRange(extraPredictions);
                 }
 
                 // Remove tournament assignment

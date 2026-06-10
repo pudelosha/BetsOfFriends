@@ -1,0 +1,89 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.MODAL_TITLE' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.CLOSE' | translate }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="modal-section">
+    <div class="section-title">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.PODIUM' | translate }}</div>
+
+    <ion-item class="prediction-item">
+      <ion-label position="stacked">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.WINNER' | translate }}</ion-label>
+      <ion-select interface="popover" [(ngModel)]="draft.winnerTeamId">
+        <ion-select-option [value]="null">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.EMPTY_SELECT' | translate }}</ion-select-option>
+        <ion-select-option
+          *ngFor="let team of teams"
+          [value]="team.teamId"
+          [disabled]="isPodiumTeamDisabled(team.teamId, 'winnerTeamId')"
+        >
+          {{ team.teamName }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item class="prediction-item">
+      <ion-label position="stacked">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.SECOND_PLACE' | translate }}</ion-label>
+      <ion-select interface="popover" [(ngModel)]="draft.secondPlaceTeamId">
+        <ion-select-option [value]="null">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.EMPTY_SELECT' | translate }}</ion-select-option>
+        <ion-select-option
+          *ngFor="let team of teams"
+          [value]="team.teamId"
+          [disabled]="isPodiumTeamDisabled(team.teamId, 'secondPlaceTeamId')"
+        >
+          {{ team.teamName }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item class="prediction-item">
+      <ion-label position="stacked">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.THIRD_PLACE' | translate }}</ion-label>
+      <ion-select interface="popover" [(ngModel)]="draft.thirdPlaceTeamId">
+        <ion-select-option [value]="null">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.EMPTY_SELECT' | translate }}</ion-select-option>
+        <ion-select-option
+          *ngFor="let team of teams"
+          [value]="team.teamId"
+          [disabled]="isPodiumTeamDisabled(team.teamId, 'thirdPlaceTeamId')"
+        >
+          {{ team.teamName }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+  </div>
+
+  <div class="modal-section">
+    <div class="section-title">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.TOP_SCORER' | translate }}</div>
+
+    <ion-item class="prediction-item">
+      <ion-label position="stacked">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.TOP_SCORER_TEAM' | translate }}</ion-label>
+      <ion-select interface="popover" [(ngModel)]="draft.topScorerTeamId">
+        <ion-select-option [value]="null">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.EMPTY_SELECT' | translate }}</ion-select-option>
+        <ion-select-option *ngFor="let team of teams" [value]="team.teamId">
+          {{ team.teamName }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item class="prediction-item">
+      <ion-label position="stacked">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.TOP_SCORER_NAME' | translate }}</ion-label>
+      <ion-input
+        [(ngModel)]="draft.topScorerName"
+        maxlength="80"
+        type="text"
+        [placeholder]="'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.TOP_SCORER_PLACEHOLDER' | translate"
+      ></ion-input>
+    </ion-item>
+  </div>
+
+  <div class="modal-actions">
+    <ion-button fill="clear" color="medium" (click)="clear()">
+      {{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.CLEAR' | translate }}
+    </ion-button>
+    <ion-button color="medium" (click)="save()">
+      {{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.SAVE' | translate }}
+    </ion-button>
+  </div>
+</ion-content>

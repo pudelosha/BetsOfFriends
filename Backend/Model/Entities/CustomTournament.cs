@@ -64,6 +64,7 @@ namespace Backend.Model.Entities
         public ICollection<CustomTeam> Teams { get; set; } = new List<CustomTeam>();
         public ICollection<CustomMatch> Matches { get; set; } = new List<CustomMatch>();
         public ICollection<CustomMatchStage> Stages { get; set; } = new List<CustomMatchStage>();
+        public ICollection<CustomTournamentExtraPrediction> ExtraPredictions { get; set; } = new List<CustomTournamentExtraPrediction>();
 
         public enum ExactResultBonusCalculationType
         {

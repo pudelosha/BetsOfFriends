@@ -152,6 +152,8 @@ public class CustomTournamentsControllerTests
         public Task<string?> GetFirstStageWithUpcomingMatchesAsync(int tournamentId, string userId) => throw new NotImplementedException();
         public Task<List<UserBettingStatsDto>> GetUserBettingStatsAsync(string userId, int tournamentId, string statsUserId) => throw new NotImplementedException();
         public Task<List<MatchInsightDto>> GetMatchInsightsAsync(string userId, int tournamentId) => throw new NotImplementedException();
+        public Task<CustomTournamentExtraPredictionsDto?> GetCustomTournamentExtraPredictionsAsync(int tournamentId, string userId) => throw new NotImplementedException();
+        public Task<ActionResultDto> UpsertCustomTournamentExtraPredictionAsync(int tournamentId, string userId, CustomTournamentExtraPredictionUpdateDto request) => throw new NotImplementedException();
         public Task<bool> IsTournamentNameTakenAsync(string name, string visibility, string userId) => throw new NotImplementedException();
         public Task<List<PublicTournamentDto>> GetPublicActiveTournamentsAsync(string userId) => throw new NotImplementedException();
         public Task<List<TournamentParticipantDto>?> GetTournamentParticipantsAsync(int tournamentId, string userId, string status) => throw new NotImplementedException();

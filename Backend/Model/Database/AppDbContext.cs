@@ -22,6 +22,7 @@ namespace Backend.Model.Database
         public DbSet<CustomTeam> CustomTeams { get; set; }
         public DbSet<CustomMatch> CustomMatches { get; set; }
         public DbSet<CustomMatchStage> CustomMatchStages { get; set; }
+        public DbSet<CustomTournamentExtraPrediction> CustomTournamentExtraPredictions { get; set; }
         public DbSet<Bet> Bets { get; set; }
 
         // Notifications
@@ -49,6 +50,7 @@ namespace Backend.Model.Database
             ConfigureUserTournamentRelationship(builder);
             ConfigureMatchRelationships(builder);
             ConfigureBetRelationships(builder);
+            ConfigureCustomTournamentExtraPredictionRelationships(builder);
             ConfigureNotificationRelationships(builder);
             ConfigurePredefinedReferencesInCustomEntities(builder);
             ConfigureMessageEntities(builder);
@@ -233,6 +235,52 @@ namespace Backend.Model.Database
 
             builder.Entity<Bet>()
                 .HasIndex(b => new { b.MatchId, b.Calculated });
+        }
+
+        private void ConfigureCustomTournamentExtraPredictionRelationships(ModelBuilder builder)
+        {
+            builder.Entity<CustomTournamentExtraPrediction>()
+                .HasKey(p => p.PredictionId);
+
+            builder.Entity<CustomTournamentExtraPrediction>()
+                .HasIndex(p => new { p.TournamentId, p.UserId })
+                .IsUnique();
+
+            builder.Entity<CustomTournamentExtraPrediction>()
+                .HasOne(p => p.Tournament)
+                .WithMany(t => t.ExtraPredictions)
+                .HasForeignKey(p => p.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<CustomTournamentExtraPrediction>()
+                .HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CustomTournamentExtraPrediction>()
+                .HasOne(p => p.WinnerTeam)
+                .WithMany()
+                .HasForeignKey(p => p.WinnerTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CustomTournamentExtraPrediction>()
+                .HasOne(p => p.SecondPlaceTeam)
+                .WithMany()
+                .HasForeignKey(p => p.SecondPlaceTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CustomTournamentExtraPrediction>()
+                .HasOne(p => p.ThirdPlaceTeam)
+                .WithMany()
+                .HasForeignKey(p => p.ThirdPlaceTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CustomTournamentExtraPrediction>()
+                .HasOne(p => p.TopScorerTeam)
+                .WithMany()
+                .HasForeignKey(p => p.TopScorerTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         private void ConfigureNotificationRelationships(ModelBuilder builder)

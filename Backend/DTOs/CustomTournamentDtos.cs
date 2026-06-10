@@ -379,4 +379,43 @@ namespace Backend.DTOs
         public int? QualificationSuccess { get; set; } // optional
         public decimal TotalPayout { get; set; }
     }
+
+    public class CustomTournamentExtraPredictionsDto
+    {
+        public int TournamentId { get; set; }
+        public bool IsLocked { get; set; }
+        public List<CustomTournamentExtraPredictionTeamDto> Teams { get; set; } = new();
+        public List<CustomTournamentExtraPredictionRowDto> Predictions { get; set; } = new();
+    }
+
+    public class CustomTournamentExtraPredictionTeamDto
+    {
+        public int TeamId { get; set; }
+        public string TeamName { get; set; } = string.Empty;
+    }
+
+    public class CustomTournamentExtraPredictionRowDto
+    {
+        public int TournamentId { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public bool IsCurrentUser { get; set; }
+        public bool HasPrediction { get; set; }
+        public int? WinnerTeamId { get; set; }
+        public int? SecondPlaceTeamId { get; set; }
+        public int? ThirdPlaceTeamId { get; set; }
+        public int? TopScorerTeamId { get; set; }
+        public string TopScorerName { get; set; } = string.Empty;
+        public DateTime? UpdatedAt { get; set; }
+    }
+
+    public class CustomTournamentExtraPredictionUpdateDto
+    {
+        public int? WinnerTeamId { get; set; }
+        public int? SecondPlaceTeamId { get; set; }
+        public int? ThirdPlaceTeamId { get; set; }
+        public int? TopScorerTeamId { get; set; }
+
+        [MaxLength(80)]
+        public string? TopScorerName { get; set; }
+    }
 }

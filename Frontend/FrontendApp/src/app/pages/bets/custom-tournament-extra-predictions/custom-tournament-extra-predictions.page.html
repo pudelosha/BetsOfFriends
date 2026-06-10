@@ -1,0 +1,53 @@
+<ion-content class="ion-padding page-with-header">
+  <div class="page-container no-side-padding extra-predictions-container">
+    <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
+
+    <div *ngIf="!isLoading && errorMessage" class="empty-state">
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading && !errorMessage">
+      <div class="extra-actions">
+        <ion-button color="medium" (click)="openPredictionModal()" [disabled]="isLocked || teams.length === 0">
+          <ion-icon slot="start" [name]="myPrediction ? 'create-outline' : 'add-outline'"></ion-icon>
+          {{ (myPrediction ? 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.EDIT_MY_TYPES' : 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.ADD_MY_TYPES') | translate }}
+        </ion-button>
+
+        <ion-badge *ngIf="isLocked" color="medium" class="lock-badge">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          {{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.LOCKED' | translate }}
+        </ion-badge>
+      </div>
+
+      <div class="predictions-table" *ngIf="rows.length > 0">
+        <div class="table-scroll">
+          <div class="table-row table-header">
+            <div>{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.USER' | translate }}</div>
+            <div>{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.WINNER_SHORT' | translate }}</div>
+            <div>{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.SECOND_PLACE_SHORT' | translate }}</div>
+            <div>{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.THIRD_PLACE_SHORT' | translate }}</div>
+            <div>{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.TOP_SCORER_SHORT' | translate }}</div>
+          </div>
+
+          <div class="table-row" *ngFor="let row of rows" [class.current-user]="row.isCurrentUser">
+            <div class="user-cell">
+              <strong>{{ row.userName }}</strong>
+              <span *ngIf="row.isCurrentUser">{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.ME' | translate }}</span>
+            </div>
+            <div>{{ row.winner }}</div>
+            <div>{{ row.secondPlace }}</div>
+            <div>{{ row.thirdPlace }}</div>
+            <div class="top-scorer-cell">
+              <span>{{ row.topScorerName }}</span>
+              <small>{{ row.topScorerTeam }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="rows.length === 0" class="empty-state">
+        <p>{{ 'CUSTOM_TOURNAMENT_EXTRA_PREDICTIONS.NO_PARTICIPANTS' | translate }}</p>
+      </div>
+    </ng-container>
+  </div>
+</ion-content>

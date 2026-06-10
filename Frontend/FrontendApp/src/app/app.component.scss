@@ -39,4 +39,20 @@
   color: inherit; // inherit color from ion-button
 }
 
+ion-menu ion-item ion-icon[slot="start"] {
+  font-size: 20px;
+  min-width: 24px;
+}
+
+ion-menu ion-item-divider ion-label {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+ion-menu ion-item-divider ion-icon {
+  font-size: 18px;
+  min-width: 20px;
+}
+
 

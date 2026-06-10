@@ -22,6 +22,8 @@ namespace Backend.Repository.Interfaces
         Task<string?> GetFirstStageWithUpcomingMatchesAsync(int tournamentId, string userId);
         Task<List<UserBettingStatsDto>> GetUserBettingStatsAsync(string userId, int tournamentId, string statsUserId);
         Task<List<MatchInsightDto>> GetMatchInsightsAsync(string userId, int tournamentId);
+        Task<CustomTournamentExtraPredictionsDto?> GetCustomTournamentExtraPredictionsAsync(int tournamentId, string userId);
+        Task<ActionResultDto> UpsertCustomTournamentExtraPredictionAsync(int tournamentId, string userId, CustomTournamentExtraPredictionUpdateDto request);
         Task<bool> IsTournamentNameTakenAsync(string name, string visibility, string userId);
         Task<List<PublicTournamentDto>> GetPublicActiveTournamentsAsync(string userId);
         Task<List<TournamentParticipantDto>?> GetTournamentParticipantsAsync(int tournamentId, string userId, string status);

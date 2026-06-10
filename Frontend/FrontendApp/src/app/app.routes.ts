@@ -24,6 +24,7 @@ export const routes: Routes = [
   { path: 'match-insights', loadComponent: () => import('./pages/matches/match-insights/match-insights.page').then( m => m.MatchInsightsPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'my-tournaments', loadComponent: () => import('./pages/tournaments/my-tournaments-dashboard/my-tournaments-dashboard.page').then(m => m.MyTournamentsDashboardPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'results', loadComponent: () => import('./pages/tournaments/tournament-results/tournament-results.page').then(m => m.TournamentResultsPage), canActivate: [AuthGuard], data: { role: 'User' } },
+  { path: 'extra-predictions', loadComponent: () => import('./pages/bets/custom-tournament-extra-predictions/custom-tournament-extra-predictions.page').then(m => m.CustomTournamentExtraPredictionsPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'find-tournament', loadComponent: () => import('./pages/tournaments/find-tournament/find-tournament.page').then(m => m.FindTournamentPage), canActivate: [AuthGuard], data: { role: 'User' } },
   { path: 'redirect', loadComponent: () => import('./shared/dummy-redirect/dummy-redirect.page').then(m => m.DummyRedirectPage), canActivate: [AuthGuard], data: { role: 'User' } },
 

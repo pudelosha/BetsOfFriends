@@ -1,4 +1,4 @@
-import { Component  } from '@angular/core';
+import { Component, OnInit  } from '@angular/core';
 import { Router, NavigationEnd  } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -21,7 +21,7 @@ import { firstValueFrom } from 'rxjs';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonApp, IonMenu, IonRow, IonGrid, IonCol, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet],  
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   isMonetizedMode = false;
   isLoggedIn = false;
   isSuperAdmin = false;
@@ -202,6 +202,10 @@ export class AppComponent {
 
   navigateToTournamentResults(){
     this.router.navigate(['/results']);
+  }
+
+  navigateToExtraPredictions() {
+    this.router.navigate(['/extra-predictions']);
   }
 
   navigateToFindTournament() {

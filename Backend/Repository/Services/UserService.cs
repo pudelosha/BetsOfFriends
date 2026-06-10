@@ -215,6 +215,15 @@ namespace Backend.Repository.Services
                 return false;
             }
 
+            var extraPredictions = await _dbContext.CustomTournamentExtraPredictions
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+            if (extraPredictions.Any())
+            {
+                _dbContext.CustomTournamentExtraPredictions.RemoveRange(extraPredictions);
+                await _dbContext.SaveChangesAsync();
+            }
+
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
             {
@@ -305,6 +314,12 @@ namespace Backend.Repository.Services
                     .ToListAsync();
                 if (userBets.Any())
                     _dbContext.Bets.RemoveRange(userBets);
+
+                var extraPredictions = await _dbContext.CustomTournamentExtraPredictions
+                    .Where(p => p.UserId == targetUserId)
+                    .ToListAsync();
+                if (extraPredictions.Any())
+                    _dbContext.CustomTournamentExtraPredictions.RemoveRange(extraPredictions);
 
                 // Remove tournament assignments
                 var assignments = await _dbContext.CustomTournamentUserAssignments
