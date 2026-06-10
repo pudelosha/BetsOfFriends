@@ -37,6 +37,15 @@
         </ion-row>
       </ion-grid>
   
+  <!-- Import tournament -->
+  <ion-button
+    *ngIf="isCustomTournamentCreateMode"
+    expand="full"
+    color="medium"
+    (click)="openTournamentSelection()">
+    {{ 'STAGE_INPUT_TYPE.IMPORT_TOURNAMENT' | translate }}
+  </ion-button>
+  
   <!-- Import from file -->
   <ion-button
     *ngIf="isCreatePredefined || isEditPredefined || isCustomTournamentCreateMode"
@@ -91,15 +100,6 @@
     type="file"
     class="hidden-file-input"
     (change)="handleBetsFileInput($event)">
-  
-  <!-- Import tournament -->
-  <ion-button
-    *ngIf="isCustomTournamentCreateMode"
-    expand="full"
-    color="medium"
-    (click)="openTournamentSelection()">
-    {{ 'STAGE_INPUT_TYPE.IMPORT_TOURNAMENT' | translate }}
-  </ion-button>
   
   <!-- Update tournament -->
   <ion-button

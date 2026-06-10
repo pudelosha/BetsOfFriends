@@ -770,6 +770,7 @@
   "BET_PLACE_FAILED": "Impossible d'enregistrer le pari. Veuillez réessayer.",
   "BET_UPDATED": "Pari mis à jour avec succès !",
   "BET_UPDATE_FAILED": "Impossible de mettre à jour le pari. Veuillez réessayer.",
+  "BET_CLOSED": "Ce match a déjà commencé. La modification du pari est fermée.",
   "BET_OVERVIEW_FAILED": "Impossible de charger l'aperçu des paris.",
   "UPCOMING_BETS_LOAD_FAILED": "Impossible de charger les prochains paris.",
   "MATCH_RESULT_UPDATED": "Résultat du match mis à jour avec succès !",

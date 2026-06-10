@@ -770,6 +770,7 @@
     "BET_PLACE_FAILED": "Failed to place bet. Please try again.",
     "BET_UPDATED": "Bet updated successfully!",
     "BET_UPDATE_FAILED": "Failed to update bet. Please try again.",
+    "BET_CLOSED": "This match has already started. Bet editing is closed.",
     "BET_OVERVIEW_FAILED": "Failed to load bet overview.",
     "UPCOMING_BETS_LOAD_FAILED": "Failed to load upcoming bets.",
     "MATCH_RESULT_UPDATED": "Match result updated successfully!",

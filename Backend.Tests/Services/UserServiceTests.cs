@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Claims;
 using Backend.DTOs;
 using Backend.Model.Database;
@@ -12,6 +13,8 @@ namespace Backend.Tests.Services;
 
 public class UserServiceTests
 {
+    private const int UrlTokenStressIterations = 100;
+
     [Fact]
     public void GetUserIdFromClaims_ReturnsNameIdentifierClaim()
     {
@@ -183,6 +186,76 @@ public class UserServiceTests
         Assert.Equal("Password updated successfully.", result.Message);
         Assert.True(await userManager.CheckPasswordAsync(refreshedUser!, "NewValidPassword123!"));
         Assert.False(await userManager.CheckPasswordAsync(refreshedUser!, BackendTestHost.ValidPassword));
+    }
+
+    [Fact]
+    public async Task ResetPasswordAsync_WithClickedUrlTokenContainingUnescapedPlus_UpdatesPassword()
+    {
+        using var host = new BackendTestHost();
+        var user = await host.CreateUserAsync("reset-password-plus@example.com");
+
+        using var scope = host.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var service = scope.ServiceProvider.GetRequiredService<IUserService>();
+        var trackedUser = await userManager.FindByIdAsync(user.Id);
+        var token = await GeneratePasswordResetTokenContainingPlusAsync(userManager, trackedUser!);
+        var encodedToken = Uri.EscapeDataString(token);
+        var resetUrlWithUnescapedPlus = BuildResetPasswordUrl(user.Id, encodedToken.Replace("%2B", "+"));
+        var clickedToken = GetQueryParameter(resetUrlWithUnescapedPlus, "token");
+
+        Assert.Contains(' ', clickedToken);
+
+        var result = await service.ResetPasswordAsync(new ResetPasswordRequestDto
+        {
+            UserId = user.Id,
+            Token = clickedToken,
+            NewPassword = "NewValidPassword123!"
+        });
+        var refreshedUser = await userManager.FindByIdAsync(user.Id);
+
+        Assert.True(result.Success);
+        Assert.Equal("Password updated successfully.", result.Message);
+        Assert.True(await userManager.CheckPasswordAsync(refreshedUser!, "NewValidPassword123!"));
+        Assert.False(await userManager.CheckPasswordAsync(refreshedUser!, BackendTestHost.ValidPassword));
+    }
+
+    [Fact]
+    public async Task ResetPasswordAsync_With100ClickedUrlTokensContainingUnescapedPlus_UpdatesAllPasswords()
+    {
+        using var host = new BackendTestHost();
+        using var scope = host.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var service = scope.ServiceProvider.GetRequiredService<IUserService>();
+
+        for (var index = 0; index < UrlTokenStressIterations; index++)
+        {
+            var user = await host.CreateUserAsync($"reset-password-plus-stress-{index}@example.com");
+            var trackedUser = await userManager.FindByIdAsync(user.Id);
+            var token = await GeneratePasswordResetTokenContainingPlusAsync(userManager, trackedUser!);
+            var encodedToken = Uri.EscapeDataString(token);
+            var resetUrlWithUnescapedPlus = BuildResetPasswordUrl(user.Id, encodedToken.Replace("%2B", "+"));
+            var clickedToken = GetQueryParameter(resetUrlWithUnescapedPlus, "token");
+
+            Assert.Contains(' ', clickedToken);
+
+            var newPassword = $"NewValidPassword{index}!";
+            var result = await service.ResetPasswordAsync(new ResetPasswordRequestDto
+            {
+                UserId = user.Id,
+                Token = clickedToken,
+                NewPassword = newPassword
+            });
+            var refreshedUser = await userManager.FindByIdAsync(user.Id);
+
+            Assert.True(result.Success, $"Iteration {index} failed.");
+            Assert.Equal("Password updated successfully.", result.Message);
+            Assert.True(
+                await userManager.CheckPasswordAsync(refreshedUser!, newPassword),
+                $"Iteration {index} did not set the new password.");
+            Assert.False(
+                await userManager.CheckPasswordAsync(refreshedUser!, BackendTestHost.ValidPassword),
+                $"Iteration {index} still accepts the old password.");
+        }
     }
 
     [Fact]
@@ -565,5 +638,46 @@ public class UserServiceTests
             Notification = notification
         });
         await dbContext.SaveChangesAsync();
+    }
+
+    private static async Task<string> GeneratePasswordResetTokenContainingPlusAsync(
+        UserManager<ApplicationUser> userManager,
+        ApplicationUser user)
+    {
+        for (var attempt = 0; attempt < 50; attempt++)
+        {
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            if (token.Contains('+'))
+            {
+                return token;
+            }
+        }
+
+        throw new InvalidOperationException("Could not generate a password reset token containing '+'.");
+    }
+
+    private static string BuildResetPasswordUrl(string userId, string encodedToken)
+    {
+        return $"https://frontend.test/reset-password?userId={Uri.EscapeDataString(userId)}&token={encodedToken}";
+    }
+
+    private static string GetQueryParameter(string url, string parameterName)
+    {
+        var query = new Uri(url).Query.TrimStart('?');
+        var queryParts = query.Split('&', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var queryPart in queryParts)
+        {
+            var keyValue = queryPart.Split('=', 2);
+            var key = WebUtility.UrlDecode(keyValue[0]);
+
+            if (key == parameterName)
+            {
+                return keyValue.Length == 2 ? WebUtility.UrlDecode(keyValue[1]) : string.Empty;
+            }
+        }
+
+        throw new InvalidOperationException($"Query parameter '{parameterName}' was not found.");
     }
 }

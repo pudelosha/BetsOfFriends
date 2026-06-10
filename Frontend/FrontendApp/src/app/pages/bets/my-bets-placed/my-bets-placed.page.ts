@@ -116,6 +116,12 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
       console.error("Error: bet is undefined or null!");
       return;
     }
+
+    if (!this.isBetOpenForEditing(bet)) {
+      await this.loadBets();
+      await this.showToast(this.t('TOASTS.BET_CLOSED'), "warning");
+      return;
+    }
   
     const modal = await this.modalCtrl.create({
       component: EditBetModalComponent,
@@ -145,6 +151,13 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
         this.showToast(this.t('TOASTS.BET_UPDATED'), "success");
       } catch (error) {
         console.error("Error updating bet:", error);
+
+        if (!this.isBetOpenForEditing(bet)) {
+          await this.loadBets();
+          await this.showToast(this.t('TOASTS.BET_CLOSED'), "warning");
+          return;
+        }
+
         this.showToast(this.t('TOASTS.BET_UPDATE_FAILED'), "danger");
       }
     }
@@ -181,5 +194,14 @@ export class MyBetsPlacedPage implements OnInit, OnChanges {
 
   private t(key: string, params?: Record<string, unknown>): string {
     return this.translate.instant(key, params);
+  }
+
+  private isBetOpenForEditing(bet: Bet): boolean {
+    const matchStart = new Date(bet.startTime).getTime();
+    const matchStatus = bet.matchStatus?.toLowerCase();
+
+    return Number.isFinite(matchStart) &&
+      matchStart > Date.now() &&
+      (matchStatus === 'scheduled' || matchStatus === 'timed');
   }
 }

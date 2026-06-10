@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges  } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges  } from '@angular/core';
 import { ModalController, ToastController, LoadingController } from '@ionic/angular';
 import { EditBetModalComponent } from 'src/app/modals/edit-bet-modal/edit-bet-modal.component';
 import { CommonModule } from '@angular/common';
@@ -19,7 +19,7 @@ import { IonSpinner, IonList, IonItem, IonButton, IonIcon } from '@ionic/angular
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonSpinner, IonList, IonItem, IonButton, IonIcon],
 })
-export class MyBetsToPlacePage implements OnInit {
+export class MyBetsToPlacePage implements OnInit, OnChanges {
   @Input() stage!: string;
 
   showFabButton: boolean = true;
@@ -114,6 +114,12 @@ export class MyBetsToPlacePage implements OnInit {
     
   async editBet(bet: Bet, event: Event) {
     event.stopPropagation();
+
+    if (!this.isBetOpenForEditing(bet)) {
+      await this.loadBets();
+      await this.showToast(this.t('TOASTS.BET_CLOSED'), "warning");
+      return;
+    }
   
     const modal = await this.modalCtrl.create({
       component: EditBetModalComponent,
@@ -142,6 +148,13 @@ export class MyBetsToPlacePage implements OnInit {
         this.showToast(this.t('TOASTS.BET_PLACED'), "success");
       } catch (error) {
         console.error("Error placing bet:", error);
+
+        if (!this.isBetOpenForEditing(bet)) {
+          await this.loadBets();
+          await this.showToast(this.t('TOASTS.BET_CLOSED'), "warning");
+          return;
+        }
+
         this.showToast(this.t('TOASTS.BET_PLACE_FAILED'), "danger");
       }
     }
@@ -177,5 +190,14 @@ export class MyBetsToPlacePage implements OnInit {
 
   private t(key: string, params?: Record<string, unknown>): string {
     return this.translate.instant(key, params);
+  }
+
+  private isBetOpenForEditing(bet: Bet): boolean {
+    const matchStart = new Date(bet.startTime).getTime();
+    const matchStatus = bet.matchStatus?.toLowerCase();
+
+    return Number.isFinite(matchStart) &&
+      matchStart > Date.now() &&
+      (matchStatus === 'scheduled' || matchStatus === 'timed');
   }
 }

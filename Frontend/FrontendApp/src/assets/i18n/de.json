@@ -770,6 +770,7 @@
     "BET_PLACE_FAILED": "Wette konnte nicht platziert werden. Bitte versuche es erneut.",
     "BET_UPDATED": "Wette erfolgreich aktualisiert!",
     "BET_UPDATE_FAILED": "Wette konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+    "BET_CLOSED": "Dieses Spiel hat bereits begonnen. Die Wettbearbeitung ist geschlossen.",
     "BET_OVERVIEW_FAILED": "Wettübersicht konnte nicht geladen werden.",
     "UPCOMING_BETS_LOAD_FAILED": "Anstehende Wetten konnten nicht geladen werden.",
     "MATCH_RESULT_UPDATED": "Spielergebnis erfolgreich aktualisiert!",

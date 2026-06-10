@@ -141,7 +141,7 @@ namespace Backend.Repository.Services
                 return new ResetPasswordResultDto { Success = false, Message = "Invalid user ID." };
             }
 
-            var decodedToken = Uri.UnescapeDataString(request.Token);
+            var decodedToken = IdentityTokenUrlDecoder.Decode(request.Token);
 
             var result = await _userManager.ResetPasswordAsync(user, decodedToken, request.NewPassword);
 

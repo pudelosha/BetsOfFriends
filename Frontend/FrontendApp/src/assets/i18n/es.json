@@ -770,6 +770,7 @@
   "BET_PLACE_FAILED": "No se pudo guardar la apuesta. Inténtalo de nuevo.",
   "BET_UPDATED": "¡Apuesta actualizada correctamente!",
   "BET_UPDATE_FAILED": "No se pudo actualizar la apuesta. Inténtalo de nuevo.",
+  "BET_CLOSED": "Este partido ya ha comenzado. La edición de apuestas está cerrada.",
   "BET_OVERVIEW_FAILED": "No se pudo cargar el resumen de apuestas.",
   "UPCOMING_BETS_LOAD_FAILED": "No se pudieron cargar las próximas apuestas.",
   "MATCH_RESULT_UPDATED": "¡Resultado del partido actualizado correctamente!",

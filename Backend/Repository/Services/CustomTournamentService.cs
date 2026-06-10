@@ -1568,11 +1568,16 @@ namespace Backend.Repository.Services
                     return null;
                 }
 
+                var nowUtc = DateTime.UtcNow;
+
                 var stageName = await _context.Bets
                     .Where(b =>
                         b.Match.TournamentId == tournamentId &&
                         b.UserId == userId &&
-                        b.Status == Bet.BetStatus.ToPlace)
+                        b.Status == Bet.BetStatus.ToPlace &&
+                        b.Match.MatchStart > nowUtc &&
+                        (b.Match.Status == CustomMatch.MatchStatus.Scheduled ||
+                         b.Match.Status == CustomMatch.MatchStatus.Timed))
                     .OrderBy(b => b.Match.Stage.Order)
                     .Select(b => b.Match.Stage.StageName)
                     .FirstOrDefaultAsync();

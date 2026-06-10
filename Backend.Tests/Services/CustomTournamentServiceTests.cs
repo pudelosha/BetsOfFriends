@@ -255,6 +255,114 @@ public class CustomTournamentServiceTests
         }
     }
 
+    [Fact]
+    public async Task GetFirstStageWithPendingBetsAsync_IgnoresStartedPendingBets()
+    {
+        using var host = new BackendTestHost();
+        var user = await host.CreateUserAsync("pending-stage@example.com");
+
+        int tournamentId;
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var tournament = new CustomTournament
+            {
+                Name = "Pending Stage Cup",
+                CreatedByUserId = user.Id,
+                IsActive = true
+            };
+
+            dbContext.CustomTournaments.Add(tournament);
+            await dbContext.SaveChangesAsync();
+            tournamentId = tournament.TournamentId;
+
+            var pastStage = new CustomMatchStage
+            {
+                TournamentId = tournamentId,
+                StageName = "Past Stage",
+                Order = 1
+            };
+            var futureStage = new CustomMatchStage
+            {
+                TournamentId = tournamentId,
+                StageName = "Future Stage",
+                Order = 2
+            };
+            var homeTeam = new CustomTeam
+            {
+                TournamentId = tournamentId,
+                TeamName = "Home",
+                EloRating = 1000
+            };
+            var awayTeam = new CustomTeam
+            {
+                TournamentId = tournamentId,
+                TeamName = "Away",
+                EloRating = 1000
+            };
+
+            dbContext.CustomMatchStages.AddRange(pastStage, futureStage);
+            dbContext.CustomTeams.AddRange(homeTeam, awayTeam);
+            await dbContext.SaveChangesAsync();
+
+            var pastMatch = new CustomMatch
+            {
+                TournamentId = tournamentId,
+                StageId = pastStage.StageId,
+                HomeTeamId = homeTeam.TeamId,
+                AwayTeamId = awayTeam.TeamId,
+                MatchStart = DateTime.UtcNow.AddMinutes(-1),
+                Status = CustomMatch.MatchStatus.Timed,
+                Type = CustomMatch.MatchType.Regular90Min,
+                HomeWinOdds = 2,
+                DrawOdds = 3,
+                AwayWinOdds = 4
+            };
+            var futureMatch = new CustomMatch
+            {
+                TournamentId = tournamentId,
+                StageId = futureStage.StageId,
+                HomeTeamId = homeTeam.TeamId,
+                AwayTeamId = awayTeam.TeamId,
+                MatchStart = DateTime.UtcNow.AddHours(2),
+                Status = CustomMatch.MatchStatus.Timed,
+                Type = CustomMatch.MatchType.Regular90Min,
+                HomeWinOdds = 2,
+                DrawOdds = 3,
+                AwayWinOdds = 4
+            };
+
+            dbContext.CustomMatches.AddRange(pastMatch, futureMatch);
+            await dbContext.SaveChangesAsync();
+
+            dbContext.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
+            {
+                TournamentId = tournamentId,
+                UserId = user.Id,
+                UserAdminName = "Pending Player",
+                UserName = "Pending Player",
+                Status = AssignmentStatus.Accepted,
+                Role = UserTournamentRole.Player
+            });
+            dbContext.Bets.AddRange(
+                CreatePendingBet(pastMatch.MatchId, user.Id),
+                CreatePendingBet(futureMatch.MatchId, user.Id));
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ICustomTournamentService>();
+
+            var stage = await service.GetFirstStageWithPendingBetsAsync(tournamentId, user.Id);
+
+            Assert.Equal("Future Stage", stage);
+        }
+    }
+
     private static Bet CreateClosedBet(int matchId, string userId, decimal basePayout)
     {
         return new Bet
@@ -266,6 +374,19 @@ public class CustomTournamentServiceTests
             Result = Bet.BetResult.Won,
             BasePayout = basePayout,
             Calculated = true
+        };
+    }
+
+    private static Bet CreatePendingBet(int matchId, string userId)
+    {
+        return new Bet
+        {
+            MatchId = matchId,
+            UserId = userId,
+            BaseAmount = 1,
+            Status = Bet.BetStatus.ToPlace,
+            Result = Bet.BetResult.Pending,
+            Calculated = false
         };
     }
 

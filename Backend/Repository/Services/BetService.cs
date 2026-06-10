@@ -19,6 +19,21 @@ namespace Backend.Repository.Services
             _logger = logger;
         }
 
+        private static bool IsMatchOpenForBetting(CustomMatch match, DateTime nowUtc)
+        {
+            return match.MatchStart > nowUtc &&
+                   (match.Status == CustomMatch.MatchStatus.Scheduled ||
+                    match.Status == CustomMatch.MatchStatus.Timed);
+        }
+
+        private static IQueryable<Bet> WhereMatchOpenForBetting(IQueryable<Bet> query, DateTime nowUtc)
+        {
+            return query.Where(b =>
+                b.Match.MatchStart > nowUtc &&
+                (b.Match.Status == CustomMatch.MatchStatus.Scheduled ||
+                 b.Match.Status == CustomMatch.MatchStatus.Timed));
+        }
+
         public async Task CreateBetsForTournamentAsync(int tournamentId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -126,11 +141,20 @@ namespace Backend.Repository.Services
                     return false;
                 }
 
-                // Block update if match has already started
-                if (bet.Match.MatchStart <= DateTime.UtcNow)
+                var nowUtc = DateTime.UtcNow;
+
+                // Block update if match has already started or is no longer in a betting-open status.
+                if (!IsMatchOpenForBetting(bet.Match, nowUtc))
                 {
-                    _logger.LogWarning($"User {userId} attempted to update Bet ID {betId}, but the match has already started.");
-                    return false; // Prevent bet modification after match start
+                    _logger.LogWarning(
+                        "User {UserId} attempted to update Bet ID {BetId}, but match {MatchId} is closed for betting. MatchStart: {MatchStart:o}, Status: {Status}, NowUtc: {NowUtc:o}",
+                        userId,
+                        betId,
+                        bet.MatchId,
+                        DateTime.SpecifyKind(bet.Match.MatchStart, DateTimeKind.Utc),
+                        bet.Match.Status,
+                        nowUtc);
+                    return false;
                 }
 
                 // Update bet details
@@ -207,18 +231,29 @@ namespace Backend.Repository.Services
                     return new List<BetDto>(); // Return empty list if stage doesn't exist
                 }
 
+                var nowUtc = DateTime.UtcNow;
+
                 // Step 4: Fetch bets with the given criteria (tournament, user, status, and stage)
-                var bets = await _context.Bets
+                var query = _context.Bets
                     .Include(b => b.Match)
                         .ThenInclude(m => m.HomeTeam)
                     .Include(b => b.Match)
                         .ThenInclude(m => m.AwayTeam)
+                    .Include(b => b.Match)
+                        .ThenInclude(m => m.Stage)
                     .Where(b =>
                         b.Match.TournamentId == tournamentId &&
                         b.UserId == userId &&
                         b.Status == betStatus &&
                         b.Match.IsVisible == true && 
-                        b.Match.Stage.StageName == stage)
+                        b.Match.Stage.StageName == stage);
+
+                if (betStatus == Bet.BetStatus.ToPlace || betStatus == Bet.BetStatus.Placed)
+                {
+                    query = WhereMatchOpenForBetting(query, nowUtc);
+                }
+
+                var bets = await query
                     .OrderBy(b => b.Match.MatchStart)
                     .ToListAsync();
 
@@ -638,10 +673,13 @@ namespace Backend.Repository.Services
 
                 _logger.LogInformation($"Fetching upcoming bets for user {userId} in tournament {tournamentId}");
 
-                var upcomingBets = await _context.Bets
+                var nowUtc = DateTime.UtcNow;
+
+                var upcomingBets = await WhereMatchOpenForBetting(_context.Bets, nowUtc)
                     .Where(b => b.Match.TournamentId == tournamentId &&
                                 b.UserId == userId &&
-                                b.Status == Bet.BetStatus.ToPlace)
+                                b.Status == Bet.BetStatus.ToPlace &&
+                                b.Match.IsVisible)
                     .OrderBy(b => b.Match.MatchStart)
                     .Take(maxResults)
                     .Select(b => new UpcomingBetDto

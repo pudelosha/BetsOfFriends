@@ -770,6 +770,7 @@
   "BET_PLACE_FAILED": "Impossibile salvare la scommessa. Riprova.",
   "BET_UPDATED": "Scommessa aggiornata con successo!",
   "BET_UPDATE_FAILED": "Impossibile aggiornare la scommessa. Riprova.",
+  "BET_CLOSED": "Questa partita è già iniziata. La modifica della scommessa è chiusa.",
   "BET_OVERVIEW_FAILED": "Impossibile caricare la panoramica scommesse.",
   "UPCOMING_BETS_LOAD_FAILED": "Impossibile caricare le prossime scommesse.",
   "MATCH_RESULT_UPDATED": "Risultato partita aggiornato con successo!",

@@ -189,7 +189,7 @@ namespace Backend.Repository.Services
                 return new RegisterResultDto { Success = false, Message = "Invalid user ID." };
             }
 
-            var decodedToken = Uri.UnescapeDataString(token);
+            var decodedToken = IdentityTokenUrlDecoder.Decode(token);
 
             var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
             if (!result.Succeeded)
@@ -244,7 +244,7 @@ namespace Backend.Repository.Services
                 return new RegisterResultDto { Success = false, Message = "User not found." };
             }
 
-            var decodedToken = Uri.UnescapeDataString(token);
+            var decodedToken = IdentityTokenUrlDecoder.Decode(token);
             var resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, password);
 
             if (!resetResult.Succeeded)

@@ -770,6 +770,7 @@
     "BET_PLACE_FAILED": "Nie udało się zapisać zakładu. Spróbuj ponownie.",
     "BET_UPDATED": "Zakład został zaktualizowany!",
     "BET_UPDATE_FAILED": "Nie udało się zaktualizować zakładu. Spróbuj ponownie.",
+    "BET_CLOSED": "Ten mecz już się rozpoczął. Edycja zakładu jest zamknięta.",
     "BET_OVERVIEW_FAILED": "Nie udało się załadować podglądu zakładów.",
     "UPCOMING_BETS_LOAD_FAILED": "Nie udało się załadować nadchodzących zakładów.",
     "MATCH_RESULT_UPDATED": "Wynik meczu został zaktualizowany!",
