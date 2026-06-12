@@ -232,6 +232,75 @@ public class NotificationServiceTests
     }
 
     [Fact]
+    public async Task NotifyUserAcceptedTournamentInviteAsync_NotifiesTournamentAdmins()
+    {
+        using var host = new BackendTestHost();
+        var admin = await host.CreateUserAsync("invite-admin@example.com");
+        var invitedUser = await host.CreateUserAsync("invite-accepted-user@example.com");
+
+        using var scope = host.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var trackedAdmin = await dbContext.Users.FindAsync(admin.Id);
+        var trackedInvitedUser = await dbContext.Users.FindAsync(invitedUser.Id);
+        trackedAdmin!.ReceiveEmailTournamentInvitation = true;
+        trackedAdmin.ReceivePushTournamentInvitation = true;
+
+        var tournament = new CustomTournament
+        {
+            Name = "Admin Notify Cup",
+            CreatedByUserId = trackedAdmin.Id,
+            CreatedByUser = trackedAdmin,
+            IsActive = true
+        };
+        dbContext.CustomTournaments.Add(tournament);
+        await dbContext.SaveChangesAsync();
+
+        dbContext.CustomTournamentUserAssignments.AddRange(
+            new CustomTournamentUserAssignment
+            {
+                TournamentId = tournament.TournamentId,
+                Tournament = tournament,
+                UserId = trackedAdmin.Id,
+                User = trackedAdmin,
+                UserAdminName = "Admin",
+                UserName = "Admin",
+                Role = UserTournamentRole.Admin,
+                Status = AssignmentStatus.Accepted
+            },
+            new CustomTournamentUserAssignment
+            {
+                TournamentId = tournament.TournamentId,
+                Tournament = tournament,
+                UserId = trackedInvitedUser!.Id,
+                User = trackedInvitedUser,
+                UserAdminName = "Invited User",
+                UserName = "Invited",
+                Role = UserTournamentRole.Player,
+                Status = AssignmentStatus.Accepted
+            });
+        await dbContext.SaveChangesAsync();
+
+        var acceptedAssignment = await dbContext.CustomTournamentUserAssignments
+            .SingleAsync(assignment => assignment.TournamentId == tournament.TournamentId && assignment.UserId == trackedInvitedUser.Id);
+        var service = scope.ServiceProvider.GetRequiredService<INotificationService>();
+
+        await service.NotifyUserAcceptedTournamentInviteAsync(acceptedAssignment);
+
+        var notificationRecipient = await dbContext.NotificationRecipients
+            .Include(recipient => recipient.Notification)
+            .SingleAsync();
+        var email = Assert.Single(host.Emails.NotificationEmails);
+        var push = Assert.Single(host.PushNotifications.SentPushNotifications);
+
+        Assert.Equal(trackedAdmin.Id, notificationRecipient.UserId);
+        Assert.Equal("User joined: Invited (invite-accepted-user@example.com)", notificationRecipient.Notification.Title);
+        Assert.Contains("has accepted the tournament invite", notificationRecipient.Notification.Message);
+        Assert.Equal("/tournaments/participants", notificationRecipient.Notification.Route);
+        Assert.Equal(notificationRecipient.Notification.Title, email.Title);
+        Assert.Equal(email.Title, push.Title);
+    }
+
+    [Fact]
     public async Task NotifyMatchStartingSoonAsync_RemindsOnlyAcceptedUsersWithToPlaceBets()
     {
         using var host = new BackendTestHost();

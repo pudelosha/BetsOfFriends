@@ -296,7 +296,9 @@
     "AW": "AW",
     "HQ": "HQ",
     "AQ": "AQ",
-    "RESULT": "R"
+    "RESULT": "R",
+    "AVERAGE_GOALS": "Average predicted goals",
+    "PLACED_BETS_SUMMARY": "{{placed}} out of {{total}} participants placed bets"
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Edit Bet",

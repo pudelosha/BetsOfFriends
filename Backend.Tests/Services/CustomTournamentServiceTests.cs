@@ -83,6 +83,75 @@ public class CustomTournamentServiceTests
     }
 
     [Fact]
+    public async Task AcceptTournamentInvitationAsync_NotifiesTournamentAdminWhenInviteIsAccepted()
+    {
+        using var host = new BackendTestHost();
+
+        var creator = await host.CreateUserAsync("creator-accept-notify@example.com");
+        var invitedUser = await host.CreateUserAsync("invited-accept-notify@example.com");
+
+        int tournamentId;
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var tournament = new CustomTournament
+            {
+                Name = "Invite Notify Cup",
+                CreatedByUserId = creator.Id,
+                IsActive = true
+            };
+
+            dbContext.CustomTournaments.Add(tournament);
+            await dbContext.SaveChangesAsync();
+            tournamentId = tournament.TournamentId;
+
+            dbContext.CustomTournamentUserAssignments.AddRange(
+                new CustomTournamentUserAssignment
+                {
+                    TournamentId = tournamentId,
+                    UserId = creator.Id,
+                    UserAdminName = "Creator",
+                    UserName = "Creator",
+                    Status = AssignmentStatus.Accepted,
+                    Role = UserTournamentRole.Admin
+                },
+                new CustomTournamentUserAssignment
+                {
+                    TournamentId = tournamentId,
+                    UserId = invitedUser.Id,
+                    UserAdminName = "Invited User",
+                    Status = AssignmentStatus.Invited,
+                    Role = UserTournamentRole.Player
+                });
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ICustomTournamentService>();
+
+            var response = await service.AcceptTournamentInvitationAsync(tournamentId, invitedUser.Id, "Invited");
+
+            Assert.True(response.Success);
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var recipient = await dbContext.NotificationRecipients
+                .Include(notificationRecipient => notificationRecipient.Notification)
+                .SingleAsync();
+
+            Assert.Equal(creator.Id, recipient.UserId);
+            Assert.Equal("User joined: Invited (invited-accept-notify@example.com)", recipient.Notification.Title);
+            Assert.Equal("/tournaments/participants", recipient.Notification.Route);
+        }
+    }
+
+    [Fact]
     public async Task RequestToJoinTournamentAsync_ReturnsSuccessWhenAdminNotificationFailsAfterRequestIsSaved()
     {
         using var host = new BackendTestHost(services =>

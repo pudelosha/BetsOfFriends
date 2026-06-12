@@ -296,7 +296,9 @@
     "AW": "GG", 
     "HQ": "AG", 
     "AQ": "AG", 
-    "RESULT": "W"
+    "RESULT": "W",
+    "AVERAGE_GOALS": "Srednia typowanych goli",
+    "PLACED_BETS_SUMMARY": "{{placed}} z {{total}} uczestnikow obstawilo"
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Edytuj zakład",

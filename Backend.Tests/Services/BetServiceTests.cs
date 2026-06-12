@@ -274,13 +274,107 @@ public class BetServiceTests
             Assert.Equal(100, stats.Percent1);
             Assert.Equal(0, stats.PercentX);
             Assert.Equal(0, stats.Percent2);
+            Assert.Equal(1, stats.PlacedBetsCount);
+            Assert.Equal(1, stats.ParticipantsCount);
+            Assert.Equal(2.0m, stats.AverageHomeGoals);
+            Assert.Equal(1.0m, stats.AverageAwayGoals);
 
             var userBet = Assert.Single(stats.UserBets!);
             Assert.Equal("Accepted Player", userBet.Username);
         }
     }
 
+    [Fact]
+    public async Task GetBetStatisticsAsync_WhenMatchIsInPlay_ShowsPlacedUserBets()
+    {
+        using var host = new BackendTestHost();
+        var user = await host.CreateUserAsync("in-play-bets@example.com");
+
+        int matchId;
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var tournament = new CustomTournament
+            {
+                Name = "In Play Bets Cup",
+                CreatedByUserId = user.Id,
+                IsActive = true
+            };
+            dbContext.CustomTournaments.Add(tournament);
+            await dbContext.SaveChangesAsync();
+
+            var stage = new CustomMatchStage
+            {
+                TournamentId = tournament.TournamentId,
+                StageName = "Final",
+                Order = 1
+            };
+            var homeTeam = new CustomTeam
+            {
+                TournamentId = tournament.TournamentId,
+                TeamName = "Home",
+                EloRating = 1000
+            };
+            var awayTeam = new CustomTeam
+            {
+                TournamentId = tournament.TournamentId,
+                TeamName = "Away",
+                EloRating = 1000
+            };
+            dbContext.CustomMatchStages.Add(stage);
+            dbContext.CustomTeams.AddRange(homeTeam, awayTeam);
+            await dbContext.SaveChangesAsync();
+
+            var match = new CustomMatch
+            {
+                TournamentId = tournament.TournamentId,
+                StageId = stage.StageId,
+                HomeTeamId = homeTeam.TeamId,
+                AwayTeamId = awayTeam.TeamId,
+                MatchStart = DateTime.UtcNow.AddMinutes(-5),
+                Status = CustomMatch.MatchStatus.In_Play,
+                Type = CustomMatch.MatchType.Regular90Min,
+                HomeWinOdds = 2,
+                DrawOdds = 3,
+                AwayWinOdds = 4
+            };
+            dbContext.CustomMatches.Add(match);
+            await dbContext.SaveChangesAsync();
+            matchId = match.MatchId;
+
+            dbContext.CustomTournamentUserAssignments.Add(new CustomTournamentUserAssignment
+            {
+                TournamentId = tournament.TournamentId,
+                UserId = user.Id,
+                UserAdminName = "In Play Admin",
+                UserName = "In Play Player",
+                Status = AssignmentStatus.Accepted,
+                Role = UserTournamentRole.Player
+            });
+            dbContext.Bets.Add(CreateBet(matchId, user.Id, homeGoals: 1, awayGoals: 1, Bet.BetStatus.Placed));
+            await dbContext.SaveChangesAsync();
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<IBetService>();
+
+            var stats = await service.GetBetStatisticsAsync(matchId, user.Id);
+
+            Assert.NotNull(stats);
+            Assert.Equal("In_Play", stats.MatchStatus);
+            var userBet = Assert.Single(stats.UserBets!);
+            Assert.Equal("In Play Player", userBet.Username);
+            Assert.Equal("1-1", userBet.BetScore);
+        }
+    }
+
     private static Bet CreateClosedBet(int matchId, string userId, int homeGoals, int awayGoals)
+        => CreateBet(matchId, userId, homeGoals, awayGoals, Bet.BetStatus.Closed);
+
+    private static Bet CreateBet(int matchId, string userId, int homeGoals, int awayGoals, Bet.BetStatus status)
     {
         return new Bet
         {
@@ -289,7 +383,7 @@ public class BetServiceTests
             BaseAmount = 1,
             HomeGoals = homeGoals,
             AwayGoals = awayGoals,
-            Status = Bet.BetStatus.Closed,
+            Status = status,
             Result = Bet.BetResult.Won,
             BasePayout = 1,
             Calculated = true

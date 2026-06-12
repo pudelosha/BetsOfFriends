@@ -29,6 +29,10 @@ export class BetsOverviewModalComponent {
     percent2: 0,
     percent1Q: null,
     percent2Q: null,
+    placedBetsCount: 0,
+    participantsCount: 0,
+    averageHomeGoals: null,
+    averageAwayGoals: null,
     result: null,
     resultQualified: null
   };
@@ -47,4 +51,12 @@ export class BetsOverviewModalComponent {
   
     return 12 - used;
   }  
+
+  formatAverageGoals(value?: number | null): string {
+    return value === null || value === undefined ? '-' : value.toFixed(1);
+  }
+
+  shouldShowUserBets(): boolean {
+    return this.betStats.matchStatus === 'In_Play' || this.betStats.matchStatus === 'Finished';
+  }
 }

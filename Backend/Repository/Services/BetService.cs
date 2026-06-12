@@ -582,6 +582,7 @@ namespace Backend.Repository.Services
 
                 var totalBets = bets.Count;
                 var totalQualificationBets = qualificationBets.Count;
+                var totalParticipants = acceptedUserIds.Count;
 
                 string? result = (match.HomeScore.HasValue && match.AwayScore.HasValue)
                     ? match.HomeScore > match.AwayScore ? "1"
@@ -613,14 +614,21 @@ namespace Backend.Repository.Services
                     Percent1 = totalBets > 0 ? Math.Round((decimal)bets.Count(b => b.HomeGoals > b.AwayGoals) / totalBets * 100, 2) : 0,
                     PercentX = totalBets > 0 ? Math.Round((decimal)bets.Count(b => b.HomeGoals == b.AwayGoals) / totalBets * 100, 2) : 0,
                     Percent2 = totalBets > 0 ? Math.Round((decimal)bets.Count(b => b.HomeGoals < b.AwayGoals) / totalBets * 100, 2) : 0,
+                    PlacedBetsCount = totalBets,
+                    ParticipantsCount = totalParticipants,
+                    AverageHomeGoals = totalBets > 0 ? Math.Round(bets.Average(b => (decimal)b.HomeGoals!.Value), 1) : null,
+                    AverageAwayGoals = totalBets > 0 ? Math.Round(bets.Average(b => (decimal)b.AwayGoals!.Value), 1) : null,
 
                     // Qualification Betting Percentages
                     Percent1Q = totalQualificationBets > 0 ? Math.Round((decimal)qualificationBets.Count(b => b.Qualified == CustomMatch.TeamQualified.Home) / totalQualificationBets * 100, 2) : null,
                     Percent2Q = totalQualificationBets > 0 ? Math.Round((decimal)qualificationBets.Count(b => b.Qualified == CustomMatch.TeamQualified.Away) / totalQualificationBets * 100, 2) : null,
 
                     // User Bets
-                    UserBets = match.Status == CustomMatch.MatchStatus.Finished ? match.Bets
-                        .Where(b => b.Status == Bet.BetStatus.Closed && userIdToUsername.ContainsKey(b.UserId))
+                    UserBets = (match.Status == CustomMatch.MatchStatus.In_Play ||
+                                match.Status == CustomMatch.MatchStatus.Finished)
+                        ? match.Bets
+                        .Where(b => (b.Status == Bet.BetStatus.Placed || b.Status == Bet.BetStatus.Closed) &&
+                                    userIdToUsername.ContainsKey(b.UserId))
                         .Select(b => new UserBetDto
                         {
                             Username = userIdToUsername.TryGetValue(b.UserId, out var username) ? username : "Unknown",

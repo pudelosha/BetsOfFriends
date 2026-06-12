@@ -296,7 +296,9 @@
     "AW": "VF",
     "HQ": "PC",
     "AQ": "PF",
-    "RESULT": "R"
+    "RESULT": "R",
+    "AVERAGE_GOALS": "Gol medi pronosticati",
+    "PLACED_BETS_SUMMARY": "{{placed}} su {{total}} partecipanti hanno scommesso"
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Modifica Scommessa",

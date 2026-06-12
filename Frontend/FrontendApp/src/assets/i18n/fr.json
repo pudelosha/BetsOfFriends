@@ -296,7 +296,9 @@
     "AW": "VE",
     "HQ": "DQ",
     "AQ": "EQ",
-    "RESULT": "R"
+    "RESULT": "R",
+    "AVERAGE_GOALS": "Buts moyens pronostiques",
+    "PLACED_BETS_SUMMARY": "{{placed}} sur {{total}} participants ont parie"
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Modifier pari",

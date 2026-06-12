@@ -53,6 +53,10 @@ export interface BetStats {
   percent2: number;
   percent1Q?: number | null;
   percent2Q?: number | null;
+  placedBetsCount: number;
+  participantsCount: number;
+  averageHomeGoals?: number | null;
+  averageAwayGoals?: number | null;
   result?: '1' | 'X' | '2' | null;
   resultQualified?: 'home' | 'away' | null;
   userBets?: UserBetDetails[] | null;

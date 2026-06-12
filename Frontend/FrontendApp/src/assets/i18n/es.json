@@ -296,7 +296,9 @@
     "AW": "GV",
     "HQ": "CL",
     "AQ": "CV",
-    "RESULT": "R"
+    "RESULT": "R",
+    "AVERAGE_GOALS": "Goles promedio pronosticados",
+    "PLACED_BETS_SUMMARY": "{{placed}} de {{total}} participantes apostaron"
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Editar Apuesta",

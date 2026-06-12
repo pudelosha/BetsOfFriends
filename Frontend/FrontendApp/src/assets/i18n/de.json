@@ -296,7 +296,9 @@
     "AW": "AS",
     "HQ": "HW",
     "AQ": "AW",
-    "RESULT": "E"
+    "RESULT": "E",
+    "AVERAGE_GOALS": "Durchschnittlich getippte Tore",
+    "PLACED_BETS_SUMMARY": "{{placed}} von {{total}} Teilnehmern haben getippt"
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Tipp bearbeiten",

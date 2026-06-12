@@ -69,6 +69,10 @@ namespace Backend.DTOs
         public decimal Percent2 { get; set; }
         public decimal? Percent1Q { get; set; }
         public decimal? Percent2Q { get; set; }
+        public int PlacedBetsCount { get; set; }
+        public int ParticipantsCount { get; set; }
+        public decimal? AverageHomeGoals { get; set; }
+        public decimal? AverageAwayGoals { get; set; }
 
         public string? Result { get; set; }
         public string? ResultQualified { get; set; }

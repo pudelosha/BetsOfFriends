@@ -10,13 +10,33 @@
 }
 
 .team-names,
-.match-score {
+.match-score,
+.average-goals-score {
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
   font-size: 14px;
   font-weight: bold;
+}
+
+.average-goals-label {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+  color: #4b5563;
+}
+
+.placed-bets-summary {
+  margin-top: 14px;
+  margin-bottom: -8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.average-goals-score {
+  margin-top: 2px;
 }
 
 .player-name {

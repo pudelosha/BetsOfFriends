@@ -24,6 +24,12 @@
       <ion-col size="5"><strong>{{ betStats.awayScoreActual ?? '-' }}</strong></ion-col>
     </ion-row>
 
+    <ion-row class="placed-bets-summary">
+      <ion-col size="12" class="centered-text">
+        {{ 'BETS_OVERVIEW.PLACED_BETS_SUMMARY' | translate:{ placed: betStats.placedBetsCount, total: betStats.participantsCount } }}
+      </ion-col>
+    </ion-row>
+
     <!-- Combined 1X2 Labels with Background Colors -->
     <ion-row class="betting-row no-margin">
       <ion-col size="4" class="label-box home-bg">
@@ -54,6 +60,22 @@
       </ion-col>
     </ion-row>
 
+    <ion-row class="average-goals-label">
+      <ion-col size="12" class="centered-text">
+        <strong>{{ 'BETS_OVERVIEW.AVERAGE_GOALS' | translate }}</strong>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="average-goals-score">
+      <ion-col size="5">
+        <strong>{{ formatAverageGoals(betStats.averageHomeGoals) }}</strong>
+      </ion-col>
+      <ion-col size="2" class="centered-text">-</ion-col>
+      <ion-col size="5">
+        <strong>{{ formatAverageGoals(betStats.averageAwayGoals) }}</strong>
+      </ion-col>
+    </ion-row>
+
     <!-- Qualification Betting Labels with Background Colors -->
     <ion-row class="betting-row no-margin" *ngIf="betStats.showQualified">
       <ion-col size="6" class="label-box homeQ-bg">
@@ -78,8 +100,8 @@
       </ion-col>
     </ion-row>
 
-    <!-- User Bets Table (Only if Match is Finalised) -->
-    <ng-container *ngIf="betStats.matchStatus === 'Finished'">
+    <!-- User Bets Table -->
+    <ng-container *ngIf="shouldShowUserBets()">
       <ion-row class="betting-row">
         <ion-col size="12" class="centered-text"><strong>{{ 'BETS_OVERVIEW.USER_BETS' | translate }}</strong></ion-col>
       </ion-row>

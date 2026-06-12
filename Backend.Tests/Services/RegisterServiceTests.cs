@@ -1,6 +1,7 @@
 using System.Net;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
+using Backend.Repository.Services;
 using Backend.Tests.TestSupport;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -226,8 +227,41 @@ public class RegisterServiceTests
             var result = await service.ConfirmEmailAsync(user.Id, clickedToken);
             var refreshedUser = await userManager.FindByIdAsync(user.Id);
 
-            Assert.True(result.Success, $"Iteration {index} failed.");
+            Assert.True(result.Success, $"Iteration {index} failed: {result.Message} {FormatIdentityErrors(result.Errors)}");
             Assert.True(refreshedUser!.EmailConfirmed, $"Iteration {index} did not confirm email.");
+        }
+    }
+
+    [Fact]
+    public async Task ConfirmEmailAsync_WithBase64UrlTokensAcrossBrowserDeviceAndLocaleUrlVariants_ConfirmsAllEmails()
+    {
+        using var host = new BackendTestHost();
+        using var scope = host.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var service = scope.ServiceProvider.GetRequiredService<IRegisterService>();
+        var scenarios = GetClickedUrlTokenScenarios();
+
+        foreach (var scenario in scenarios)
+        {
+            for (var index = 0; index < UrlTokenStressIterations; index++)
+            {
+                var user = await host.CreateUserAsync(
+                    $"activation-v2-{scenario.Name}-{index}@example.com",
+                    emailConfirmed: false);
+                var trackedUser = await userManager.FindByIdAsync(user.Id)
+                    ?? throw new InvalidOperationException("Created test user could not be loaded.");
+                var token = await userManager.GenerateEmailConfirmationTokenAsync(trackedUser);
+                var urlSafeToken = IdentityTokenUrlDecoder.Encode(token);
+                var clickedToken = scenario.ExtractToken(BuildActivationUrl(user.Id, urlSafeToken), urlSafeToken);
+
+                AssertUrlSafeToken(urlSafeToken);
+
+                var result = await service.ConfirmEmailAsync(user.Id, clickedToken);
+                var refreshedUser = await userManager.FindByIdAsync(user.Id);
+
+                Assert.True(result.Success, $"Scenario {scenario.Name}, iteration {index} failed: {result.Message}");
+                Assert.True(refreshedUser!.EmailConfirmed, $"Scenario {scenario.Name}, iteration {index} did not confirm email.");
+            }
         }
     }
 
@@ -346,6 +380,7 @@ public class RegisterServiceTests
             var clickedToken = GetQueryParameter(setupUrlWithUnescapedPlus, "token");
 
             Assert.Contains(' ', clickedToken);
+            Assert.Equal(token, IdentityTokenUrlDecoder.Decode(clickedToken));
 
             var result = await service.SetupAccountAsync(
                 invitedUser.Id,
@@ -354,12 +389,49 @@ public class RegisterServiceTests
                 "pl");
             var refreshedUser = await userManager.FindByIdAsync(invitedUser.Id);
 
-            Assert.True(result.Success, $"Iteration {index} failed.");
+            Assert.True(result.Success, $"Iteration {index} failed: {result.Message} {FormatIdentityErrors(result.Errors)}");
             Assert.True(refreshedUser!.EmailConfirmed, $"Iteration {index} did not confirm email.");
             Assert.Equal(2, refreshedUser.LanguageId);
             Assert.True(
                 await userManager.CheckPasswordAsync(refreshedUser, BackendTestHost.ValidPassword),
                 $"Iteration {index} did not set the password.");
+        }
+    }
+
+    [Fact]
+    public async Task SetupAccountAsync_WithBase64UrlTokensAcrossBrowserDeviceAndLocaleUrlVariants_SetsUpAllAccounts()
+    {
+        using var host = new BackendTestHost();
+        using var scope = host.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IRegisterService>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var scenarios = GetClickedUrlTokenScenarios();
+
+        foreach (var scenario in scenarios)
+        {
+            for (var index = 0; index < UrlTokenStressIterations; index++)
+            {
+                var invitedUser = await service.RegisterInvitedUserAsync($"setup-v2-{scenario.Name}-{index}@example.com");
+                var token = await userManager.GeneratePasswordResetTokenAsync(invitedUser!);
+                var urlSafeToken = IdentityTokenUrlDecoder.Encode(token);
+                var clickedToken = scenario.ExtractToken(BuildSetupUrl(invitedUser!.Id, urlSafeToken), urlSafeToken);
+                var password = $"NewValidPassword{scenario.Name}{index}!";
+
+                AssertUrlSafeToken(urlSafeToken);
+
+                var result = await service.SetupAccountAsync(
+                    invitedUser.Id,
+                    clickedToken,
+                    password,
+                    index % 2 == 0 ? "pl-PL" : "en-US");
+                var refreshedUser = await userManager.FindByIdAsync(invitedUser.Id);
+
+                Assert.True(result.Success, $"Scenario {scenario.Name}, iteration {index} failed: {result.Message}");
+                Assert.True(refreshedUser!.EmailConfirmed, $"Scenario {scenario.Name}, iteration {index} did not confirm email.");
+                Assert.True(
+                    await userManager.CheckPasswordAsync(refreshedUser, password),
+                    $"Scenario {scenario.Name}, iteration {index} did not set password.");
+            }
         }
     }
 
@@ -457,6 +529,43 @@ public class RegisterServiceTests
 
         throw new InvalidOperationException($"Query parameter '{parameterName}' was not found.");
     }
+
+    private static IReadOnlyList<ClickedUrlTokenScenario> GetClickedUrlTokenScenarios()
+    {
+        return new List<ClickedUrlTokenScenario>
+        {
+            new("chrome_desktop_direct_query", (url, _) => GetQueryParameter(url, "token")),
+            new("safari_ios_html_href", (url, _) => GetQueryParameter(WebUtility.HtmlDecode(WebUtility.HtmlEncode(url)), "token")),
+            new("android_gmail_url_decoded_once", (url, _) => Uri.UnescapeDataString(GetQueryParameter(url, "token"))),
+            new("outlook_desktop_trimmed_copy", (_, token) => $"  {token}  "),
+            new("polish_keyboard_locale_extra_param", (url, _) => GetQueryParameter($"{url}&culture=pl-PL&keyboard=pl", "token")),
+            new("german_keyboard_locale_param_before_token", (url, _) =>
+            {
+                var uri = new Uri(url);
+                var rebuilt = $"{uri.GetLeftPart(UriPartial.Path)}?culture=de-DE&{uri.Query.TrimStart('?')}";
+                return GetQueryParameter(rebuilt, "token");
+            }),
+            new("mobile_fragment_after_token", (url, _) => GetQueryParameter($"{url}#opened-on-phone", "token")),
+            new("manual_copy_non_breaking_space_edges", (_, token) => $"\u00A0{token}\u00A0")
+        };
+    }
+
+    private static void AssertUrlSafeToken(string token)
+    {
+        Assert.StartsWith("v2_", token);
+        Assert.DoesNotContain("+", token);
+        Assert.DoesNotContain("/", token);
+        Assert.DoesNotContain("=", token);
+        Assert.DoesNotContain("%", token);
+        Assert.DoesNotContain(" ", token);
+    }
+
+    private static string FormatIdentityErrors(IEnumerable<IdentityError>? errors)
+    {
+        return errors == null ? string.Empty : string.Join("; ", errors.Select(error => $"{error.Code}:{error.Description}"));
+    }
+
+    private sealed record ClickedUrlTokenScenario(string Name, Func<string, string, string> ExtractToken);
 
     private sealed class ThrowingConfirmationEmailService : IEmailService
     {

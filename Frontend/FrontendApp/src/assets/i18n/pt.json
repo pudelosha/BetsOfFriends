@@ -296,7 +296,9 @@
     "AW": "VF",
     "HQ": "CC",
     "AQ": "CF",
-    "RESULT": "R"
+    "RESULT": "R",
+    "AVERAGE_GOALS": "Gols medios previstos",
+    "PLACED_BETS_SUMMARY": "{{placed}} de {{total}} participantes apostaram"
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Editar Aposta",
