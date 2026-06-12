@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonContent } from '@ionic/angular';
@@ -8,8 +8,8 @@ import { MyBetsToPlacePage } from '../my-bets-to-place/my-bets-to-place.page';
 import { FormsModule } from '@angular/forms';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
-import { firstValueFrom } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
@@ -23,12 +23,13 @@ import { BetService } from 'src/app/services/bet.service';
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MyBetsFinalisedPage, MyBetsPlacedPage, MyBetsToPlacePage, TranslateModule, IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class MyBetsPage {
+export class MyBetsPage implements OnInit, OnDestroy {
   selectedTab: string = 'to-place';
   availableStages: string[] = [];
   selectedStageIndex = 0;
   selectedStage: string = '';
   private tabChangeSequence = 0;
+  private queryParamsSubscription?: Subscription;
   
   @ViewChild(IonContent, { static: false }) content!: IonContent;
 
@@ -40,27 +41,17 @@ export class MyBetsPage {
     private betService: BetService
   ) {}
 
-  ionViewDidEnter() {
-    this.route.queryParamMap.subscribe(params => {
-      const urlTab = params.get('tab') ?? 'to-place';
-      const urlStage = params.get('stage') ?? undefined;
-      const urlTournamentId = params.get('tournamentId');
-  
-      if (urlTab === 'to-place' || urlTab === 'placed' || urlTab === 'finalised') {
-        this.selectedTab = urlTab;
-      } else {
-        this.selectedTab = 'to-place';
-      }
-  
-      if (urlTournamentId && !isNaN(+urlTournamentId)) {
-        const parsedId = Number(urlTournamentId);
-        this.tournamentSelectionService.setSelectedTournament(parsedId);
-      }
-  
-      this.loadStages(urlStage);
-    });
+  ngOnInit() {
+    this.queryParamsSubscription = this.route.queryParamMap.subscribe(params => this.loadFromQueryParams(params));
+  }
 
+  ionViewDidEnter() {
     this.titleService.setTitle('MY_BETS.TITLE');
+    this.loadFromQueryParams(this.route.snapshot.queryParamMap);
+  }
+
+  ngOnDestroy() {
+    this.queryParamsSubscription?.unsubscribe();
   }
      
   triggerRefresh() {
@@ -86,14 +77,6 @@ export class MyBetsPage {
     }, 100);
   }
 
-  forceTabReload() {
-    const currentTab = this.selectedTab;
-    this.selectedTab = '';
-    setTimeout(() => {
-      this.selectedTab = currentTab;
-    }, 100);
-  }
-
   prevStage() {
     if (this.selectedStageIndex > 0) {
       this.selectedStageIndex--;
@@ -116,25 +99,36 @@ export class MyBetsPage {
     }
   }
   
-  async loadStages(stageFromUrl?: string) {
+  async loadStages(stageFromUrl?: string, tabFromUrl: string = this.selectedTab) {
+    const requestedTab = this.normalizeTab(tabFromUrl);
+    const sequence = ++this.tabChangeSequence;
     const tournamentId = this.tournamentSelectionService.getSelectedTournament();
     
     if (!tournamentId) {
       console.warn("No tournament selected.");
+      this.selectedTab = requestedTab;
       return;
     }
   
     try {
       this.availableStages = await firstValueFrom(this.tournamentService.getTournamentStages(tournamentId));
+
+      if (sequence !== this.tabChangeSequence) {
+        return;
+      }
       
       if (this.availableStages.length > 0) {
         if (stageFromUrl && this.availableStages.includes(stageFromUrl)) {
           this.selectedStage = stageFromUrl;
           this.selectedStageIndex = this.availableStages.indexOf(stageFromUrl);
-        } else {
+        } else if (requestedTab === 'to-place') {
           const stageWithPending = await firstValueFrom(
             this.tournamentService.getFirstStageWithPendingBets(tournamentId)
           );
+
+          if (sequence !== this.tabChangeSequence) {
+            return;
+          }
           
           if (stageWithPending && this.availableStages.includes(stageWithPending)) {
             this.selectedStage = stageWithPending;
@@ -142,17 +136,25 @@ export class MyBetsPage {
           } else {
             this.selectedStage = this.availableStages[0];
             this.selectedStageIndex = 0;
-          }          
+          }
+        } else {
+          this.selectedStage = this.availableStages[0];
+          this.selectedStageIndex = 0;
         }
 
         if (!stageFromUrl) {
-          await this.selectFirstStageWithBetsIfCurrentStageIsEmpty(this.selectedTab);
+          await this.selectFirstStageWithBetsIfCurrentStageIsEmpty(requestedTab);
         }
       }
+
+      if (sequence !== this.tabChangeSequence) {
+        return;
+      }
       
-      this.forceTabReload();
+      this.selectedTab = requestedTab;
     } catch (error) {
       console.error("Error fetching tournament stages:", error);
+      this.selectedTab = requestedTab;
     }
   }   
 
@@ -166,6 +168,20 @@ export class MyBetsPage {
     return tab === 'placed' || tab === 'finalised' || tab === 'to-place'
       ? tab
       : 'to-place';
+  }
+
+  private loadFromQueryParams(params: ParamMap) {
+    const urlTab = params.get('tab') ?? 'to-place';
+    const urlStage = params.get('stage') ?? undefined;
+    const urlTournamentId = params.get('tournamentId');
+    const requestedTab = this.normalizeTab(urlTab);
+
+    if (urlTournamentId && !isNaN(+urlTournamentId)) {
+      const parsedId = Number(urlTournamentId);
+      this.tournamentSelectionService.setSelectedTournament(parsedId);
+    }
+
+    this.loadStages(urlStage, requestedTab);
   }
 
   private getBetStatusForTab(tab: string): 'ToPlace' | 'Placed' | 'Closed' | null {
