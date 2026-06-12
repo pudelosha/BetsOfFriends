@@ -14,6 +14,7 @@ namespace Backend.Services.Interfaces
         Task RecalculateBetsForMatchAsync(int matchId);
         Task<bool> RecalculateBetsForTournamentAsync(int tournamentId);
         Task<List<UpcomingBetDto>> GetUpcomingBetsAsync(int tournamentId, string userId, int? limit = null);
+        Task<List<BetDto>> GetInProgressBetsAsync(int tournamentId, string userId, int? limit = null);
         Task<MissingBetsSummaryDto?> GetMissingBetsSummaryAsync(int tournamentId, string userId, int matchLimit = 5, int hoursAhead = 48);
         Task MarkBetsAsCompletedForMatchAsync(int matchId);
     }

@@ -512,6 +512,10 @@
     "TITLE": "Missing bets",
     "NO_MISSING_BETS": "No missing bets in the next 48 hours."
   },
+  "MATCHES_IN_PROGRESS": {
+    "TITLE": "Matches In Progress",
+    "MY_BET": "My bet"
+  },
   "STARTED_MATCHES": {
     "TITLE": "Started Custom Matches"
   },

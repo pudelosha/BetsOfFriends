@@ -512,6 +512,10 @@
     "TITLE": "Apostas em falta",
     "NO_MISSING_BETS": "Nenhuma aposta em falta nas próximas 48 horas."
   },
+  "MATCHES_IN_PROGRESS": {
+    "TITLE": "Jogos em andamento",
+    "MY_BET": "Minha aposta"
+  },
   "STARTED_MATCHES": {
     "TITLE": "Jogos Personalizados Iniciados"
   },

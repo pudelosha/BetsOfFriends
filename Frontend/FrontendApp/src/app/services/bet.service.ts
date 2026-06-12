@@ -46,6 +46,10 @@ export class BetService {
     return this.http.get<UpcomingBet[]>(`${this.apiUrl}/upcoming/${tournamentId}`);
   }
 
+  getInProgressBets(tournamentId: number): Observable<Bet[]> {
+    return this.http.get<Bet[]>(`${this.apiUrl}/in-progress/${tournamentId}`);
+  }
+
   getMissingBets(tournamentId: number): Observable<MissingBetsSummary> {
     return this.http.get<MissingBetsSummary>(`${this.apiUrl}/missing/${tournamentId}`);
   }

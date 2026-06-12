@@ -236,5 +236,31 @@ namespace Backend.Controllers
                 return StatusCode(500, new { Message = "An error occurred while fetching missing bets." });
             }
         }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("in-progress/{tournamentId}")]
+        public async Task<IActionResult> GetInProgressBets(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching in-progress bets for tournament {tournamentId}");
+
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized request to fetch in-progress bets.");
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var inProgressBets = await _betService.GetInProgressBetsAsync(tournamentId, userId, 5);
+
+                return Ok(inProgressBets ?? Enumerable.Empty<BetDto>());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching in-progress bets for tournament {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while fetching in-progress bets." });
+            }
+        }
     }
 }

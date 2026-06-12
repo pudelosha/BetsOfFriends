@@ -245,6 +245,7 @@ public class CustomTournamentsControllerTests
         public Task RecalculateBetsForMatchAsync(int matchId) => throw new NotImplementedException();
         public Task<bool> RecalculateBetsForTournamentAsync(int tournamentId) => throw new NotImplementedException();
         public Task<List<UpcomingBetDto>> GetUpcomingBetsAsync(int tournamentId, string userId, int? limit = null) => throw new NotImplementedException();
+        public Task<List<BetDto>> GetInProgressBetsAsync(int tournamentId, string userId, int? limit = null) => throw new NotImplementedException();
         public Task<MissingBetsSummaryDto?> GetMissingBetsSummaryAsync(int tournamentId, string userId, int matchLimit = 5, int hoursAhead = 48) => throw new NotImplementedException();
         public Task MarkBetsAsCompletedForMatchAsync(int matchId) => throw new NotImplementedException();
     }

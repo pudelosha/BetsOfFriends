@@ -512,6 +512,10 @@
     "TITLE": "Paris manquants",
     "NO_MISSING_BETS": "Aucun pari manquant dans les prochaines 48 heures."
   },
+  "MATCHES_IN_PROGRESS": {
+    "TITLE": "Matchs en cours",
+    "MY_BET": "Mon pari"
+  },
   "STARTED_MATCHES": {
     "TITLE": "Matchs personnalisés en cours"
   },

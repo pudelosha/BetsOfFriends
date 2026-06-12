@@ -9,6 +9,7 @@ import { StartedCustomMatchesPage } from '../started-custom-matches/started-cust
 import { StartedPredefinedMatchesPage } from '../started-predefined-matches/started-predefined-matches.page';
 import { SelectedTournamentPage } from '../selected-tournament/selected-tournament.page';
 import { MissingBetsPage } from '../missing-bets/missing-bets.page';
+import { MatchesInProgressPage } from '../matches-in-progress/matches-in-progress.page';
 import { LoadingController } from '@ionic/angular';
 import { TitleService } from 'src/app/services/title.service';
 import { IonContent } from '@ionic/angular/standalone';
@@ -20,7 +21,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonContent, ReactiveFormsModule, LatestMessagesPage, MissingBetsPage, SelectedTournamentPage, UpcomingBetsPage, TournamentResultsPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage, TournamentMessageBoardPage],
+  imports: [CommonModule, IonContent, ReactiveFormsModule, LatestMessagesPage, MatchesInProgressPage, MissingBetsPage, SelectedTournamentPage, UpcomingBetsPage, TournamentResultsPage, TournamentInvitesPage, StartedPredefinedMatchesPage, StartedCustomMatchesPage, TournamentMessageBoardPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class HomePage implements OnDestroy {

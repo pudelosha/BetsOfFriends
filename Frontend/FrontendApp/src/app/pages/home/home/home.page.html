@@ -11,6 +11,12 @@
         (loadingStart)="showGlobalSpinner()"
         (loadingEnd)="hideGlobalSpinner()"
       ></app-missing-bets>
+
+      <app-matches-in-progress
+        [refreshTrigger]="refreshCounter"
+        (loadingStart)="showGlobalSpinner()"
+        (loadingEnd)="hideGlobalSpinner()"
+      ></app-matches-in-progress>
   
       <app-latest-messages
         [refreshTrigger]="refreshCounter"

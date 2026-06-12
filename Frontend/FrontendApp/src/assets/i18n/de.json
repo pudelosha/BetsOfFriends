@@ -512,6 +512,10 @@
     "TITLE": "Fehlende Tipps",
     "NO_MISSING_BETS": "Keine fehlenden Tipps in den nächsten 48 Stunden."
   },
+  "MATCHES_IN_PROGRESS": {
+    "TITLE": "Laufende Spiele",
+    "MY_BET": "Mein Tipp"
+  },
   "STARTED_MATCHES": {
     "TITLE": "Gestartete Custom-Spiele"
   },

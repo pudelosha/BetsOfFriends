@@ -1,0 +1,21 @@
+<div class="matches-in-progress-box" *ngIf="matches.length > 0" (click)="goToClosedBets()">
+  <h2 class="frame-title">{{ 'MATCHES_IN_PROGRESS.TITLE' | translate }}</h2>
+
+  <ion-list class="matches-in-progress-list">
+    <ion-item *ngFor="let match of matches" class="matches-in-progress-item">
+      <div class="matches-in-progress-grid">
+        <div class="matches-in-progress-details">
+          <span class="teams">{{ match.teamHome }} - {{ match.teamAway }}</span>
+        </div>
+
+        <div class="score live-score">
+          <span>{{ formatLiveResult(match) }}</span>
+        </div>
+
+        <div class="score my-bet">
+          <span>{{ 'MATCHES_IN_PROGRESS.MY_BET' | translate }} {{ formatMyBet(match) }}</span>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+</div>

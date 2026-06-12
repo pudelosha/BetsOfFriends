@@ -512,6 +512,10 @@
     "TITLE": "Scommesse mancanti",
     "NO_MISSING_BETS": "Nessuna scommessa mancante nelle prossime 48 ore."
   },
+  "MATCHES_IN_PROGRESS": {
+    "TITLE": "Partite in corso",
+    "MY_BET": "La mia scommessa"
+  },
   "STARTED_MATCHES": {
     "TITLE": "Partite Personalizzate Avviate"
   },

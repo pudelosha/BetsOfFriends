@@ -512,6 +512,10 @@
     "TITLE": "Brakujące zakłady",
     "NO_MISSING_BETS": "Brak brakujących zakładów w najbliższych 48 godzinach."
   },
+  "MATCHES_IN_PROGRESS": {
+    "TITLE": "Trwające mecze",
+    "MY_BET": "Mój typ"
+  },
   "STARTED_MATCHES": {
     "TITLE": "Rozpoczęte mecze niestandardowe"
   },

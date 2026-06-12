@@ -451,7 +451,9 @@ namespace Backend.Repository.Services
                 }
 
                 // Penalty for not submitting
-                if (tournamentSettings.AllowNonSubmittedBetsPenalty && tournamentSettings.NonSubmittedBetPenalty.HasValue)
+                if (!IsSubmittedBet(bet) &&
+                    tournamentSettings.AllowNonSubmittedBetsPenalty &&
+                    tournamentSettings.NonSubmittedBetPenalty.HasValue)
                 {
                     var penalty = tournamentSettings.NonSubmittedBetPenalty.Value;
                     bet.BasePayout -= penalty;
@@ -911,6 +913,86 @@ namespace Backend.Repository.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error fetching upcoming bets for tournament {tournamentId} and user {userId}");
+                throw;
+            }
+        }
+
+        public async Task<List<BetDto>> GetInProgressBetsAsync(int tournamentId, string userId, int? limit = null)
+        {
+            try
+            {
+                int maxResults = limit ?? int.MaxValue;
+
+                _logger.LogInformation($"Fetching in-progress bets for user {userId} in tournament {tournamentId}");
+
+                var tournament = await _context.CustomTournaments
+                    .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+                if (tournament == null)
+                {
+                    _logger.LogWarning($"Tournament {tournamentId} not found.");
+                    return new List<BetDto>();
+                }
+
+                var isAssigned = await _context.CustomTournamentUserAssignments
+                    .AnyAsync(a => a.TournamentId == tournamentId &&
+                        a.UserId == userId &&
+                        a.Status == AssignmentStatus.Accepted);
+
+                if (!isAssigned)
+                {
+                    _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}");
+                    return new List<BetDto>();
+                }
+
+                var bets = await _context.Bets
+                    .Include(b => b.Match)
+                        .ThenInclude(m => m.HomeTeam)
+                    .Include(b => b.Match)
+                        .ThenInclude(m => m.AwayTeam)
+                    .Include(b => b.Match)
+                        .ThenInclude(m => m.Stage)
+                    .Where(b =>
+                        b.Match.TournamentId == tournamentId &&
+                        b.UserId == userId &&
+                        b.Match.IsVisible &&
+                        b.Match.Status == CustomMatch.MatchStatus.In_Play)
+                    .OrderBy(b => b.Match.MatchStart)
+                    .Take(maxResults)
+                    .ToListAsync();
+
+                return bets.Select(b => new BetDto
+                {
+                    BetId = b.BetId,
+                    MatchId = b.MatchId,
+                    TeamHome = b.Match.HomeTeam.TeamName,
+                    TeamAway = b.Match.AwayTeam.TeamName,
+                    HomeTeamCrestUrl = b.Match.HomeTeam.CrestUrl,
+                    AwayTeamCrestUrl = b.Match.AwayTeam.CrestUrl,
+                    StartTime = DateTime.SpecifyKind(b.Match.MatchStart, DateTimeKind.Utc),
+                    BaseAmount = b.BaseAmount,
+                    BonusAmount = b.BonusAmount,
+                    PlayerHomeGoals = b.HomeGoals,
+                    PlayerAwayGoals = b.AwayGoals,
+                    PlayerQualifiedTeam = b.Qualified?.ToString(),
+                    ActualHomeGoals = b.Match.HomeScoreLive ?? b.Match.HomeScore,
+                    ActualAwayGoals = b.Match.AwayScoreLive ?? b.Match.AwayScore,
+                    ActualQualifiedTeam = b.Match.Qualified?.ToString(),
+                    HomeOdds = b.Match.HomeWinOdds,
+                    DrawOdds = b.Match.DrawOdds,
+                    AwayOdds = b.Match.AwayWinOdds,
+                    QualifyHomeOdds = b.Match.HomeQualifies,
+                    QualifyAwayOdds = b.Match.AwayQualifies,
+                    MatchStatus = b.Match.Status.ToString(),
+                    Status = b.Status.ToString(),
+                    Result = b.Result.ToString(),
+                    Type = b.Match.Type.ToString(),
+                    ShowWhoQualifies = tournament.AllowWhoQualifiesBets
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching in-progress bets for tournament {tournamentId} and user {userId}");
                 throw;
             }
         }

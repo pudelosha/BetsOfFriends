@@ -1,5 +1,5 @@
-.missing-bets-box {
-  background: #fdecec !important;
+.matches-in-progress-box {
+  background: #eef7ee !important;
   border-radius: 10px;
   padding: 15px;
   margin-top: 15px;
@@ -7,8 +7,8 @@
   transition: background 0.2s ease-in-out;
 }
 
-.missing-bets-box:hover {
-  background: #fbdada !important;
+.matches-in-progress-box:hover {
+  background: #e1f0e1 !important;
 }
 
 .frame-title {
@@ -19,21 +19,14 @@
   text-align: left;
 }
 
-.no-missing-bets-message {
-  text-align: center;
-  color: #666;
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-.missing-bets-list {
+.matches-in-progress-list {
   --background: transparent !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
   background: transparent !important;
 }
 
-.missing-bets-item {
+.matches-in-progress-item {
   --inner-padding-end: 0 !important;
   --inner-padding-start: 0 !important;
   --padding-end: 0 !important;
@@ -48,16 +41,16 @@
   align-items: center;
 }
 
-.missing-bets-grid {
+.matches-in-progress-grid {
   display: grid;
-  grid-template-columns: 8fr 2fr;
+  grid-template-columns: minmax(0, 6fr) 2fr 4fr;
   align-items: center;
   width: 100%;
-  gap: 10px;
+  gap: 8px;
   padding-right: 0;
 }
 
-.missing-bets-details {
+.matches-in-progress-details {
   text-align: left;
   font-size: 12px;
   font-weight: normal;
@@ -78,10 +71,27 @@
   text-overflow: ellipsis;
 }
 
-.missing-bets-date {
-  text-align: right;
+.score {
   font-size: 12px;
-  color: #666;
   white-space: nowrap;
   background: transparent !important;
+}
+
+.live-score {
+  color: #24532a;
+  font-weight: bold;
+  text-align: center;
+}
+
+.my-bet {
+  color: #666;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 520px) {
+  .matches-in-progress-grid {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
 }
