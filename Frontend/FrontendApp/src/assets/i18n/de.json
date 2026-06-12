@@ -372,12 +372,15 @@
     "TEAM_NAME_PLACEHOLDER": "Name eingeben",
     "TEAM_NAME_REQUIRED": "Teamname erforderlich.",
     "TEAM_NAME_MAXLENGTH": "Max. 50 Zeichen.",
+    "CREST_URL_LABEL": "Wappen-URL",
+    "CREST_URL_PLACEHOLDER": "Wappen-URL eingeben",
     "ELO_LABEL": "ELO-Bewertung",
     "ELO_PLACEHOLDER": "ELO-Bewertung eingeben",
     "ELO_REQUIRED": "ELO-Bewertung ist erforderlich.",
     "ELO_MIN": "ELO-Bewertung muss mindestens 0 sein.",
     "ELO_MAX": "ELO-Bewertung darf 5000 nicht überschreiten.",
-    "SAVE": "Speichern"
+    "SAVE": "Speichern",
+    "UPDATE": "Aktualisieren"
   },
   "USER_MODAL": {
     "ADD_TITLE": "Benutzer hinzufügen",

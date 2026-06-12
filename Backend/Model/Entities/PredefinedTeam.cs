@@ -14,6 +14,9 @@ namespace Backend.Model.Entities
         [Required, MaxLength(50)]
         public string TeamName { get; set; } = string.Empty;
 
+        [MaxLength(500)]
+        public string? CrestUrl { get; set; }
+
         public int EloRating { get; set; }
 
         public int PredefinedTournamentId { get; set; }

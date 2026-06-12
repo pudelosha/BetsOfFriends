@@ -17,6 +17,7 @@ export class EditTeamModalComponent implements OnInit {
   @Input() team: Team | null = null;
   @Input() isEditing: boolean = false;
   @Input() allTeamNames: string[] = [];
+  @Input() showCrestUrl = false;
 
   teamForm: FormGroup;
 
@@ -31,6 +32,7 @@ export class EditTeamModalComponent implements OnInit {
       teamId: [null],
       externalTeamId: [null],
       predefinedTeamId: [null],
+      crestUrl: [''],
       teamName: ['', [Validators.required, Validators.maxLength(50)]],
       eloRating: [1000, [Validators.required, Validators.min(0), Validators.max(5000)]],
       recordStatus: ['New'],
@@ -44,6 +46,7 @@ export class EditTeamModalComponent implements OnInit {
         teamId: this.team.teamId ?? null,
         externalTeamId: this.team.externalTeamId ?? null,
         predefinedTeamId: this.team.predefinedTeamId ?? null,
+        crestUrl: this.team.crestUrl ?? '',
         teamName: this.team.teamName,
         eloRating: this.team.eloRating ?? 1000, // <--- default
         recordStatus: this.team.recordStatus ?? 'Uploaded',
@@ -55,6 +58,10 @@ export class EditTeamModalComponent implements OnInit {
         recordStatus: 'New'
       });
     }
+  }
+
+  get crestUrlPreview(): string {
+    return this.normalizeOptionalText(this.teamForm.get('crestUrl')?.value);
   }
 
   private generateFrontendId(): string {
@@ -69,6 +76,8 @@ export class EditTeamModalComponent implements OnInit {
 
     const teamName = this.teamForm.value.teamName.trim().toLowerCase();
     const currentTeamName = this.team?.teamName?.trim().toLowerCase() || '';
+    const crestUrl = this.normalizeOptionalText(this.teamForm.value.crestUrl);
+    const currentCrestUrl = this.normalizeOptionalText(this.team?.crestUrl);
 
     const existingTeamNames = this.isEditing
       ? this.allTeamNames.filter(name => name !== currentTeamName)
@@ -79,19 +88,23 @@ export class EditTeamModalComponent implements OnInit {
       return;
     }
 
-    const isUpdated = this.isEditing && teamName !== currentTeamName;
-
     const elo = Number(this.teamForm.value.eloRating);
     if (Number.isNaN(elo)) {
       await this.showToast(this.t('TOASTS.TEAM_ELO_INVALID'), 'danger');
       return;
     }
 
+    const currentElo = Number(this.team?.eloRating ?? 1000);
+    const isUpdated =
+      this.isEditing &&
+      (teamName !== currentTeamName || elo !== currentElo || crestUrl !== currentCrestUrl);
+
     const updatedTeam: Team = {
       teamFrontendId: this.teamForm.value.teamFrontendId,
       teamId: this.teamForm.value.teamId,
       externalTeamId: this.teamForm.value.externalTeamId ?? null,
       predefinedTeamId: this.teamForm.value.predefinedTeamId ?? null,
+      crestUrl: crestUrl || null,
       teamName: this.teamForm.value.teamName.trim(),
       eloRating: elo,
       recordStatus: this.isEditing
@@ -122,5 +135,9 @@ export class EditTeamModalComponent implements OnInit {
 
   private t(key: string, params?: Record<string, unknown>): string {
     return this.translate.instant(key, params);
+  }
+
+  private normalizeOptionalText(value?: string | null): string {
+    return (value ?? '').trim();
   }
 }

@@ -51,6 +51,11 @@ namespace Backend.Repository.Services
             throw new ArgumentException($"Qualification odds must be greater than zero for {label}.");
         }
 
+        private static string? NormalizeCrestUrl(string? crestUrl)
+        {
+            return string.IsNullOrWhiteSpace(crestUrl) ? null : crestUrl.Trim();
+        }
+
         public async Task<bool> CreatePredefinedTournamentAsync(PredefinedTournamentDto tournamentDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -81,6 +86,7 @@ namespace Backend.Repository.Services
                 {
                     TeamName = t.TeamName,
                     ExternalTeamId = t.ExternalTeamId,
+                    CrestUrl = NormalizeCrestUrl(t.CrestUrl),
                     EloRating = t.EloRating,
                     PredefinedTournamentId = tournament.TournamentId
                 }).ToList();
@@ -232,6 +238,7 @@ namespace Backend.Repository.Services
                     {
                         existingTeam.TeamName = dtoTeam.TeamName;
                         //existingTeam.ExternalTeamId = dtoTeam.ExternalTeamId;
+                        existingTeam.CrestUrl = NormalizeCrestUrl(dtoTeam.CrestUrl);
 
                         // ELO update (default to 1000 if missing)
                         existingTeam.EloRating = dtoTeam.EloRating;
@@ -246,6 +253,7 @@ namespace Backend.Repository.Services
                         TeamName = dtoTeam.TeamName,
                         //ExternalTeamId = dtoTeam.ExternalTeamId,
                         PredefinedTournamentId = tournament.TournamentId,
+                        CrestUrl = NormalizeCrestUrl(dtoTeam.CrestUrl),
                         EloRating = dtoTeam.EloRating
                     });
                 }
@@ -483,7 +491,9 @@ namespace Backend.Repository.Services
                     Teams = tournament.PredefinedTeams.Select(team => new PredefinedTeamDto
                     {
                         TeamId = team.TeamId,
+                        ExternalTeamId = team.ExternalTeamId,
                         TeamName = team.TeamName,
+                        CrestUrl = team.CrestUrl,
                         EloRating = team.EloRating
                     }).ToList(),
                     Stages = tournament.PredefinedStages.Select(stage => new PredefinedStageDto

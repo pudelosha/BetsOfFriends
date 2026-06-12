@@ -20,6 +20,34 @@
   font-weight: bold;
 }
 
+.team-names {
+  align-items: flex-start;
+}
+
+.team-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.team-column-centered {
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.team-crest {
+  display: block;
+  width: 90px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.team-name {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .average-goals-label {
   margin-top: 10px;
   font-size: 12px;
@@ -143,11 +171,16 @@
 }
 
 .bet-table-header {
-  font-weight: bold;
   font-size: 12px;
+  font-weight: 600;
   text-align: center;
-  background-color: #f0f0f0;
-  padding: 10px 0;
+  color: #4b5563;
+  background-color: transparent;
+  padding: 10px 0 6px;
+}
+
+.bet-table-header strong {
+  font-weight: 600;
 }
 
 .bet-table-body {

@@ -372,12 +372,15 @@
     "TEAM_NAME_PLACEHOLDER": "Inserisci nome squadra",
     "TEAM_NAME_REQUIRED": "Nome richiesto.",
     "TEAM_NAME_MAXLENGTH": "Max 50 caratteri.",
+    "CREST_URL_LABEL": "URL stemma",
+    "CREST_URL_PLACEHOLDER": "Inserisci URL stemma",
     "ELO_LABEL": "Valutazione ELO",
     "ELO_PLACEHOLDER": "Inserisci la valutazione ELO",
     "ELO_REQUIRED": "La valutazione ELO è obbligatoria.",
     "ELO_MIN": "La valutazione ELO deve essere almeno 0.",
     "ELO_MAX": "La valutazione ELO non può superare 5000.",
-    "SAVE": "Salva"
+    "SAVE": "Salva",
+    "UPDATE": "Aggiorna"
   },
   "USER_MODAL": {
     "ADD_TITLE": "Nuovo Utente",

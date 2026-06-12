@@ -372,12 +372,15 @@
   "TEAM_NAME_PLACEHOLDER": "Ingresa nombre",
   "TEAM_NAME_REQUIRED": "Nombre requerido.",
   "TEAM_NAME_MAXLENGTH": "Máximo 50 caracteres.",
+  "CREST_URL_LABEL": "URL del escudo",
+  "CREST_URL_PLACEHOLDER": "Ingresa URL del escudo",
   "ELO_LABEL": "Clasificación ELO",
   "ELO_PLACEHOLDER": "Ingresa la clasificación ELO",
   "ELO_REQUIRED": "La clasificación ELO es obligatoria.",
   "ELO_MIN": "La clasificación ELO debe ser al menos 0.",
   "ELO_MAX": "La clasificación ELO no puede superar 5000.",
-  "SAVE": "Guardar"
+  "SAVE": "Guardar",
+  "UPDATE": "Actualizar"
 },
 "USER_MODAL": {
   "ADD_TITLE": "Agregar Usuario",

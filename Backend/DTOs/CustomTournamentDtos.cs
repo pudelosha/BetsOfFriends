@@ -85,6 +85,7 @@ namespace Backend.DTOs
     {
         public int? TeamId { get; set; }
         public int? PredefinedTeamId { get; set; }
+        public string? CrestUrl { get; set; }
         [Required, MaxLength(50)]
         public string TeamName { get; set; } = string.Empty;
         public int EloRating { get; set; }
@@ -392,6 +393,7 @@ namespace Backend.DTOs
     {
         public int TeamId { get; set; }
         public string TeamName { get; set; } = string.Empty;
+        public string? CrestUrl { get; set; }
     }
 
     public class CustomTournamentExtraPredictionRowDto

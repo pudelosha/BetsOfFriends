@@ -22,8 +22,36 @@
   text-align: center;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 10px;
+}
+
+.team-column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.team-column-home {
+  align-items: flex-start;
+}
+
+.team-column-away {
+  align-items: flex-end;
+}
+
+.team-crest {
+  display: block;
+  width: 90px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.team-name {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .left-align {

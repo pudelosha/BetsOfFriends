@@ -20,6 +20,8 @@ namespace Backend.DTOs
 
         public string TeamHome { get; set; }
         public string TeamAway { get; set; }
+        public string? HomeTeamCrestUrl { get; set; }
+        public string? AwayTeamCrestUrl { get; set; }
         public DateTime StartTime { get; set; }
 
         public decimal BaseAmount { get; set; }
@@ -56,6 +58,8 @@ namespace Backend.DTOs
 
         public string HomeTeam { get; set; }
         public string AwayTeam { get; set; }
+        public string? HomeTeamCrestUrl { get; set; }
+        public string? AwayTeamCrestUrl { get; set; }
 
         public int? HomeScoreUser { get; set; }
         public int? AwayScoreUser { get; set; }

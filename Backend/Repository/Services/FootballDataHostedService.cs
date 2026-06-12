@@ -20,6 +20,11 @@ public class FootballDataHostedService : BackgroundService
         _logger = logger;
     }
 
+    private static string? NormalizeCrestUrl(string? crestUrl)
+    {
+        return string.IsNullOrWhiteSpace(crestUrl) ? null : crestUrl.Trim();
+    }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
@@ -84,6 +89,65 @@ public class FootballDataHostedService : BackgroundService
                 var apiTeamsByName = updatedDto.Teams
                     .GroupBy(t => t.TeamName)
                     .ToDictionary(g => g.Key, g => g.First());
+
+                var storedPredefinedTeams = await dbContext.PredefinedTeams
+                    .Where(t => t.PredefinedTournamentId == tournament.TournamentId)
+                    .ToListAsync(cancellationToken);
+
+                var predefinedTeamsByExternalId = storedPredefinedTeams
+                    .Where(t => t.ExternalTeamId.HasValue)
+                    .ToDictionary(t => t.ExternalTeamId!.Value);
+
+                var predefinedTeamsByName = storedPredefinedTeams
+                    .GroupBy(t => t.TeamName, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+                var changedPredefinedTeamIds = new List<int>();
+
+                foreach (var apiTeam in updatedDto.Teams)
+                {
+                    var normalizedCrestUrl = NormalizeCrestUrl(apiTeam.CrestUrl);
+                    if (normalizedCrestUrl == null)
+                    {
+                        continue;
+                    }
+
+                    PredefinedTeam? storedTeam = null;
+                    if (apiTeam.ExternalTeamId.HasValue)
+                    {
+                        predefinedTeamsByExternalId.TryGetValue(apiTeam.ExternalTeamId.Value, out storedTeam);
+                    }
+
+                    if (storedTeam == null && !string.IsNullOrWhiteSpace(apiTeam.TeamName))
+                    {
+                        predefinedTeamsByName.TryGetValue(apiTeam.TeamName, out storedTeam);
+                    }
+
+                    if (storedTeam != null && storedTeam.CrestUrl != normalizedCrestUrl)
+                    {
+                        storedTeam.CrestUrl = normalizedCrestUrl;
+                        changedPredefinedTeamIds.Add(storedTeam.TeamId);
+                    }
+                }
+
+                if (changedPredefinedTeamIds.Count > 0)
+                {
+                    var linkedCustomTeams = await dbContext.CustomTeams
+                        .Where(t => t.PredefinedTeamId.HasValue
+                            && changedPredefinedTeamIds.Contains(t.PredefinedTeamId.Value)
+                            && t.Tournament.Update == CustomTournament.TournamentUpdate.Auto)
+                        .ToListAsync(cancellationToken);
+
+                    foreach (var customTeam in linkedCustomTeams)
+                    {
+                        var predefinedTeam = storedPredefinedTeams
+                            .FirstOrDefault(t => t.TeamId == customTeam.PredefinedTeamId);
+
+                        customTeam.CrestUrl = predefinedTeam?.CrestUrl;
+                    }
+
+                    await dbContext.SaveChangesAsync(cancellationToken);
+                }
 
                 // ============================================================
                 // Odds helpers (same shape as frontend; deterministic jitter to avoid churn)
@@ -323,6 +387,7 @@ public class FootballDataHostedService : BackgroundService
                                     placeholderHome.PredefinedTeamId = newPredefinedHomeId;
                                     // do NOT rely on names; but keeping is fine as best-effort display
                                     placeholderHome.TeamName = updatedMatch.HomeTeam;
+                                    placeholderHome.CrestUrl = existingMatch.HomeTeam?.CrestUrl;
                                     customMatch.HomeTeamId = placeholderHome.TeamId;
                                 }
                             }
@@ -353,6 +418,7 @@ public class FootballDataHostedService : BackgroundService
                                 {
                                     placeholderAway.PredefinedTeamId = newPredefinedAwayId;
                                     placeholderAway.TeamName = updatedMatch.AwayTeam;
+                                    placeholderAway.CrestUrl = existingMatch.AwayTeam?.CrestUrl;
                                     customMatch.AwayTeamId = placeholderAway.TeamId;
                                 }
                             }

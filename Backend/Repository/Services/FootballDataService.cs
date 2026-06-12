@@ -73,6 +73,7 @@ namespace Backend.Repository.Services
             {
                 TeamName = placeholderTeamName,
                 ExternalTeamId = null,
+                CrestUrl = null,
                 RecordStatus = "New"
             };
 
@@ -110,14 +111,22 @@ namespace Backend.Repository.Services
                     ? awayIdProp.GetInt32()
                     : (int?)null;
 
+                var homeTeamCrestUrl = ReadOptionalString(homeTeamJson, "crest");
+                var awayTeamCrestUrl = ReadOptionalString(awayTeamJson, "crest");
+
                 if (!teams.ContainsKey(homeTeamName))
                 {
                     teams[homeTeamName] = new PredefinedTeamDto
                     {
                         TeamName = homeTeamName,
                         ExternalTeamId = homeTeamId,
+                        CrestUrl = homeTeamCrestUrl,
                         RecordStatus = "New"
                     };
+                }
+                else if (string.IsNullOrWhiteSpace(teams[homeTeamName].CrestUrl))
+                {
+                    teams[homeTeamName].CrestUrl = homeTeamCrestUrl;
                 }
 
                 if (!teams.ContainsKey(awayTeamName))
@@ -126,8 +135,13 @@ namespace Backend.Repository.Services
                     {
                         TeamName = awayTeamName,
                         ExternalTeamId = awayTeamId,
+                        CrestUrl = awayTeamCrestUrl,
                         RecordStatus = "New"
                     };
+                }
+                else if (string.IsNullOrWhiteSpace(teams[awayTeamName].CrestUrl))
+                {
+                    teams[awayTeamName].CrestUrl = awayTeamCrestUrl;
                 }
 
                 var stageKey = $"{stageCode}_{matchday}";
@@ -241,6 +255,13 @@ namespace Backend.Repository.Services
         private static string ToTitleCase(string input)
         {
             return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input.ToLower());
+        }
+
+        private static string? ReadOptionalString(JsonElement json, string propertyName)
+        {
+            return json.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.String
+                ? value.GetString()
+                : null;
         }
 
         private static string MapMatchStatus(string? rawStatus, JsonElement match)

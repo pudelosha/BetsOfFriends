@@ -1,6 +1,7 @@
 export interface Team {
   teamFrontendId: string;
   externalTeamId?: number | null;
+  crestUrl?: string | null;
 
   teamId: number | null;
   predefinedTeamId?: number | null;

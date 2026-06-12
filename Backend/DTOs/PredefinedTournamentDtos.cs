@@ -51,6 +51,7 @@ namespace Backend.DTOs
     {
         public int? TeamId { get; set; }                // Nullable for new teams
         public int? ExternalTeamId { get; set; }        // API data
+        public string? CrestUrl { get; set; }
 
         // Frontend sends this (can be null)
         public int? PredefinedTeamId { get; set; }

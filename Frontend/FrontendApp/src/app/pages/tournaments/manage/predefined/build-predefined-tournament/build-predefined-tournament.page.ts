@@ -235,6 +235,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
             teamId: [team.teamId],
             externalTeamId: [team.externalTeamId || null],
             predefinedTeamId: [team.predefinedTeamId ?? null],
+            crestUrl: [this.resolveTeamCrestUrl(team)],
             teamName: [team.teamName, Validators.required],
             eloRating: [
               team.eloRating ?? 1000,
@@ -367,6 +368,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
           teamFrontendId: [team.teamFrontendId || this.generateFrontendId()],
           teamId: [team.teamId],
           externalTeamId: [team.externalTeamId || null],
+          crestUrl: [this.resolveTeamCrestUrl(team)],
           teamName: [team.teamName, Validators.required],
           predefinedTeamId: [team.predefinedTeamId ?? null],
           eloRating: [
@@ -428,6 +430,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
       const isUpdated =
         previousTeam &&
         (previousTeam.teamName !== team.teamName ||
+          this.normalizeOptionalText(previousTeam.crestUrl) !== this.normalizeOptionalText(team.crestUrl) ||
           Number(previousTeam.eloRating ?? 1000) !== Number(team.eloRating ?? 1000));
 
       this.teamsArray.push(
@@ -436,6 +439,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
           teamId: [team.teamId],
           externalTeamId: [team.externalTeamId ?? null],
           predefinedTeamId: [team.predefinedTeamId ?? null],
+          crestUrl: [this.normalizeOptionalText(team.crestUrl) || null],
           teamName: [team.teamName, Validators.required],
           eloRating: [
             Number(team.eloRating ?? 1000),
@@ -686,6 +690,7 @@ export class BuildPredefinedTournamentPage implements OnInit {
         teamId: isEditing ? team.teamId || null : null,
         predefinedTeamId: team.predefinedTeamId ?? null,
         externalTeamId: team.externalTeamId ?? null,
+        crestUrl: this.normalizeOptionalText(team.crestUrl) || null,
         teamName: team.teamName,
         eloRating: Number(team.eloRating ?? 1000),
         recordStatus: team.recordStatus || 'New',
@@ -825,6 +830,15 @@ export class BuildPredefinedTournamentPage implements OnInit {
 
   private t(key: string, params?: Record<string, unknown>): string {
     return this.translate.instant(key, params);
+  }
+
+  private resolveTeamCrestUrl(team: Team): string | null {
+    const externalTeam = team as Team & { crest?: string | null };
+    return this.normalizeOptionalText(team.crestUrl ?? externalTeam.crest) || null;
+  }
+
+  private normalizeOptionalText(value?: string | null): string {
+    return (value ?? '').trim();
   }
 
   private getEloByFrontendId(): Map<string, number> {

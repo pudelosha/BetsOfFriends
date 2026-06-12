@@ -18,6 +18,7 @@ import { IonList, IonItem, IonButton, IonIcon } from '@ionic/angular/standalone'
 })
 export class StageTeamsManagementPage implements OnInit {
   @Input() teamsArray!: FormArray;
+  @Input() showCrestUrl = false;
   @Output() teamsUpdated = new EventEmitter<{ previousTeams: Team[]; updatedTeams: Team[] }>();
 
   isMobile = false;
@@ -69,6 +70,7 @@ export class StageTeamsManagementPage implements OnInit {
         team: null,
         isEditing: false,
         allTeamNames,
+        showCrestUrl: this.showCrestUrl,
       },
     });
 
@@ -79,6 +81,7 @@ export class StageTeamsManagementPage implements OnInit {
           teamId: null,
           externalTeamId: result.data.externalTeamId ?? null,
           predefinedTeamId: result.data.predefinedTeamId ?? null,
+          crestUrl: this.normalizeOptionalText(result.data.crestUrl) || null,
           teamName: result.data.teamName.trim(),
           eloRating: result.data.eloRating ?? 1000,
           recordStatus: 'New',
@@ -89,6 +92,7 @@ export class StageTeamsManagementPage implements OnInit {
           teamId: [newTeam.teamId],
           externalTeamId: [newTeam.externalTeamId],
           predefinedTeamId: [newTeam.predefinedTeamId],
+          crestUrl: [newTeam.crestUrl],
           teamName: [newTeam.teamName, Validators.required],
           eloRating: [newTeam.eloRating, [Validators.required, Validators.min(0), Validators.max(5000)]],
           recordStatus: [newTeam.recordStatus],
@@ -115,6 +119,7 @@ export class StageTeamsManagementPage implements OnInit {
         team,
         isEditing: true,
         allTeamNames,
+        showCrestUrl: this.showCrestUrl,
       },
     });
 
@@ -125,16 +130,19 @@ export class StageTeamsManagementPage implements OnInit {
 
         const prevName = (teamGroup.get('teamName')?.value ?? '').trim();
         const prevElo = Number(teamGroup.get('eloRating')?.value ?? 1000);
+        const prevCrestUrl = this.normalizeOptionalText(teamGroup.get('crestUrl')?.value);
 
         const nextName = (updatedTeam.teamName ?? '').trim();
         const nextElo = Number(updatedTeam.eloRating ?? 1000);
+        const nextCrestUrl = this.normalizeOptionalText(updatedTeam.crestUrl);
 
-        const changed = prevName !== nextName || prevElo !== nextElo;
+        const changed = prevName !== nextName || prevElo !== nextElo || prevCrestUrl !== nextCrestUrl;
 
         if (changed) {
           teamGroup.patchValue({
             teamName: nextName,
             eloRating: nextElo,
+            crestUrl: nextCrestUrl || null,
             recordStatus: 'Update'
           });
         }
@@ -199,6 +207,7 @@ export class StageTeamsManagementPage implements OnInit {
       teamId: team.teamId,
       externalTeamId: team.externalTeamId ?? null,
       predefinedTeamId: team.predefinedTeamId ?? null,
+      crestUrl: this.normalizeOptionalText(team.crestUrl) || null,
       teamName: team.teamName,
       eloRating: Number(team.eloRating ?? 1000),
       recordStatus: (team.recordStatus ?? 'Uploaded') as RecordStatus,
@@ -232,5 +241,9 @@ export class StageTeamsManagementPage implements OnInit {
 
   private t(key: string, params?: Record<string, unknown>): string {
     return this.translate.instant(key, params);
+  }
+
+  private normalizeOptionalText(value?: string | null): string {
+    return (value ?? '').trim();
   }
 }

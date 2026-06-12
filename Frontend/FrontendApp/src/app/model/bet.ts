@@ -3,6 +3,8 @@ export interface Bet {
   matchId: number;
   teamHome: string;
   teamAway: string;
+  homeTeamCrestUrl?: string | null;
+  awayTeamCrestUrl?: string | null;
   startTime: string;
 
   baseAmount: number;
@@ -43,6 +45,8 @@ export interface BetStats {
   matchStatus: string | null;
   homeTeam: string;
   awayTeam: string;
+  homeTeamCrestUrl?: string | null;
+  awayTeamCrestUrl?: string | null;
   homeScoreUser?: number | null;
   awayScoreUser?: number | null;
   homeScoreActual?: number | null;

@@ -23,6 +23,7 @@
     <div *ngIf="step === 3">
       <app-stage-teams-management
         [teamsArray]="teamsArray"
+        [showCrestUrl]="true"
         (teamsUpdated)="handleTeamsUpdated($event)">
       </app-stage-teams-management>
     </div>

@@ -1,4 +1,4 @@
-import { Component, Input, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
@@ -14,7 +14,7 @@ import { Bet } from '../../model/bet';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [CommonModule, FormsModule, TranslateModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonLabel, IonPicker, IonPickerColumn, IonPickerColumnOption, IonItem, IonSegment, IonSegmentButton],
 })
-export class EditBetModalComponent implements AfterViewInit {
+export class EditBetModalComponent {
   @Input() set bet(value: Bet) {
     if (!value) {
       console.error("Received undefined or null bet!");
@@ -42,8 +42,6 @@ export class EditBetModalComponent implements AfterViewInit {
     private toastController: ToastController,
     private translate: TranslateService
   ) {}
-
-  ngAfterViewInit() {}
 
   onHomeGoalsChange(event: CustomEvent) {
     this.homeGoals = event.detail.value;

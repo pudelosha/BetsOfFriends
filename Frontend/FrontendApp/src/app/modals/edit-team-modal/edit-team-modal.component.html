@@ -9,6 +9,24 @@
 
 <ion-content class="ion-padding">
   <form [formGroup]="teamForm" class="team-form">
+    <div class="crest-preview" *ngIf="showCrestUrl && crestUrlPreview">
+      <img
+        class="crest-image"
+        [src]="crestUrlPreview"
+        [alt]="teamForm.get('teamName')?.value || 'Team crest'">
+    </div>
+
+    <!-- Crest URL Input -->
+    <div class="form-group" *ngIf="showCrestUrl">
+      <ion-label class="selector-label">{{ 'TEAM_MODAL.CREST_URL_LABEL' | translate }}</ion-label>
+      <ion-input
+        type="url"
+        inputmode="url"
+        formControlName="crestUrl"
+        [placeholder]="'TEAM_MODAL.CREST_URL_PLACEHOLDER' | translate">
+      </ion-input>
+    </div>
+
     <!-- Team Name Input -->
     <div class="form-group">
       <ion-label class="selector-label">{{ 'TEAM_MODAL.TEAM_NAME_LABEL' | translate }}</ion-label>
@@ -51,7 +69,7 @@
     <!-- Save Button -->
     <div class="save-button-container">
       <ion-button expand="full" color="medium" (click)="saveTeam()">
-        {{ 'TEAM_MODAL.SAVE' | translate }}
+        {{ (isEditing ? 'TEAM_MODAL.UPDATE' : 'TEAM_MODAL.SAVE') | translate }}
       </ion-button>
     </div>
   </form>

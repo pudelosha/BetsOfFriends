@@ -270,6 +270,8 @@ namespace Backend.Repository.Services
                     MatchId = b.MatchId,
                     TeamHome = b.Match.HomeTeam.TeamName,
                     TeamAway = b.Match.AwayTeam.TeamName,
+                    HomeTeamCrestUrl = b.Match.HomeTeam.CrestUrl,
+                    AwayTeamCrestUrl = b.Match.AwayTeam.CrestUrl,
 
                     StartTime = DateTime.SpecifyKind(b.Match.MatchStart, DateTimeKind.Utc),
 
@@ -605,6 +607,8 @@ namespace Backend.Repository.Services
 
                     HomeTeam = match.HomeTeam.TeamName,
                     AwayTeam = match.AwayTeam.TeamName,
+                    HomeTeamCrestUrl = match.HomeTeam.CrestUrl,
+                    AwayTeamCrestUrl = match.AwayTeam.CrestUrl,
                     HomeScoreActual = match.HomeScore,
                     AwayScoreActual = match.AwayScore,
                     Result = result,

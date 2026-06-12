@@ -12,9 +12,25 @@
 
     <!-- Team Names -->
     <ion-row class="team-names">
-      <ion-col size="5"><strong>{{ betStats.homeTeam }}</strong></ion-col>
+      <ion-col size="5" class="team-column team-column-centered">
+        <img
+          *ngIf="betStats.homeTeamCrestUrl"
+          class="team-crest"
+          [src]="betStats.homeTeamCrestUrl"
+          [alt]="betStats.homeTeam"
+        />
+        <strong class="team-name">{{ betStats.homeTeam }}</strong>
+      </ion-col>
       <ion-col size="2" class="centered-text"></ion-col>
-      <ion-col size="5"><strong>{{ betStats.awayTeam }}</strong></ion-col>
+      <ion-col size="5" class="team-column team-column-centered">
+        <img
+          *ngIf="betStats.awayTeamCrestUrl"
+          class="team-crest"
+          [src]="betStats.awayTeamCrestUrl"
+          [alt]="betStats.awayTeam"
+        />
+        <strong class="team-name">{{ betStats.awayTeam }}</strong>
+      </ion-col>
     </ion-row>
 
     <!-- Match Scores -->

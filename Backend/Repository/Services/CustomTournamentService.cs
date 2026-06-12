@@ -98,6 +98,47 @@ namespace Backend.Repository.Services
             throw new ArgumentException($"Qualification odds must be greater than zero for {label}.");
         }
 
+        private static string? NormalizeCrestUrl(string? crestUrl)
+        {
+            return string.IsNullOrWhiteSpace(crestUrl) ? null : crestUrl.Trim();
+        }
+
+        private static string? ResolveTeamCrestUrl(
+            string? submittedCrestUrl,
+            int? predefinedTeamId,
+            IReadOnlyDictionary<int, string?> predefinedCrestsById)
+        {
+            var normalizedSubmitted = NormalizeCrestUrl(submittedCrestUrl);
+            if (normalizedSubmitted != null)
+            {
+                return normalizedSubmitted;
+            }
+
+            return predefinedTeamId.HasValue &&
+                   predefinedCrestsById.TryGetValue(predefinedTeamId.Value, out var predefinedCrestUrl)
+                ? NormalizeCrestUrl(predefinedCrestUrl)
+                : null;
+        }
+
+        private async Task<Dictionary<int, string?>> GetPredefinedTeamCrestsByIdAsync(
+            IEnumerable<CustomTeamDto> teams)
+        {
+            var predefinedTeamIds = teams
+                .Where(team => team.PredefinedTeamId.HasValue)
+                .Select(team => team.PredefinedTeamId!.Value)
+                .Distinct()
+                .ToList();
+
+            if (predefinedTeamIds.Count == 0)
+            {
+                return new Dictionary<int, string?>();
+            }
+
+            return await _context.PredefinedTeams
+                .Where(team => predefinedTeamIds.Contains(team.TeamId))
+                .ToDictionaryAsync(team => team.TeamId, team => team.CrestUrl);
+        }
+
         private async Task<bool> IsExtraPredictionLockedAsync(int tournamentId)
         {
             var now = DateTime.UtcNow;
@@ -167,11 +208,14 @@ namespace Backend.Repository.Services
 
                 _logger.LogInformation("Step 3: Assigned creator as Admin");
 
+                var predefinedCrestsById = await GetPredefinedTeamCrestsByIdAsync(tournamentDto.Teams);
+
                 var teams = tournamentDto.Teams.Select(t => new CustomTeam
                 {
                     TeamName = t.TeamName,
                     TournamentId = tournament.TournamentId,
                     PredefinedTeamId = t.PredefinedTeamId,
+                    CrestUrl = ResolveTeamCrestUrl(t.CrestUrl, t.PredefinedTeamId, predefinedCrestsById),
                     EloRating = t.EloRating
                 }).ToList();
 
@@ -509,6 +553,7 @@ namespace Backend.Repository.Services
                 var teamsToRemove = tournamentDto.Teams.Where(t => t.RecordStatus == "Delete").ToList();
                 var teamsToUpdate = tournamentDto.Teams.Where(t => t.RecordStatus == "Update").ToList();
                 var newTeams = tournamentDto.Teams.Where(t => t.RecordStatus == "New").ToList();
+                var predefinedCrestsById = await GetPredefinedTeamCrestsByIdAsync(tournamentDto.Teams);
 
                 foreach (var team in teamsToRemove)
                 {
@@ -536,9 +581,11 @@ namespace Backend.Repository.Services
 
                 foreach (var team in teamsToUpdate)
                 {
-                    if (existingTeams.TryGetValue(team.TeamId.Value, out var existingTeam))
+                    if (team.TeamId.HasValue && existingTeams.TryGetValue(team.TeamId.Value, out var existingTeam))
                     {
                         existingTeam.TeamName = team.TeamName;
+                        existingTeam.PredefinedTeamId = team.PredefinedTeamId;
+                        existingTeam.CrestUrl = ResolveTeamCrestUrl(team.CrestUrl, team.PredefinedTeamId, predefinedCrestsById);
                         existingTeam.EloRating = team.EloRating;
                     }
                 }
@@ -550,6 +597,7 @@ namespace Backend.Repository.Services
                         TeamName = team.TeamName,
                         TournamentId = tournament.TournamentId,
                         PredefinedTeamId = team.PredefinedTeamId, // This can be null or a valid ID
+                        CrestUrl = ResolveTeamCrestUrl(team.CrestUrl, team.PredefinedTeamId, predefinedCrestsById),
                         EloRating = team.EloRating
                     });
                 }
@@ -869,6 +917,7 @@ namespace Backend.Repository.Services
                         TeamId = team.TeamId,
                         TeamName = team.TeamName,
                         PredefinedTeamId = team.PredefinedTeamId,
+                        CrestUrl = team.CrestUrl,
                         EloRating = team.EloRating
                     }).ToList(),
                     Stages = tournament.Stages.Select(stage => new CustomStageDto
@@ -1471,7 +1520,8 @@ namespace Backend.Repository.Services
                 .Select(t => new CustomTournamentExtraPredictionTeamDto
                 {
                     TeamId = t.TeamId,
-                    TeamName = t.TeamName
+                    TeamName = t.TeamName,
+                    CrestUrl = t.CrestUrl
                 })
                 .ToListAsync();
 
@@ -2454,6 +2504,7 @@ namespace Backend.Repository.Services
                 {
                     TeamId = team.TeamId,
                     PredefinedTeamId = team.PredefinedTeamId,
+                    CrestUrl = team.CrestUrl,
                     TeamName = team.TeamName,
                     RecordStatus = "Uploaded"
                 };
@@ -2468,6 +2519,7 @@ namespace Backend.Repository.Services
                     if (predefined.UpdatedAt > (team.UpdatedAt ?? team.CreatedAt))
                     {
                         teamDto.TeamName = predefined.TeamName;
+                        teamDto.CrestUrl = predefined.CrestUrl;
                         teamDto.RecordStatus = "Update";
                     }
                 }
@@ -2483,6 +2535,7 @@ namespace Backend.Repository.Services
                     {
                         TeamId = null,
                         PredefinedTeamId = predefined.TeamId,
+                        CrestUrl = predefined.CrestUrl,
                         TeamName = predefined.TeamName,
                         RecordStatus = "New"
                     });

@@ -11,9 +11,25 @@
   <!-- First Section: Team Names -->
   <ion-grid>
     <ion-row class="team-names">
-      <ion-col class="left-align"><strong>{{ bet.teamHome }}</strong></ion-col>
+      <ion-col class="team-column team-column-home left-align">
+        <img
+          *ngIf="bet.homeTeamCrestUrl"
+          class="team-crest team-crest-home"
+          [src]="bet.homeTeamCrestUrl"
+          [alt]="bet.teamHome"
+        />
+        <strong class="team-name">{{ bet.teamHome }}</strong>
+      </ion-col>
       <ion-col class="separator"></ion-col>
-      <ion-col class="right-align"><strong>{{ bet.teamAway }}</strong></ion-col>
+      <ion-col class="team-column team-column-away right-align">
+        <img
+          *ngIf="bet.awayTeamCrestUrl"
+          class="team-crest team-crest-away"
+          [src]="bet.awayTeamCrestUrl"
+          [alt]="bet.teamAway"
+        />
+        <strong class="team-name">{{ bet.teamAway }}</strong>
+      </ion-col>
     </ion-row>
   </ion-grid>
 

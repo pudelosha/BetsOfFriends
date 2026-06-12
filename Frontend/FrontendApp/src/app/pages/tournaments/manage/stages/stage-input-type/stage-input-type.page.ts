@@ -228,6 +228,7 @@ export class StageInputTypePage implements OnInit {
             teamId: null,
             externalTeamId: t.externalTeamId,
             predefinedTeamId: t.teamId,
+            crestUrl: this.resolveTeamCrestUrl(t),
             teamName: t.teamName,
             recordStatus: 'New'
           }));
@@ -665,6 +666,11 @@ export class StageInputTypePage implements OnInit {
 
   private t(key: string, params?: Record<string, unknown>): string {
     return this.translate.instant(key, params);
+  }
+
+  private resolveTeamCrestUrl(team: Team): string | null {
+    const externalTeam = team as Team & { crest?: string | null };
+    return team.crestUrl ?? externalTeam.crest ?? null;
   }
   
   generateFrontendId(): string {
