@@ -39,6 +39,10 @@
       "Title24Hours": "Promemoria: partita tra 24 ore",
       "Message24Hours": "Non hai ancora inviato il pronostico per {{HOME_TEAM}} vs {{AWAY_TEAM}}. La partita inizia tra meno di 24 ore."
     },
+    "ManualPendingBetReminder": {
+      "Title": "Promemoria: invia il pronostico",
+      "Message": "Non hai ancora inviato il pronostico per {{HOME_TEAM}} vs {{AWAY_TEAM}}."
+    },
     "ResultsUpdated": {
       "Title": "Risultati del torneo aggiornati",
       "Message": "I risultati sono stati ricalcolati dopo {{HOME_TEAM}} vs {{AWAY_TEAM}}. Risultato finale: {{SCORE}}."

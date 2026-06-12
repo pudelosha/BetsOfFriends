@@ -40,9 +40,31 @@
       <ion-col size="5"><strong>{{ betStats.awayScoreActual ?? '-' }}</strong></ion-col>
     </ion-row>
 
-    <ion-row class="placed-bets-summary">
-      <ion-col size="12" class="centered-text">
-        {{ 'BETS_OVERVIEW.PLACED_BETS_SUMMARY' | translate:{ placed: betStats.placedBetsCount, total: betStats.participantsCount } }}
+    <ion-row class="section-divider-row">
+      <ion-col size="12">
+        <div class="divider"></div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="placed-bets-summary section-title-row">
+      <ion-col size="12">
+        <div class="placed-bets-summary-content" [class.has-reminder-button]="canOpenPendingReminders()">
+          <span class="placed-bets-summary-text">
+            {{ 'BETS_OVERVIEW.PLACED_BETS_SUMMARY' | translate:{ placed: betStats.placedBetsCount, total: betStats.participantsCount } }}
+          </span>
+          <ion-button
+            *ngIf="canOpenPendingReminders()"
+            class="pending-reminder-button"
+            color="medium"
+            fill="outline"
+            size="small"
+            [disabled]="loadingPendingReminders"
+            (click)="openPendingBetReminders()"
+          >
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            {{ 'BETS_OVERVIEW.PENDING_REMINDERS_BUTTON' | translate }}
+          </ion-button>
+        </div>
       </ion-col>
     </ion-row>
 
@@ -76,9 +98,15 @@
       </ion-col>
     </ion-row>
 
-    <ion-row class="average-goals-label">
+    <ion-row class="section-divider-row average-goals-divider">
+      <ion-col size="12">
+        <div class="divider"></div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="average-goals-label section-title-row">
       <ion-col size="12" class="centered-text">
-        <strong>{{ 'BETS_OVERVIEW.AVERAGE_GOALS' | translate }}</strong>
+        <strong class="section-title">{{ 'BETS_OVERVIEW.AVERAGE_GOALS' | translate }}</strong>
       </ion-col>
     </ion-row>
 
@@ -118,8 +146,16 @@
 
     <!-- User Bets Table -->
     <ng-container *ngIf="shouldShowUserBets()">
-      <ion-row class="betting-row">
-        <ion-col size="12" class="centered-text"><strong>{{ 'BETS_OVERVIEW.USER_BETS' | translate }}</strong></ion-col>
+      <ion-row class="section-divider-row user-bets-divider">
+        <ion-col size="12">
+          <div class="divider"></div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="section-title-row user-bets-title">
+        <ion-col size="12" class="centered-text">
+          <strong class="section-title">{{ 'BETS_OVERVIEW.USER_BETS' | translate }}</strong>
+        </ion-col>
       </ion-row>
 
       <!-- Table Header -->

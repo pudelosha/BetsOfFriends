@@ -298,7 +298,16 @@
     "AQ": "AQ",
     "RESULT": "R",
     "AVERAGE_GOALS": "Average predicted goals",
-    "PLACED_BETS_SUMMARY": "{{placed}} out of {{total}} participants placed bets"
+    "PLACED_BETS_SUMMARY": "{{placed}} out of {{total}} participants placed bets",
+    "PENDING_REMINDERS_BUTTON": "Remind",
+    "PENDING_REMINDERS_TITLE": "Participants without bets",
+    "PENDING_REMINDERS_SEND_ALL": "Send reminders to all",
+    "PENDING_REMINDERS_SEND": "Send",
+    "PENDING_REMINDERS_SENT": "Sent",
+    "PENDING_REMINDERS_NONE": "Everyone has placed a bet.",
+    "PENDING_REMINDERS_SENT_TOAST": "Reminder emails sent: {{count}}.",
+    "PENDING_REMINDERS_FAILED_TOAST": "Failed to send reminder email.",
+    "PENDING_REMINDERS_LOAD_FAILED": "Failed to load participants."
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Edit Bet",
@@ -498,6 +507,10 @@
   "LATEST_MESSAGES": {
     "TITLE": "Latest Messages",
     "NO_MESSAGES": "No messages found."
+  },
+  "MISSING_BETS": {
+    "TITLE": "Missing bets",
+    "NO_MISSING_BETS": "No missing bets in the next 48 hours."
   },
   "STARTED_MATCHES": {
     "TITLE": "Started Custom Matches"

@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit, OnInit, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonContent } from '@ionic/angular';
@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { CustomMatchService } from 'src/app/services/custom-match.service';
 
 @Component({
   selector: 'app-manage-custom-matches',
@@ -22,11 +23,12 @@ import { IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIc
   imports: [CommonModule, FormsModule, ReactiveFormsModule, ManageCustomFinalisedPage, ManageCustomStartedPage, ManageCustomUpcomingPage, TranslateModule, IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
+export class ManageCustomMatchesPage implements OnInit {
   selectedTab: string = 'upcoming';
   availableStages: string[] = [];
   selectedStageIndex = 0;
   selectedStage: string = '';
+  private tabChangeSequence = 0;
 
   @ViewChild(IonContent, { static: false }) content!: IonContent;
 
@@ -34,10 +36,11 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
     private tournamentService: CustomTournamentService,
     private tournamentSelectionService: TournamentSelectionService,
     private route: ActivatedRoute,
-    private titleService: TitleService
+    private titleService: TitleService,
+    private matchService: CustomMatchService
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.titleService.setTitle('MANAGE_CUSTOM_MATCHES.TITLE');
   }
 
@@ -62,10 +65,6 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
     this.loadStages(urlStage ?? undefined);
   }
   
-  ngAfterViewInit() {
-
-  }
-
   forceTabReload() {
     const currentTab = this.selectedTab;
     this.selectedTab = '';
@@ -102,6 +101,10 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
             this.selectedStageIndex = 0;
           }          
         }
+
+        if (!stageFromUrl) {
+          await this.selectFirstStageWithMatchesIfCurrentStageIsEmpty(this.selectedTab);
+        }
       }
   
       this.forceTabReload();
@@ -132,14 +135,90 @@ export class ManageCustomMatchesPage implements OnInit, AfterViewInit {
     }
   }  
   
-  changeTab(tab: string) {
-    this.selectedTab = tab;
-    this.scrollToTop();
+  async changeTab(tab: string) {
+    const requestedTab = this.normalizeTab(tab);
+    const sequence = ++this.tabChangeSequence;
+
+    this.selectedTab = '';
+
+    await this.selectFirstStageWithMatchesIfCurrentStageIsEmpty(requestedTab);
+
+    if (sequence !== this.tabChangeSequence) {
+      return;
+    }
+
+    setTimeout(() => {
+      if (sequence === this.tabChangeSequence) {
+        this.selectedTab = requestedTab;
+        this.scrollToTop();
+      }
+    }, 100);
   }
 
   scrollToTop() {
     if (this.content) {
       this.content.scrollToTop(300);
+    }
+  }
+
+  private normalizeTab(tab: string): string {
+    return tab === 'started' || tab === 'finalised' || tab === 'upcoming'
+      ? tab
+      : 'upcoming';
+  }
+
+  private getMatchStatusForTab(tab: string): 'Timed' | 'In_Play' | 'Finished' | null {
+    switch (tab) {
+      case 'upcoming':
+        return 'Timed';
+      case 'started':
+        return 'In_Play';
+      case 'finalised':
+        return 'Finished';
+      default:
+        return null;
+    }
+  }
+
+  private async selectFirstStageWithMatchesIfCurrentStageIsEmpty(tab: string): Promise<void> {
+    const status = this.getMatchStatusForTab(tab);
+    const tournamentId = this.tournamentSelectionService.getSelectedTournament();
+
+    if (!status || !tournamentId || !this.availableStages.length || !this.selectedStage) {
+      return;
+    }
+
+    if (await this.stageHasMatches(tournamentId, status, this.selectedStage)) {
+      return;
+    }
+
+    for (const stage of this.availableStages) {
+      if (stage === this.selectedStage) {
+        continue;
+      }
+
+      if (await this.stageHasMatches(tournamentId, status, stage)) {
+        this.selectedStage = stage;
+        this.selectedStageIndex = this.availableStages.indexOf(stage);
+        return;
+      }
+    }
+  }
+
+  private async stageHasMatches(
+    tournamentId: number,
+    status: 'Timed' | 'In_Play' | 'Finished',
+    stage: string
+  ): Promise<boolean> {
+    try {
+      const matches = await firstValueFrom(
+        this.matchService.getMatchesByTournamentStage(tournamentId, status, stage)
+      );
+
+      return matches.length > 0;
+    } catch (error) {
+      console.error(`Error checking custom matches for stage ${stage}:`, error);
+      return false;
     }
   }
 }

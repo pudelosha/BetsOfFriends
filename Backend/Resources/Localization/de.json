@@ -39,6 +39,10 @@
       "Title24Hours": "Erinnerung: Spiel beginnt in 24 Stunden",
       "Message24Hours": "Du hast deinen Tipp fuer {{HOME_TEAM}} gegen {{AWAY_TEAM}} noch nicht abgegeben. Das Spiel beginnt in weniger als 24 Stunden."
     },
+    "ManualPendingBetReminder": {
+      "Title": "Erinnerung: Tipp abgeben",
+      "Message": "Du hast deinen Tipp fuer {{HOME_TEAM}} gegen {{AWAY_TEAM}} noch nicht abgegeben."
+    },
     "ResultsUpdated": {
       "Title": "Turnierergebnisse aktualisiert",
       "Message": "Die Ergebnisse wurden nach {{HOME_TEAM}} gegen {{AWAY_TEAM}} neu berechnet. Endstand: {{SCORE}}."

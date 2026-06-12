@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'BETS_OVERVIEW.PENDING_REMINDERS_TITLE' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">{{ 'BET_MODAL.CLOSE' | translate }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-button
+    expand="block"
+    color="medium"
+    class="send-all-button"
+    [disabled]="!hasUnsentParticipants() || sendingAll"
+    (click)="sendAll()"
+  >
+    <ion-icon name="mail-outline" slot="start"></ion-icon>
+    {{ 'BETS_OVERVIEW.PENDING_REMINDERS_SEND_ALL' | translate }}
+  </ion-button>
+
+  <ion-list *ngIf="participants.length; else noParticipants" class="participants-list">
+    <ion-item *ngFor="let participant of participants" class="participant-item">
+      <ion-label class="participant-name">{{ participant.userName }}</ion-label>
+      <ion-button
+        slot="end"
+        class="send-one-button"
+        color="medium"
+        size="small"
+        [disabled]="isReminderSent(participant) || isSending(participant.userId)"
+        (click)="sendOne(participant)"
+      >
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        {{ isReminderSent(participant) ? ('BETS_OVERVIEW.PENDING_REMINDERS_SENT' | translate) : ('BETS_OVERVIEW.PENDING_REMINDERS_SEND' | translate) }}
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #noParticipants>
+    <div class="empty-state">
+      {{ 'BETS_OVERVIEW.PENDING_REMINDERS_NONE' | translate }}
+    </div>
+  </ng-template>
+</ion-content>

@@ -39,6 +39,10 @@
       "Title24Hours": "Lembrete: jogo comeca em 24 horas",
       "Message24Hours": "Ainda nao submeteu a sua aposta para {{HOME_TEAM}} vs {{AWAY_TEAM}}. O jogo comeca em menos de 24 horas."
     },
+    "ManualPendingBetReminder": {
+      "Title": "Lembrete: submeta a sua aposta",
+      "Message": "Ainda nao submeteu a sua aposta para {{HOME_TEAM}} vs {{AWAY_TEAM}}."
+    },
     "ResultsUpdated": {
       "Title": "Resultados do torneio atualizados",
       "Message": "Os resultados foram recalculados apos {{HOME_TEAM}} vs {{AWAY_TEAM}}. Resultado final: {{SCORE}}."

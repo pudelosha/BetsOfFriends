@@ -39,6 +39,10 @@
       "Title24Hours": "Reminder: match starts in 24 hours",
       "Message24Hours": "You have not submitted your bet for {{HOME_TEAM}} vs {{AWAY_TEAM}}. The match starts in less than 24 hours."
     },
+    "ManualPendingBetReminder": {
+      "Title": "Reminder: submit your bet",
+      "Message": "You have not submitted your bet for {{HOME_TEAM}} vs {{AWAY_TEAM}} yet."
+    },
     "ResultsUpdated": {
       "Title": "Tournament results updated",
       "Message": "Results were recalculated after {{HOME_TEAM}} vs {{AWAY_TEAM}}. Final score: {{SCORE}}."

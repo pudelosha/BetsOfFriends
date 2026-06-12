@@ -39,6 +39,10 @@
       "Title24Hours": "Rappel : match dans 24 heures",
       "Message24Hours": "Vous n'avez pas encore envoye votre pari pour {{HOME_TEAM}} contre {{AWAY_TEAM}}. Le match commence dans moins de 24 heures."
     },
+    "ManualPendingBetReminder": {
+      "Title": "Rappel : envoyez votre pari",
+      "Message": "Vous n'avez pas encore envoye votre pari pour {{HOME_TEAM}} contre {{AWAY_TEAM}}."
+    },
     "ResultsUpdated": {
       "Title": "Resultats du tournoi mis a jour",
       "Message": "Les resultats ont ete recalcules apres {{HOME_TEAM}} contre {{AWAY_TEAM}}. Score final : {{SCORE}}."

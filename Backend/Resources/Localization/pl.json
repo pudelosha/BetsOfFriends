@@ -39,6 +39,10 @@
       "Title24Hours": "Przypomnienie: mecz za 24 godziny",
       "Message24Hours": "Nie wyslales jeszcze typu na {{HOME_TEAM}} vs {{AWAY_TEAM}}. Mecz zaczyna sie za mniej niz 24 godziny."
     },
+    "ManualPendingBetReminder": {
+      "Title": "Przypomnienie: wyslij swoj typ",
+      "Message": "Nie wyslales jeszcze typu na {{HOME_TEAM}} vs {{AWAY_TEAM}}."
+    },
     "ResultsUpdated": {
       "Title": "Wyniki turnieju zaktualizowane",
       "Message": "Wyniki zostaly przeliczone po meczu {{HOME_TEAM}} vs {{AWAY_TEAM}}. Wynik koncowy: {{SCORE}}."

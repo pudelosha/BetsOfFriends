@@ -1,0 +1,21 @@
+<div class="missing-bets-box" *ngIf="visible" (click)="goToPlacedBets()">
+  <h2 class="frame-title">{{ 'MISSING_BETS.TITLE' | translate }}</h2>
+
+  <ion-list class="missing-bets-list" *ngIf="matches.length > 0">
+    <ion-item *ngFor="let match of matches" class="missing-bets-item">
+      <div class="missing-bets-grid">
+        <div class="missing-bets-details">
+          <span class="teams">{{ match.homeTeam }} - {{ match.awayTeam }} ({{ getParticipantNames(match) }})</span>
+        </div>
+
+        <div class="missing-bets-date">
+          <span class="date-time">{{ match.matchTime | date: 'yyyy.MM.dd HH:mm' }}</span>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <p class="no-missing-bets-message" *ngIf="!isLoading && matches.length === 0">
+    {{ 'MISSING_BETS.NO_MISSING_BETS' | translate }}
+  </p>
+</div>

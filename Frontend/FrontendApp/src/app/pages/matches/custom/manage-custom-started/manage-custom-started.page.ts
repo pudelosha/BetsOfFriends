@@ -24,6 +24,7 @@ export class ManageCustomStartedPage implements OnInit, OnChanges {
   matches: Match[] = [];
   isLoading = true;
   errorMessage: string = '';
+  private loadSequence = 0;
 
   constructor(
     private modalCtrl: ModalController,
@@ -49,9 +50,17 @@ export class ManageCustomStartedPage implements OnInit, OnChanges {
   }
   
   async loadMatches() {
+    const requestedStage = this.stage;
+    const sequence = ++this.loadSequence;
+
     this.isLoading = true;
     this.matches = [];
     this.errorMessage = '';
+
+    if (!requestedStage) {
+      this.isLoading = false;
+      return;
+    }
   
     const loading = await this.loadingController.create({
       message: this.t('TOASTS.LOADING_MATCHES'),
@@ -65,21 +74,33 @@ export class ManageCustomStartedPage implements OnInit, OnChanges {
   
     if (!tournamentId) {
       console.warn("No tournament selected.");
-      this.errorMessage = this.t('TOASTS.NO_TOURNAMENT_SELECTED');
-      this.isLoading = false;
+      if (sequence === this.loadSequence) {
+        this.errorMessage = this.t('TOASTS.NO_TOURNAMENT_SELECTED');
+        this.isLoading = false;
+      }
       await loading.dismiss();
       return;
     }
   
     try {
-      this.matches = await firstValueFrom(
-        this.matchService.getMatchesByTournamentStage(tournamentId, 'In_Play', this.stage)
+      const matches = await firstValueFrom(
+        this.matchService.getMatchesByTournamentStage(tournamentId, 'In_Play', requestedStage)
       );
+
+      if (sequence !== this.loadSequence) {
+        return;
+      }
+
+      this.matches = matches;
   
       if (!this.matches.length) {
         this.errorMessage = this.t('TOASTS.NO_MATCHES_FOR_STAGE');
       }
     } catch (error: unknown) {
+      if (sequence !== this.loadSequence) {
+        return;
+      }
+
       console.error("API error:", error);
   
       if (error instanceof HttpErrorResponse) {
@@ -92,7 +113,9 @@ export class ManageCustomStartedPage implements OnInit, OnChanges {
       const delay = Math.max(0, 200 - elapsedTime);
   
       setTimeout(async () => {
-        this.isLoading = false;
+        if (sequence === this.loadSequence) {
+          this.isLoading = false;
+        }
         await loading.dismiss();
       }, delay);
     }

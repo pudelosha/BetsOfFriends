@@ -578,6 +578,12 @@ public class RegisterServiceTests
 
         public Task SendPasswordResetEmailAsync(ApplicationUser user) => Task.CompletedTask;
 
-        public Task SendNotificationEmailAsync(ApplicationUser user, string title, string message, string route, string language) => Task.CompletedTask;
+        public Task SendNotificationEmailAsync(
+            ApplicationUser user,
+            string title,
+            string message,
+            string route,
+            string language,
+            bool includeNotificationConsentText = true) => Task.CompletedTask;
     }
 }

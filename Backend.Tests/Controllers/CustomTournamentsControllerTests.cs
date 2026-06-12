@@ -216,7 +216,13 @@ public class CustomTournamentsControllerTests
         public Task SendTournamentInvitationEmailAsync(string email, string tournamentName, int tournamentId) => throw new NotImplementedException();
         public Task SendConfirmationEmailAsync(ApplicationUser user) => throw new NotImplementedException();
         public Task SendPasswordResetEmailAsync(ApplicationUser user) => throw new NotImplementedException();
-        public Task SendNotificationEmailAsync(ApplicationUser user, string title, string message, string route, string language) => throw new NotImplementedException();
+        public Task SendNotificationEmailAsync(
+            ApplicationUser user,
+            string title,
+            string message,
+            string route,
+            string language,
+            bool includeNotificationConsentText = true) => throw new NotImplementedException();
     }
 
     private sealed class FakeBetService : IBetService
@@ -234,9 +240,12 @@ public class CustomTournamentsControllerTests
         public Task<List<BetDto>> GetBetsByStatusAndStageAsync(int tournamentId, string userId, string status, string stage) => throw new NotImplementedException();
         public Task GenerateBetsForNewMatchAsync(int matchId, int tournamentId) => throw new NotImplementedException();
         public Task<BetStatsDto?> GetBetStatisticsAsync(int matchId, string userId) => throw new NotImplementedException();
+        public Task<PendingBetReminderSummaryDto?> GetPendingBetReminderParticipantsAsync(int matchId, string userId) => throw new NotImplementedException();
+        public Task<SendPendingBetReminderResultDto> SendPendingBetReminderAsync(int matchId, string userId, SendPendingBetReminderRequestDto request) => throw new NotImplementedException();
         public Task RecalculateBetsForMatchAsync(int matchId) => throw new NotImplementedException();
         public Task<bool> RecalculateBetsForTournamentAsync(int tournamentId) => throw new NotImplementedException();
         public Task<List<UpcomingBetDto>> GetUpcomingBetsAsync(int tournamentId, string userId, int? limit = null) => throw new NotImplementedException();
+        public Task<MissingBetsSummaryDto?> GetMissingBetsSummaryAsync(int tournamentId, string userId, int matchLimit = 5, int hoursAhead = 48) => throw new NotImplementedException();
         public Task MarkBetsAsCompletedForMatchAsync(int matchId) => throw new NotImplementedException();
     }
 
@@ -261,6 +270,7 @@ public class CustomTournamentsControllerTests
         public Task NotifyAdminsJoinRequestAsync(CustomTournamentUserAssignment joinRequest) => throw new NotImplementedException();
         public Task NotifyUserJoinRequestApprovedAsync(CustomTournamentUserAssignment assignment) => throw new NotImplementedException();
         public Task NotifyMatchStartingSoonAsync(CustomMatch match, TimeSpan threshold) => throw new NotImplementedException();
+        public Task<List<string>> NotifyManualPendingBetReminderAsync(CustomMatch match, List<ApplicationUser> recipients) => throw new NotImplementedException();
         public Task NotifyDailyTournamentUpdatesAsync(DateTime nowUtc) => throw new NotImplementedException();
         public Task NotifyNewGamesToBetAsync(CustomMatch match) => throw new NotImplementedException();
         public Task NotifySuperAdminsAboutSupportMessageAsync(SupportMessage message) => throw new NotImplementedException();

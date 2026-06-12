@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit, OnInit, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonContent } from '@ionic/angular';
@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
 import { IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { BetService } from 'src/app/services/bet.service';
 
 @Component({
   selector: 'app-my-bets',
@@ -22,11 +23,12 @@ import { IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIc
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MyBetsFinalisedPage, MyBetsPlacedPage, MyBetsToPlacePage, TranslateModule, IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonSelect, IonSelectOption],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class MyBetsPage implements OnInit, AfterViewInit {
+export class MyBetsPage {
   selectedTab: string = 'to-place';
   availableStages: string[] = [];
   selectedStageIndex = 0;
   selectedStage: string = '';
+  private tabChangeSequence = 0;
   
   @ViewChild(IonContent, { static: false }) content!: IonContent;
 
@@ -34,15 +36,9 @@ export class MyBetsPage implements OnInit, AfterViewInit {
     private tournamentService: CustomTournamentService,
     private tournamentSelectionService: TournamentSelectionService,
     private route: ActivatedRoute,
-    private titleService: TitleService
+    private titleService: TitleService,
+    private betService: BetService
   ) {}
-
-  ngOnInit() {
-  }
-
-  ngAfterViewInit() {
-    
-  }
 
   ionViewDidEnter() {
     this.route.queryParamMap.subscribe(params => {
@@ -71,10 +67,22 @@ export class MyBetsPage implements OnInit, AfterViewInit {
     this.changeTab(this.selectedTab);
   }
 
-  changeTab(tab: string) {
+  async changeTab(tab: string) {
+    const requestedTab = this.normalizeTab(tab);
+    const sequence = ++this.tabChangeSequence;
+
     this.selectedTab = '';
+
+    await this.selectFirstStageWithBetsIfCurrentStageIsEmpty(requestedTab);
+
+    if (sequence !== this.tabChangeSequence) {
+      return;
+    }
+
     setTimeout(() => {
-      this.selectedTab = tab;
+      if (sequence === this.tabChangeSequence) {
+        this.selectedTab = requestedTab;
+      }
     }, 100);
   }
 
@@ -136,6 +144,10 @@ export class MyBetsPage implements OnInit, AfterViewInit {
             this.selectedStageIndex = 0;
           }          
         }
+
+        if (!stageFromUrl) {
+          await this.selectFirstStageWithBetsIfCurrentStageIsEmpty(this.selectedTab);
+        }
       }
       
       this.forceTabReload();
@@ -147,6 +159,67 @@ export class MyBetsPage implements OnInit, AfterViewInit {
   scrollToTop() {
     if (this.content) {
       this.content.scrollToTop(300);
+    }
+  }
+
+  private normalizeTab(tab: string): string {
+    return tab === 'placed' || tab === 'finalised' || tab === 'to-place'
+      ? tab
+      : 'to-place';
+  }
+
+  private getBetStatusForTab(tab: string): 'ToPlace' | 'Placed' | 'Closed' | null {
+    switch (tab) {
+      case 'to-place':
+        return 'ToPlace';
+      case 'placed':
+        return 'Placed';
+      case 'finalised':
+        return 'Closed';
+      default:
+        return null;
+    }
+  }
+
+  private async selectFirstStageWithBetsIfCurrentStageIsEmpty(tab: string): Promise<void> {
+    const status = this.getBetStatusForTab(tab);
+    const tournamentId = this.tournamentSelectionService.getSelectedTournament();
+
+    if (!status || !tournamentId || !this.availableStages.length || !this.selectedStage) {
+      return;
+    }
+
+    if (await this.stageHasBets(tournamentId, status, this.selectedStage)) {
+      return;
+    }
+
+    for (const stage of this.availableStages) {
+      if (stage === this.selectedStage) {
+        continue;
+      }
+
+      if (await this.stageHasBets(tournamentId, status, stage)) {
+        this.selectedStage = stage;
+        this.selectedStageIndex = this.availableStages.indexOf(stage);
+        return;
+      }
+    }
+  }
+
+  private async stageHasBets(
+    tournamentId: number,
+    status: 'ToPlace' | 'Placed' | 'Closed',
+    stage: string
+  ): Promise<boolean> {
+    try {
+      const bets = await firstValueFrom(
+        this.betService.getBetsByTournamentStage(tournamentId, status, stage)
+      );
+
+      return bets.length > 0;
+    } catch (error) {
+      console.error(`Error checking bets for stage ${stage}:`, error);
+      return false;
     }
   }
 }

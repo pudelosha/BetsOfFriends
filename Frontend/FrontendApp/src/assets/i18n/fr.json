@@ -298,7 +298,16 @@
     "AQ": "EQ",
     "RESULT": "R",
     "AVERAGE_GOALS": "Buts moyens pronostiques",
-    "PLACED_BETS_SUMMARY": "{{placed}} sur {{total}} participants ont parie"
+    "PLACED_BETS_SUMMARY": "{{placed}} sur {{total}} participants ont parie",
+    "PENDING_REMINDERS_BUTTON": "Relancer",
+    "PENDING_REMINDERS_TITLE": "Participants sans pari",
+    "PENDING_REMINDERS_SEND_ALL": "Envoyer a tous",
+    "PENDING_REMINDERS_SEND": "Envoyer",
+    "PENDING_REMINDERS_SENT": "Envoye",
+    "PENDING_REMINDERS_NONE": "Tout le monde a parie.",
+    "PENDING_REMINDERS_SENT_TOAST": "Emails de rappel envoyes: {{count}}.",
+    "PENDING_REMINDERS_FAILED_TOAST": "Impossible d'envoyer le rappel.",
+    "PENDING_REMINDERS_LOAD_FAILED": "Impossible de charger les participants."
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Modifier pari",
@@ -498,6 +507,10 @@
   "LATEST_MESSAGES": {
     "TITLE": "Derniers messages",
     "NO_MESSAGES": "Aucun message."
+  },
+  "MISSING_BETS": {
+    "TITLE": "Paris manquants",
+    "NO_MISSING_BETS": "Aucun pari manquant dans les prochaines 48 heures."
   },
   "STARTED_MATCHES": {
     "TITLE": "Matchs personnalisés en cours"

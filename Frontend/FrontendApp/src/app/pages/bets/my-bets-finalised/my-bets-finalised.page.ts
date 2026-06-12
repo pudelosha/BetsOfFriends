@@ -24,6 +24,7 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
   bets: Bet[] = [];
   isLoading = true;
   errorMessage: string = '';
+  private loadSequence = 0;
 
   constructor(
     private modalCtrl: ModalController,
@@ -49,10 +50,13 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
   }
 
   async loadBets() {
-    if (!this.stage) {
+    const requestedStage = this.stage;
+
+    if (!requestedStage) {
       return;
     }
 
+    const sequence = ++this.loadSequence;
     this.isLoading = true;
     this.bets = [];
     this.errorMessage = '';
@@ -69,8 +73,10 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
   
     if (!tournamentId) {
       console.warn("No tournament selected.");
-      this.errorMessage = this.t('TOASTS.NO_TOURNAMENT_SELECTED');
-      this.isLoading = false;
+      if (sequence === this.loadSequence) {
+        this.errorMessage = this.t('TOASTS.NO_TOURNAMENT_SELECTED');
+        this.isLoading = false;
+      }
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
@@ -79,14 +85,25 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
     }
   
     try {
-      this.bets = await firstValueFrom(
-        this.betService.getBetsByTournamentStage(tournamentId, 'Closed', this.stage)
+      const bets = await firstValueFrom(
+        this.betService.getBetsByTournamentStage(tournamentId, 'Closed', requestedStage)
       );
+
+      if (sequence !== this.loadSequence) {
+        return;
+      }
+
+      this.bets = bets;
+      this.errorMessage = '';
   
-      if (!this.bets.length) {
+      if (!bets.length) {
         this.errorMessage = this.t('TOASTS.NO_BETS_FOR_STAGE');
       }
     } catch (error: unknown) {
+      if (sequence !== this.loadSequence) {
+        return;
+      }
+
       console.error("API error:", error);
   
       if (error instanceof HttpErrorResponse) {
@@ -99,9 +116,11 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
       const delay = Math.max(0, 200 - elapsedTime);
   
       setTimeout(async () => {
-        this.isLoading = false;
-        if (document.activeElement instanceof HTMLElement) {
-          document.activeElement.blur();
+        if (sequence === this.loadSequence) {
+          this.isLoading = false;
+          if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+          }
         }
         await loading.dismiss();
       }, delay);

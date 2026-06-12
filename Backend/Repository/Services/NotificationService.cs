@@ -75,6 +75,38 @@ public class NotificationService : INotificationService
         );
     }
 
+    public async Task<List<string>> NotifyManualPendingBetReminderAsync(CustomMatch match, List<ApplicationUser> recipients)
+    {
+        if (recipients == null || !recipients.Any())
+        {
+            _logger.LogInformation($"No manual pending-bet reminder recipients for Match ID {match.MatchId}.");
+            return new List<string>();
+        }
+
+        var stageNameEncoded = Uri.EscapeDataString(match.Stage?.StageName ?? "");
+        var route = $"/my-bets?tab=to-place&stage={stageNameEncoded}&tournamentId={match.TournamentId}&matchId={match.MatchId}";
+
+        var processedRecipients = await ProcessLocalizedNotificationsWithResultAsync(
+            recipients,
+            "Notifications.ManualPendingBetReminder.Title",
+            "Notifications.ManualPendingBetReminder.Message",
+            new Dictionary<string, string>
+            {
+                { "HOME_TEAM", match.HomeTeam?.TeamName ?? "Home team" },
+                { "AWAY_TEAM", match.AwayTeam?.TeamName ?? "Away team" }
+            },
+            route,
+            u => (true, false),
+            includeNotificationConsentText: false
+        );
+
+        return processedRecipients
+            .Where(recipient => recipient.SentEmail)
+            .Select(recipient => recipient.UserId)
+            .Distinct()
+            .ToList();
+    }
+
 
     public async Task NotifyMatchClosureAsync(CustomMatch match)
     {
@@ -517,15 +549,36 @@ public class NotificationService : INotificationService
         string messageKey,
         IReadOnlyDictionary<string, string> placeholders,
         string route,
-        Func<ApplicationUser, (bool emailConsent, bool pushConsent)> getConsent)
+        Func<ApplicationUser, (bool emailConsent, bool pushConsent)> getConsent,
+        bool includeNotificationConsentText = true)
+    {
+        await ProcessLocalizedNotificationsWithResultAsync(
+            recipients,
+            titleKey,
+            messageKey,
+            placeholders,
+            route,
+            getConsent,
+            includeNotificationConsentText);
+    }
+
+    private async Task<List<NotificationRecipient>> ProcessLocalizedNotificationsWithResultAsync(
+        List<ApplicationUser> recipients,
+        string titleKey,
+        string messageKey,
+        IReadOnlyDictionary<string, string> placeholders,
+        string route,
+        Func<ApplicationUser, (bool emailConsent, bool pushConsent)> getConsent,
+        bool includeNotificationConsentText = true)
     {
         if (recipients == null || !recipients.Any())
         {
             _logger.LogWarning("ProcessLocalizedNotificationsAsync was called with an empty recipient list.");
-            return;
+            return new List<NotificationRecipient>();
         }
 
         var languageByUserId = await GetRecipientLanguagesAsync(recipients);
+        var processedRecipients = new List<NotificationRecipient>();
 
         foreach (var languageGroup in recipients.GroupBy(user => languageByUserId.GetValueOrDefault(user.Id, "en")))
         {
@@ -533,23 +586,29 @@ public class NotificationService : INotificationService
             var title = _localizationService.Translate(titleKey, language, placeholders);
             var message = _localizationService.Translate(messageKey, language, placeholders);
 
-            await ProcessNotificationGroupAsync(
+            var groupRecipients = await ProcessNotificationGroupAsync(
                 languageGroup.ToList(),
                 title,
                 message,
                 route,
                 getConsent,
-                language);
+                language,
+                includeNotificationConsentText);
+
+            processedRecipients.AddRange(groupRecipients);
         }
+
+        return processedRecipients;
     }
 
-    private async Task ProcessNotificationGroupAsync(
+    private async Task<List<NotificationRecipient>> ProcessNotificationGroupAsync(
         List<ApplicationUser> recipients,
         string title,
         string message,
         string route,
         Func<ApplicationUser, (bool emailConsent, bool pushConsent)> getConsent,
-        string language)
+        string language,
+        bool includeNotificationConsentText = true)
     {
         _logger.LogInformation($"Processing notifications for {recipients.Count} users in language {language}.");
 
@@ -588,7 +647,13 @@ public class NotificationService : INotificationService
             {
                 try
                 {
-                    await _emailService.SendNotificationEmailAsync(user, title, message, route, language);
+                    await _emailService.SendNotificationEmailAsync(
+                        user,
+                        title,
+                        message,
+                        route,
+                        language,
+                        includeNotificationConsentText);
                     recipient.SentEmail = true;
                     _logger.LogInformation($"Notification email sent to {user.Email}");
                 }
@@ -618,6 +683,7 @@ public class NotificationService : INotificationService
         await _dbContext.SaveChangesAsync();
 
         _logger.LogInformation($"Successfully processed notifications for {recipients.Count} users.");
+        return notificationRecipients;
     }
 
     private async Task<Dictionary<string, string>> GetRecipientLanguagesAsync(List<ApplicationUser> recipients)

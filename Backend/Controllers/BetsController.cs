@@ -108,6 +108,72 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("pending-reminders/{matchId}")]
+        public async Task<IActionResult> GetPendingBetReminderParticipants(int matchId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (userId == null)
+                {
+                    return Unauthorized("User not found.");
+                }
+
+                var summary = await _betService.GetPendingBetReminderParticipantsAsync(matchId, userId);
+
+                if (summary == null)
+                {
+                    return NotFound(new { message = "Match not found." });
+                }
+
+                if (!summary.CanSendReminders)
+                {
+                    return Forbid("You do not have permission to send reminders for this match.");
+                }
+
+                return Ok(summary);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching pending bet reminder participants for match ID {matchId}.");
+                return StatusCode(500, new { message = "An unexpected error occurred. Please try again later." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("pending-reminders/{matchId}/send")]
+        public async Task<IActionResult> SendPendingBetReminders(
+            int matchId,
+            [FromBody] SendPendingBetReminderRequestDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (userId == null)
+                {
+                    return Unauthorized("User not found.");
+                }
+
+                var result = await _betService.SendPendingBetReminderAsync(
+                    matchId,
+                    userId,
+                    request ?? new SendPendingBetReminderRequestDto());
+
+                if (!result.Success)
+                {
+                    return BadRequest(result);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error sending pending bet reminders for match ID {matchId}.");
+                return StatusCode(500, new { message = "An unexpected error occurred. Please try again later." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("upcoming/{tournamentId}")]
         public async Task<IActionResult> GetUpcomingBets(int tournamentId)
         {
@@ -132,6 +198,42 @@ namespace Backend.Controllers
             {
                 _logger.LogError(ex, $"Error fetching upcoming bets for tournament {tournamentId}");
                 return StatusCode(500, new { Message = "An error occurred while fetching upcoming bets." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("missing/{tournamentId}")]
+        public async Task<IActionResult> GetMissingBets(int tournamentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Fetching missing bets summary for tournament {tournamentId}");
+
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized request to fetch missing bets summary.");
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var missingBets = await _betService.GetMissingBetsSummaryAsync(tournamentId, userId);
+
+                if (missingBets == null)
+                {
+                    return NotFound(new { Message = "Tournament not found." });
+                }
+
+                if (!missingBets.CanView)
+                {
+                    return Forbid();
+                }
+
+                return Ok(missingBets);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching missing bets summary for tournament {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while fetching missing bets." });
             }
         }
     }

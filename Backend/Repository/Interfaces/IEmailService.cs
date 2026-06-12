@@ -8,6 +8,12 @@ namespace Backend.Repository.Interfaces
         Task SendAccountSetupEmailAsync(ApplicationUser user, string tournamentName);
         Task SendTournamentInvitationEmailAsync(string email, string tournamentName, int tournamentId);
         Task SendPasswordResetEmailAsync(ApplicationUser user);
-        Task SendNotificationEmailAsync(ApplicationUser user, string title, string message, string route, string language);
+        Task SendNotificationEmailAsync(
+            ApplicationUser user,
+            string title,
+            string message,
+            string route,
+            string language,
+            bool includeNotificationConsentText = true);
     }
 }

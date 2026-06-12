@@ -298,7 +298,16 @@
     "AQ": "AG", 
     "RESULT": "W",
     "AVERAGE_GOALS": "Srednia typowanych goli",
-    "PLACED_BETS_SUMMARY": "{{placed}} z {{total}} uczestnikow obstawilo"
+    "PLACED_BETS_SUMMARY": "{{placed}} z {{total}} uczestnikow obstawilo",
+    "PENDING_REMINDERS_BUTTON": "Przypomnij",
+    "PENDING_REMINDERS_TITLE": "Uczestnicy bez typow",
+    "PENDING_REMINDERS_SEND_ALL": "Wyslij do wszystkich",
+    "PENDING_REMINDERS_SEND": "Wyslij",
+    "PENDING_REMINDERS_SENT": "Wyslano",
+    "PENDING_REMINDERS_NONE": "Wszyscy obstawili.",
+    "PENDING_REMINDERS_SENT_TOAST": "Wyslano emaile z przypomnieniem: {{count}}.",
+    "PENDING_REMINDERS_FAILED_TOAST": "Nie udalo sie wyslac przypomnienia.",
+    "PENDING_REMINDERS_LOAD_FAILED": "Nie udalo sie zaladowac uczestnikow."
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Edytuj zakład",
@@ -498,6 +507,10 @@
   "LATEST_MESSAGES": {
     "TITLE": "Najnowsze wiadomości",
     "NO_MESSAGES": "Brak wiadomości."
+  },
+  "MISSING_BETS": {
+    "TITLE": "Brakujące zakłady",
+    "NO_MISSING_BETS": "Brak brakujących zakładów w najbliższych 48 godzinach."
   },
   "STARTED_MATCHES": {
     "TITLE": "Rozpoczęte mecze niestandardowe"

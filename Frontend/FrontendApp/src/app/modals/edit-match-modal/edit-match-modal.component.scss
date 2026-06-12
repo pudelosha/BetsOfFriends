@@ -30,6 +30,82 @@ ion-content {
   gap: 10px;
 }
 
+.teams-selection-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 0;
+}
+
+.team-select-column {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.team-select-column-home {
+  align-items: flex-start;
+}
+
+.team-select-column-away {
+  align-items: flex-end;
+}
+
+.team-crest-slot {
+  display: flex;
+  width: 90px;
+  height: 50px;
+}
+
+.team-crest-slot-home {
+  justify-content: flex-start;
+}
+
+.team-crest-slot-away {
+  justify-content: flex-end;
+}
+
+.team-crest {
+  display: block;
+  width: 90px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.team-select-spacer {
+  flex: 0 0 20px;
+}
+
+.team-select {
+  width: 100%;
+}
+
+::ng-deep .team-select-column-home ion-select.team-select::part(text),
+::ng-deep .team-select-column-home ion-select.team-select::part(placeholder),
+::ng-deep .team-select-column-home ion-select.team-select::part(label) {
+  text-align: left;
+  justify-content: flex-start;
+}
+
+::ng-deep .team-select-column-away ion-select.team-select::part(text),
+::ng-deep .team-select-column-away ion-select.team-select::part(placeholder),
+::ng-deep .team-select-column-away ion-select.team-select::part(label) {
+  text-align: right;
+  justify-content: flex-end;
+}
+
+.left-align {
+  text-align: left;
+}
+
+.right-align {
+  text-align: right;
+}
+
 .half-width {
   width: 48%;
 }
@@ -111,4 +187,14 @@ ion-select {
   width: 80px;
   margin-right: 12px;
   display: inline-block;
+}
+
+@media (max-width: 520px) {
+  .teams-selection-row {
+    gap: 6px;
+  }
+
+  .team-select-spacer {
+    flex-basis: 8px;
+  }
 }

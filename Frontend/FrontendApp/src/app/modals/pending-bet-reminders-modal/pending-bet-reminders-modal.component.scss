@@ -1,0 +1,43 @@
+.send-all-button {
+  margin-bottom: 14px;
+}
+
+.participants-list {
+  background: transparent;
+}
+
+.participant-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --background: transparent;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.participant-name {
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+ion-button {
+  white-space: normal;
+}
+
+.send-one-button {
+  min-width: 112px;
+}
+
+.empty-state {
+  padding: 24px 8px;
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (max-width: 420px) {
+  .send-one-button {
+    min-width: 96px;
+  }
+}

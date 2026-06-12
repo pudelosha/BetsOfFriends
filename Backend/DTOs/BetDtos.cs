@@ -52,6 +52,7 @@ namespace Backend.DTOs
 
     public class BetStatsDto
     {
+        public int MatchId { get; set; }
         public bool ShowExactResult { get; set; } = false;
         public bool ShowQualified { get; set; } = false;
         public string MatchStatus { get; set; } = string.Empty;
@@ -77,6 +78,8 @@ namespace Backend.DTOs
         public int ParticipantsCount { get; set; }
         public decimal? AverageHomeGoals { get; set; }
         public decimal? AverageAwayGoals { get; set; }
+        public bool CanSendPendingBetReminders { get; set; }
+        public int PendingBetReminderCount { get; set; }
 
         public string? Result { get; set; }
         public string? ResultQualified { get; set; }
@@ -98,6 +101,32 @@ namespace Backend.DTOs
         public int? ResultSuccess { get; set; }
     }
 
+    public class PendingBetReminderParticipantDto
+    {
+        public string UserId { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public bool ReminderSent { get; set; }
+    }
+
+    public class PendingBetReminderSummaryDto
+    {
+        public int MatchId { get; set; }
+        public bool CanSendReminders { get; set; }
+        public List<PendingBetReminderParticipantDto> Participants { get; set; } = new();
+    }
+
+    public class SendPendingBetReminderRequestDto
+    {
+        public List<string>? UserIds { get; set; }
+    }
+
+    public class SendPendingBetReminderResultDto
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public List<string> RemindedUserIds { get; set; } = new();
+    }
+
     public class UpcomingBetDto
     {
         public int MatchId { get; set; }
@@ -105,6 +134,28 @@ namespace Backend.DTOs
         public string AwayTeam { get; set; } = string.Empty;
         public DateTime MatchTime { get; set; }
         public string Stage { get; set; }
+    }
+
+    public class MissingBetsSummaryDto
+    {
+        public bool CanView { get; set; }
+        public List<MissingBetMatchDto> Matches { get; set; } = new();
+    }
+
+    public class MissingBetMatchDto
+    {
+        public int MatchId { get; set; }
+        public string HomeTeam { get; set; } = string.Empty;
+        public string AwayTeam { get; set; } = string.Empty;
+        public DateTime MatchTime { get; set; }
+        public string Stage { get; set; } = string.Empty;
+        public List<MissingBetParticipantDto> Participants { get; set; } = new();
+    }
+
+    public class MissingBetParticipantDto
+    {
+        public string UserId { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
     }
 
     public class UserBettingStatsDto

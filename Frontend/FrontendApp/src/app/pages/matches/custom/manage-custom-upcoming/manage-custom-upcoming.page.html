@@ -2,7 +2,7 @@
 <ion-spinner *ngIf="isLoading" class="loading-spinner" name="crescent"></ion-spinner>
 
 <!-- Display Message if No Matches Found -->
-<div *ngIf="!isLoading && errorMessage" class="no-matches">
+<div *ngIf="!isLoading && !matches.length && errorMessage" class="no-matches">
   <p>{{ 'MANAGE_CUSTOM_UPCOMING.NO_MATCHES' | translate }}</p>
 </div>
 

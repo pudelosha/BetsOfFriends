@@ -5,6 +5,12 @@
         (loadingStart)="showGlobalSpinner()"
         (loadingEnd)="hideGlobalSpinner()"
       ></app-tournament-invites>
+
+      <app-missing-bets
+        [refreshTrigger]="refreshCounter"
+        (loadingStart)="showGlobalSpinner()"
+        (loadingEnd)="hideGlobalSpinner()"
+      ></app-missing-bets>
   
       <app-latest-messages
         [refreshTrigger]="refreshCounter"
@@ -47,7 +53,6 @@
       (loadingStart)="showGlobalSpinner()"
       (loadingEnd)="hideGlobalSpinner()"
     ></app-started-predefined-matches>
-    
+
     </div>
   </ion-content>
-  

@@ -1,6 +1,7 @@
 ﻿using Backend.DTOs;
 using Backend.Model.Database;
 using Backend.Model.Entities;
+using Backend.Repository.Interfaces;
 using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using static Backend.Model.Entities.CustomMatch;
@@ -12,11 +13,16 @@ namespace Backend.Repository.Services
     {
         private readonly AppDbContext _context;
         private readonly ILogger<BetService> _logger;
+        private readonly INotificationService _notificationService;
 
-        public BetService(AppDbContext context, ILogger<BetService> logger)
+        public BetService(
+            AppDbContext context,
+            ILogger<BetService> logger,
+            INotificationService notificationService)
         {
             _context = context;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         private static bool IsMatchOpenForBetting(CustomMatch match, DateTime nowUtc)
@@ -32,6 +38,27 @@ namespace Backend.Repository.Services
                 b.Match.MatchStart > nowUtc &&
                 (b.Match.Status == CustomMatch.MatchStatus.Scheduled ||
                  b.Match.Status == CustomMatch.MatchStatus.Timed));
+        }
+
+        private static bool IsSubmittedBet(Bet bet)
+        {
+            return bet.Status != Bet.BetStatus.ToPlace &&
+                   bet.HomeGoals.HasValue &&
+                   bet.AwayGoals.HasValue;
+        }
+
+        private static string BuildManualPendingBetReminderRoute(CustomMatch match)
+        {
+            var stageNameEncoded = Uri.EscapeDataString(match.Stage?.StageName ?? string.Empty);
+            return $"/my-bets?tab=to-place&stage={stageNameEncoded}&tournamentId={match.TournamentId}&matchId={match.MatchId}";
+        }
+
+        private static string GetParticipantDisplayName(CustomTournamentUserAssignment assignment)
+        {
+            return assignment.UserName
+                ?? assignment.UserAdminName
+                ?? assignment.User?.Email
+                ?? "Unknown";
         }
 
         public async Task CreateBetsForTournamentAsync(int tournamentId)
@@ -571,6 +598,7 @@ namespace Backend.Repository.Services
                     .Where(a => a.TournamentId == match.TournamentId && a.Status == AssignmentStatus.Accepted)
                     .ToListAsync();
 
+                var requesterAssignment = userAssignments.FirstOrDefault(a => a.UserId == userId);
                 var userIdToUsername = userAssignments.ToDictionary(a => a.UserId, a => a.UserName);
                 var acceptedUserIds = userIdToUsername.Keys.ToHashSet();
 
@@ -585,6 +613,8 @@ namespace Backend.Repository.Services
                 var totalBets = bets.Count;
                 var totalQualificationBets = qualificationBets.Count;
                 var totalParticipants = acceptedUserIds.Count;
+                var pendingBetReminderCount = userAssignments.Count(assignment =>
+                    !match.Bets.Any(b => b.UserId == assignment.UserId && IsSubmittedBet(b)));
 
                 string? result = (match.HomeScore.HasValue && match.AwayScore.HasValue)
                     ? match.HomeScore > match.AwayScore ? "1"
@@ -601,6 +631,7 @@ namespace Backend.Repository.Services
                 // Create DTO
                 var betStats = new BetStatsDto
                 {
+                    MatchId = match.MatchId,
                     ShowQualified = showQualified,
                     ShowExactResult = showExactResult,
                     MatchStatus = match.Status.ToString(),
@@ -622,6 +653,9 @@ namespace Backend.Repository.Services
                     ParticipantsCount = totalParticipants,
                     AverageHomeGoals = totalBets > 0 ? Math.Round(bets.Average(b => (decimal)b.HomeGoals!.Value), 1) : null,
                     AverageAwayGoals = totalBets > 0 ? Math.Round(bets.Average(b => (decimal)b.AwayGoals!.Value), 1) : null,
+                    CanSendPendingBetReminders = requesterAssignment?.Role == UserTournamentRole.Admin &&
+                        IsMatchOpenForBetting(match, DateTime.UtcNow),
+                    PendingBetReminderCount = pendingBetReminderCount,
 
                     // Qualification Betting Percentages
                     Percent1Q = totalQualificationBets > 0 ? Math.Round((decimal)qualificationBets.Count(b => b.Qualified == CustomMatch.TeamQualified.Home) / totalQualificationBets * 100, 2) : null,
@@ -677,6 +711,174 @@ namespace Backend.Repository.Services
             }
         }
 
+        public async Task<PendingBetReminderSummaryDto?> GetPendingBetReminderParticipantsAsync(int matchId, string userId)
+        {
+            var match = await GetMatchForPendingBetReminderAsync(matchId);
+            if (match == null)
+            {
+                _logger.LogWarning($"Match {matchId} not found while fetching pending bet reminders.");
+                return null;
+            }
+
+            var canSendReminders = await CanUserSendPendingBetRemindersAsync(match, userId);
+            if (!canSendReminders)
+            {
+                _logger.LogWarning($"User {userId} is not authorized or match {matchId} is not open for pending bet reminders.");
+                return new PendingBetReminderSummaryDto
+                {
+                    MatchId = matchId,
+                    CanSendReminders = false
+                };
+            }
+
+            var participants = await GetPendingBetReminderParticipantsForMatchAsync(match);
+
+            return new PendingBetReminderSummaryDto
+            {
+                MatchId = matchId,
+                CanSendReminders = true,
+                Participants = participants
+            };
+        }
+
+        public async Task<SendPendingBetReminderResultDto> SendPendingBetReminderAsync(
+            int matchId,
+            string userId,
+            SendPendingBetReminderRequestDto request)
+        {
+            var match = await GetMatchForPendingBetReminderAsync(matchId);
+            if (match == null)
+            {
+                return new SendPendingBetReminderResultDto
+                {
+                    Success = false,
+                    Message = "Match not found."
+                };
+            }
+
+            if (!await CanUserSendPendingBetRemindersAsync(match, userId))
+            {
+                return new SendPendingBetReminderResultDto
+                {
+                    Success = false,
+                    Message = "User is not authorized or the match is no longer open for reminders."
+                };
+            }
+
+            var pendingParticipants = await GetPendingBetReminderParticipantsForMatchAsync(match);
+            var requestedUserIds = request.UserIds?
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Select(id => id.Trim())
+                .Distinct()
+                .ToHashSet();
+
+            var targetUserIds = pendingParticipants
+                .Where(participant => !participant.ReminderSent)
+                .Where(participant => requestedUserIds == null || requestedUserIds.Count == 0 || requestedUserIds.Contains(participant.UserId))
+                .Select(participant => participant.UserId)
+                .Distinct()
+                .ToList();
+
+            if (!targetUserIds.Any())
+            {
+                return new SendPendingBetReminderResultDto
+                {
+                    Success = false,
+                    Message = "No pending participants found for reminder."
+                };
+            }
+
+            var recipients = await _context.Users
+                .Where(user => targetUserIds.Contains(user.Id))
+                .ToListAsync();
+
+            var remindedUserIds = await _notificationService.NotifyManualPendingBetReminderAsync(match, recipients);
+
+            return new SendPendingBetReminderResultDto
+            {
+                Success = remindedUserIds.Any(),
+                Message = remindedUserIds.Any()
+                    ? "Reminder sent."
+                    : "No reminder email was sent.",
+                RemindedUserIds = remindedUserIds
+            };
+        }
+
+        private async Task<CustomMatch?> GetMatchForPendingBetReminderAsync(int matchId)
+        {
+            return await _context.CustomMatches
+                .Include(match => match.HomeTeam)
+                .Include(match => match.AwayTeam)
+                .Include(match => match.Stage)
+                .FirstOrDefaultAsync(match => match.MatchId == matchId);
+        }
+
+        private async Task<bool> CanUserSendPendingBetRemindersAsync(CustomMatch match, string userId)
+        {
+            if (!IsMatchOpenForBetting(match, DateTime.UtcNow))
+            {
+                return false;
+            }
+
+            return await _context.CustomTournamentUserAssignments
+                .AnyAsync(assignment =>
+                    assignment.TournamentId == match.TournamentId &&
+                    assignment.UserId == userId &&
+                    assignment.Status == AssignmentStatus.Accepted &&
+                    assignment.Role == UserTournamentRole.Admin);
+        }
+
+        private async Task<List<PendingBetReminderParticipantDto>> GetPendingBetReminderParticipantsForMatchAsync(CustomMatch match)
+        {
+            var assignments = await _context.CustomTournamentUserAssignments
+                .Include(assignment => assignment.User)
+                .Where(assignment => assignment.TournamentId == match.TournamentId &&
+                    assignment.Status == AssignmentStatus.Accepted)
+                .ToListAsync();
+
+            var submittedUserIds = await _context.Bets
+                .Where(bet => bet.MatchId == match.MatchId &&
+                    bet.Status != Bet.BetStatus.ToPlace &&
+                    bet.HomeGoals.HasValue &&
+                    bet.AwayGoals.HasValue)
+                .Select(bet => bet.UserId)
+                .Distinct()
+                .ToListAsync();
+
+            var submittedUserSet = submittedUserIds.ToHashSet();
+            var pendingAssignments = assignments
+                .Where(assignment => !submittedUserSet.Contains(assignment.UserId))
+                .ToList();
+
+            if (!pendingAssignments.Any())
+            {
+                return new List<PendingBetReminderParticipantDto>();
+            }
+
+            var pendingUserIds = pendingAssignments.Select(assignment => assignment.UserId).Distinct().ToList();
+            var reminderRoute = BuildManualPendingBetReminderRoute(match);
+
+            var remindedUserIds = await _context.NotificationRecipients
+                .Where(recipient => pendingUserIds.Contains(recipient.UserId) &&
+                    recipient.SentEmail &&
+                    recipient.Notification.Route == reminderRoute)
+                .Select(recipient => recipient.UserId)
+                .Distinct()
+                .ToListAsync();
+
+            var remindedUserSet = remindedUserIds.ToHashSet();
+
+            return pendingAssignments
+                .Select(assignment => new PendingBetReminderParticipantDto
+                {
+                    UserId = assignment.UserId,
+                    UserName = GetParticipantDisplayName(assignment),
+                    ReminderSent = remindedUserSet.Contains(assignment.UserId)
+                })
+                .OrderBy(participant => participant.UserName)
+                .ToList();
+        }
+
         public async Task<List<UpcomingBetDto>> GetUpcomingBetsAsync(int tournamentId, string userId, int? limit = null)
         {
             try
@@ -711,6 +913,138 @@ namespace Backend.Repository.Services
                 _logger.LogError(ex, $"Error fetching upcoming bets for tournament {tournamentId} and user {userId}");
                 throw;
             }
+        }
+
+        public async Task<MissingBetsSummaryDto?> GetMissingBetsSummaryAsync(
+            int tournamentId,
+            string userId,
+            int matchLimit = 5,
+            int hoursAhead = 48)
+        {
+            var tournamentExists = await _context.CustomTournaments
+                .AnyAsync(tournament => tournament.TournamentId == tournamentId);
+
+            if (!tournamentExists)
+            {
+                return null;
+            }
+
+            var isTournamentAdmin = await _context.CustomTournamentUserAssignments
+                .AnyAsync(assignment =>
+                    assignment.TournamentId == tournamentId &&
+                    assignment.UserId == userId &&
+                    assignment.Status == AssignmentStatus.Accepted &&
+                    assignment.Role == UserTournamentRole.Admin);
+
+            if (!isTournamentAdmin)
+            {
+                return new MissingBetsSummaryDto
+                {
+                    CanView = false
+                };
+            }
+
+            var nowUtc = DateTime.UtcNow;
+            var endUtc = nowUtc.AddHours(hoursAhead);
+
+            var matches = await _context.CustomMatches
+                .Include(match => match.HomeTeam)
+                .Include(match => match.AwayTeam)
+                .Include(match => match.Stage)
+                .Where(match =>
+                    match.TournamentId == tournamentId &&
+                    match.IsVisible &&
+                    match.MatchStart > nowUtc &&
+                    match.MatchStart <= endUtc &&
+                    (match.Status == CustomMatch.MatchStatus.Scheduled ||
+                     match.Status == CustomMatch.MatchStatus.Timed))
+                .OrderBy(match => match.MatchStart)
+                .ToListAsync();
+
+            if (!matches.Any())
+            {
+                return new MissingBetsSummaryDto
+                {
+                    CanView = true
+                };
+            }
+
+            var participants = await _context.CustomTournamentUserAssignments
+                .Include(assignment => assignment.User)
+                .Where(assignment =>
+                    assignment.TournamentId == tournamentId &&
+                    assignment.Status == AssignmentStatus.Accepted)
+                .OrderBy(assignment => assignment.UserName ?? assignment.UserAdminName)
+                .ToListAsync();
+
+            if (!participants.Any())
+            {
+                return new MissingBetsSummaryDto
+                {
+                    CanView = true
+                };
+            }
+
+            var matchIds = matches.Select(match => match.MatchId).ToList();
+            var submittedBets = await _context.Bets
+                .Where(bet =>
+                    matchIds.Contains(bet.MatchId) &&
+                    bet.Status != Bet.BetStatus.ToPlace &&
+                    bet.HomeGoals.HasValue &&
+                    bet.AwayGoals.HasValue)
+                .Select(bet => new { bet.MatchId, bet.UserId })
+                .Distinct()
+                .ToListAsync();
+
+            var submittedUsersByMatch = submittedBets
+                .GroupBy(bet => bet.MatchId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(bet => bet.UserId).ToHashSet());
+
+            var missingMatches = new List<MissingBetMatchDto>();
+
+            foreach (var match in matches)
+            {
+                submittedUsersByMatch.TryGetValue(match.MatchId, out var submittedUsers);
+                submittedUsers ??= new HashSet<string>();
+
+                var missingParticipants = participants
+                    .Where(participant => !submittedUsers.Contains(participant.UserId))
+                    .Select(participant => new MissingBetParticipantDto
+                    {
+                        UserId = participant.UserId,
+                        UserName = GetParticipantDisplayName(participant)
+                    })
+                    .OrderBy(participant => participant.UserName)
+                    .ToList();
+
+                if (!missingParticipants.Any())
+                {
+                    continue;
+                }
+
+                missingMatches.Add(new MissingBetMatchDto
+                {
+                    MatchId = match.MatchId,
+                    HomeTeam = match.HomeTeam.TeamName,
+                    AwayTeam = match.AwayTeam.TeamName,
+                    MatchTime = DateTime.SpecifyKind(match.MatchStart, DateTimeKind.Utc),
+                    Stage = match.Stage.StageName,
+                    Participants = missingParticipants
+                });
+
+                if (missingMatches.Count >= matchLimit)
+                {
+                    break;
+                }
+            }
+
+            return new MissingBetsSummaryDto
+            {
+                CanView = true,
+                Matches = missingMatches
+            };
         }
 
         public async Task MarkBetsAsCompletedForMatchAsync(int matchId)

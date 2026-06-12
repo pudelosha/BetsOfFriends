@@ -298,7 +298,16 @@
     "AQ": "AW",
     "RESULT": "E",
     "AVERAGE_GOALS": "Durchschnittlich getippte Tore",
-    "PLACED_BETS_SUMMARY": "{{placed}} von {{total}} Teilnehmern haben getippt"
+    "PLACED_BETS_SUMMARY": "{{placed}} von {{total}} Teilnehmern haben getippt",
+    "PENDING_REMINDERS_BUTTON": "Erinnern",
+    "PENDING_REMINDERS_TITLE": "Teilnehmer ohne Tipps",
+    "PENDING_REMINDERS_SEND_ALL": "Alle erinnern",
+    "PENDING_REMINDERS_SEND": "Senden",
+    "PENDING_REMINDERS_SENT": "Gesendet",
+    "PENDING_REMINDERS_NONE": "Alle haben getippt.",
+    "PENDING_REMINDERS_SENT_TOAST": "Erinnerungs-E-Mails gesendet: {{count}}.",
+    "PENDING_REMINDERS_FAILED_TOAST": "Erinnerungs-E-Mail konnte nicht gesendet werden.",
+    "PENDING_REMINDERS_LOAD_FAILED": "Teilnehmer konnten nicht geladen werden."
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Tipp bearbeiten",
@@ -498,6 +507,10 @@
   "LATEST_MESSAGES": {
     "TITLE": "Neueste Nachrichten",
     "NO_MESSAGES": "Keine Nachrichten gefunden."
+  },
+  "MISSING_BETS": {
+    "TITLE": "Fehlende Tipps",
+    "NO_MISSING_BETS": "Keine fehlenden Tipps in den nächsten 48 Stunden."
   },
   "STARTED_MATCHES": {
     "TITLE": "Gestartete Custom-Spiele"

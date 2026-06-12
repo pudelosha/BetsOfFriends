@@ -40,6 +40,7 @@ export interface BetUpdateDto {
 }
 
 export interface BetStats {
+  matchId: number;
   showExactResult: boolean | null;
   showQualified: boolean | null;
   matchStatus: string | null;
@@ -59,6 +60,8 @@ export interface BetStats {
   percent2Q?: number | null;
   placedBetsCount: number;
   participantsCount: number;
+  canSendPendingBetReminders?: boolean;
+  pendingBetReminderCount?: number;
   averageHomeGoals?: number | null;
   averageAwayGoals?: number | null;
   result?: '1' | 'X' | '2' | null;
@@ -78,6 +81,28 @@ export interface UserBetDetails {
   resultSuccess?: number | null;
 }
 
+export interface PendingBetReminderParticipant {
+  userId: string;
+  userName: string;
+  reminderSent: boolean;
+}
+
+export interface PendingBetReminderSummary {
+  matchId: number;
+  canSendReminders: boolean;
+  participants: PendingBetReminderParticipant[];
+}
+
+export interface SendPendingBetReminderRequest {
+  userIds?: string[] | null;
+}
+
+export interface SendPendingBetReminderResult {
+  success: boolean;
+  message: string;
+  remindedUserIds: string[];
+}
+
 export interface UpcomingBet {
   matchId: number;
   homeTeam: string;
@@ -86,6 +111,24 @@ export interface UpcomingBet {
   stage: string
 }
 
+export interface MissingBetsSummary {
+  canView: boolean;
+  matches: MissingBetMatch[];
+}
+
+export interface MissingBetMatch {
+  matchId: number;
+  homeTeam: string;
+  awayTeam: string;
+  matchTime: string;
+  stage: string;
+  participants: MissingBetParticipant[];
+}
+
+export interface MissingBetParticipant {
+  userId: string;
+  userName: string;
+}
 
 
 

@@ -20,19 +20,43 @@
       </ion-select>
     </div>  
 
-  <!-- Home Team -->
-  <ion-select formControlName="homeTeamFrontendId" (ionChange)="onHomeTeamChange($event)">
-    <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
-      {{ team.teamName }}
-    </ion-select-option>
-  </ion-select>
+    <div class="teams-selection-row">
+      <div class="team-select-column team-select-column-home left-align">
+        <ion-label class="selector-label">{{ 'MATCH_MODAL.HOME_TEAM' | translate }}</ion-label>
+        <div class="team-crest-slot team-crest-slot-home">
+          <img
+            *ngIf="selectedHomeTeam?.crestUrl"
+            class="team-crest team-crest-home"
+            [src]="selectedHomeTeam?.crestUrl"
+            [alt]="selectedHomeTeam?.teamName || 'Home team'"
+          />
+        </div>
+        <ion-select formControlName="homeTeamFrontendId" (ionChange)="onHomeTeamChange($event)" class="team-select">
+          <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
+            {{ team.teamName }}
+          </ion-select-option>
+        </ion-select>
+      </div>
 
-  <!-- Away Team -->
-  <ion-select formControlName="awayTeamFrontendId" (ionChange)="onAwayTeamChange($event)">
-    <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
-      {{ team.teamName }}
-    </ion-select-option>
-  </ion-select>
+      <div class="team-select-spacer"></div>
+
+      <div class="team-select-column team-select-column-away right-align">
+        <ion-label class="selector-label">{{ 'MATCH_MODAL.AWAY_TEAM' | translate }}</ion-label>
+        <div class="team-crest-slot team-crest-slot-away">
+          <img
+            *ngIf="selectedAwayTeam?.crestUrl"
+            class="team-crest team-crest-away"
+            [src]="selectedAwayTeam?.crestUrl"
+            [alt]="selectedAwayTeam?.teamName || 'Away team'"
+          />
+        </div>
+        <ion-select formControlName="awayTeamFrontendId" (ionChange)="onAwayTeamChange($event)" class="team-select">
+          <ion-select-option *ngFor="let team of teams" [value]="team.teamFrontendId">
+            {{ team.teamName }}
+          </ion-select-option>
+        </ion-select>
+      </div>
+    </div>
 
     <!-- Match Type -->
     <div class="match-row">

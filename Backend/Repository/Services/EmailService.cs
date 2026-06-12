@@ -161,7 +161,13 @@ public class EmailService : IEmailService
         _logger.LogInformation($"Password reset email sent to {user.Email}");
     }
 
-    public async Task SendNotificationEmailAsync(ApplicationUser user, string title, string message, string route, string language)
+    public async Task SendNotificationEmailAsync(
+        ApplicationUser user,
+        string title,
+        string message,
+        string route,
+        string language,
+        bool includeNotificationConsentText = true)
     {
         if (string.IsNullOrWhiteSpace(user.Email))
         {
@@ -177,7 +183,10 @@ public class EmailService : IEmailService
             { "BODY_HTML", WebUtility.HtmlEncode(message).Replace("\n", "<br />") },
             { "ACTION_LINK", WebUtility.HtmlEncode(notificationLink) },
             { "ACTION_TEXT", WebUtility.HtmlEncode(_localizationService.Translate("Email.Action.OpenApp", language)) },
-            { "SECONDARY_TEXT", WebUtility.HtmlEncode(_localizationService.Translate("Email.NotificationConsent", language)) },
+            { "ACTION_LINK_FALLBACK_HTML", string.Empty },
+            { "SECONDARY_TEXT", includeNotificationConsentText
+                ? WebUtility.HtmlEncode(_localizationService.Translate("Email.NotificationConsent", language))
+                : string.Empty },
             { "SIGNATURE", _localizationService.Translate("Email.Signature", language) }
         };
 

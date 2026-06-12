@@ -183,9 +183,15 @@ public sealed class TestEmailService : IEmailService
         return Task.CompletedTask;
     }
 
-    public Task SendNotificationEmailAsync(ApplicationUser user, string title, string message, string route, string language)
+    public Task SendNotificationEmailAsync(
+        ApplicationUser user,
+        string title,
+        string message,
+        string route,
+        string language,
+        bool includeNotificationConsentText = true)
     {
-        NotificationEmails.Add(new NotificationEmail(user, title, message, route, language));
+        NotificationEmails.Add(new NotificationEmail(user, title, message, route, language, includeNotificationConsentText));
         return Task.CompletedTask;
     }
 }
@@ -194,7 +200,13 @@ public sealed record AccountSetupEmail(ApplicationUser User, string TournamentNa
 
 public sealed record TournamentInvitationEmail(string Email, string TournamentName, int TournamentId);
 
-public sealed record NotificationEmail(ApplicationUser User, string Title, string Message, string Route, string Language);
+public sealed record NotificationEmail(
+    ApplicationUser User,
+    string Title,
+    string Message,
+    string Route,
+    string Language,
+    bool IncludeNotificationConsentText);
 
 public sealed class TestEmailTemplateService : IEmailTemplateService
 {

@@ -170,6 +170,133 @@ public class BetServiceTests
     }
 
     [Fact]
+    public async Task GetMissingBetsSummaryAsync_ForTournamentAdmin_ReturnsMissingBetsForUpcoming48Hours()
+    {
+        using var host = new BackendTestHost();
+        var admin = await host.CreateUserAsync("missing-admin@example.com");
+        var player = await host.CreateUserAsync("missing-player@example.com");
+
+        int tournamentId;
+        int missingMatchId;
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var nowUtc = DateTime.UtcNow;
+
+            var tournament = new CustomTournament
+            {
+                Name = "Missing Bets Cup",
+                CreatedByUserId = admin.Id,
+                IsActive = true
+            };
+
+            dbContext.CustomTournaments.Add(tournament);
+            await dbContext.SaveChangesAsync();
+            tournamentId = tournament.TournamentId;
+
+            var stage = new CustomMatchStage
+            {
+                TournamentId = tournamentId,
+                StageName = "Group A",
+                Order = 1
+            };
+            var homeTeam = new CustomTeam
+            {
+                TournamentId = tournamentId,
+                TeamName = "England",
+                EloRating = 1000
+            };
+            var awayTeam = new CustomTeam
+            {
+                TournamentId = tournamentId,
+                TeamName = "Germany",
+                EloRating = 1000
+            };
+
+            dbContext.CustomMatchStages.Add(stage);
+            dbContext.CustomTeams.AddRange(homeTeam, awayTeam);
+            await dbContext.SaveChangesAsync();
+
+            var missingMatch = CreateMatch(tournamentId, stage.StageId, homeTeam.TeamId, awayTeam.TeamId, nowUtc.AddHours(2));
+            var completedMatch = CreateMatch(tournamentId, stage.StageId, homeTeam.TeamId, awayTeam.TeamId, nowUtc.AddHours(4));
+            var outsideWindowMatch = CreateMatch(tournamentId, stage.StageId, homeTeam.TeamId, awayTeam.TeamId, nowUtc.AddHours(72));
+
+            dbContext.CustomMatches.AddRange(missingMatch, completedMatch, outsideWindowMatch);
+            await dbContext.SaveChangesAsync();
+            missingMatchId = missingMatch.MatchId;
+
+            dbContext.CustomTournamentUserAssignments.AddRange(
+                new CustomTournamentUserAssignment
+                {
+                    TournamentId = tournamentId,
+                    UserId = admin.Id,
+                    UserAdminName = "Admin",
+                    UserName = "Admin",
+                    Status = AssignmentStatus.Accepted,
+                    Role = UserTournamentRole.Admin
+                },
+                new CustomTournamentUserAssignment
+                {
+                    TournamentId = tournamentId,
+                    UserId = player.Id,
+                    UserAdminName = "Johny",
+                    UserName = "Johny",
+                    Status = AssignmentStatus.Accepted,
+                    Role = UserTournamentRole.Player
+                });
+
+            dbContext.Bets.AddRange(
+                CreateBet(missingMatch.MatchId, admin.Id, 1, 1, Bet.BetStatus.Placed),
+                new Bet
+                {
+                    MatchId = missingMatch.MatchId,
+                    UserId = player.Id,
+                    BaseAmount = 1,
+                    Status = Bet.BetStatus.ToPlace,
+                    Result = Bet.BetResult.Pending
+                },
+                CreateBet(completedMatch.MatchId, admin.Id, 2, 1, Bet.BetStatus.Placed),
+                CreateBet(completedMatch.MatchId, player.Id, 1, 0, Bet.BetStatus.Placed),
+                CreateBet(outsideWindowMatch.MatchId, admin.Id, 0, 0, Bet.BetStatus.Placed),
+                new Bet
+                {
+                    MatchId = outsideWindowMatch.MatchId,
+                    UserId = player.Id,
+                    BaseAmount = 1,
+                    Status = Bet.BetStatus.ToPlace,
+                    Result = Bet.BetResult.Pending
+                });
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<IBetService>();
+
+            var adminSummary = await service.GetMissingBetsSummaryAsync(tournamentId, admin.Id);
+            var playerSummary = await service.GetMissingBetsSummaryAsync(tournamentId, player.Id);
+
+            Assert.NotNull(adminSummary);
+            Assert.True(adminSummary.CanView);
+
+            var match = Assert.Single(adminSummary.Matches);
+            Assert.Equal(missingMatchId, match.MatchId);
+            Assert.Equal("England", match.HomeTeam);
+            Assert.Equal("Germany", match.AwayTeam);
+
+            var participant = Assert.Single(match.Participants);
+            Assert.Equal(player.Id, participant.UserId);
+            Assert.Equal("Johny", participant.UserName);
+
+            Assert.NotNull(playerSummary);
+            Assert.False(playerSummary.CanView);
+            Assert.Empty(playerSummary.Matches);
+        }
+    }
+
+    [Fact]
     public async Task GetBetStatisticsAsync_UsesOnlyAcceptedParticipantsForComparison()
     {
         using var host = new BackendTestHost();
@@ -387,6 +514,29 @@ public class BetServiceTests
             Result = Bet.BetResult.Won,
             BasePayout = 1,
             Calculated = true
+        };
+    }
+
+    private static CustomMatch CreateMatch(
+        int tournamentId,
+        int stageId,
+        int homeTeamId,
+        int awayTeamId,
+        DateTime matchStartUtc)
+    {
+        return new CustomMatch
+        {
+            TournamentId = tournamentId,
+            StageId = stageId,
+            HomeTeamId = homeTeamId,
+            AwayTeamId = awayTeamId,
+            MatchStart = DateTime.SpecifyKind(matchStartUtc, DateTimeKind.Utc),
+            Status = CustomMatch.MatchStatus.Timed,
+            Type = CustomMatch.MatchType.Regular90Min,
+            HomeWinOdds = 2,
+            DrawOdds = 3,
+            AwayWinOdds = 4,
+            IsVisible = true
         };
     }
 

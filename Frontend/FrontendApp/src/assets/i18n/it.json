@@ -298,7 +298,16 @@
     "AQ": "PF",
     "RESULT": "R",
     "AVERAGE_GOALS": "Gol medi pronosticati",
-    "PLACED_BETS_SUMMARY": "{{placed}} su {{total}} partecipanti hanno scommesso"
+    "PLACED_BETS_SUMMARY": "{{placed}} su {{total}} partecipanti hanno scommesso",
+    "PENDING_REMINDERS_BUTTON": "Ricorda",
+    "PENDING_REMINDERS_TITLE": "Partecipanti senza scommessa",
+    "PENDING_REMINDERS_SEND_ALL": "Invia a tutti",
+    "PENDING_REMINDERS_SEND": "Invia",
+    "PENDING_REMINDERS_SENT": "Inviato",
+    "PENDING_REMINDERS_NONE": "Tutti hanno scommesso.",
+    "PENDING_REMINDERS_SENT_TOAST": "Email di promemoria inviate: {{count}}.",
+    "PENDING_REMINDERS_FAILED_TOAST": "Impossibile inviare il promemoria.",
+    "PENDING_REMINDERS_LOAD_FAILED": "Impossibile caricare i partecipanti."
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Modifica Scommessa",
@@ -498,6 +507,10 @@
   "LATEST_MESSAGES": {
     "TITLE": "Ultimi Messaggi",
     "NO_MESSAGES": "Nessun messaggio."
+  },
+  "MISSING_BETS": {
+    "TITLE": "Scommesse mancanti",
+    "NO_MISSING_BETS": "Nessuna scommessa mancante nelle prossime 48 ore."
   },
   "STARTED_MATCHES": {
     "TITLE": "Partite Personalizzate Avviate"

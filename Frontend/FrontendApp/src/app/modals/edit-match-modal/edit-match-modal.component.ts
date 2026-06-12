@@ -154,6 +154,14 @@ export class EditMatchModalComponent implements OnInit {
     return o1 === o2;
   }
 
+  get selectedHomeTeam(): Team | undefined {
+    return this.teams.find(team => team.teamFrontendId === this.matchForm.get('homeTeamFrontendId')?.value);
+  }
+
+  get selectedAwayTeam(): Team | undefined {
+    return this.teams.find(team => team.teamFrontendId === this.matchForm.get('awayTeamFrontendId')?.value);
+  }
+
   private toggleQualificationOddsValidation(matchType: string) {
     const homeQualifiesControl = this.matchForm.get('homeQualifies');
     const awayQualifiesControl = this.matchForm.get('awayQualifies');
@@ -340,10 +348,12 @@ export class EditMatchModalComponent implements OnInit {
   onHomeTeamChange(ev: any): void {
     const v = ev?.detail?.value ?? null;
     this.matchForm.get('homeTeamFrontendId')?.setValue(v, { emitEvent: true });
+    this.matchForm.get('homeTeam')?.setValue(this.selectedHomeTeam?.teamName ?? '', { emitEvent: false });
   }
 
   onAwayTeamChange(ev: any): void {
     const v = ev?.detail?.value ?? null;
     this.matchForm.get('awayTeamFrontendId')?.setValue(v, { emitEvent: true });
+    this.matchForm.get('awayTeam')?.setValue(this.selectedAwayTeam?.teamName ?? '', { emitEvent: false });
   }
 }

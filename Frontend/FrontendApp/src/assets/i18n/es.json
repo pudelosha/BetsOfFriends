@@ -298,7 +298,16 @@
     "AQ": "CV",
     "RESULT": "R",
     "AVERAGE_GOALS": "Goles promedio pronosticados",
-    "PLACED_BETS_SUMMARY": "{{placed}} de {{total}} participantes apostaron"
+    "PLACED_BETS_SUMMARY": "{{placed}} de {{total}} participantes apostaron",
+    "PENDING_REMINDERS_BUTTON": "Recordar",
+    "PENDING_REMINDERS_TITLE": "Participantes sin apuesta",
+    "PENDING_REMINDERS_SEND_ALL": "Enviar a todos",
+    "PENDING_REMINDERS_SEND": "Enviar",
+    "PENDING_REMINDERS_SENT": "Enviado",
+    "PENDING_REMINDERS_NONE": "Todos han apostado.",
+    "PENDING_REMINDERS_SENT_TOAST": "Emails de recordatorio enviados: {{count}}.",
+    "PENDING_REMINDERS_FAILED_TOAST": "No se pudo enviar el recordatorio.",
+    "PENDING_REMINDERS_LOAD_FAILED": "No se pudieron cargar los participantes."
   },
   "BET_MODAL": {
     "EDIT_TITLE": "Editar Apuesta",
@@ -498,6 +507,10 @@
 "LATEST_MESSAGES": {
   "TITLE": "Últimos Mensajes",
   "NO_MESSAGES": "Sin mensajes."
+},
+"MISSING_BETS": {
+  "TITLE": "Apuestas faltantes",
+  "NO_MISSING_BETS": "No faltan apuestas en las próximas 48 horas."
 },
 "STARTED_MATCHES": {
   "TITLE": "Partidos Personalizados Iniciados"

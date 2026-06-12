@@ -664,6 +664,9 @@ public class CustomTournamentServiceTests
 
         public Task NotifyMatchStartingSoonAsync(CustomMatch match, TimeSpan threshold) => Task.CompletedTask;
 
+        public Task<List<string>> NotifyManualPendingBetReminderAsync(CustomMatch match, List<ApplicationUser> recipients)
+            => Task.FromResult(new List<string>());
+
         public Task NotifyDailyTournamentUpdatesAsync(DateTime nowUtc) => Task.CompletedTask;
 
         public Task NotifyNewGamesToBetAsync(CustomMatch match) => Task.CompletedTask;
@@ -707,6 +710,9 @@ public class CustomTournamentServiceTests
         public Task NotifyUserJoinRequestApprovedAsync(CustomTournamentUserAssignment assignment) => Task.CompletedTask;
 
         public Task NotifyMatchStartingSoonAsync(CustomMatch match, TimeSpan threshold) => Task.CompletedTask;
+
+        public Task<List<string>> NotifyManualPendingBetReminderAsync(CustomMatch match, List<ApplicationUser> recipients)
+            => Task.FromResult(new List<string>());
 
         public Task NotifyDailyTournamentUpdatesAsync(DateTime nowUtc) => Task.CompletedTask;
 
