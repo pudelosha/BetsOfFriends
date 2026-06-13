@@ -22,6 +22,10 @@
   
             <!-- Action Buttons -->
             <ion-col size="6" class="button-col">
+              <ion-button fill="outline" color="success" (click)="recalculateLinkedCustomTournaments(tournament)" [title]="'PREDEFINED_TOURNAMENTS.RECALCULATE_LINKED' | translate">
+                <ion-icon name="cog-outline"></ion-icon>
+              </ion-button>
+
               <ion-button fill="outline" color="primary" (click)="editTournament(tournament)" [title]="'PREDEFINED_TOURNAMENTS.EDIT_TOURNAMENT' | translate">
                 <ion-icon name="create-outline"></ion-icon>
               </ion-button>

@@ -32,6 +32,7 @@ namespace Backend.Repository.Services
                     var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
 
                     await SendMatchStartRemindersAsync(notificationService, dbContext, TimeSpan.FromHours(1));
+                    await notificationService.NotifyAdminsAboutMissingBetsAsync(DateTime.UtcNow);
                     await SendDailyTournamentUpdatesIfDueAsync(notificationService);
                     await DeleteOldNotificationsAsync(dbContext);
                 }

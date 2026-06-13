@@ -56,8 +56,8 @@ export class MissingBetsPage implements OnChanges {
       }
 
       const summary = await firstValueFrom(this.betService.getMissingBets(this.tournamentId));
-      this.visible = summary.canView;
       this.matches = summary.matches ?? [];
+      this.visible = summary.canView && this.matches.length > 0;
     } catch (error) {
       if (error instanceof HttpErrorResponse && (error.status === 403 || error.status === 404)) {
         return;

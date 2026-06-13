@@ -2,10 +2,10 @@
   <h2 class="frame-title">{{ 'TOURNAMENT_RESULTS.TITLE' | translate }}</h2>
 
   <ion-list class="tournament-results-list" *ngIf="players.length > 0">
-    <ion-item *ngFor="let player of players" class="tournament-results-item">
+    <ion-item *ngFor="let player of players; let i = index" class="tournament-results-item">
       <div class="results-grid">
         <!-- Position -->
-        <span class="position">{{ player.position }}.</span>
+        <span class="position">{{ getDisplayPosition(i) }}.</span>
 
         <!-- Player Name -->
         <span class="player-name" [ngClass]="{ 'highlight-player': player.isCurrentUser }">

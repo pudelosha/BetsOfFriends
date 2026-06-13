@@ -62,12 +62,33 @@ export class MatchInsightsPage {
   }
 
   calculatePlayerColumnSize(match: MatchInsight): number {
-    let used = 2 + 1 + 1; // Bet, R, Payout
+    let used = 2; // Bet
+
+    if (this.canShowOutcomeColumns(match)) {
+      used += 3; // 1, X, 2
+    }
 
     if (match.showExactResult) used += 1; // Precise result (P)
-    if (match.showQualified) used += 1;   // Qualification (Q)
+    if (this.isFinalizedMatch(match)) used += 1; // Payout
+    if (this.isFinalizedMatch(match) && match.showQualified) used += 1; // Qualification (Q)
 
     return 12 - used;
+  }
+
+  canExpandMatch(match: MatchInsight): boolean {
+    return match.matchStatus === 'Finalized' || match.matchStatus === 'InProgress';
+  }
+
+  isFinalizedMatch(match: MatchInsight): boolean {
+    return match.matchStatus === 'Finalized';
+  }
+
+  isLiveMatch(match: MatchInsight): boolean {
+    return match.matchStatus === 'InProgress';
+  }
+
+  canShowOutcomeColumns(match: MatchInsight): boolean {
+    return this.canExpandMatch(match) && !!match.result;
   }
 
   onAccordionChange(event: Event) {

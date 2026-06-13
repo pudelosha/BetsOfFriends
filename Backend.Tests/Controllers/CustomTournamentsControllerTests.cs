@@ -272,6 +272,7 @@ public class CustomTournamentsControllerTests
         public Task NotifyUserJoinRequestApprovedAsync(CustomTournamentUserAssignment assignment) => throw new NotImplementedException();
         public Task NotifyMatchStartingSoonAsync(CustomMatch match, TimeSpan threshold) => throw new NotImplementedException();
         public Task<List<string>> NotifyManualPendingBetReminderAsync(CustomMatch match, List<ApplicationUser> recipients) => throw new NotImplementedException();
+        public Task NotifyAdminsAboutMissingBetsAsync(DateTime nowUtc) => throw new NotImplementedException();
         public Task NotifyDailyTournamentUpdatesAsync(DateTime nowUtc) => throw new NotImplementedException();
         public Task NotifyNewGamesToBetAsync(CustomMatch match) => throw new NotImplementedException();
         public Task NotifySuperAdminsAboutSupportMessageAsync(SupportMessage message) => throw new NotImplementedException();

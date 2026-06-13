@@ -43,6 +43,10 @@
       "Title": "Erinnerung: Tipp abgeben",
       "Message": "Du hast deinen Tipp fuer {{HOME_TEAM}} gegen {{AWAY_TEAM}} noch nicht abgegeben."
     },
+    "AdminMissingBets": {
+      "Title": "Fehlende Tipps fuer anstehendes Spiel",
+      "Message": "{{HOME_TEAM}} gegen {{AWAY_TEAM}} beginnt innerhalb von 24 Stunden. {{COUNT}} Teilnehmer haben noch nicht getippt: {{PARTICIPANTS}}."
+    },
     "ResultsUpdated": {
       "Title": "Turnierergebnisse aktualisiert",
       "Message": "Die Ergebnisse wurden nach {{HOME_TEAM}} gegen {{AWAY_TEAM}} neu berechnet. Endstand: {{SCORE}}."

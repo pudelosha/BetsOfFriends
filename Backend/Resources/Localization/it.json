@@ -43,6 +43,10 @@
       "Title": "Promemoria: invia il pronostico",
       "Message": "Non hai ancora inviato il pronostico per {{HOME_TEAM}} vs {{AWAY_TEAM}}."
     },
+    "AdminMissingBets": {
+      "Title": "Scommesse mancanti per partita in arrivo",
+      "Message": "{{HOME_TEAM}} vs {{AWAY_TEAM}} inizia entro 24 ore. {{COUNT}} partecipante/i non hanno ancora scommesso: {{PARTICIPANTS}}."
+    },
     "ResultsUpdated": {
       "Title": "Risultati del torneo aggiornati",
       "Message": "I risultati sono stati ricalcolati dopo {{HOME_TEAM}} vs {{AWAY_TEAM}}. Risultato finale: {{SCORE}}."

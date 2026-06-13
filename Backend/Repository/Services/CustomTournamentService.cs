@@ -1443,8 +1443,16 @@ namespace Backend.Repository.Services
             var result = matches.Select(match =>
             {
                 bool isFinalised = match.Status == CustomMatch.MatchStatus.Finished;
+                bool isInProgress = match.Status == CustomMatch.MatchStatus.In_Play;
+                int? actualHomeScore = isInProgress ? match.HomeScoreLive ?? match.HomeScore : match.HomeScore;
+                int? actualAwayScore = isInProgress ? match.AwayScoreLive ?? match.AwayScore : match.AwayScore;
+                string? actualOutcome = actualHomeScore.HasValue && actualAwayScore.HasValue
+                    ? actualHomeScore > actualAwayScore ? "1"
+                    : actualHomeScore < actualAwayScore ? "2"
+                    : "X"
+                    : null;
 
-                bool showExactResult = tournament.AllowExactResultBonus && isFinalised;
+                bool showExactResult = tournament.AllowExactResultBonus && (isFinalised || isInProgress);
                 bool showQualified = tournament.AllowWhoQualifiesBets &&
                                      match.Type == CustomMatch.MatchType.ExtendedWithQualification;
 
@@ -1456,8 +1464,8 @@ namespace Backend.Repository.Services
                     _ => "Upcoming"
                 };
 
-                string? resultScore = isFinalised && match.HomeScore.HasValue && match.AwayScore.HasValue
-                    ? $"{match.HomeScore}:{match.AwayScore}"
+                string? resultScore = (isFinalised || isInProgress) && actualHomeScore.HasValue && actualAwayScore.HasValue
+                    ? $"{actualHomeScore}:{actualAwayScore}"
                     : null;
 
                 var userBets = match.Bets
@@ -1472,8 +1480,19 @@ namespace Backend.Repository.Services
                         {
                             PlayerName = nicknameMap.TryGetValue(bet.UserId, out var name) ? name : "Unknown",
                             BetScore = betScore,
-                            ResultSuccess = (bet.BasePayout > 0 ? 1 : 0),
-                            PreciseResultSuccess = showExactResult ? (bet.ExactScorePayout > 0 ? 1 : 0) : null,
+                            HomeWinSuccess = bet.HomeGoals.HasValue && bet.AwayGoals.HasValue && bet.HomeGoals > bet.AwayGoals
+                                ? actualOutcome == "1" ? 1 : 0
+                                : null,
+                            DrawSuccess = bet.HomeGoals.HasValue && bet.AwayGoals.HasValue && bet.HomeGoals == bet.AwayGoals
+                                ? actualOutcome == "X" ? 1 : 0
+                                : null,
+                            AwayWinSuccess = bet.HomeGoals.HasValue && bet.AwayGoals.HasValue && bet.HomeGoals < bet.AwayGoals
+                                ? actualOutcome == "2" ? 1 : 0
+                                : null,
+                            ResultSuccess = isFinalised ? (bet.BasePayout > 0 ? 1 : 0) : null,
+                            PreciseResultSuccess = (isFinalised || isInProgress) && tournament.AllowExactResultBonus && bet.HomeGoals.HasValue && bet.AwayGoals.HasValue && actualHomeScore.HasValue && actualAwayScore.HasValue
+                                ? bet.HomeGoals == actualHomeScore && bet.AwayGoals == actualAwayScore ? 1 : 0
+                                : null,
                             QualificationSuccess = showQualified ? (bet.QualificationPayout > 0 ? 1 : 0) : null,
                             TotalPayout = (bet.BasePayout ?? 0)
                                         + (showExactResult ? (bet.ExactScorePayout ?? 0) : 0)
@@ -1489,6 +1508,8 @@ namespace Backend.Repository.Services
                     HomeTeam = match.HomeTeam.TeamName,
                     AwayTeam = match.AwayTeam.TeamName,
                     Result = resultScore,
+                    HomeScoreActual = actualHomeScore,
+                    AwayScoreActual = actualAwayScore,
                     MatchDateTime = DateTime.SpecifyKind(match.MatchStart, DateTimeKind.Utc).ToString("o"),
                     MatchStatus = matchStatus,
                     ShowExactResult = showExactResult,

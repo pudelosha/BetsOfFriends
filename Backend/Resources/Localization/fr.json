@@ -43,6 +43,10 @@
       "Title": "Rappel : envoyez votre pari",
       "Message": "Vous n'avez pas encore envoye votre pari pour {{HOME_TEAM}} contre {{AWAY_TEAM}}."
     },
+    "AdminMissingBets": {
+      "Title": "Paris manquants pour un match a venir",
+      "Message": "{{HOME_TEAM}} contre {{AWAY_TEAM}} commence dans les 24 heures. {{COUNT}} participant(s) n'ont pas encore parie : {{PARTICIPANTS}}."
+    },
     "ResultsUpdated": {
       "Title": "Resultats du tournoi mis a jour",
       "Message": "Les resultats ont ete recalcules apres {{HOME_TEAM}} contre {{AWAY_TEAM}}. Score final : {{SCORE}}."

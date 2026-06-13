@@ -43,6 +43,10 @@
       "Title": "Reminder: submit your bet",
       "Message": "You have not submitted your bet for {{HOME_TEAM}} vs {{AWAY_TEAM}} yet."
     },
+    "AdminMissingBets": {
+      "Title": "Missing bets for upcoming match",
+      "Message": "{{HOME_TEAM}} vs {{AWAY_TEAM}} starts within 24 hours. {{COUNT}} participant(s) have not submitted a bet: {{PARTICIPANTS}}."
+    },
     "ResultsUpdated": {
       "Title": "Tournament results updated",
       "Message": "Results were recalculated after {{HOME_TEAM}} vs {{AWAY_TEAM}}. Final score: {{SCORE}}."

@@ -48,6 +48,13 @@
   overflow-wrap: anywhere;
 }
 
+.live-team-score {
+  color: #32cd32;
+  font-size: 16px;
+  font-weight: bold;
+  animation: blink 1s steps(2, start) infinite;
+}
+
 .divider {
   height: 1px;
   background: #ccc;
@@ -245,6 +252,14 @@
   font-weight: 600;
 }
 
+.player-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: left;
+  padding-left: 5px;
+}
+
 .bet-table-body {
   font-size: 10px;
 }
@@ -288,6 +303,12 @@ ion-row > ion-col {
 
   &:hover {
     background-color: #F7F8FE;
+  }
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
   }
 }
 

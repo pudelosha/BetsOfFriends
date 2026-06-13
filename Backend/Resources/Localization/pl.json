@@ -43,6 +43,10 @@
       "Title": "Przypomnienie: wyslij swoj typ",
       "Message": "Nie wyslales jeszcze typu na {{HOME_TEAM}} vs {{AWAY_TEAM}}."
     },
+    "AdminMissingBets": {
+      "Title": "Brakujace zaklady przed meczem",
+      "Message": "{{HOME_TEAM}} vs {{AWAY_TEAM}} zaczyna sie w ciagu 24 godzin. Liczba uczestnikow bez typu: {{COUNT}}. Uczestnicy: {{PARTICIPANTS}}."
+    },
     "ResultsUpdated": {
       "Title": "Wyniki turnieju zaktualizowane",
       "Message": "Wyniki zostaly przeliczone po meczu {{HOME_TEAM}} vs {{AWAY_TEAM}}. Wynik koncowy: {{SCORE}}."
@@ -50,7 +54,7 @@
     "DailyUpdate": {
       "Title": "Codzienna aktualizacja turnieju",
       "MessageOne": "Masz {{COUNT}} mecz turniejowy w ciagu najblizszych 24 godzin.",
-      "MessageMany": "Masz {{COUNT}} mecze turniejowe w ciagu najblizszych 24 godzin."
+      "MessageMany": "Liczba meczow turniejowych w ciagu najblizszych 24 godzin: {{COUNT}}."
     },
     "NewGame": {
       "Title": "Nowy mecz dostepny",

@@ -69,8 +69,16 @@ export class BetsOverviewModalComponent {
     return value === null || value === undefined ? '-' : value.toFixed(1);
   }
 
+  formatPercent(value?: number | null): string {
+    return value === null || value === undefined ? '-' : value.toFixed(1);
+  }
+
   shouldShowUserBets(): boolean {
     return this.betStats.matchStatus === 'In_Play' || this.betStats.matchStatus === 'Finished';
+  }
+
+  isMatchLive(): boolean {
+    return this.betStats.matchStatus === 'In_Play';
   }
 
   canOpenPendingReminders(): boolean {

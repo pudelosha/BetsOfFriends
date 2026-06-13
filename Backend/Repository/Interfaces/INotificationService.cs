@@ -11,6 +11,7 @@ namespace Backend.Repository.Interfaces
         Task NotifyUserJoinRequestApprovedAsync(CustomTournamentUserAssignment assignment);
         Task NotifyMatchStartingSoonAsync(CustomMatch match, TimeSpan threshold);
         Task<List<string>> NotifyManualPendingBetReminderAsync(CustomMatch match, List<ApplicationUser> recipients);
+        Task NotifyAdminsAboutMissingBetsAsync(DateTime nowUtc);
         Task NotifyDailyTournamentUpdatesAsync(DateTime nowUtc);
         Task NotifyNewGamesToBetAsync(CustomMatch match);
         Task NotifyTournamentInvitationsAsync(int tournamentId, IEnumerable<string> userEmails);

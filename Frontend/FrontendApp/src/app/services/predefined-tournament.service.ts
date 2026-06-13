@@ -39,6 +39,13 @@ export class PredefinedTournamentService {
     return this.http.patch<void>(`${this.apiUrl}/status/${tournamentId}`, requestBody);
   }
 
+  recalculateLinkedCustomTournaments(tournamentId: number): Observable<{ message: string; recalculatedTournaments: number }> {
+    return this.http.post<{ message: string; recalculatedTournaments: number }>(
+      `${this.apiUrl}/recalculate-linked/${tournamentId}`,
+      {}
+    );
+  }
+
   deletePredefinedTournament(tournamentId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${tournamentId}`);
   }

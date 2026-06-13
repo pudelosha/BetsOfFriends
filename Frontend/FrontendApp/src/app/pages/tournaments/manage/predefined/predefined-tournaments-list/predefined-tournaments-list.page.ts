@@ -93,6 +93,50 @@ export class PredefinedTournamentsListPage implements OnInit {
   
     this.router.navigate(['/matches/predefined', tournamentId]);
   }  
+
+  async recalculateLinkedCustomTournaments(tournament: Tournament): Promise<void> {
+    if (!tournament.tournamentId) {
+      this.showToast(this.t('TOASTS.NO_TOURNAMENT_ID'), 'danger');
+      return;
+    }
+
+    const alert = await this.alertController.create({
+      header: this.t('PREDEFINED_TOURNAMENTS.RECALCULATE_LINKED_TITLE'),
+      message: this.t('PREDEFINED_TOURNAMENTS.RECALCULATE_LINKED_CONFIRM', { name: tournament.tournamentName }),
+      buttons: [
+        { text: this.t('TOASTS.CANCEL'), role: 'cancel' },
+        {
+          text: this.t('PREDEFINED_TOURNAMENTS.RECALCULATE_LINKED'),
+          handler: async () => {
+            const loading = await this.loadingController.create({
+              message: this.t('TOASTS.RECALCULATING_BETS'),
+              spinner: 'crescent',
+            });
+            await loading.present();
+
+            try {
+              const result = await firstValueFrom(
+                this.tournamentService.recalculateLinkedCustomTournaments(tournament.tournamentId!)
+              );
+              this.showToast(
+                this.t('PREDEFINED_TOURNAMENTS.RECALCULATE_LINKED_SUCCESS', {
+                  count: result.recalculatedTournaments,
+                }),
+                'success'
+              );
+            } catch (error) {
+              console.error('Error recalculating linked custom tournaments:', error);
+              this.showToast(this.t('PREDEFINED_TOURNAMENTS.RECALCULATE_LINKED_FAILED'), 'danger');
+            } finally {
+              await loading.dismiss();
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
   
   async toggleTournamentStatus(tournament: any) {
     const newStatus = !tournament.isActive;

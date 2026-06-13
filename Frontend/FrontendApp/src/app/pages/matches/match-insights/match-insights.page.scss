@@ -96,6 +96,19 @@ ion-accordion[expanded] .accordion-header {
   border-top: 1px solid #e6e6e6;
 }
 
+.centered-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.live-header-score {
+  color: #32cd32;
+  font-weight: bold;
+  animation: blink 1s steps(2, start) infinite;
+}
+
 /* Bets Table */
 .bets-overview-grid {
   width: 100%;
@@ -170,4 +183,10 @@ ion-accordion[expanded] .accordion-header {
 .left-aligned-text {
   text-align: left;
   padding-left: 10px !important;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
 }

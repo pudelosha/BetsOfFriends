@@ -107,6 +107,101 @@ public class NotificationService : INotificationService
             .ToList();
     }
 
+    public async Task NotifyAdminsAboutMissingBetsAsync(DateTime nowUtc)
+    {
+        var windowEndUtc = nowUtc.AddHours(24);
+        var matches = await _dbContext.CustomMatches
+            .Include(match => match.HomeTeam)
+            .Include(match => match.AwayTeam)
+            .Include(match => match.Stage)
+            .Include(match => match.Tournament)
+            .Where(match =>
+                match.IsVisible &&
+                match.Tournament.IsActive &&
+                match.Status == CustomMatch.MatchStatus.Timed &&
+                match.MatchStart >= nowUtc &&
+                match.MatchStart < windowEndUtc)
+            .ToListAsync();
+
+        foreach (var match in matches)
+        {
+            var assignments = await _dbContext.CustomTournamentUserAssignments
+                .Include(assignment => assignment.User)
+                .Where(assignment =>
+                    assignment.TournamentId == match.TournamentId &&
+                    assignment.Status == AssignmentStatus.Accepted)
+                .ToListAsync();
+
+            var submittedUserIds = await _dbContext.Bets
+                .Where(bet =>
+                    bet.MatchId == match.MatchId &&
+                    bet.Status != Bet.BetStatus.ToPlace &&
+                    bet.HomeGoals.HasValue &&
+                    bet.AwayGoals.HasValue)
+                .Select(bet => bet.UserId)
+                .Distinct()
+                .ToListAsync();
+
+            var submittedUserSet = submittedUserIds.ToHashSet();
+            var missingParticipants = assignments
+                .Where(assignment => !submittedUserSet.Contains(assignment.UserId))
+                .OrderBy(assignment => GetParticipantDisplayName(assignment))
+                .ToList();
+
+            if (!missingParticipants.Any())
+            {
+                continue;
+            }
+
+            var admins = assignments
+                .Where(assignment => assignment.Role == UserTournamentRole.Admin)
+                .Select(assignment => assignment.User)
+                .Where(user => user.ReceiveEmailPendingBets || user.ReceivePushPendingBets)
+                .DistinctBy(user => user.Id)
+                .ToList();
+
+            if (!admins.Any())
+            {
+                continue;
+            }
+
+            var stageNameEncoded = Uri.EscapeDataString(match.Stage?.StageName ?? "");
+            var route = $"/my-bets?tab=placed&stage={stageNameEncoded}&tournamentId={match.TournamentId}&matchId={match.MatchId}";
+            var adminIds = admins.Select(admin => admin.Id).ToList();
+            var alreadyNotifiedAdminIds = await _dbContext.NotificationRecipients
+                .Where(recipient =>
+                    adminIds.Contains(recipient.UserId) &&
+                    recipient.Notification.Route == route)
+                .Select(recipient => recipient.UserId)
+                .Distinct()
+                .ToListAsync();
+            var alreadyNotifiedAdminSet = alreadyNotifiedAdminIds.ToHashSet();
+            var recipients = admins
+                .Where(admin => !alreadyNotifiedAdminSet.Contains(admin.Id))
+                .ToList();
+
+            if (!recipients.Any())
+            {
+                continue;
+            }
+
+            await ProcessLocalizedNotificationsAsync(
+                recipients,
+                "Notifications.AdminMissingBets.Title",
+                "Notifications.AdminMissingBets.Message",
+                new Dictionary<string, string>
+                {
+                    { "HOME_TEAM", match.HomeTeam?.TeamName ?? "Home team" },
+                    { "AWAY_TEAM", match.AwayTeam?.TeamName ?? "Away team" },
+                    { "COUNT", missingParticipants.Count.ToString() },
+                    { "PARTICIPANTS", string.Join(", ", missingParticipants.Select(GetParticipantDisplayName)) }
+                },
+                route,
+                user => (user.ReceiveEmailPendingBets, user.ReceivePushPendingBets)
+            );
+        }
+    }
+
 
     public async Task NotifyMatchClosureAsync(CustomMatch match)
     {
@@ -159,9 +254,13 @@ public class NotificationService : INotificationService
     {
         var windowEndUtc = nowUtc.AddHours(24);
         var rows = await _dbContext.CustomTournamentUserAssignments
-            .Where(a => a.Status == AssignmentStatus.Accepted)
+            .Where(a =>
+                a.Status == AssignmentStatus.Accepted &&
+                a.IsVisible &&
+                a.Tournament.IsActive)
             .SelectMany(a => a.Tournament.Matches
                 .Where(m =>
+                    m.IsVisible &&
                     m.Status == CustomMatch.MatchStatus.Timed &&
                     m.MatchStart >= nowUtc &&
                     m.MatchStart < windowEndUtc)
@@ -169,16 +268,19 @@ public class NotificationService : INotificationService
                 {
                     a.UserId,
                     a.User,
+                    a.TournamentId,
                     m.MatchId
                 }))
             .ToListAsync();
 
         var groupedUsers = rows
-            .GroupBy(r => r.UserId)
+            .GroupBy(r => new { r.UserId, r.TournamentId })
             .Select(g => new
             {
                 User = g.First().User,
-                Count = g.Select(r => r.MatchId).Distinct().Count()
+                g.Key.TournamentId,
+                Count = g.Select(r => r.MatchId).Distinct().Count(),
+                Route = $"/my-bets?tab=to-place&tournamentId={g.Key.TournamentId}"
             })
             .Where(x => x.Count > 0)
             .ToList();
@@ -193,30 +295,38 @@ public class NotificationService : INotificationService
         var dayStartUtc = nowUtc.Date;
         var dayEndUtc = dayStartUtc.AddDays(1);
 
-        var alreadyNotifiedUserIds = await _dbContext.NotificationRecipients
+        var alreadyNotifiedRows = await _dbContext.NotificationRecipients
             .Where(nr =>
                 userIds.Contains(nr.UserId) &&
-                nr.Notification.Route == "/my-bets?tab=to-place" &&
+                nr.Notification.Route != null &&
+                nr.Notification.Route.StartsWith("/my-bets?tab=to-place") &&
                 nr.Notification.CreatedAt >= dayStartUtc &&
                 nr.Notification.CreatedAt < dayEndUtc)
-            .Select(nr => nr.UserId)
+            .Select(nr => new
+            {
+                nr.UserId,
+                nr.Notification.Route
+            })
             .Distinct()
             .ToListAsync();
 
-        var alreadyNotified = alreadyNotifiedUserIds.ToHashSet();
+        var alreadyNotified = alreadyNotifiedRows
+            .Select(n => $"{n.UserId}|{n.Route}")
+            .ToHashSet();
+
         var usersToNotify = groupedUsers
-            .Where(g => !alreadyNotified.Contains(g.User.Id))
+            .Where(g => !alreadyNotified.Contains($"{g.User.Id}|{g.Route}"))
             .ToList();
 
-        foreach (var countGroup in usersToNotify.GroupBy(g => g.Count))
+        foreach (var countGroup in usersToNotify.GroupBy(g => new { g.Count, g.Route }))
         {
-            var count = countGroup.Key;
+            var count = countGroup.Key.Count;
             await ProcessLocalizedNotificationsAsync(
                 countGroup.Select(g => g.User).ToList(),
                 "Notifications.DailyUpdate.Title",
                 count == 1 ? "Notifications.DailyUpdate.MessageOne" : "Notifications.DailyUpdate.MessageMany",
                 new Dictionary<string, string> { { "COUNT", count.ToString() } },
-                "/my-bets?tab=to-place",
+                countGroup.Key.Route,
                 user => (user.ReceiveEmailDailyUpdates, user.ReceivePushDailyUpdates)
             );
         }
@@ -702,6 +812,21 @@ public class NotificationService : INotificationService
                 Language = user.Language != null ? user.Language.ShortName : "en"
             })
             .ToDictionaryAsync(user => user.Id, user => user.Language ?? "en");
+    }
+
+    private static string GetParticipantDisplayName(CustomTournamentUserAssignment assignment)
+    {
+        if (!string.IsNullOrWhiteSpace(assignment.UserName))
+        {
+            return assignment.UserName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(assignment.UserAdminName))
+        {
+            return assignment.UserAdminName;
+        }
+
+        return assignment.User?.UserName ?? assignment.User?.Email ?? "Unknown";
     }
 
     public async Task<NotificationSettingsDto?> GetNotificationSettingsAsync(string userId)

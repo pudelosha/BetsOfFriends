@@ -2,6 +2,7 @@
 using Backend.Model.Database;
 using Backend.Model.Entities;
 using Backend.Repository.Interfaces;
+using Backend.Services.Interfaces;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
@@ -14,11 +15,16 @@ namespace Backend.Repository.Services
     {
         private readonly AppDbContext _context;
         private readonly ILogger<PredefinedTournamentService> _logger;
+        private readonly IBetService _betService;
 
-        public PredefinedTournamentService(AppDbContext context, ILogger<PredefinedTournamentService> logger)
+        public PredefinedTournamentService(
+            AppDbContext context,
+            ILogger<PredefinedTournamentService> logger,
+            IBetService betService)
         {
             _context = context;
             _logger = logger;
+            _betService = betService;
         }
 
         private static bool IsQualificationMatch(CustomMatch.MatchType matchType)
@@ -608,6 +614,39 @@ namespace Backend.Repository.Services
                 _logger.LogError($"Error updating status for tournament ID {tournamentId}: {ex.Message}");
                 throw;
             }
+        }
+
+        public async Task<int?> RecalculateLinkedCustomTournamentBetsAsync(int tournamentId)
+        {
+            var predefinedTournamentExists = await _context.PredefinedTournaments
+                .AnyAsync(t => t.TournamentId == tournamentId);
+
+            if (!predefinedTournamentExists)
+            {
+                _logger.LogWarning($"Predefined tournament with ID {tournamentId} not found.");
+                return null;
+            }
+
+            var customTournamentIds = await _context.CustomTournaments
+                .Where(t => t.PredefinedTournamentId == tournamentId)
+                .Select(t => t.TournamentId)
+                .ToListAsync();
+
+            var recalculatedCount = 0;
+
+            foreach (var customTournamentId in customTournamentIds)
+            {
+                var recalculated = await _betService.RecalculateBetsForTournamentAsync(customTournamentId);
+                if (recalculated)
+                {
+                    recalculatedCount++;
+                }
+            }
+
+            _logger.LogInformation(
+                $"Recalculated bets for {recalculatedCount} linked custom tournaments for predefined tournament ID {tournamentId}.");
+
+            return recalculatedCount;
         }
 
         public async Task<List<PredefinedTournamentListDto>> GetActivePredefinedTournamentsAsync()

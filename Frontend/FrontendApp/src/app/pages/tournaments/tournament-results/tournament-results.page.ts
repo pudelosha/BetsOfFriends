@@ -127,6 +127,25 @@ export class TournamentResultsPage implements OnInit {
     if (!this.showExactResultColumn) extra += 1;
     return baseSize + extra;
   }
+
+  getDisplayPosition(index: number): number {
+    if (index <= 0) {
+      return 1;
+    }
+
+    const current = this.summaryData[index];
+    const previous = this.summaryData[index - 1];
+
+    if (this.roundPoints(current?.totalPayout) === this.roundPoints(previous?.totalPayout)) {
+      return this.getDisplayPosition(index - 1);
+    }
+
+    return index + 1;
+  }
+
+  private roundPoints(value?: number | null): number | null {
+    return value === null || value === undefined ? null : Math.round(value * 100) / 100;
+  }
           
   async showToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary') {
     const toast = await this.toastController.create({

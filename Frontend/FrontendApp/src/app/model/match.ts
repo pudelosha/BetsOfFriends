@@ -21,6 +21,8 @@ export interface MatchInsight {
   homeTeam: string;
   awayTeam: string;
   result: string | null;
+  homeScoreActual?: number | null;
+  awayScoreActual?: number | null;
   matchDateTime: string;
   matchStatus: 'Upcoming' | 'InProgress' | 'Finalized';
   showExactResult: boolean;
@@ -31,8 +33,11 @@ export interface MatchInsight {
 export interface MatchUserBet {
   playerName: string;
   betScore: string;
-  resultSuccess: 0 | 1;
-  preciseResultSuccess?: 0 | 1;      // optional depending on showExactResult
-  qualificationSuccess?: 0 | 1;      // optional depending on showQualified
+  homeWinSuccess?: 0 | 1 | null;
+  drawSuccess?: 0 | 1 | null;
+  awayWinSuccess?: 0 | 1 | null;
+  resultSuccess?: 0 | 1 | null;
+  preciseResultSuccess?: 0 | 1 | null;      // optional depending on showExactResult
+  qualificationSuccess?: 0 | 1 | null;      // optional depending on showQualified
   totalPayout: number;
 }

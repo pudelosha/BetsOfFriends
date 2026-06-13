@@ -181,6 +181,32 @@ namespace Backend.Controllers
             }
         }
 
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpPost("recalculate-linked/{tournamentId}")]
+        public async Task<IActionResult> RecalculateLinkedCustomTournamentBets(int tournamentId)
+        {
+            try
+            {
+                var recalculatedCount = await _tournamentService.RecalculateLinkedCustomTournamentBetsAsync(tournamentId);
+
+                if (recalculatedCount == null)
+                {
+                    return NotFound(new { Message = $"Tournament with ID {tournamentId} not found." });
+                }
+
+                return Ok(new
+                {
+                    Message = "Linked custom tournament bets recalculated successfully.",
+                    RecalculatedTournaments = recalculatedCount.Value
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error recalculating linked custom tournaments for predefined tournament ID {tournamentId}.");
+                return StatusCode(500, new { Message = "An error occurred while recalculating linked custom tournament bets." });
+            }
+        }
+
         [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("active")]
         public async Task<IActionResult> GetActivePredefinedTournaments()

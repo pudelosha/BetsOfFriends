@@ -20,6 +20,9 @@
           [alt]="betStats.homeTeam"
         />
         <strong class="team-name">{{ betStats.homeTeam }}</strong>
+        <strong *ngIf="isMatchLive()" class="live-team-score">
+          {{ betStats.homeScoreActual ?? '-' }}
+        </strong>
       </ion-col>
       <ion-col size="2" class="centered-text"></ion-col>
       <ion-col size="5" class="team-column team-column-centered">
@@ -30,11 +33,14 @@
           [alt]="betStats.awayTeam"
         />
         <strong class="team-name">{{ betStats.awayTeam }}</strong>
+        <strong *ngIf="isMatchLive()" class="live-team-score">
+          {{ betStats.awayScoreActual ?? '-' }}
+        </strong>
       </ion-col>
     </ion-row>
 
     <!-- Match Scores -->
-    <ion-row class="match-score">
+    <ion-row class="match-score" *ngIf="!isMatchLive()">
       <ion-col size="5"><strong>{{ betStats.homeScoreActual ?? '-' }}</strong></ion-col>
       <ion-col size="2" class="centered-text">-</ion-col>
       <ion-col size="5"><strong>{{ betStats.awayScoreActual ?? '-' }}</strong></ion-col>
@@ -86,13 +92,13 @@
       <ion-col size="12" class="no-padding">
         <div class="progress-bar compact">
           <div class="bar home" *ngIf="betStats.percent1 && betStats.percent1 > 0" [style.width.%]="betStats.percent1">
-            <span>{{ betStats.percent1 }}%</span>
+            <span>{{ formatPercent(betStats.percent1) }}%</span>
           </div>
           <div class="bar draw" *ngIf="betStats.percentX && betStats.percentX > 0" [style.width.%]="betStats.percentX">
-            <span>{{ betStats.percentX }}%</span>
+            <span>{{ formatPercent(betStats.percentX) }}%</span>
           </div>
           <div class="bar away" *ngIf="betStats.percent2 && betStats.percent2 > 0" [style.width.%]="betStats.percent2">
-            <span>{{ betStats.percent2 }}%</span>
+            <span>{{ formatPercent(betStats.percent2) }}%</span>
           </div>
         </div>
       </ion-col>
@@ -160,7 +166,7 @@
 
       <!-- Table Header -->
       <ion-row class="bet-table-header">
-        <ion-col [size]="calculatePlayerColumnSize()" class="centered-text"><strong>{{ 'BETS_OVERVIEW.PLAYER' | translate }}</strong></ion-col>
+        <ion-col [size]="calculatePlayerColumnSize()" class="player-header"><strong>{{ 'BETS_OVERVIEW.PLAYER' | translate }}</strong></ion-col>
         <ion-col size="2" class="centered-text"><strong>{{ 'BETS_OVERVIEW.BET' | translate }}</strong></ion-col>
         <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.HW' | translate }}</strong></ion-col>
         <ion-col size="1" class="centered-text"><strong>{{ 'BETS_OVERVIEW.D' | translate }}</strong></ion-col>

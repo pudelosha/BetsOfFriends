@@ -196,6 +196,190 @@ public class NotificationServiceTests
     }
 
     [Fact]
+    public async Task NotifyDailyTournamentUpdatesAsync_GroupsCountsPerVisibleTournament()
+    {
+        using var host = new BackendTestHost();
+        var user = await host.CreateUserAsync("daily-multiple-tournaments@example.com");
+        var nowUtc = DateTime.UtcNow;
+
+        using var scope = host.CreateScope();
+        var firstTournamentSeed = await SeedTournamentMatchAsync(
+            scope.ServiceProvider,
+            user.Id,
+            configuredUser => configuredUser.ReceiveEmailDailyUpdates = true,
+            matchStartUtc: nowUtc.AddHours(2));
+        var secondTournamentSeed = await SeedTournamentMatchAsync(
+            scope.ServiceProvider,
+            user.Id,
+            configuredUser => configuredUser.ReceiveEmailDailyUpdates = true,
+            matchStartUtc: nowUtc.AddHours(3));
+
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        dbContext.CustomMatches.Add(new CustomMatch
+        {
+            TournamentId = secondTournamentSeed.Tournament.TournamentId,
+            Tournament = secondTournamentSeed.Tournament,
+            StageId = secondTournamentSeed.Match.StageId,
+            HomeTeamId = secondTournamentSeed.Match.HomeTeamId,
+            AwayTeamId = secondTournamentSeed.Match.AwayTeamId,
+            MatchStart = nowUtc.AddHours(4),
+            Status = CustomMatch.MatchStatus.Timed,
+            HomeWinOdds = 2.1m,
+            DrawOdds = 3.3m,
+            AwayWinOdds = 3.4m
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = scope.ServiceProvider.GetRequiredService<INotificationService>();
+
+        await service.NotifyDailyTournamentUpdatesAsync(nowUtc);
+
+        Assert.Equal(2, host.Emails.NotificationEmails.Count);
+        Assert.Contains(host.Emails.NotificationEmails, email =>
+            email.Route == $"/my-bets?tab=to-place&tournamentId={firstTournamentSeed.Tournament.TournamentId}" &&
+            email.Message.Contains("1 tournament match"));
+        Assert.Contains(host.Emails.NotificationEmails, email =>
+            email.Route == $"/my-bets?tab=to-place&tournamentId={secondTournamentSeed.Tournament.TournamentId}" &&
+            email.Message.Contains("2 tournament matches"));
+    }
+
+    [Fact]
+    public async Task NotifyAdminsAboutMissingBetsAsync_SendsOneSummaryToTournamentAdminWithPendingBetConsent()
+    {
+        using var host = new BackendTestHost();
+        var admin = await host.CreateUserAsync("missing-bets-admin@example.com");
+        var missingPlayer = await host.CreateUserAsync("missing-bets-player@example.com");
+        var submittedPlayer = await host.CreateUserAsync("submitted-bets-player@example.com");
+        var nowUtc = DateTime.UtcNow;
+
+        using var scope = host.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var trackedAdmin = await dbContext.Users.FindAsync(admin.Id);
+        var trackedMissingPlayer = await dbContext.Users.FindAsync(missingPlayer.Id);
+        var trackedSubmittedPlayer = await dbContext.Users.FindAsync(submittedPlayer.Id);
+        trackedAdmin!.ReceiveEmailPendingBets = true;
+        trackedAdmin.ReceivePushPendingBets = true;
+
+        var tournament = new CustomTournament
+        {
+            Name = "Missing Bets Cup",
+            CreatedByUserId = trackedAdmin.Id,
+            CreatedByUser = trackedAdmin,
+            IsActive = true
+        };
+        dbContext.CustomTournaments.Add(tournament);
+        await dbContext.SaveChangesAsync();
+
+        dbContext.CustomTournamentUserAssignments.AddRange(
+            new CustomTournamentUserAssignment
+            {
+                TournamentId = tournament.TournamentId,
+                Tournament = tournament,
+                UserId = trackedAdmin.Id,
+                User = trackedAdmin,
+                Role = UserTournamentRole.Admin,
+                UserAdminName = "Admin",
+                UserName = "Admin",
+                Status = AssignmentStatus.Accepted
+            },
+            new CustomTournamentUserAssignment
+            {
+                TournamentId = tournament.TournamentId,
+                Tournament = tournament,
+                UserId = trackedMissingPlayer!.Id,
+                User = trackedMissingPlayer,
+                Role = UserTournamentRole.Player,
+                UserAdminName = "Missing Player",
+                UserName = "Missing Player",
+                Status = AssignmentStatus.Accepted
+            },
+            new CustomTournamentUserAssignment
+            {
+                TournamentId = tournament.TournamentId,
+                Tournament = tournament,
+                UserId = trackedSubmittedPlayer!.Id,
+                User = trackedSubmittedPlayer,
+                Role = UserTournamentRole.Player,
+                UserAdminName = "Submitted Player",
+                UserName = "Submitted Player",
+                Status = AssignmentStatus.Accepted
+            });
+
+        var stage = new CustomMatchStage
+        {
+            TournamentId = tournament.TournamentId,
+            Tournament = tournament,
+            StageName = "Group A",
+            Order = 1
+        };
+        var homeTeam = new CustomTeam
+        {
+            TournamentId = tournament.TournamentId,
+            Tournament = tournament,
+            TeamName = "Home FC",
+            EloRating = 1600
+        };
+        var awayTeam = new CustomTeam
+        {
+            TournamentId = tournament.TournamentId,
+            Tournament = tournament,
+            TeamName = "Away FC",
+            EloRating = 1500
+        };
+        dbContext.CustomMatchStages.Add(stage);
+        dbContext.CustomTeams.AddRange(homeTeam, awayTeam);
+        await dbContext.SaveChangesAsync();
+
+        var match = new CustomMatch
+        {
+            TournamentId = tournament.TournamentId,
+            Tournament = tournament,
+            StageId = stage.StageId,
+            Stage = stage,
+            HomeTeamId = homeTeam.TeamId,
+            HomeTeam = homeTeam,
+            AwayTeamId = awayTeam.TeamId,
+            AwayTeam = awayTeam,
+            MatchStart = nowUtc.AddHours(6),
+            Status = CustomMatch.MatchStatus.Timed,
+            HomeWinOdds = 2.1m,
+            DrawOdds = 3.3m,
+            AwayWinOdds = 3.4m
+        };
+        dbContext.CustomMatches.Add(match);
+        await dbContext.SaveChangesAsync();
+
+        dbContext.Bets.Add(new Bet
+        {
+            MatchId = match.MatchId,
+            Match = match,
+            UserId = trackedSubmittedPlayer.Id,
+            User = trackedSubmittedPlayer,
+            HomeGoals = 2,
+            AwayGoals = 1,
+            Status = Bet.BetStatus.Placed,
+            Result = Bet.BetResult.Pending
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = scope.ServiceProvider.GetRequiredService<INotificationService>();
+
+        await service.NotifyAdminsAboutMissingBetsAsync(nowUtc);
+        await service.NotifyAdminsAboutMissingBetsAsync(nowUtc.AddMinutes(5));
+
+        var email = Assert.Single(host.Emails.NotificationEmails);
+        var push = Assert.Single(host.PushNotifications.SentPushNotifications);
+        Assert.Equal("Missing bets for upcoming match", email.Title);
+        Assert.Contains("Home FC vs Away FC", email.Message);
+        Assert.Contains("Admin", email.Message);
+        Assert.Contains("Missing Player", email.Message);
+        Assert.DoesNotContain("Submitted Player", email.Message);
+        Assert.Contains($"tournamentId={tournament.TournamentId}", email.Route);
+        Assert.Contains($"matchId={match.MatchId}", email.Route);
+        Assert.Equal(email.Title, push.Title);
+    }
+
+    [Fact]
     public async Task NotifyTournamentInvitationsAsync_NotifiesRegisteredEmailsWithInvitationConsent()
     {
         using var host = new BackendTestHost();

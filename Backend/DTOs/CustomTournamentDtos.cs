@@ -364,6 +364,8 @@ namespace Backend.DTOs
         public string HomeTeam { get; set; }
         public string AwayTeam { get; set; }
         public string? Result { get; set; }
+        public int? HomeScoreActual { get; set; }
+        public int? AwayScoreActual { get; set; }
         public string MatchDateTime { get; set; }
         public string MatchStatus { get; set; } // 'Upcoming' | 'InProgress' | 'Finalized'
         public bool ShowExactResult { get; set; }
@@ -375,7 +377,10 @@ namespace Backend.DTOs
     {
         public string PlayerName { get; set; } = string.Empty;
         public string BetScore { get; set; } = string.Empty;
-        public int ResultSuccess { get; set; } // 0 or 1
+        public int? HomeWinSuccess { get; set; }
+        public int? DrawSuccess { get; set; }
+        public int? AwayWinSuccess { get; set; }
+        public int? ResultSuccess { get; set; } // 0 or 1
         public int? PreciseResultSuccess { get; set; } // optional
         public int? QualificationSuccess { get; set; } // optional
         public decimal TotalPayout { get; set; }

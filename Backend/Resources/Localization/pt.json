@@ -43,6 +43,10 @@
       "Title": "Lembrete: submeta a sua aposta",
       "Message": "Ainda nao submeteu a sua aposta para {{HOME_TEAM}} vs {{AWAY_TEAM}}."
     },
+    "AdminMissingBets": {
+      "Title": "Apostas em falta para jogo proximo",
+      "Message": "{{HOME_TEAM}} vs {{AWAY_TEAM}} comeca nas proximas 24 horas. {{COUNT}} participante(s) ainda nao apostaram: {{PARTICIPANTS}}."
+    },
     "ResultsUpdated": {
       "Title": "Resultados do torneio atualizados",
       "Message": "Os resultados foram recalculados apos {{HOME_TEAM}} vs {{AWAY_TEAM}}. Resultado final: {{SCORE}}."

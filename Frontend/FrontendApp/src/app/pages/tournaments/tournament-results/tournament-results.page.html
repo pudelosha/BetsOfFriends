@@ -48,8 +48,8 @@
       </ion-row>
 
       <!-- Table Data -->
-      <ion-row *ngFor="let player of summaryData" (click)="openPlayerStats(player.userId)">
-        <ion-col size="1" class="centered-text">{{ player.position }}</ion-col>
+      <ion-row *ngFor="let player of summaryData; let i = index" (click)="openPlayerStats(player.userId)">
+        <ion-col size="1" class="centered-text">{{ getDisplayPosition(i) }}</ion-col>
         <ion-col [size]="calculatePlayerColumnSize()" class="text-left player-name">
           {{ player.userName }}
         </ion-col>
