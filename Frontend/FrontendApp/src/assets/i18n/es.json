@@ -624,7 +624,14 @@
     "W": "G",
     "Q": "C",
     "P": "A",
-    "RESULT": "Resultado"
+    "RESULT": "Resultado",
+    "POINTS_SPLIT": "Distribucion de puntos",
+    "ACCURACY_SPLIT": "Precision de apuestas",
+    "POSITION_UP": "{{count}} arriba",
+    "POSITION_DOWN": "{{count}} abajo",
+    "POSITION_NO_CHANGE": "sin cambios",
+    "POINTS_GROWTH": "Evolucion de puntos",
+    "CHART_CLICK_HINT": "toca un punto para ver detalles"
   },
   "MY_TOURNAMENTS": {
     "TITLE": "Mis Torneos",

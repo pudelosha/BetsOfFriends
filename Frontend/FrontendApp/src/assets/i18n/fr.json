@@ -624,6 +624,13 @@
     "W": "G",
     "Q": "Q",
     "P": "P",
+    "POINTS_SPLIT": "Repartition des points",
+    "ACCURACY_SPLIT": "Precision des pronostics",
+    "POSITION_UP": "{{count}} places gagnees",
+    "POSITION_DOWN": "{{count}} places perdues",
+    "POSITION_NO_CHANGE": "aucun changement",
+    "POINTS_GROWTH": "Evolution des points",
+    "CHART_CLICK_HINT": "appuyez sur un point pour les details",
     "RESULT": "Résultat"
   },
   "MY_TOURNAMENTS": {

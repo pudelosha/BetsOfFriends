@@ -624,7 +624,14 @@
     "W": "W",
     "Q": "Q",
     "P": "P",
-    "RESULT": "Ergebnis"
+    "RESULT": "Ergebnis",
+    "POINTS_SPLIT": "Punkteverteilung",
+    "ACCURACY_SPLIT": "Tippgenauigkeit",
+    "POSITION_UP": "{{count}} nach oben",
+    "POSITION_DOWN": "{{count}} nach unten",
+    "POSITION_NO_CHANGE": "keine Aenderung",
+    "POINTS_GROWTH": "Punkteentwicklung",
+    "CHART_CLICK_HINT": "Punkt fuer Details antippen"
   },
   "MY_TOURNAMENTS": {
     "TITLE": "Meine Turniere",

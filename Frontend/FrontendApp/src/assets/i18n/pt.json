@@ -624,7 +624,14 @@
     "W": "V",
     "Q": "Q",
     "P": "A",
-    "RESULT": "Resultado"
+    "RESULT": "Resultado",
+    "POINTS_SPLIT": "Distribuicao de pontos",
+    "ACCURACY_SPLIT": "Precisao das apostas",
+    "POSITION_UP": "{{count}} acima",
+    "POSITION_DOWN": "{{count}} abaixo",
+    "POSITION_NO_CHANGE": "sem alteracao",
+    "POINTS_GROWTH": "Evolucao de pontos",
+    "CHART_CLICK_HINT": "toque em um ponto para detalhes"
   },
   "MY_TOURNAMENTS": {
     "TITLE": "Meus Torneios",

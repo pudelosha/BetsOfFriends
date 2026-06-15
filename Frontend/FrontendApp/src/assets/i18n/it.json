@@ -624,7 +624,14 @@
     "W": "W",
     "Q": "Q",
     "P": "P",
-    "RESULT": "Risultato"
+    "RESULT": "Risultato",
+    "POINTS_SPLIT": "Distribuzione punti",
+    "ACCURACY_SPLIT": "Precisione pronostici",
+    "POSITION_UP": "{{count}} su",
+    "POSITION_DOWN": "{{count}} giu",
+    "POSITION_NO_CHANGE": "nessuna variazione",
+    "POINTS_GROWTH": "Andamento punti",
+    "CHART_CLICK_HINT": "tocca un punto per i dettagli"
   },
   "MY_TOURNAMENTS": {
     "TITLE": "I Miei Tornei",

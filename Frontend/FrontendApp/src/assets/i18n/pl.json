@@ -624,7 +624,14 @@
     "W": "W",
     "Q": "Q",
     "P": "P",
-    "RESULT": "Wynik"
+    "RESULT": "Wynik",
+    "POINTS_SPLIT": "Podzial punktow",
+    "ACCURACY_SPLIT": "Skutecznosc typowania",
+    "POSITION_UP": "{{count}} w gore",
+    "POSITION_DOWN": "{{count}} w dol",
+    "POSITION_NO_CHANGE": "bez zmian",
+    "POINTS_GROWTH": "Przyrost punktow",
+    "CHART_CLICK_HINT": "kliknij punkt, aby zobaczyc szczegoly"
   },
   "MY_TOURNAMENTS": {
     "TITLE": "Moje turnieje",

@@ -206,13 +206,20 @@ namespace Backend.DTOs
         public int FinalisedMatchesCount { get; set; } = 0;
 
         public int Position { get; set; }
+        public int? PositionChange { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }
         public int TotalBetsPlaced { get; set; }
         public decimal BetSuccessRate { get; set; }
+        public decimal PreviousBetSuccessRate { get; set; }
+        public decimal BetSuccessRateChange { get; set; }
+        public int? BetSuccessRatePositionChange { get; set; }
         public int Successful1X2Results { get; set; }
         public int SuccessfulQualifications { get; set; }
         public int SuccessfulExactResults { get; set; }
+        public decimal RegularPayout { get; set; }
+        public decimal QualificationPayout { get; set; }
+        public decimal ExactScorePayout { get; set; }
         public decimal TotalPayout { get; set; }
     }
 
@@ -240,6 +247,37 @@ namespace Backend.DTOs
         public string UserName { get; set; } = string.Empty;
         public decimal Points { get; set; }
         public bool IsCurrentUser { get; set; }
+    }
+
+    public class TournamentResultsChartDto
+    {
+        public List<string> Labels { get; set; } = new();
+        public List<TournamentResultsChartSeriesDto> Series { get; set; } = new();
+    }
+
+    public class TournamentResultsChartSeriesDto
+    {
+        public string UserId { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public List<decimal> Points { get; set; } = new();
+        public List<TournamentResultsChartPointDto> PointDetails { get; set; } = new();
+    }
+
+    public class TournamentResultsChartPointDto
+    {
+        public int MatchNumber { get; set; }
+        public decimal CumulativePoints { get; set; }
+        public decimal PointsGained { get; set; }
+        public List<TournamentResultsChartMatchDto> Matches { get; set; } = new();
+    }
+
+    public class TournamentResultsChartMatchDto
+    {
+        public string HomeTeam { get; set; } = string.Empty;
+        public string AwayTeam { get; set; } = string.Empty;
+        public string Result { get; set; } = string.Empty;
+        public string Bet { get; set; } = string.Empty;
+        public decimal PointsGained { get; set; }
     }
 
     public class TournamentInviteDto

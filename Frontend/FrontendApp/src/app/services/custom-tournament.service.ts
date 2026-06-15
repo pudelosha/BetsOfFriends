@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tournament } from '../model/tournament-model';
 import { environment } from '../../environments/environment';
-import { UserActiveTournament, TournamentSummary, TournamentPlayerResult, TournamentInvite, UserBettingStats, PublicTournament, TournamentParticipant, SelectedTournamentDetails } from '../model/tournament-model';
+import { UserActiveTournament, TournamentSummary, TournamentPlayerResult, TournamentResultsChart, TournamentInvite, UserBettingStats, PublicTournament, TournamentParticipant, SelectedTournamentDetails } from '../model/tournament-model';
 import { ActionResult } from '../model/action-result';
 import { map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -77,6 +77,12 @@ export class CustomTournamentService {
   
   getTournamentPlayerResult(tournamentId: number): Observable<TournamentPlayerResult[]> {
     return this.http.get<TournamentPlayerResult[]>(`${this.apiUrl}/result/${tournamentId}`);
+  }
+
+  getTournamentResultsChart(tournamentId: number, limit = 7): Observable<TournamentResultsChart> {
+    return this.http.get<TournamentResultsChart>(`${this.apiUrl}/results-chart/${tournamentId}`, {
+      params: { limit }
+    });
   }
 
   getPendingTournamentInvites(): Observable<TournamentInvite[]> {

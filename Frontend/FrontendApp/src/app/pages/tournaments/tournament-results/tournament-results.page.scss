@@ -59,6 +59,182 @@ ion-row:not(.summary-header) {
   font-size: 12px;
 }
 
+.position-change {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.position-change-col {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.position-up {
+  color: #148a3b;
+}
+
+.position-down {
+  color: #8b1e1e;
+}
+
+.position-neutral {
+  color: #777;
+}
+
+.results-stack-section {
+  padding: 30px 10px 0;
+}
+
+.results-stack-header {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 7px;
+}
+
+.stacked-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 6px;
+}
+
+.stacked-result-row {
+  display: grid;
+  grid-template-columns: minmax(92px, 28%) 1fr 48px;
+  align-items: center;
+  gap: 8px;
+}
+
+.stacked-player-name {
+  overflow: hidden;
+  color: #333;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stacked-bar-shell {
+  display: flex;
+  height: 22px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.stack-segment {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.stack-segment span {
+  overflow: hidden;
+  padding: 0 3px;
+  text-overflow: clip;
+}
+
+.stack-segment:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.stack-segment:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.stack-w {
+  background: #3767ff;
+}
+
+.stack-q {
+  background: #54b96f;
+}
+
+.stack-p {
+  background: #e78442;
+}
+
+.stacked-total {
+  color: #007bff;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.results-accuracy-section {
+  padding: 30px 10px 0;
+}
+
+.accuracy-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 0 6px;
+}
+
+.accuracy-result-row {
+  display: grid;
+  grid-template-columns: minmax(92px, 28%) 1fr 48px;
+  align-items: center;
+  gap: 8px;
+}
+
+.accuracy-player-name {
+  overflow: hidden;
+  color: #333;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accuracy-bar-area {
+  min-width: 0;
+}
+
+.accuracy-bar-shell {
+  display: flex;
+  height: 18px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.accuracy-segment {
+  min-width: 0;
+  height: 100%;
+}
+
+.accuracy-segment:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.accuracy-segment:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.accuracy-base-segment {
+  background: #3767ff;
+}
+
+.accuracy-up-segment {
+  background: #54b96f;
+}
+
+.accuracy-down-segment {
+  background: #b3261e;
+}
+
+.accuracy-total {
+  color: #007bff;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
 .page-description {
   margin-bottom: 1rem;
   color: #666;
@@ -70,6 +246,116 @@ ion-row:not(.summary-header) {
 
 .progress-label {
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 0.25rem;
+}
+
+.results-chart-section {
+  padding: 30px 10px 4px;
+  margin-bottom: 28px;
+}
+
+.results-chart-header {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 6px 8px;
+}
+
+.results-chart-header small {
+  color: #777;
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.results-chart-card {
+  position: relative;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.results-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 210px;
+}
+
+.chart-grid-lines line {
+  stroke: #e9e9e9;
+  stroke-dasharray: 3 4;
+}
+
+.chart-grid-lines text,
+.chart-axis-labels text {
+  fill: #666;
+  font-size: 11px;
+}
+
+.chart-line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-point {
+  stroke: #fff;
+  stroke-width: 2;
+  cursor: pointer;
+}
+
+.chart-tooltip {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  width: min(280px, calc(100vw - 24px));
+  max-height: 190px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+  padding: 10px;
+  z-index: 2;
+  color: #333;
+  font-size: 12px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.tooltip-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.tooltip-row {
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.tooltip-match {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-top: 1px solid #eee;
+  padding-top: 6px;
+  margin-top: 6px;
+}
+
+.tooltip-match span {
+  color: #666;
+}
+
+.points-positive {
+  color: #148a3b;
+  font-weight: 700;
+}
+
+.points-zero {
+  color: #8b1e1e;
+  font-weight: 700;
 }

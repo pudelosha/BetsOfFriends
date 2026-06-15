@@ -28,6 +28,7 @@
       <!-- Table Header -->
       <ion-row class="summary-header">
         <ion-col size="1" class="centered-text"><strong>#</strong></ion-col>
+        <ion-col size="0.6" class="centered-text position-change-col"><strong>+/-</strong></ion-col>
         <ion-col [size]="calculatePlayerColumnSize()" class="text-left">
           <strong>{{ 'RESULTS.PLAYER' | translate }}</strong>
         </ion-col>
@@ -49,7 +50,10 @@
 
       <!-- Table Data -->
       <ion-row *ngFor="let player of summaryData; let i = index" (click)="openPlayerStats(player.userId)">
-        <ion-col size="1" class="centered-text">{{ getDisplayPosition(i) }}</ion-col>
+        <ion-col size="1" class="centered-text">{{ player.position }}</ion-col>
+        <ion-col size="0.6" class="centered-text position-change position-change-col" [ngClass]="getPositionChangeClass(player.positionChange)">
+          {{ formatPositionChange(player.positionChange) }}
+        </ion-col>
         <ion-col [size]="calculatePlayerColumnSize()" class="text-left player-name">
           {{ player.userName }}
         </ion-col>
@@ -72,6 +76,153 @@
       </ion-row>
 
     </ion-grid>
+
+    <div *ngIf="hasStackedResultsData" class="results-stack-section">
+      <div class="results-chart-header results-stack-header">
+        <span>{{ 'RESULTS.POINTS_SPLIT' | translate }}</span>
+      </div>
+
+      <div class="stacked-results-list">
+        <div *ngFor="let player of summaryData" class="stacked-result-row">
+          <div class="stacked-player-name">{{ player.userName }}</div>
+          <div class="stacked-bar-shell">
+            <div
+              *ngIf="getStackSegmentWidth(player, player.regularPayout) > 0"
+              class="stack-segment stack-w"
+              [style.width.%]="getStackSegmentWidth(player, player.regularPayout)">
+              <span>{{ 'RESULTS.W' | translate }}</span>
+            </div>
+            <div
+              *ngIf="getStackSegmentWidth(player, player.qualificationPayout) > 0"
+              class="stack-segment stack-q"
+              [style.width.%]="getStackSegmentWidth(player, player.qualificationPayout)">
+              <span>{{ 'RESULTS.Q' | translate }}</span>
+            </div>
+            <div
+              *ngIf="getStackSegmentWidth(player, player.exactScorePayout) > 0"
+              class="stack-segment stack-p"
+              [style.width.%]="getStackSegmentWidth(player, player.exactScorePayout)">
+              <span>{{ 'RESULTS.P' | translate }}</span>
+            </div>
+          </div>
+          <div class="stacked-total">{{ player.totalPayout | number:'1.2-2' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="hasAccuracyChartData" class="results-accuracy-section">
+      <div class="results-chart-header results-stack-header">
+        <span>{{ 'RESULTS.ACCURACY_SPLIT' | translate }}</span>
+      </div>
+
+      <div class="accuracy-results-list">
+        <div *ngFor="let player of sortedAccuracyData" class="accuracy-result-row">
+          <div class="accuracy-player-name">{{ player.userName }}</div>
+          <div class="accuracy-bar-area">
+            <div class="accuracy-bar-shell">
+              <div
+                *ngIf="getAccuracyBaseWidth(player) > 0"
+                class="accuracy-segment accuracy-base-segment"
+                [style.width.%]="getAccuracyBaseWidth(player)">
+              </div>
+              <div
+                *ngIf="getAccuracyChangeWidth(player) > 0"
+                class="accuracy-segment"
+                [ngClass]="getAccuracyChangeClass(player)"
+                [style.width.%]="getAccuracyChangeWidth(player)">
+              </div>
+            </div>
+          </div>
+          <div class="accuracy-total">{{ player.betSuccessRate | number:'1.0-0' }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="hasChartData" class="results-chart-section">
+      <div class="results-chart-header">
+        <span>{{ 'RESULTS.POINTS_GROWTH' | translate }}</span>
+        <small>{{ 'RESULTS.CHART_CLICK_HINT' | translate }}</small>
+      </div>
+
+      <div class="results-chart-card">
+        <svg
+          class="results-chart"
+          [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+          role="img">
+
+          <g class="chart-grid-lines">
+            <g *ngFor="let tick of chartTicks">
+              <line
+                [attr.x1]="chartPadding.left"
+                [attr.x2]="chartWidth - chartPadding.right"
+                [attr.y1]="getTickY(tick)"
+                [attr.y2]="getTickY(tick)">
+              </line>
+              <text
+                [attr.x]="chartPadding.left - 10"
+                [attr.y]="getTickY(tick) + 4"
+                text-anchor="end">
+                {{ tick | number:'1.0-1' }}
+              </text>
+            </g>
+          </g>
+
+          <g class="chart-axis-labels">
+            <text
+              *ngFor="let label of chartData?.labels; let i = index"
+              [attr.x]="getPointX(i)"
+              [attr.y]="chartHeight - 14"
+              text-anchor="middle">
+              {{ label }}
+            </text>
+          </g>
+
+          <g *ngFor="let series of chartData?.series; let seriesIndex = index">
+            <path
+              class="chart-line"
+              [attr.d]="getLinePath(series)"
+              [attr.stroke]="getSeriesColor(seriesIndex)">
+            </path>
+
+            <circle
+              *ngFor="let point of series.points; let pointIndex = index"
+              class="chart-point"
+              [attr.cx]="getPointX(pointIndex)"
+              [attr.cy]="getPointY(point)"
+              r="4"
+              [attr.fill]="getSeriesColor(seriesIndex)"
+              (click)="showChartPoint(series, pointIndex, $event)"
+              (touchstart)="showChartPoint(series, pointIndex, $event)">
+            </circle>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div
+      *ngIf="activeChartPoint"
+      class="chart-tooltip"
+      [style.left.px]="activeChartPoint.pageX"
+      [style.top.px]="activeChartPoint.pageY"
+      (click)="clearChartPoint()"
+      (touchstart)="clearChartPoint()">
+      <div class="tooltip-title">
+        {{ activeChartPoint.series.userName }}
+      </div>
+      <div class="tooltip-row">
+        #{{ activeChartPoint.details.matchNumber }}
+        · {{ activeChartPoint.details.cumulativePoints | number:'1.2-2' }}
+        · <span [ngClass]="getPointsDeltaClass(activeChartPoint.details.pointsGained)">+{{ activeChartPoint.details.pointsGained | number:'1.2-2' }}</span>
+      </div>
+      <div *ngFor="let match of activeChartPoint.details.matches" class="tooltip-match">
+        <strong>{{ match.homeTeam }} - {{ match.awayTeam }}</strong>
+        <span>
+          {{ match.result }} ·
+          <b>{{ getChartMatchStatus(match.result, match.bet) }}</b>
+          · {{ match.bet }}
+        </span>
+      </div>
+    </div>
 
     <!-- Loading Spinner -->
     <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>

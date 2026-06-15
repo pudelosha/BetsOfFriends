@@ -1211,6 +1211,47 @@ namespace Backend.Repository.Services
 
                 bool showExactResult = tournament.AllowExactResultBonus;
                 bool showQualified = tournament.AllowWhoQualifiesBets;
+                var finishedGroupStarts = matches
+                    .Where(m => m.Status == CustomMatch.MatchStatus.Finished)
+                    .Select(m => m.MatchStart)
+                    .Distinct()
+                    .OrderByDescending(matchStart => matchStart)
+                    .ToList();
+
+                DateTime? comparisonGroupStart = null;
+                foreach (var groupStart in finishedGroupStarts)
+                {
+                    bool groupChangedPoints = tournamentBets.Any(b =>
+                        userAssignments.ContainsKey(b.UserId) &&
+                        b.Match.Status == CustomMatch.MatchStatus.Finished &&
+                        b.Status == Bet.BetStatus.Closed &&
+                        b.Match.MatchStart == groupStart &&
+                        CalculateChartPayout(b, showQualified, showExactResult) != 0);
+
+                    if (groupChangedPoints)
+                    {
+                        comparisonGroupStart = groupStart;
+                        break;
+                    }
+                }
+
+                if (!comparisonGroupStart.HasValue && finishedGroupStarts.Any())
+                {
+                    comparisonGroupStart = finishedGroupStarts.First();
+                }
+
+                var previousPayouts = comparisonGroupStart.HasValue
+                    ? tournamentBets
+                        .Where(b =>
+                            userAssignments.ContainsKey(b.UserId) &&
+                            b.Match.Status == CustomMatch.MatchStatus.Finished &&
+                            b.Status == Bet.BetStatus.Closed &&
+                            b.Match.MatchStart < comparisonGroupStart.Value)
+                        .GroupBy(b => b.UserId)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Sum(b => CalculateChartPayout(b, showQualified, showExactResult)))
+                    : new Dictionary<string, decimal>();
 
                 var summary = tournamentBets
                     .GroupBy(b => b.UserId)
@@ -1230,6 +1271,16 @@ namespace Backend.Repository.Services
                         decimal betSuccessRate = finalisedBets > 0
                             ? Math.Round((decimal)wonBets / finalisedBets * 100, 2)
                             : 0;
+                        var previousFinishedClosedBets = comparisonGroupStart.HasValue
+                            ? finishedClosedBets
+                                .Where(b => b.Match.MatchStart < comparisonGroupStart.Value)
+                                .ToList()
+                            : new List<Bet>();
+                        int previousFinalisedBets = previousFinishedClosedBets.Count;
+                        int previousWonBets = previousFinishedClosedBets.Count(b => b.Result == Bet.BetResult.Won);
+                        decimal previousBetSuccessRate = previousFinalisedBets > 0
+                            ? Math.Round((decimal)previousWonBets / previousFinalisedBets * 100, 2)
+                            : 0;
 
                         int successful1X2 = wonBets;
 
@@ -1241,12 +1292,14 @@ namespace Backend.Repository.Services
                             b.HomeGoals == b.Match.HomeScore &&
                             b.AwayGoals == b.Match.AwayScore);
 
-                        decimal totalPayout = finishedClosedBets
-                            .Sum(b =>
-                                (b.BasePayout ?? 0) +
-                                (showQualified ? (b.QualificationPayout ?? 0) : 0) +
-                                (showExactResult ? (b.ExactScorePayout ?? 0) : 0)
-                            );
+                        decimal regularPayout = finishedClosedBets.Sum(b => b.BasePayout ?? 0);
+                        decimal qualificationPayout = showQualified
+                            ? finishedClosedBets.Sum(b => b.QualificationPayout ?? 0)
+                            : 0;
+                        decimal exactScorePayout = showExactResult
+                            ? finishedClosedBets.Sum(b => b.ExactScorePayout ?? 0)
+                            : 0;
+                        decimal totalPayout = regularPayout + qualificationPayout + exactScorePayout;
 
                         return new TournamentSummaryDto
                         {
@@ -1257,9 +1310,14 @@ namespace Backend.Repository.Services
                             Successful1X2Results = successful1X2,
                             SuccessfulQualifications = successfulQualification,
                             SuccessfulExactResults = successfulExactResults,
+                            RegularPayout = regularPayout,
+                            QualificationPayout = qualificationPayout,
+                            ExactScorePayout = exactScorePayout,
                             TotalPayout = totalPayout,
 
                             BetSuccessRate = betSuccessRate,
+                            PreviousBetSuccessRate = previousBetSuccessRate,
+                            BetSuccessRateChange = betSuccessRate - previousBetSuccessRate,
                             MatchesCount = matchesCount,
                             FinalisedMatchesCount = finalisedMatchesCount,
 
@@ -1270,9 +1328,40 @@ namespace Backend.Repository.Services
                     .OrderByDescending(s => s.TotalPayout)
                     .ToList();
 
-                for (int i = 0; i < summary.Count; i++)
+                AssignDensePositions(summary);
+
+                if (comparisonGroupStart.HasValue)
                 {
-                    summary[i].Position = i + 1;
+                    var previousRanks = BuildDenseRankMap(summary.Select(player =>
+                    {
+                        var totalPayout = previousPayouts.TryGetValue(player.UserId, out var previousPayout)
+                            ? previousPayout
+                            : 0;
+
+                        return (player.UserId, TotalPayout: totalPayout);
+                    }));
+
+                    foreach (var player in summary)
+                    {
+                        if (previousRanks.TryGetValue(player.UserId, out var previousPosition))
+                        {
+                            player.PositionChange = previousPosition - player.Position;
+                        }
+                    }
+
+                    var previousAccuracyRanks = BuildGroupedRankMap(summary.Select(player =>
+                        (player.UserId, Value: player.PreviousBetSuccessRate)));
+                    var currentAccuracyRanks = BuildGroupedRankMap(summary.Select(player =>
+                        (player.UserId, Value: player.BetSuccessRate)));
+
+                    foreach (var player in summary)
+                    {
+                        if (previousAccuracyRanks.TryGetValue(player.UserId, out var previousPosition) &&
+                            currentAccuracyRanks.TryGetValue(player.UserId, out var currentPosition))
+                        {
+                            player.BetSuccessRatePositionChange = previousPosition - currentPosition;
+                        }
+                    }
                 }
 
                 _logger.LogInformation($"Successfully generated tournament summary for ID {tournamentId}.");
@@ -1783,6 +1872,226 @@ namespace Backend.Repository.Services
                 _logger.LogError(ex, $"Error fetching tournament player results for tournament ID {tournamentId}");
                 throw;
             }
+        }
+
+        public async Task<TournamentResultsChartDto?> GetTournamentResultsChartAsync(int tournamentId, string userId, int limit = 7)
+        {
+            limit = Math.Clamp(limit, 1, 20);
+
+            bool isParticipant = await _context.CustomTournamentUserAssignments
+                .AnyAsync(a => a.TournamentId == tournamentId && a.UserId == userId);
+
+            if (!isParticipant)
+            {
+                _logger.LogWarning($"User {userId} is not assigned to tournament {tournamentId}.");
+                return null;
+            }
+
+            var tournament = await _context.CustomTournaments
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.TournamentId == tournamentId);
+
+            if (tournament == null)
+            {
+                return new TournamentResultsChartDto();
+            }
+
+            var matchGroups = await _context.CustomMatches
+                .AsNoTracking()
+                .Where(m => m.TournamentId == tournamentId && m.Status == CustomMatch.MatchStatus.Finished)
+                .GroupBy(m => m.MatchStart)
+                .Select(g => new
+                {
+                    MatchStart = g.Key,
+                    MatchIds = g.Select(m => m.MatchId).ToList()
+                })
+                .OrderByDescending(g => g.MatchStart)
+                .Take(limit)
+                .ToListAsync();
+
+            matchGroups = matchGroups
+                .OrderBy(g => g.MatchStart)
+                .ToList();
+
+            if (!matchGroups.Any())
+            {
+                return new TournamentResultsChartDto();
+            }
+
+            var acceptedAssignments = await _context.CustomTournamentUserAssignments
+                .AsNoTracking()
+                .Where(a => a.TournamentId == tournamentId && a.Status == AssignmentStatus.Accepted)
+                .OrderBy(a => a.UserName ?? a.UserAdminName)
+                .ToListAsync();
+
+            var userNames = acceptedAssignments
+                .ToDictionary(a => a.UserId, a => a.UserName ?? a.UserAdminName ?? "Unknown");
+            var acceptedUserIds = userNames.Keys.ToList();
+
+            var groupMatchIds = matchGroups
+                .SelectMany(g => g.MatchIds)
+                .ToHashSet();
+
+            var firstGroupStart = matchGroups.First().MatchStart;
+
+            var bets = await _context.Bets
+                .AsNoTracking()
+                .Include(b => b.Match)
+                    .ThenInclude(m => m.HomeTeam)
+                .Include(b => b.Match)
+                    .ThenInclude(m => m.AwayTeam)
+                .Where(b =>
+                    b.Match.TournamentId == tournamentId &&
+                    b.Match.Status == CustomMatch.MatchStatus.Finished &&
+                    b.Status == Bet.BetStatus.Closed &&
+                    acceptedUserIds.Contains(b.UserId))
+                .ToListAsync();
+
+            var priorTotals = bets
+                .Where(b => b.Match.MatchStart < firstGroupStart)
+                .GroupBy(b => b.UserId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Sum(b => CalculateChartPayout(b, tournament.AllowWhoQualifiesBets, tournament.AllowExactResultBonus)));
+
+            var chartBets = bets
+                .Where(b => groupMatchIds.Contains(b.MatchId))
+                .ToList();
+
+            var chart = new TournamentResultsChartDto
+            {
+                Labels = matchGroups
+                    .Select((_, index) => (index + 1).ToString())
+                    .ToList()
+            };
+
+            foreach (var assignment in acceptedAssignments)
+            {
+                var cumulativePoints = priorTotals.TryGetValue(assignment.UserId, out var prior)
+                    ? prior
+                    : 0;
+
+                var series = new TournamentResultsChartSeriesDto
+                {
+                    UserId = assignment.UserId,
+                    UserName = userNames[assignment.UserId]
+                };
+
+                for (int i = 0; i < matchGroups.Count; i++)
+                {
+                    var group = matchGroups[i];
+                    var userGroupBets = chartBets
+                        .Where(b => b.UserId == assignment.UserId && group.MatchIds.Contains(b.MatchId))
+                        .OrderBy(b => b.Match.MatchStart)
+                        .ThenBy(b => b.Match.HomeTeam.TeamName)
+                        .ToList();
+
+                    var pointsGained = userGroupBets
+                        .Sum(b => CalculateChartPayout(b, tournament.AllowWhoQualifiesBets, tournament.AllowExactResultBonus));
+
+                    cumulativePoints += pointsGained;
+
+                    series.Points.Add(cumulativePoints);
+                    series.PointDetails.Add(new TournamentResultsChartPointDto
+                    {
+                        MatchNumber = i + 1,
+                        CumulativePoints = cumulativePoints,
+                        PointsGained = pointsGained,
+                        Matches = userGroupBets
+                            .Select(b => new TournamentResultsChartMatchDto
+                            {
+                                HomeTeam = b.Match.HomeTeam.TeamName,
+                                AwayTeam = b.Match.AwayTeam.TeamName,
+                                Result = $"{b.Match.HomeScore}:{b.Match.AwayScore}",
+                                Bet = b.HomeGoals.HasValue && b.AwayGoals.HasValue
+                                    ? $"{b.HomeGoals}:{b.AwayGoals}"
+                                    : "-",
+                                PointsGained = CalculateChartPayout(b, tournament.AllowWhoQualifiesBets, tournament.AllowExactResultBonus)
+                            })
+                            .ToList()
+                    });
+                }
+
+                chart.Series.Add(series);
+            }
+
+            return chart;
+        }
+
+        private static decimal CalculateChartPayout(Bet bet, bool showQualified, bool showExactResult)
+        {
+            return (bet.BasePayout ?? 0) +
+                   (showQualified ? (bet.QualificationPayout ?? 0) : 0) +
+                   (showExactResult ? (bet.ExactScorePayout ?? 0) : 0);
+        }
+
+        private static void AssignDensePositions(List<TournamentSummaryDto> summary)
+        {
+            int lastPosition = 0;
+            decimal? lastPayout = null;
+
+            for (int i = 0; i < summary.Count; i++)
+            {
+                var roundedPayout = Math.Round(summary[i].TotalPayout, 2);
+                if (lastPayout.HasValue && roundedPayout == lastPayout.Value)
+                {
+                    summary[i].Position = lastPosition;
+                    continue;
+                }
+
+                lastPosition = i + 1;
+                lastPayout = roundedPayout;
+                summary[i].Position = lastPosition;
+            }
+        }
+
+        private static Dictionary<string, int> BuildDenseRankMap(IEnumerable<(string UserId, decimal TotalPayout)> playerPayouts)
+        {
+            var ordered = playerPayouts
+                .OrderByDescending(player => player.TotalPayout)
+                .ToList();
+
+            var ranks = new Dictionary<string, int>();
+            int lastPosition = 0;
+            decimal? lastPayout = null;
+
+            for (int i = 0; i < ordered.Count; i++)
+            {
+                var roundedPayout = Math.Round(ordered[i].TotalPayout, 2);
+                if (!lastPayout.HasValue || roundedPayout != lastPayout.Value)
+                {
+                    lastPosition = i + 1;
+                    lastPayout = roundedPayout;
+                }
+
+                ranks[ordered[i].UserId] = lastPosition;
+            }
+
+            return ranks;
+        }
+
+        private static Dictionary<string, int> BuildGroupedRankMap(IEnumerable<(string UserId, decimal Value)> playerValues)
+        {
+            var orderedGroups = playerValues
+                .GroupBy(player => Math.Round(player.Value, 2))
+                .OrderByDescending(group => group.Key)
+                .Select((group, index) => new
+                {
+                    Position = index + 1,
+                    Players = group.Select(player => player.UserId)
+                });
+
+            var ranks = new Dictionary<string, int>();
+
+            foreach (var group in orderedGroups)
+            {
+                foreach (var userId in group.Players)
+                {
+                    ranks[userId] = group.Position;
+                }
+            }
+
+            return ranks;
         }
 
         public async Task<List<TournamentInviteDto>> GetPendingTournamentInvitesAsync(string userId)

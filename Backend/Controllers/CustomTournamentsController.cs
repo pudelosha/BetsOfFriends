@@ -544,6 +544,33 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("results-chart/{tournamentId}")]
+        public async Task<IActionResult> GetTournamentResultsChart(int tournamentId, [FromQuery] int limit = 7)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var chart = await _tournamentService.GetTournamentResultsChartAsync(tournamentId, userId, limit);
+                if (chart == null)
+                {
+                    return Forbid("User is not assigned to this tournament.");
+                }
+
+                return Ok(chart);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error fetching tournament results chart for ID {tournamentId}");
+                return StatusCode(500, new { Message = "An error occurred while fetching the tournament results chart." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("betting-stats/{tournamentId}/{statsUserId}")]
         public async Task<IActionResult> GetUserBettingStats(int tournamentId, string statsUserId)
         {

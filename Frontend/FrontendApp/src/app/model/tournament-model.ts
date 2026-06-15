@@ -128,13 +128,20 @@ export interface TournamentSummary {
   finalisedMatchesCount: number;
 
   position: number;
+  positionChange?: number | null;
   userId: string;
   userName: string;
   totalBetsPlaced: number;
   betSuccessRate: number;
+  previousBetSuccessRate: number;
+  betSuccessRateChange: number;
+  betSuccessRatePositionChange?: number | null;
   successful1X2Results: number;
   successfulQualifications: number;
   successfulExactResults: number;
+  regularPayout: number;
+  qualificationPayout: number;
+  exactScorePayout: number;
   totalPayout: number;
 }
 
@@ -143,6 +150,33 @@ export interface TournamentPlayerResult {
   userName: string;
   points: number;
   isCurrentUser: boolean;
+}
+
+export interface TournamentResultsChart {
+  labels: string[];
+  series: TournamentResultsChartSeries[];
+}
+
+export interface TournamentResultsChartSeries {
+  userId: string;
+  userName: string;
+  points: number[];
+  pointDetails: TournamentResultsChartPoint[];
+}
+
+export interface TournamentResultsChartPoint {
+  matchNumber: number;
+  cumulativePoints: number;
+  pointsGained: number;
+  matches: TournamentResultsChartMatch[];
+}
+
+export interface TournamentResultsChartMatch {
+  homeTeam: string;
+  awayTeam: string;
+  result: string;
+  bet: string;
+  pointsGained: number;
 }
 
 export interface TournamentInvite {

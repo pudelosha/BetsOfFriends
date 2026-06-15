@@ -624,7 +624,14 @@
     "W": "W",
     "Q": "Q",
     "P": "P",
-    "RESULT": "Result"
+    "RESULT": "Result",
+    "POINTS_SPLIT": "Points split",
+    "ACCURACY_SPLIT": "Betting accuracy",
+    "POSITION_UP": "{{count}} up",
+    "POSITION_DOWN": "{{count}} down",
+    "POSITION_NO_CHANGE": "no change",
+    "POINTS_GROWTH": "Points growth",
+    "CHART_CLICK_HINT": "click a point for details"
   },
   "MY_TOURNAMENTS": {
     "TITLE": "My Tournaments",
