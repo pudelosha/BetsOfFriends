@@ -52,6 +52,141 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpGet("tournament-message-recipients/{tournamentId}")]
+        public async Task<ActionResult<List<NotificationMessageRecipientDto>>> GetTournamentMessageRecipients(int tournamentId)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var recipients = await _notificationService.GetTournamentMessageRecipientsAsync(tournamentId, userId);
+                return Ok(recipients);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching tournament message recipients for tournament {TournamentId}.", tournamentId);
+                return StatusCode(500, new { Message = "An error occurred while fetching message recipients." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("tournament-user-message")]
+        public async Task<IActionResult> SendTournamentUserMessage([FromBody] SendTournamentUserMessageDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var success = await _notificationService.SendTournamentUserMessageAsync(request, userId);
+                if (!success)
+                {
+                    return BadRequest(new { Message = "Message could not be sent." });
+                }
+
+                return Ok(new { Message = "Message sent successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending tournament user message for tournament {TournamentId}.", request.TournamentId);
+                return StatusCode(500, new { Message = "An error occurred while sending the message." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpPost("reply-user-message")]
+        public async Task<IActionResult> ReplyToUserMessage([FromBody] ReplyToUserMessageDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var success = await _notificationService.ReplyToUserMessageAsync(request, userId);
+                if (!success)
+                {
+                    return BadRequest(new { Message = "Reply could not be sent." });
+                }
+
+                return Ok(new { Message = "Reply sent successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error replying to user message for recipient {RecipientUserId}.", request.RecipientUserId);
+                return StatusCode(500, new { Message = "An error occurred while sending the reply." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpPost("admin-broadcast-message")]
+        public async Task<IActionResult> SendAdminBroadcastMessage([FromBody] SendAdminBroadcastMessageDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var recipientCount = await _notificationService.SendAdminBroadcastMessageAsync(request, userId);
+                if (recipientCount <= 0)
+                {
+                    return BadRequest(new { Message = "Message could not be sent." });
+                }
+
+                return Ok(new { Message = "Message sent successfully.", RecipientCount = recipientCount });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending admin broadcast message.");
+                return StatusCode(500, new { Message = "An error occurred while sending the message." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpPost("admin-user-message")]
+        public async Task<IActionResult> SendAdminUserMessage([FromBody] SendAdminUserMessageDto request)
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var success = await _notificationService.SendAdminUserMessageAsync(request, userId);
+                if (!success)
+                {
+                    return BadRequest(new { Message = "Message could not be sent." });
+                }
+
+                return Ok(new { Message = "Message sent successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending admin user message to {RecipientUserId}.", request.RecipientUserId);
+                return StatusCode(500, new { Message = "An error occurred while sending the message." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
         [HttpGet("latest")]
         public async Task<IActionResult> GetLatestNotifications()
         {
@@ -74,6 +209,29 @@ namespace Backend.Controllers
             {
                 _logger.LogError(ex, "Error fetching user notifications.");
                 return StatusCode(500, new { Message = "An error occurred while fetching notifications." });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin,User")]
+        [HttpDelete("delete-all")]
+        public async Task<IActionResult> DeleteAllNotifications()
+        {
+            try
+            {
+                var userId = _userService.GetUserIdFromClaims(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Unauthorized request to delete all notifications.");
+                    return Unauthorized(new { Message = "User authentication failed." });
+                }
+
+                var deletedCount = await _notificationService.DeleteAllNotificationsAsync(userId);
+                return Ok(new { DeletedCount = deletedCount });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting all notifications.");
+                return StatusCode(500, new { Message = "An error occurred while deleting notifications." });
             }
         }
 

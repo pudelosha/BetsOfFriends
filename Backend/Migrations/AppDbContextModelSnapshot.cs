@@ -2235,8 +2235,20 @@ namespace Backend.Migrations
                     b.Property<string>("Route")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SenderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderUserId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TournamentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")

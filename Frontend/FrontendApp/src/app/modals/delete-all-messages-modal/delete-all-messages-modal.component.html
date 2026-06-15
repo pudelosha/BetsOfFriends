@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'TOASTS.DELETE_ALL_MESSAGES_TITLE' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="description">
+    <p>{{ 'TOASTS.DELETE_ALL_MESSAGES_CONFIRM' | translate }}</p>
+  </div>
+
+  <div class="save-button-container">
+    <ion-button expand="full" fill="outline" color="medium" (click)="dismiss()">
+      {{ 'TOASTS.CANCEL' | translate }}
+    </ion-button>
+  </div>
+
+  <div class="save-button-container">
+    <ion-button expand="full" color="danger" (click)="confirm()">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      {{ 'TOASTS.DELETE' | translate }}
+    </ion-button>
+  </div>
+</ion-content>

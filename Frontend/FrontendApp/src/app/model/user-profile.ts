@@ -25,3 +25,11 @@ export interface ApplicationUser {
 
   memberSince: string;
 }
+
+export interface PagedApplicationUsers {
+  items: ApplicationUser[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}

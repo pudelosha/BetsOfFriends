@@ -204,6 +204,22 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin")]
+        [HttpGet("page")]
+        public async Task<IActionResult> GetUsersPage([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] string? search = null)
+        {
+            try
+            {
+                var users = await _userService.GetUsersPageAsync(page, pageSize, search);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching paged user list");
+                return StatusCode(500, new { message = "Internal Server Error" });
+            }
+        }
+
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPost("suspend")]
         public async Task<IActionResult> SuspendUser([FromBody] UserActionRequestDto request)
         {

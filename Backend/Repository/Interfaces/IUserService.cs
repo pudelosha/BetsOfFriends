@@ -17,6 +17,7 @@ namespace Backend.Repository.Interfaces
         Task<bool> UpdateUserPasswordAsync(string userId, string currentPassword, string newPassword);
         Task<bool> DeleteUserAccountAsync(string userId, string password);
         Task<List<ApplicationUserDto>> GetAllUsersAsync();
+        Task<PagedApplicationUsersDto> GetUsersPageAsync(int page, int pageSize, string? search);
         Task<ActionResultDto> SuspendUserAsync(string targetUserId, string performedByUserId);
         Task<ActionResultDto> UnsuspendUserAsync(string targetUserId, string adminUserId);
         Task<ActionResultDto> DeleteUserAsync(string targetUserId, string performedByUserId);

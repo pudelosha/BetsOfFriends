@@ -476,6 +476,10 @@ public class NotificationService : INotificationService
                     Title = nr.Notification.Title,
                     Message = nr.Notification.Message,
                     Route = nr.Notification.Route,
+                    Type = nr.Notification.Type,
+                    SenderUserId = nr.Notification.SenderUserId,
+                    SenderDisplayName = nr.Notification.SenderDisplayName,
+                    TournamentId = nr.Notification.TournamentId,
                     CreatedAt = DateTime.SpecifyKind(nr.Notification.CreatedAt, DateTimeKind.Utc),
                     IsRead = nr.IsRead
                 })
@@ -485,6 +489,350 @@ public class NotificationService : INotificationService
         {
             _logger.LogError($"Error fetching notifications for user {userId}: {ex.Message}");
             return new List<NotificationDto>(); // Return empty list on failure
+        }
+    }
+
+    public async Task<List<NotificationMessageRecipientDto>> GetTournamentMessageRecipientsAsync(int tournamentId, string userId)
+    {
+        var isAcceptedParticipant = await _dbContext.CustomTournamentUserAssignments
+            .AnyAsync(assignment =>
+                assignment.TournamentId == tournamentId &&
+                assignment.UserId == userId &&
+                assignment.Status == AssignmentStatus.Accepted);
+
+        if (!isAcceptedParticipant)
+        {
+            _logger.LogWarning("User {UserId} attempted to list message recipients for tournament {TournamentId} without accepted assignment.", userId, tournamentId);
+            return new List<NotificationMessageRecipientDto>();
+        }
+
+        return await _dbContext.CustomTournamentUserAssignments
+            .AsNoTracking()
+            .Where(assignment =>
+                assignment.TournamentId == tournamentId &&
+                assignment.UserId != userId &&
+                assignment.Status == AssignmentStatus.Accepted)
+            .OrderBy(assignment => assignment.UserName ?? assignment.UserAdminName)
+            .Select(assignment => new NotificationMessageRecipientDto
+            {
+                AssignmentId = assignment.AssignmentId,
+                UserName = assignment.UserName ?? assignment.UserAdminName ?? assignment.User.UserName ?? assignment.User.Email ?? "Unknown"
+            })
+            .ToListAsync();
+    }
+
+    public async Task<bool> SendTournamentUserMessageAsync(SendTournamentUserMessageDto request, string senderUserId)
+    {
+        var message = request.Message?.Trim();
+        if (request.TournamentId <= 0 || request.RecipientAssignmentId <= 0 || string.IsNullOrWhiteSpace(message) || message.Length > 2000)
+        {
+            return false;
+        }
+
+        var senderAssignment = await _dbContext.CustomTournamentUserAssignments
+            .Include(assignment => assignment.User)
+            .FirstOrDefaultAsync(assignment =>
+                assignment.TournamentId == request.TournamentId &&
+                assignment.UserId == senderUserId &&
+                assignment.Status == AssignmentStatus.Accepted);
+
+        if (senderAssignment == null)
+        {
+            _logger.LogWarning("User {UserId} attempted to send a tournament message without accepted assignment in tournament {TournamentId}.", senderUserId, request.TournamentId);
+            return false;
+        }
+
+        var recipientAssignment = await _dbContext.CustomTournamentUserAssignments
+            .Include(assignment => assignment.User)
+            .ThenInclude(user => user.Language)
+            .FirstOrDefaultAsync(assignment =>
+                assignment.TournamentId == request.TournamentId &&
+                assignment.AssignmentId == request.RecipientAssignmentId &&
+                assignment.Status == AssignmentStatus.Accepted);
+
+        if (recipientAssignment?.User == null || recipientAssignment.UserId == senderUserId)
+        {
+            _logger.LogWarning("Invalid recipient assignment {AssignmentId} for tournament message in tournament {TournamentId}.", request.RecipientAssignmentId, request.TournamentId);
+            return false;
+        }
+
+        var senderDisplayName = GetParticipantDisplayName(senderAssignment);
+        var language = recipientAssignment.User.Language?.ShortName ?? "en";
+        var title = _localizationService.Translate(
+            "Notifications.UserMessage.Title",
+            language,
+            new Dictionary<string, string> { { "SENDER", senderDisplayName } });
+
+        var notification = new Notification
+        {
+            Title = title,
+            Message = message,
+            Route = "/messages",
+            Type = "UserMessage",
+            SenderUserId = senderUserId,
+            SenderDisplayName = senderDisplayName,
+            TournamentId = request.TournamentId,
+            CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc)
+        };
+
+        _dbContext.Notifications.Add(notification);
+        await _dbContext.SaveChangesAsync();
+
+        _dbContext.NotificationRecipients.Add(new NotificationRecipient
+        {
+            UserId = recipientAssignment.UserId,
+            NotificationId = notification.Id,
+            IsRead = false,
+            SentEmail = false,
+            SentPush = false
+        });
+
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation("User {SenderUserId} sent an in-app tournament message to assignment {RecipientAssignmentId} in tournament {TournamentId}.", senderUserId, request.RecipientAssignmentId, request.TournamentId);
+        return true;
+    }
+
+    public async Task<bool> ReplyToUserMessageAsync(ReplyToUserMessageDto request, string senderUserId)
+    {
+        var message = request.Message?.Trim();
+        if (string.IsNullOrWhiteSpace(request.RecipientUserId) || string.IsNullOrWhiteSpace(message) || message.Length > 2000)
+        {
+            return false;
+        }
+
+        if (request.RecipientUserId == senderUserId)
+        {
+            return false;
+        }
+
+        var sender = await _dbContext.Users
+            .Include(user => user.Language)
+            .FirstOrDefaultAsync(user => user.Id == senderUserId);
+
+        var recipient = await _dbContext.Users
+            .Include(user => user.Language)
+            .FirstOrDefaultAsync(user => user.Id == request.RecipientUserId);
+
+        if (sender == null || recipient == null)
+        {
+            return false;
+        }
+
+        if (request.TournamentId.HasValue)
+        {
+            var hasSharedTournament = await _dbContext.CustomTournamentUserAssignments
+                .AnyAsync(senderAssignment =>
+                    senderAssignment.TournamentId == request.TournamentId.Value &&
+                    senderAssignment.UserId == senderUserId &&
+                    senderAssignment.Status == AssignmentStatus.Accepted &&
+                    _dbContext.CustomTournamentUserAssignments.Any(recipientAssignment =>
+                        recipientAssignment.TournamentId == request.TournamentId.Value &&
+                        recipientAssignment.UserId == request.RecipientUserId &&
+                        recipientAssignment.Status == AssignmentStatus.Accepted));
+
+            if (!hasSharedTournament)
+            {
+                _logger.LogWarning("User {SenderUserId} attempted to reply to user {RecipientUserId} outside shared tournament {TournamentId}.", senderUserId, request.RecipientUserId, request.TournamentId);
+                return false;
+            }
+        }
+
+        var senderDisplayName = sender.Nickname ?? sender.UserName ?? sender.Email ?? "User";
+        var language = recipient.Language?.ShortName ?? "en";
+        var title = _localizationService.Translate(
+            "Notifications.UserMessage.Title",
+            language,
+            new Dictionary<string, string> { { "SENDER", senderDisplayName } });
+
+        var notification = new Notification
+        {
+            Title = title,
+            Message = message,
+            Route = "/messages",
+            Type = "UserMessage",
+            SenderUserId = senderUserId,
+            SenderDisplayName = senderDisplayName,
+            TournamentId = request.TournamentId,
+            CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc)
+        };
+
+        _dbContext.Notifications.Add(notification);
+        await _dbContext.SaveChangesAsync();
+
+        _dbContext.NotificationRecipients.Add(new NotificationRecipient
+        {
+            UserId = request.RecipientUserId,
+            NotificationId = notification.Id,
+            IsRead = false,
+            SentEmail = false,
+            SentPush = false
+        });
+
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation("User {SenderUserId} replied to in-app message from user {RecipientUserId}.", senderUserId, request.RecipientUserId);
+        return true;
+    }
+
+    public async Task<int> SendAdminBroadcastMessageAsync(SendAdminBroadcastMessageDto request, string senderUserId)
+    {
+        var message = request.Message?.Trim();
+        if (string.IsNullOrWhiteSpace(message) || message.Length > 2000)
+        {
+            return 0;
+        }
+
+        var sender = await _dbContext.Users.FirstOrDefaultAsync(user => user.Id == senderUserId);
+        if (sender == null || !await _userManager.IsInRoleAsync(sender, "SuperAdmin"))
+        {
+            return 0;
+        }
+
+        var users = await _dbContext.Users
+            .AsNoTracking()
+            .Include(user => user.Language)
+            .Where(user => user.Id != senderUserId)
+            .ToListAsync();
+
+        if (!users.Any())
+        {
+            return 0;
+        }
+
+        var senderDisplayName = sender.Nickname ?? sender.UserName ?? sender.Email ?? "Super Admin";
+        foreach (var languageGroup in users.GroupBy(user => user.Language?.ShortName ?? "en"))
+        {
+            var title = _localizationService.Translate(
+                "Notifications.AdminBroadcast.Title",
+                languageGroup.Key,
+                new Dictionary<string, string>());
+
+            var notification = new Notification
+            {
+                Title = title,
+                Message = message,
+                Route = "/messages",
+                Type = "AdminBroadcast",
+                SenderUserId = senderUserId,
+                SenderDisplayName = senderDisplayName,
+                CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc)
+            };
+
+            _dbContext.Notifications.Add(notification);
+            await _dbContext.SaveChangesAsync();
+
+            var recipients = new List<NotificationRecipient>();
+            foreach (var user in languageGroup)
+            {
+                var recipient = new NotificationRecipient
+                {
+                    UserId = user.Id,
+                    NotificationId = notification.Id,
+                    IsRead = false,
+                    SentEmail = false,
+                    SentPush = false
+                };
+
+                if (request.SendEmail)
+                {
+                    recipient.SentEmail = await TrySendAdminMessageEmailAsync(user, title, message, "/messages", languageGroup.Key);
+                }
+
+                recipients.Add(recipient);
+            }
+
+            _dbContext.NotificationRecipients.AddRange(recipients);
+        }
+
+        await _dbContext.SaveChangesAsync();
+        _logger.LogInformation("SuperAdmin {SenderUserId} sent broadcast message to {Count} users.", senderUserId, users.Count);
+        return users.Count;
+    }
+
+    public async Task<bool> SendAdminUserMessageAsync(SendAdminUserMessageDto request, string senderUserId)
+    {
+        var message = request.Message?.Trim();
+        if (string.IsNullOrWhiteSpace(request.RecipientUserId) || string.IsNullOrWhiteSpace(message) || message.Length > 2000)
+        {
+            return false;
+        }
+
+        var sender = await _dbContext.Users.FirstOrDefaultAsync(user => user.Id == senderUserId);
+        if (sender == null || !await _userManager.IsInRoleAsync(sender, "SuperAdmin"))
+        {
+            return false;
+        }
+
+        var recipient = await _dbContext.Users
+            .Include(user => user.Language)
+            .FirstOrDefaultAsync(user => user.Id == request.RecipientUserId);
+
+        if (recipient == null)
+        {
+            return false;
+        }
+
+        var title = _localizationService.Translate(
+            "Notifications.AdminBroadcast.Title",
+            recipient.Language?.ShortName ?? "en",
+            new Dictionary<string, string>());
+
+        var senderDisplayName = sender.Nickname ?? sender.UserName ?? sender.Email ?? "Super Admin";
+        var notification = new Notification
+        {
+            Title = title,
+            Message = message,
+            Route = "/messages",
+            Type = "AdminDirectMessage",
+            SenderUserId = senderUserId,
+            SenderDisplayName = senderDisplayName,
+            CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc)
+        };
+
+        _dbContext.Notifications.Add(notification);
+        await _dbContext.SaveChangesAsync();
+
+        _dbContext.NotificationRecipients.Add(new NotificationRecipient
+        {
+            UserId = request.RecipientUserId,
+            NotificationId = notification.Id,
+            IsRead = false,
+            SentEmail = request.SendEmail
+                ? await TrySendAdminMessageEmailAsync(recipient, title, message, "/messages", recipient.Language?.ShortName ?? "en")
+                : false,
+            SentPush = false
+        });
+
+        await _dbContext.SaveChangesAsync();
+        _logger.LogInformation("SuperAdmin {SenderUserId} sent direct message to user {RecipientUserId}.", senderUserId, request.RecipientUserId);
+        return true;
+    }
+
+    private async Task<bool> TrySendAdminMessageEmailAsync(
+        ApplicationUser user,
+        string title,
+        string message,
+        string route,
+        string language)
+    {
+        try
+        {
+            await _emailService.SendNotificationEmailAsync(
+                user,
+                title,
+                message,
+                route,
+                language,
+                includeNotificationConsentText: false);
+
+            _logger.LogInformation("Admin message email sent to user {UserId}.", user.Id);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send admin message email to user {UserId}.", user.Id);
+            return false;
         }
     }
 
@@ -634,6 +982,32 @@ public class NotificationService : INotificationService
         {
             _logger.LogError(ex, $"Error deleting notification {notificationId} for user {userId}");
             return false;
+        }
+    }
+
+    public async Task<int> DeleteAllNotificationsAsync(string userId)
+    {
+        try
+        {
+            var notificationRecipients = await _dbContext.NotificationRecipients
+                .Where(nr => nr.UserId == userId)
+                .ToListAsync();
+
+            if (!notificationRecipients.Any())
+            {
+                return 0;
+            }
+
+            _dbContext.NotificationRecipients.RemoveRange(notificationRecipients);
+            await _dbContext.SaveChangesAsync();
+
+            _logger.LogInformation("Deleted {Count} notifications for user {UserId}.", notificationRecipients.Count, userId);
+            return notificationRecipients.Count;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting all notifications for user {UserId}.", userId);
+            return 0;
         }
     }
 

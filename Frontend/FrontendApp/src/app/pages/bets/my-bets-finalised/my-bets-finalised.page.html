@@ -20,7 +20,7 @@
         <span>{{ bet.playerAwayGoals !== null ? bet.playerAwayGoals : '-' }}</span>
       </div>
 
-      <div class="bet-actual-result" [class.in-progress]="getBetStatus(bet) === 'In Progress'">
+      <div class="bet-actual-result" [class.in-progress]="isBetInProgress(bet)">
         <span>{{ bet.actualHomeGoals !== null ? bet.actualHomeGoals : '-' }}</span>
         <span>{{ bet.actualAwayGoals !== null ? bet.actualAwayGoals : '-' }}</span>
       </div>

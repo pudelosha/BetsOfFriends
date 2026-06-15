@@ -254,7 +254,19 @@
     "ACTION_FAILED": "Akcja nie powiodła się. Spróbuj ponownie.",
     "CONFIRM_DELETE_TITLE": "Potwierdź usunięcie",
     "CONFIRM_DELETE_MESSAGE": "Czy na pewno chcesz usunąć użytkownika {{name}}?",
-    "CANCEL": "Anuluj"
+    "CANCEL": "Anuluj",
+    "MESSAGE_ALL_USERS": "Wiadomosc do wszystkich",
+    "MESSAGE_USER": "Wiadomosc",
+    "DIRECT_MESSAGE_TITLE": "Wiadomosc do {{name}}",
+    "DIRECT_MESSAGE_DESCRIPTION": "Wyslij wiadomosc do tego uzytkownika.",
+    "DIRECT_MESSAGE_SENT": "Wiadomosc wyslana.",
+    "BROADCAST_TITLE": "Wiadomosc do wszystkich uzytkownikow",
+    "BROADCAST_DESCRIPTION": "Ta wiadomosc zostanie wyslana do wszystkich uzytkownikow aplikacji.",
+    "SEND_EMAIL_COPY": "Wyslij rowniez email",
+    "SEND_MESSAGE": "Wyslij wiadomosc",
+    "SENDING_MESSAGE": "Wysylanie wiadomosci...",
+    "BROADCAST_SENT": "Wiadomosc wyslana do {{count}} uzytkownikow.",
+    "BROADCAST_FAILED": "Nie udalo sie wyslac wiadomosci."
   },
   "INVITE": {
     "TITLE": "Przydział do turnieju",
@@ -291,11 +303,11 @@
     "USER_BETS": "Zakłady użytkowników",
     "PLAYER": "Gracz",
     "BET": "Zakład",
-    "HW": "1", 
-    "D": "X", 
-    "AW": "2", 
-    "HQ": "AG", 
-    "AQ": "AG", 
+    "HW": "1",
+    "D": "X",
+    "AW": "2",
+    "HQ": "AG",
+    "AQ": "AG",
     "RESULT": "P",
     "AVERAGE_GOALS": "Srednia typowanych goli",
     "PLACED_BETS_SUMMARY": "{{placed}} z {{total}} uczestnikow obstawilo",
@@ -442,7 +454,7 @@
     "BET": "Zakład",
     "EXACT": "Dokładny",
     "QUALIFY": "Awans"
-  },  
+  },
   "TOURNAMENT_SELECTION": {
     "TITLE": "Wybierz turniej",
     "CANCEL": "Anuluj"
@@ -451,10 +463,16 @@
     "TITLE": "Moje zakłady",
     "TO_PLACE": "Do obstawienia",
     "PLACED": "Obstawione",
-    "FINALISED": "Zakończone"
+    "FINALISED": "Zamknięte"
   },
   "MY_BETS_FINALISED": {
-    "NO_MATCHES": "Nie znaleziono zakończonych meczów."
+    "NO_MATCHES": "Nie znaleziono zamkniętych meczów.",
+    "STATUS_IN_PROGRESS": "W trakcie",
+    "STATUS_NOT_PREDICTED": "Nieobstawiony",
+    "STATUS_NOT_FINALIZED": "Bez wyniku",
+    "STATUS_EXACT_MATCH": "Dokładny wynik",
+    "STATUS_WON": "Trafiony",
+    "STATUS_LOST": "Nietrafiony"
   },
   "MY_BETS_PLACED": {
     "NO_MATCHES": "Nie znaleziono obstawionych zakładów.",
@@ -502,7 +520,15 @@
   },
   "MESSAGES": {
     "TITLE": "Wiadomości",
-    "NO_NOTIFICATIONS": "Brak powiadomień."
+    "NO_NOTIFICATIONS": "Brak powiadomień.",
+    "SEND_MESSAGE": "Wyslij wiadomosc",
+    "RECIPIENT": "Odbiorca",
+    "MESSAGE_BODY": "Wiadomosc",
+    "SEND": "Wyslij",
+    "NO_RECIPIENTS": "Brak dostepnych uczestnikow turnieju.",
+    "NEW_MESSAGE_TO_USER": "Nowa wiadomosc do uzytkownika",
+    "REPLY_TITLE": "Odpowiedz do {{name}}",
+    "REPLY_DESCRIPTION": "Wyslij odpowiedz do tego uzytkownika."
   },
   "LATEST_MESSAGES": {
     "TITLE": "Najnowsze wiadomości",
@@ -920,7 +946,15 @@
     "STAGE_REMOVED": "Etap \"{{name}}\" został usunięty!",
     "STAGE_RESTORED": "Etap \"{{name}}\" został przywrócony!",
     "MATCH_REMOVED": "Mecz został usunięty!",
-    "MATCH_RESTORED": "Mecz został przywrócony!"
+    "MATCH_RESTORED": "Mecz został przywrócony!",
+    "DELETE_ALL_MESSAGES_TITLE": "Usun wiadomosci",
+    "DELETE_ALL_MESSAGES_CONFIRM": "Czy na pewno chcesz usunac wszystkie wiadomosci?",
+    "ALL_MESSAGES_DELETED": "Wiadomosci zostaly usuniete.",
+    "MESSAGE_RECIPIENTS_LOAD_FAILED": "Nie udalo sie zaladowac odbiorcow wiadomosci.",
+    "MESSAGE_REQUIRED_FIELDS": "Wybierz odbiorce i wpisz wiadomosc.",
+    "MESSAGE_SENT": "Wiadomosc zostala wyslana.",
+    "MESSAGE_SEND_FAILED": "Nie udalo sie wyslac wiadomosci.",
+    "SELECT_TOURNAMENT_FIRST": "Najpierw wybierz turniej."
   },
   "SUPPORT": {
     "TITLE": "Skontaktuj się z pomocą",
@@ -1000,9 +1034,9 @@
     "NO_MATCHES": "Nie znaleziono żadnych meczów.",
     "PLAYER": "Zawodnik",
     "BET": "Zakład",
-    "RESULT_SHORT": "W", 
-    "PRECISE_SHORT": "D",    
-    "QUALIFIED_SHORT": "A",   
-    "PAYOUT_SHORT": "W"      
+    "RESULT_SHORT": "W",
+    "PRECISE_SHORT": "D",
+    "QUALIFIED_SHORT": "A",
+    "PAYOUT_SHORT": "W"
   }
 }

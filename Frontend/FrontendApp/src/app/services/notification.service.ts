@@ -34,6 +34,34 @@ export interface PushSubscriptionPayload {
   userAgent: string;
 }
 
+export interface NotificationMessageRecipient {
+  assignmentId: number;
+  userName: string;
+}
+
+export interface SendTournamentUserMessagePayload {
+  tournamentId: number;
+  recipientAssignmentId: number;
+  message: string;
+}
+
+export interface ReplyToUserMessagePayload {
+  recipientUserId: string;
+  tournamentId?: number | null;
+  message: string;
+}
+
+export interface SendAdminBroadcastMessagePayload {
+  message: string;
+  sendEmail?: boolean;
+}
+
+export interface SendAdminUserMessagePayload {
+  recipientUserId: string;
+  message: string;
+  sendEmail?: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -56,6 +84,30 @@ export class NotificationService {
 
   deleteNotification(notificationId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${notificationId}`);
+  }
+
+  deleteAllNotifications(): Observable<{ deletedCount: number }> {
+    return this.http.delete<{ deletedCount: number }>(`${this.apiUrl}/delete-all`);
+  }
+
+  getTournamentMessageRecipients(tournamentId: number): Observable<NotificationMessageRecipient[]> {
+    return this.http.get<NotificationMessageRecipient[]>(`${this.apiUrl}/tournament-message-recipients/${tournamentId}`);
+  }
+
+  sendTournamentUserMessage(payload: SendTournamentUserMessagePayload): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/tournament-user-message`, payload);
+  }
+
+  replyToUserMessage(payload: ReplyToUserMessagePayload): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/reply-user-message`, payload);
+  }
+
+  sendAdminBroadcastMessage(payload: SendAdminBroadcastMessagePayload): Observable<{ message: string; recipientCount: number }> {
+    return this.http.post<{ message: string; recipientCount: number }>(`${this.apiUrl}/admin-broadcast-message`, payload);
+  }
+
+  sendAdminUserMessage(payload: SendAdminUserMessagePayload): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/admin-user-message`, payload);
   }
 
   getNotificationSettings(): Observable<NotificationSettings> {

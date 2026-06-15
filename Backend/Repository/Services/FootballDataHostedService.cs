@@ -185,6 +185,49 @@ public class FootballDataHostedService : BackgroundService
 
                     // Normalize incoming MatchStart to UTC before compare/update
                     var incomingMatchStart = DateTime.SpecifyKind(updatedMatch.MatchStart, DateTimeKind.Utc);
+                    var incomingStatus = Enum.TryParse(updatedMatch.MatchStatus, out CustomMatch.MatchStatus parsedStatus)
+                        ? parsedStatus
+                        : existingMatch.Status;
+                    var incomingHomeScore = updatedMatch.ScoreHome;
+                    var incomingAwayScore = updatedMatch.ScoreAway;
+
+                    var existingFinishedWithScore =
+                        existingMatch.Status == CustomMatch.MatchStatus.Finished &&
+                        existingMatch.HomeScore.HasValue &&
+                        existingMatch.AwayScore.HasValue;
+
+                    if (existingFinishedWithScore && incomingStatus != CustomMatch.MatchStatus.Finished)
+                    {
+                        _logger.LogWarning(
+                            "Ignoring external status downgrade for predefined match {MatchId} / external match {ExternalMatchId}. Local: {LocalStatus} {LocalHomeScore}:{LocalAwayScore}, incoming: {IncomingStatus} {IncomingHomeScore}:{IncomingAwayScore}.",
+                            existingMatch.MatchId,
+                            updatedMatch.ExternalMatchId,
+                            existingMatch.Status,
+                            existingMatch.HomeScore,
+                            existingMatch.AwayScore,
+                            incomingStatus,
+                            incomingHomeScore,
+                            incomingAwayScore);
+
+                        incomingStatus = existingMatch.Status;
+                        incomingMatchStart = existingMatch.MatchStart;
+                        incomingHomeScore = existingMatch.HomeScore;
+                        incomingAwayScore = existingMatch.AwayScore;
+                    }
+                    else if (existingFinishedWithScore && (!incomingHomeScore.HasValue || !incomingAwayScore.HasValue))
+                    {
+                        _logger.LogWarning(
+                            "Preserving final score for predefined match {MatchId} / external match {ExternalMatchId}. Local score: {LocalHomeScore}:{LocalAwayScore}, incoming score: {IncomingHomeScore}:{IncomingAwayScore}.",
+                            existingMatch.MatchId,
+                            updatedMatch.ExternalMatchId,
+                            existingMatch.HomeScore,
+                            existingMatch.AwayScore,
+                            incomingHomeScore,
+                            incomingAwayScore);
+
+                        incomingHomeScore = existingMatch.HomeScore;
+                        incomingAwayScore = existingMatch.AwayScore;
+                    }
 
                     // ============================================================
                     // 1) Resolve incoming EXTERNAL team IDs from API DTO (source of truth)
@@ -248,10 +291,10 @@ public class FootballDataHostedService : BackgroundService
                     // 3) Detect changes (time/status/score OR team change)
                     // ============================================================
                     bool hasChanges =
-                        existingMatch.Status.ToString() != updatedMatch.MatchStatus ||
+                        existingMatch.Status != incomingStatus ||
                         existingMatch.MatchStart != incomingMatchStart ||
-                        existingMatch.HomeScore != updatedMatch.ScoreHome ||
-                        existingMatch.AwayScore != updatedMatch.ScoreAway ||
+                        existingMatch.HomeScore != incomingHomeScore ||
+                        existingMatch.AwayScore != incomingAwayScore ||
                         teamChanged;
 
                     if (!hasChanges)
@@ -263,13 +306,10 @@ public class FootballDataHostedService : BackgroundService
                     // ============================================================
                     // 4) Update predefined match
                     // ============================================================
-                    existingMatch.Status = Enum.TryParse(updatedMatch.MatchStatus, out CustomMatch.MatchStatus parsedStatus)
-                        ? parsedStatus
-                        : existingMatch.Status;
-
+                    existingMatch.Status = incomingStatus;
                     existingMatch.MatchStart = incomingMatchStart;
-                    existingMatch.HomeScore = updatedMatch.ScoreHome;
-                    existingMatch.AwayScore = updatedMatch.ScoreAway;
+                    existingMatch.HomeScore = incomingHomeScore;
+                    existingMatch.AwayScore = incomingAwayScore;
 
                     // Update predefined team ids ONLY if we successfully resolved them
                     // (If still TBD/null from API, keep existing)

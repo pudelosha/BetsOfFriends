@@ -71,6 +71,15 @@ namespace Backend.DTOs
         public DateTime MemberSince { get; set; }
     }
 
+    public class PagedApplicationUsersDto
+    {
+        public List<ApplicationUserDto> Items { get; set; } = new();
+        public int TotalCount { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public int TotalPages { get; set; }
+    }
+
     public class UserActionRequestDto
     {
         public string UserId { get; set; }

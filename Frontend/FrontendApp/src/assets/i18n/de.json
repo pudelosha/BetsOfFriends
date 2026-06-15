@@ -254,7 +254,19 @@
     "ACTION_FAILED": "Aktion fehlgeschlagen. Bitte versuche es erneut.",
     "CONFIRM_DELETE_TITLE": "Löschen bestätigen",
     "CONFIRM_DELETE_MESSAGE": "Möchtest du {{name}} wirklich löschen?",
-    "CANCEL": "Abbrechen"
+    "CANCEL": "Abbrechen",
+    "MESSAGE_ALL_USERS": "Alle Benutzer anschreiben",
+    "MESSAGE_USER": "Nachricht",
+    "DIRECT_MESSAGE_TITLE": "Nachricht an {{name}}",
+    "DIRECT_MESSAGE_DESCRIPTION": "Sende eine Nachricht an diesen Benutzer.",
+    "DIRECT_MESSAGE_SENT": "Nachricht gesendet.",
+    "BROADCAST_TITLE": "Nachricht an alle App-Benutzer",
+    "BROADCAST_DESCRIPTION": "Diese Nachricht wird an alle App-Benutzer gesendet.",
+    "SEND_EMAIL_COPY": "Auch per E-Mail senden",
+    "SEND_MESSAGE": "Nachricht senden",
+    "SENDING_MESSAGE": "Nachricht wird gesendet...",
+    "BROADCAST_SENT": "Nachricht an {{count}} Benutzer gesendet.",
+    "BROADCAST_FAILED": "Nachricht konnte nicht gesendet werden."
   },
   "INVITE": {
     "TITLE": "Turnier-Einladung",
@@ -322,7 +334,7 @@
     "QUALIFY_PREDICTION": "Dein Tipp",
     "SAVE": "Speichern"
   },
-"MATCH_MODAL": {
+  "MATCH_MODAL": {
     "ADD_TITLE": "Spiel hinzufügen",
     "EDIT_TITLE": "Spiel bearbeiten",
     "CLOSE": "Schließen",
@@ -451,10 +463,16 @@
     "TITLE": "Meine Tipps",
     "TO_PLACE": "Offen",
     "PLACED": "Getippt",
-    "FINALISED": "Abgeschlossen"
+    "FINALISED": "Geschlossen"
   },
   "MY_BETS_FINALISED": {
-    "NO_MATCHES": "Keine abgeschlossenen Spiele."
+    "NO_MATCHES": "Keine geschlossenen Spiele.",
+    "STATUS_IN_PROGRESS": "Laeuft",
+    "STATUS_NOT_PREDICTED": "Nicht getippt",
+    "STATUS_NOT_FINALIZED": "Kein Ergebnis",
+    "STATUS_EXACT_MATCH": "Exaktes Ergebnis",
+    "STATUS_WON": "Getroffen",
+    "STATUS_LOST": "Verfehlt"
   },
   "MY_BETS_PLACED": {
     "NO_MATCHES": "Keine getippten Spiele.",
@@ -502,7 +520,15 @@
   },
   "MESSAGES": {
     "TITLE": "Nachrichten",
-    "NO_NOTIFICATIONS": "Keine Nachrichten."
+    "NO_NOTIFICATIONS": "Keine Nachrichten.",
+    "SEND_MESSAGE": "Nachricht senden",
+    "RECIPIENT": "Empfaenger",
+    "MESSAGE_BODY": "Nachricht",
+    "SEND": "Senden",
+    "NO_RECIPIENTS": "Keine Turnierteilnehmer verfuegbar.",
+    "NEW_MESSAGE_TO_USER": "Neue Nachricht an Benutzer",
+    "REPLY_TITLE": "Antwort an {{name}}",
+    "REPLY_DESCRIPTION": "Sende eine Antwort an diesen Benutzer."
   },
   "LATEST_MESSAGES": {
     "TITLE": "Neueste Nachrichten",
@@ -920,7 +946,15 @@
     "STAGE_REMOVED": "Phase \"{{name}}\" erfolgreich entfernt!",
     "STAGE_RESTORED": "Phase \"{{name}}\" erfolgreich wiederhergestellt!",
     "MATCH_REMOVED": "Spiel erfolgreich entfernt!",
-    "MATCH_RESTORED": "Spiel erfolgreich wiederhergestellt!"
+    "MATCH_RESTORED": "Spiel erfolgreich wiederhergestellt!",
+    "DELETE_ALL_MESSAGES_TITLE": "Nachrichten loeschen",
+    "DELETE_ALL_MESSAGES_CONFIRM": "Moechten Sie wirklich alle Nachrichten loeschen?",
+    "ALL_MESSAGES_DELETED": "Nachrichten geloescht.",
+    "MESSAGE_RECIPIENTS_LOAD_FAILED": "Nachrichtenempfaenger konnten nicht geladen werden.",
+    "MESSAGE_REQUIRED_FIELDS": "Waehlen Sie einen Empfaenger und geben Sie eine Nachricht ein.",
+    "MESSAGE_SENT": "Nachricht gesendet.",
+    "MESSAGE_SEND_FAILED": "Nachricht konnte nicht gesendet werden.",
+    "SELECT_TOURNAMENT_FIRST": "Waehlen Sie zuerst ein Turnier."
   },
   "SUPPORT": {
     "TITLE": "Support kontaktieren",
@@ -1001,8 +1035,8 @@
     "PLAYER": "Spieler",
     "BET": "Tipp",
     "RESULT_SHORT": "E",
-    "PRECISE_SHORT": "G",    
-    "QUALIFIED_SHORT": "Q",   
-    "PAYOUT_SHORT": "A"   
+    "PRECISE_SHORT": "G",
+    "QUALIFIED_SHORT": "Q",
+    "PAYOUT_SHORT": "A"
   }
 }

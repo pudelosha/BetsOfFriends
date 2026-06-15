@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ titleKey | translate:titleParams }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="descriptionKey" class="description">
+    <p>{{ descriptionKey | translate:descriptionParams }}</p>
+  </div>
+
+  <div class="form-row vertical-align">
+    <ion-label class="selector-label">{{ 'MESSAGES.MESSAGE_BODY' | translate }}</ion-label>
+    <ion-textarea
+      auto-grow="true"
+      rows="7"
+      maxlength="2000"
+      [(ngModel)]="messageBody"
+    ></ion-textarea>
+  </div>
+
+  <label *ngIf="includeEmailOption" class="checkbox-row">
+    <ion-checkbox [(ngModel)]="sendEmail"></ion-checkbox>
+    <span>{{ emailOptionKey | translate }}</span>
+  </label>
+
+  <div class="save-button-container">
+    <ion-button expand="full" fill="outline" color="medium" (click)="dismiss()">
+      {{ 'TOASTS.CANCEL' | translate }}
+    </ion-button>
+  </div>
+
+  <div class="save-button-container">
+    <ion-button expand="full" color="medium" (click)="submit()" [disabled]="!messageBody.trim()">
+      {{ submitKey | translate }}
+    </ion-button>
+  </div>
+</ion-content>

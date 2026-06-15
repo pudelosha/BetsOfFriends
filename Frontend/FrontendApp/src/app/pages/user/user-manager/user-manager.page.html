@@ -1,12 +1,23 @@
-<ion-content class="ion-padding page-with-header">
-  <div class="page-container find-tournament-container">
+<ion-content class="ion-padding page-with-header user-manager-content">
+  <div class="sticky-users-bar">
+    <div class="paginator-shell">
+      <div class="paginator-center">
+        <ion-button fill="clear" (click)="prevPage()" [disabled]="currentPage === 1">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+        </ion-button>
 
-    <!-- Page Description -->
-    <div class="page-description">
-      <p>{{ 'USER_MANAGER.DESCRIPTION' | translate }}</p>
+        <span class="page-indicator">{{ currentPage }} / {{ totalPages }}</span>
+
+        <ion-button fill="clear" (click)="nextPage()" [disabled]="currentPage === totalPages">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      <ion-button fill="clear" class="paginator-action paginator-action-right" (click)="openBroadcastMessageModal()">
+        <ion-icon slot="icon-only" name="mail-outline"></ion-icon>
+      </ion-button>
     </div>
 
-    <!-- Search Bar -->
     <ion-searchbar
       class="custom-searchbar"
       [(ngModel)]="searchTerm"
@@ -16,16 +27,19 @@
       debounce="200"
       animated>
     </ion-searchbar>
+  </div>
+
+  <div class="page-container find-tournament-container">
 
     <!-- No Results -->
-    <div *ngIf="filteredUsers.length === 0 && !isLoading" class="no-tournaments">
+    <div *ngIf="users.length === 0 && !isLoading" class="no-tournaments">
       {{ 'USER_MANAGER.NO_RESULTS' | translate }}
     </div>
 
     <!-- User List -->
-    <ion-list class="tournament-list" *ngIf="filteredUsers.length > 0">
+    <ion-list class="tournament-list" *ngIf="users.length > 0">
       <ion-item
-        *ngFor="let user of filteredUsers"
+        *ngFor="let user of users"
         class="user-item"
         [class.user-suspended]="user.userStatus === 'Suspended'"
         lines="none">
@@ -48,6 +62,10 @@
 
               <!-- Buttons (4 columns) -->
               <ion-col size="4" class="user-actions">
+                <ion-button expand="block" color="medium" size="small" (click)="openUserMessageModal(user)">
+                  <ion-icon name="mail-outline" slot="start"></ion-icon>
+                  {{ 'USER_MANAGER.MESSAGE_USER' | translate }}
+                </ion-button>
                 <ion-button
                   expand="block"
                   [color]="user.userStatus === 'Suspended' ? 'medium' : 'warning'"
@@ -65,7 +83,9 @@
       </ion-item>
     </ion-list>
 
-    <!-- Loading -->
-    <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+  </div>
+
+  <div *ngIf="showListSpinner" class="users-loading-overlay">
+    <ion-spinner name="crescent"></ion-spinner>
   </div>
 </ion-content>

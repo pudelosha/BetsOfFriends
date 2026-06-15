@@ -1,0 +1,50 @@
+ion-content {
+  --padding-top: 60px !important;
+  --padding-bottom: 0 !important;
+  padding: 0 !important;
+}
+
+.description {
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 10px 0;
+  text-align: center;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.selector-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+ion-textarea {
+  min-height: 170px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 5px 15px 0;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.save-button-container {
+  margin: 15px;
+}

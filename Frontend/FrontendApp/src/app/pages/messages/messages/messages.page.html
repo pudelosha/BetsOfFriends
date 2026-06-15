@@ -1,27 +1,27 @@
-<ion-content class="ion-padding page-with-header">
+<ion-content class="ion-padding page-with-header messages-page-content">
 
       <!-- Sticky Pagination Bar at Top -->
       <div class="sticky-pagination-bar-top">
-        <div class="sticky-inner">
-          <ion-grid class="full-width">
-            <ion-row class="ion-justify-content-center ion-align-items-center">
-              <ion-col size="auto">
-                <ion-button fill="clear" (click)="prevPage()" [disabled]="currentPage === 1">
-                  <ion-icon name="chevron-back-outline"></ion-icon>
-                </ion-button>
-              </ion-col>
+        <div class="paginator-shell">
+          <ion-button fill="clear" class="paginator-action paginator-action-left" (click)="openComposeModal()">
+            <ion-icon slot="icon-only" name="mail-outline"></ion-icon>
+          </ion-button>
 
-              <ion-col size="auto">
-                <span class="page-indicator">{{ currentPage }} / {{ totalPages }}</span>
-              </ion-col>
+          <div class="paginator-center">
+            <ion-button fill="clear" (click)="prevPage()" [disabled]="currentPage === 1">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </ion-button>
 
-              <ion-col size="auto">
-                <ion-button fill="clear" (click)="nextPage()" [disabled]="currentPage === totalPages">
-                  <ion-icon name="chevron-forward-outline"></ion-icon>
-                </ion-button>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+            <span class="page-indicator">{{ currentPage }} / {{ totalPages }}</span>
+
+            <ion-button fill="clear" (click)="nextPage()" [disabled]="currentPage === totalPages">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </ion-button>
+          </div>
+
+          <ion-button fill="clear" color="danger" class="paginator-action paginator-action-right" (click)="confirmDeleteAll()" [disabled]="allNotifications.length === 0">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
         </div>
       </div>
   
@@ -88,4 +88,5 @@
     </ion-list>
 
   </div>
+
 </ion-content>

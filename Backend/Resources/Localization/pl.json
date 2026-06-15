@@ -79,6 +79,12 @@
     "SupportMessage": {
       "Title": "Nowa wiadomosc supportu od {{EMAIL}}",
       "Message": "Temat: {{SUBJECT}}"
+    },
+    "UserMessage": {
+      "Title": "Wiadomosc od {{SENDER}}"
+    },
+    "AdminBroadcast": {
+      "Title": "Wiadomosc administratora"
     }
   }
 }

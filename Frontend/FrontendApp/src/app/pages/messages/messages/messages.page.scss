@@ -4,7 +4,7 @@
     padding-top: 56px;
   }
   
-  ion-content {
+  .messages-page-content {
     --padding-start: 0 !important;
     --padding-end: 0 !important;
   }
@@ -109,6 +109,43 @@
     font-weight: 500;
     font-size: 16px;
   }
+
+  .paginator-shell {
+    position: relative;
+    width: 100%;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+  }
+
+  .paginator-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .paginator-action {
+    min-width: 44px;
+    height: 44px;
+    margin: 0;
+  }
+
+  .paginator-action-left,
+  .paginator-action-right {
+    position: absolute;
+    top: 6px;
+  }
+
+  .paginator-action-left {
+    left: 16px;
+  }
+
+  .paginator-action-right {
+    right: 16px;
+  }
   
 .expanded-header {
   background-color: #F7F8FE  !important;
@@ -120,5 +157,3 @@
   color: #555;
   background-color: #F7F8FE ;
 }
-
-  

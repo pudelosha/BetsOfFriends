@@ -1219,29 +1219,29 @@ namespace Backend.Repository.Services
                     {
                         var userId = group.Key;
                         var bets = group.ToList();
+                        var finishedClosedBets = bets
+                            .Where(b => b.Match.Status == CustomMatch.MatchStatus.Finished &&
+                                        b.Status == Bet.BetStatus.Closed)
+                            .ToList();
 
-                        int totalBetsPlaced = bets.Count;
-
-                        int finalisedBets = bets.Count(b => b.Status == Bet.BetStatus.Closed);
-                        int wonBets = bets.Count(b => b.Status == Bet.BetStatus.Closed && b.Result == Bet.BetResult.Won);
+                        int totalBetsPlaced = finishedClosedBets.Count;
+                        int finalisedBets = finishedClosedBets.Count;
+                        int wonBets = finishedClosedBets.Count(b => b.Result == Bet.BetResult.Won);
                         decimal betSuccessRate = finalisedBets > 0
                             ? Math.Round((decimal)wonBets / finalisedBets * 100, 2)
                             : 0;
 
                         int successful1X2 = wonBets;
 
-                        int successfulQualification = bets.Count(b =>
-                            b.Status == Bet.BetStatus.Closed &&
+                        int successfulQualification = finishedClosedBets.Count(b =>
                             b.Match.Type == CustomMatch.MatchType.ExtendedWithQualification &&
                             b.Qualified == b.Match.Qualified);
 
-                        int successfulExactResults = bets.Count(b =>
-                            b.Status == Bet.BetStatus.Closed &&
+                        int successfulExactResults = finishedClosedBets.Count(b =>
                             b.HomeGoals == b.Match.HomeScore &&
                             b.AwayGoals == b.Match.AwayScore);
 
-                        decimal totalPayout = bets
-                            .Where(b => b.Status == Bet.BetStatus.Closed)
+                        decimal totalPayout = finishedClosedBets
                             .Sum(b =>
                                 (b.BasePayout ?? 0) +
                                 (showQualified ? (b.QualificationPayout ?? 0) : 0) +
@@ -1734,7 +1734,8 @@ namespace Backend.Repository.Services
                         var userIdKey = group.Key;
                         var userName = userIdToUsername[userIdKey];
                         var totalPayout = group
-                            .Where(b => b.Status == Bet.BetStatus.Closed)
+                            .Where(b => b.Match.Status == CustomMatch.MatchStatus.Finished &&
+                                        b.Status == Bet.BetStatus.Closed)
                             .Sum(b => (b.BasePayout ?? 0) + (b.QualificationPayout ?? 0) + (b.ExactScorePayout ?? 0));
 
                         return new TournamentPlayerResultDto

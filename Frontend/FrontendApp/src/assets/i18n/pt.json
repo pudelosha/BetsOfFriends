@@ -254,7 +254,19 @@
     "ACTION_FAILED": "A ação falhou. Tente novamente.",
     "CONFIRM_DELETE_TITLE": "Confirmar exclusão",
     "CONFIRM_DELETE_MESSAGE": "Tem certeza de que deseja excluir {{name}}?",
-    "CANCEL": "Cancelar"
+    "CANCEL": "Cancelar",
+    "MESSAGE_ALL_USERS": "Mensagem para todos",
+    "MESSAGE_USER": "Mensagem",
+    "DIRECT_MESSAGE_TITLE": "Mensagem para {{name}}",
+    "DIRECT_MESSAGE_DESCRIPTION": "Envie uma mensagem para este usuario.",
+    "DIRECT_MESSAGE_SENT": "Mensagem enviada.",
+    "BROADCAST_TITLE": "Mensagem para todos os usuarios",
+    "BROADCAST_DESCRIPTION": "Esta mensagem sera enviada para todos os usuarios do app.",
+    "SEND_EMAIL_COPY": "Enviar tambem por email",
+    "SEND_MESSAGE": "Enviar mensagem",
+    "SENDING_MESSAGE": "Enviando mensagem...",
+    "BROADCAST_SENT": "Mensagem enviada para {{count}} usuarios.",
+    "BROADCAST_FAILED": "Falha ao enviar mensagem."
   },
   "INVITE": {
     "TITLE": "Convite para Torneio",
@@ -322,7 +334,7 @@
     "QUALIFY_PREDICTION": "Previsão Classificação",
     "SAVE": "Salvar"
   },
-"MATCH_MODAL": {
+  "MATCH_MODAL": {
     "ADD_TITLE": "Adicionar Jogo",
     "EDIT_TITLE": "Editar Jogo",
     "CLOSE": "Fechar",
@@ -454,7 +466,13 @@
     "FINALISED": "Encerradas"
   },
   "MY_BETS_FINALISED": {
-    "NO_MATCHES": "Nenhum jogo encerrado."
+    "NO_MATCHES": "Nenhum jogo encerrado.",
+    "STATUS_IN_PROGRESS": "Em andamento",
+    "STATUS_NOT_PREDICTED": "Sem aposta",
+    "STATUS_NOT_FINALIZED": "Sem resultado",
+    "STATUS_EXACT_MATCH": "Resultado exato",
+    "STATUS_WON": "Acertada",
+    "STATUS_LOST": "Errada"
   },
   "MY_BETS_PLACED": {
     "NO_MATCHES": "Nenhuma aposta feita.",
@@ -502,7 +520,15 @@
   },
   "MESSAGES": {
     "TITLE": "Mensagens",
-    "NO_NOTIFICATIONS": "Nenhuma notificação."
+    "NO_NOTIFICATIONS": "Nenhuma notificação.",
+    "SEND_MESSAGE": "Enviar mensagem",
+    "RECIPIENT": "Destinatario",
+    "MESSAGE_BODY": "Mensagem",
+    "SEND": "Enviar",
+    "NO_RECIPIENTS": "Nenhum participante do torneio disponivel.",
+    "NEW_MESSAGE_TO_USER": "Nova mensagem para usuario",
+    "REPLY_TITLE": "Responder a {{name}}",
+    "REPLY_DESCRIPTION": "Envie uma resposta para este usuario."
   },
   "LATEST_MESSAGES": {
     "TITLE": "Últimas Mensagens",
@@ -576,7 +602,7 @@
     "NO_MATCHES": "Nenhum jogo.",
     "EDIT_BUTTON": "Editar"
   },
-"FIND_TOURNAMENT": {
+  "FIND_TOURNAMENT": {
     "TITLE": "Encontrar Torneio",
     "DESCRIPTION": "Explore torneios públicos abertos para participação. Use a busca para encontrar um torneio pelo nome e solicitar entrada.",
     "SEARCH_PLACEHOLDER": "Buscar torneios...",
@@ -700,7 +726,7 @@
     "DELETE": "Excluir",
     "UNDO": "Desfazer"
   },
- "STAGE_INPUT_TYPE": {
+  "STAGE_INPUT_TYPE": {
     "SEASON": "Temporada",
     "END_DATE": "Data de Término (opcional)",
     "END_DATE_INFO": "Se uma data de término for fornecida, o torneio será encerrado automaticamente nessa data.",
@@ -920,7 +946,15 @@
     "STAGE_REMOVED": "Fase \"{{name}}\" removida com sucesso!",
     "STAGE_RESTORED": "Fase \"{{name}}\" restaurada com sucesso!",
     "MATCH_REMOVED": "Jogo removido com sucesso!",
-    "MATCH_RESTORED": "Jogo restaurado com sucesso!"
+    "MATCH_RESTORED": "Jogo restaurado com sucesso!",
+    "DELETE_ALL_MESSAGES_TITLE": "Excluir mensagens",
+    "DELETE_ALL_MESSAGES_CONFIRM": "Tem certeza de que deseja excluir todas as mensagens?",
+    "ALL_MESSAGES_DELETED": "Mensagens excluidas.",
+    "MESSAGE_RECIPIENTS_LOAD_FAILED": "Nao foi possivel carregar os destinatarios.",
+    "MESSAGE_REQUIRED_FIELDS": "Selecione um destinatario e insira uma mensagem.",
+    "MESSAGE_SENT": "Mensagem enviada.",
+    "MESSAGE_SEND_FAILED": "Nao foi possivel enviar a mensagem.",
+    "SELECT_TOURNAMENT_FIRST": "Selecione primeiro um torneio."
   },
   "SUPPORT": {
     "TITLE": "Contato com Suporte",

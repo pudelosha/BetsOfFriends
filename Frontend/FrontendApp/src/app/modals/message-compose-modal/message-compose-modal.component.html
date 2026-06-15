@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'MESSAGES.NEW_MESSAGE_TO_USER' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="form-row vertical-align">
+    <ion-label class="selector-label">{{ 'MESSAGES.RECIPIENT' | translate }}</ion-label>
+    <ion-select
+      interface="popover"
+      [(ngModel)]="selectedRecipientAssignmentId"
+      [disabled]="recipients.length === 0"
+    >
+      <ion-select-option *ngFor="let recipient of recipients" [value]="recipient.assignmentId">
+        {{ recipient.userName }}
+      </ion-select-option>
+    </ion-select>
+  </div>
+
+  <div *ngIf="recipients.length === 0" class="empty-state">
+    {{ 'MESSAGES.NO_RECIPIENTS' | translate }}
+  </div>
+
+  <div class="form-row vertical-align">
+    <ion-label class="selector-label">{{ 'MESSAGES.MESSAGE_BODY' | translate }}</ion-label>
+    <ion-textarea
+      auto-grow="true"
+      rows="6"
+      maxlength="2000"
+      [(ngModel)]="messageBody"
+    ></ion-textarea>
+  </div>
+
+  <div class="save-button-container">
+    <ion-button expand="full" fill="outline" color="medium" (click)="dismiss()">
+      {{ 'TOASTS.CANCEL' | translate }}
+    </ion-button>
+  </div>
+
+  <div class="save-button-container">
+    <ion-button
+      expand="full"
+      color="medium"
+      (click)="send()"
+      [disabled]="!selectedRecipientAssignmentId || !messageBody.trim()"
+    >
+      {{ 'MESSAGES.SEND' | translate }}
+    </ion-button>
+  </div>
+</ion-content>

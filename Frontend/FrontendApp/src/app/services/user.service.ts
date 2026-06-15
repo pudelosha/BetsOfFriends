@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { UserProfile, ApplicationUser } from '../model/user-profile';
+import { UserProfile, ApplicationUser, PagedApplicationUsers } from '../model/user-profile';
 import { ActionResult } from '../model/action-result';
 
 @Injectable({
@@ -47,6 +47,16 @@ export class UserService {
 
   getAllUsers(): Observable<ApplicationUser[]> {
     return this.http.get<ApplicationUser[]>(`${this.apiUrl}/all`);
+  }
+
+  getUsersPage(page = 1, pageSize = 20, search = ''): Observable<PagedApplicationUsers> {
+    return this.http.get<PagedApplicationUsers>(`${this.apiUrl}/page`, {
+      params: {
+        page,
+        pageSize,
+        search
+      }
+    });
   }
 
   suspendUser(userId: string): Observable<ActionResult> {

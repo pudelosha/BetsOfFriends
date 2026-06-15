@@ -264,6 +264,66 @@ namespace Backend.Repository.Services
             return result;
         }
 
+        public async Task<PagedApplicationUsersDto> GetUsersPageAsync(int page, int pageSize, string? search)
+        {
+            page = Math.Max(1, page);
+            pageSize = Math.Clamp(pageSize, 1, 100);
+
+            var query = _userManager.Users.AsNoTracking();
+            var normalizedSearch = search?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(normalizedSearch))
+            {
+                var like = $"%{normalizedSearch}%";
+                query = query.Where(user =>
+                    EF.Functions.Like(user.UserName, like) ||
+                    EF.Functions.Like(user.Email, like));
+            }
+
+            var totalCount = await query.CountAsync();
+            var totalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)pageSize));
+
+            if (page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            var users = await query
+                .OrderBy(user => user.Email)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var result = new List<ApplicationUserDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault() ?? "Player";
+
+                result.Add(new ApplicationUserDto
+                {
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    UserEmail = user.Email,
+                    UserRole = role,
+                    UserStatus = GetUserStatus(user),
+                    TournamentAdminCount = await _dbContext.CustomTournaments.CountAsync(t => t.CreatedByUserId == user.Id),
+                    TournamentParticipantCount = await _dbContext.CustomTournamentUserAssignments.CountAsync(p => p.UserId == user.Id),
+                    MemberSince = user.MemberSince
+                });
+            }
+
+            return new PagedApplicationUsersDto
+            {
+                Items = result,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize,
+                TotalPages = totalPages
+            };
+        }
+
         public async Task<ActionResultDto> SuspendUserAsync(string targetUserId, string adminUserId)
         {
             var user = await _userManager.FindByIdAsync(targetUserId);

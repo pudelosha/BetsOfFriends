@@ -135,30 +135,41 @@ export class MyBetsFinalisedPage implements OnInit, OnChanges {
     const status = bet.matchStatus?.toLowerCase();
   
     // 1. Game is in progress (based on match status from backend)
-    if (bet.status === 'Closed' && status === 'in_play') {
-      return 'In Progress';
+    if (this.isBetInProgress(bet)) {
+      return this.t('MY_BETS_FINALISED.STATUS_IN_PROGRESS');
     }
   
     // 2. Prediction not made
     if (ph == null || pa == null) {
-      return 'Not Predicted';
+      return this.t('MY_BETS_FINALISED.STATUS_NOT_PREDICTED');
     }
   
     // 3. Final result not yet available
     if (ah == null || aa == null) {
-      return 'Not Finalized';
+      return this.t('MY_BETS_FINALISED.STATUS_NOT_FINALIZED');
     }
   
     // 4. Exact match predicted
     if (ph === ah && pa === aa) {
-      return 'Exact Match';
+      return this.t('MY_BETS_FINALISED.STATUS_EXACT_MATCH');
     }
   
     // 5. Determine outcome
     const predicted = ph > pa ? 'home' : ph < pa ? 'away' : 'draw';
     const actual = ah > aa ? 'home' : ah < aa ? 'away' : 'draw';
   
-    return predicted === actual ? 'Won' : 'Lost';
+    return predicted === actual
+      ? this.t('MY_BETS_FINALISED.STATUS_WON')
+      : this.t('MY_BETS_FINALISED.STATUS_LOST');
+  }
+
+  isBetInProgress(bet: Bet): boolean {
+    const status = bet.matchStatus?.toLowerCase();
+    return bet.status === 'Closed' && (
+      status === 'in_play' ||
+      status === 'live' ||
+      status === 'paused'
+    );
   }
       
   async openBetsOverview(bet: Bet) {  
