@@ -8,7 +8,7 @@ import { ModalController } from '@ionic/angular';
 import { PlayerStatsModalComponent } from 'src/app/modals/player-stats-modal/player-stats-modal.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TitleService } from 'src/app/services/title.service';
-import { IonContent, IonGrid, IonRow, IonCol, IonProgressBar, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonGrid, IonRow, IonCol, IonProgressBar, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -16,12 +16,13 @@ import { forkJoin } from 'rxjs';
   templateUrl: './tournament-results.page.html',
   styleUrls: ['./tournament-results.page.scss'],
   standalone: true,
-  imports: [CommonModule, TranslateModule, IonContent, IonGrid, IonRow, IonCol, IonProgressBar, IonSpinner],
+  imports: [CommonModule, TranslateModule, IonContent, IonGrid, IonRow, IonCol, IonProgressBar, IonSelect, IonSelectOption],
 })
 export class TournamentResultsPage implements OnInit {
   tournamentId: number | null = null;
   summaryData: TournamentSummary[] = [];
   chartData: TournamentResultsChart | null = null;
+  selectedChartUserIds: string[] = [];
   activeChartPoint: {
     series: TournamentResultsChartSeries;
     details: TournamentResultsChartPoint;
@@ -89,6 +90,7 @@ export class TournamentResultsPage implements OnInit {
       next: async ({ summary, chart }) => {
         this.summaryData = summary;
         this.chartData = chart;
+        this.selectedChartUserIds = chart.series.map(series => series.userId);
         this.isLoading = false;
   
         const elapsedTime = Date.now() - startTime;
@@ -186,6 +188,11 @@ export class TournamentResultsPage implements OnInit {
     return !!this.chartData?.labels?.length && !!this.chartData?.series?.length;
   }
 
+  get filteredChartSeries(): TournamentResultsChartSeries[] {
+    const selected = new Set(this.selectedChartUserIds);
+    return (this.chartData?.series ?? []).filter(series => selected.has(series.userId));
+  }
+
   get hasStackedResultsData(): boolean {
     return this.summaryData.some(player => this.getPositiveTotalPayout(player) > 0);
   }
@@ -225,20 +232,7 @@ export class TournamentResultsPage implements OnInit {
   }
 
   getAccuracyBaseWidth(player: TournamentSummary): number {
-    const current = this.clampPercent(player.betSuccessRate);
-    const previous = this.clampPercent(player.previousBetSuccessRate);
-
-    return (player.betSuccessRateChange ?? 0) < 0
-      ? current
-      : Math.min(current, previous);
-  }
-
-  getAccuracyChangeWidth(player: TournamentSummary): number {
-    return Math.abs(this.clampPercent(player.betSuccessRate) - this.clampPercent(player.previousBetSuccessRate));
-  }
-
-  getAccuracyChangeClass(player: TournamentSummary): string {
-    return (player.betSuccessRateChange ?? 0) < 0 ? 'accuracy-down-segment' : 'accuracy-up-segment';
+    return this.clampPercent(player.betSuccessRate);
   }
 
   private clampPercent(value?: number | null): number {
@@ -246,7 +240,7 @@ export class TournamentResultsPage implements OnInit {
   }
 
   get chartMaxValue(): number {
-    const values = (this.chartData?.series ?? []).reduce<number[]>(
+    const values = this.filteredChartSeries.reduce<number[]>(
       (allPoints, series) => allPoints.concat(series.points),
       []
     );
@@ -270,6 +264,16 @@ export class TournamentResultsPage implements OnInit {
 
   getSeriesColor(index: number): string {
     return this.chartColors[index % this.chartColors.length];
+  }
+
+  getFilteredSeriesColor(series: TournamentResultsChartSeries): string {
+    const originalIndex = this.chartData?.series?.findIndex(item => item.userId === series.userId) ?? 0;
+    return this.getSeriesColor(Math.max(0, originalIndex));
+  }
+
+  onChartParticipantsChange(value: string[] | string | null | undefined): void {
+    this.selectedChartUserIds = Array.isArray(value) ? value : value ? [value] : [];
+    this.clearChartPoint();
   }
 
   getPointX(index: number): number {

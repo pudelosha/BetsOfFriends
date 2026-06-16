@@ -1,12 +1,12 @@
-import { Component, OnInit  } from '@angular/core';
+import { Component, OnInit, ViewChild  } from '@angular/core';
 import { Router, NavigationEnd  } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
-import { ToastController, ModalController } from '@ionic/angular';
+import { ToastController, ModalController, MenuController } from '@ionic/angular';
 import { ParticipantTournamentsModalComponent } from './modals/participant-tournaments-modal/participant-tournaments-modal.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TitleService } from './services/title.service';
 import { Platform } from '@ionic/angular';
 import { IonMenu, IonApp, IonHeader, IonToolbar, IonTitle, IonRow, IonGrid, IonCol, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet, IonFab, IonFabButton, IonFabList } from '@ionic/angular/standalone';
@@ -14,6 +14,8 @@ import { version } from 'src/environments/version';
 import { LanguageService } from 'src/app/services/language.service';
 import { UserService } from 'src/app/services/user.service';
 import { firstValueFrom } from 'rxjs';
+import { TournamentSelectionService } from './services/tournament-selection.service';
+import { CustomTournamentService } from './services/custom-tournament.service';
 
 @Component({
   selector: 'app-root',
@@ -22,10 +24,13 @@ import { firstValueFrom } from 'rxjs';
   imports: [CommonModule, ReactiveFormsModule, TranslateModule, IonApp, IonMenu, IonRow, IonGrid, IonCol, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonItemDivider, IonButtons, IonMenuButton, IonButton, IonFooter, IonRouterOutlet],  
 })
 export class AppComponent implements OnInit {
+  @ViewChild('sideMenuContent') sideMenuContent?: IonContent;
+
   isMonetizedMode = false;
   isLoggedIn = false;
   isSuperAdmin = false;
   isAdmin = false;
+  selectedTournamentUpdateMethod: 'Manual' | 'Semi' | 'Auto' | null = null;
   showFab: boolean = false;
   pageTitle: string = 'APP.TITLE';
   version = version;
@@ -39,6 +44,10 @@ export class AppComponent implements OnInit {
               private platform: Platform,
               private languageService: LanguageService,
               private userService: UserService,
+              private tournamentSelectionService: TournamentSelectionService,
+              private customTournamentService: CustomTournamentService,
+              private translate: TranslateService,
+              private menuController: MenuController,
               private modalController: ModalController) {}
 
   ngOnInit() {
@@ -50,6 +59,7 @@ export class AppComponent implements OnInit {
       this.updateUserRoles();
       if (loggedIn) {
         void this.syncLanguageFromProfile();
+        this.loadSelectedTournamentUpdateMethod();
       }
     });
 
@@ -62,10 +72,21 @@ export class AppComponent implements OnInit {
       // Refresh authentication state
       this.isLoggedIn = this.authService.isLoggedIn();
       this.updateUserRoles();
+      if (this.isLoggedIn) {
+        this.loadSelectedTournamentUpdateMethod();
+      }
 
       // Global fix for aria-hidden warning
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
+      }
+    });
+
+    this.tournamentSelectionService.getSelectedTournamentObservable().subscribe(() => {
+      if (this.authService.isLoggedIn()) {
+        this.loadSelectedTournamentUpdateMethod();
+      } else {
+        this.selectedTournamentUpdateMethod = null;
       }
     });
   }
@@ -94,6 +115,10 @@ export class AppComponent implements OnInit {
 
   get isNative(): boolean {
     return this.platform.is('android') || this.platform.is('ios');
+  }
+
+  get isCustomMatchesMenuLocked(): boolean {
+    return this.selectedTournamentUpdateMethod === 'Auto';
   }
 
   updateUserRoles() {
@@ -134,6 +159,30 @@ export class AppComponent implements OnInit {
       color,
     });
     await toast.present();
+  }
+
+  onMenuWillOpen() {
+    setTimeout(() => {
+      void this.sideMenuContent?.scrollToTop(0);
+    }, 0);
+  }
+
+  private loadSelectedTournamentUpdateMethod(): void {
+    const tournamentId = this.tournamentSelectionService.getSelectedTournament();
+    if (!tournamentId || tournamentId < 0) {
+      this.selectedTournamentUpdateMethod = null;
+      return;
+    }
+
+    this.customTournamentService.getSelectedTournamentDetails(tournamentId).subscribe({
+      next: details => {
+        this.selectedTournamentUpdateMethod = details.updateMethod ?? null;
+      },
+      error: error => {
+        console.warn('Failed to load selected tournament update method:', error);
+        this.selectedTournamentUpdateMethod = null;
+      }
+    });
   }
 
   navigateToMessages(){
@@ -188,8 +237,34 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/tournaments/custom']);
   }
 
-  navigateToCustomTournamentsMatches() {
-    this.router.navigate(['/matches/custom']);
+  async navigateToCustomTournamentsMatches(event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    const tournamentId = this.tournamentSelectionService.getSelectedTournament();
+    if (!tournamentId || tournamentId < 0) {
+      await this.menuController.close();
+      await this.router.navigate(['/matches/custom']);
+      return;
+    }
+
+    try {
+      const details = await firstValueFrom(this.customTournamentService.getSelectedTournamentDetails(tournamentId));
+      this.selectedTournamentUpdateMethod = details.updateMethod ?? null;
+
+      if ((details.updateMethod ?? '').toLowerCase() === 'auto') {
+        await this.menuController.close();
+        await this.presentToast(this.translate.instant('TOASTS.AUTO_UPDATE_MATCHES_LOCKED'), 'warning');
+        return;
+      }
+
+      await this.menuController.close();
+      await this.router.navigate(['/matches/custom']);
+    } catch (error) {
+      console.warn('Failed to verify selected tournament update method:', error);
+      await this.menuController.close();
+      await this.router.navigate(['/matches/custom']);
+    }
   }
 
   navigateToCustomTournamentsParticipants() {

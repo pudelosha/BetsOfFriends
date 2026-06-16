@@ -631,6 +631,7 @@
     "POSITION_DOWN": "{{count}} down",
     "POSITION_NO_CHANGE": "no change",
     "POINTS_GROWTH": "Points growth",
+    "CHART_PARTICIPANTS": "Participants",
     "CHART_CLICK_HINT": "click a point for details"
   },
   "MY_TOURNAMENTS": {
@@ -837,6 +838,7 @@
     "LOADING": "Loading...",
     "LOADING_BETS": "Loading bets...",
     "LOADING_MATCHES": "Loading matches...",
+    "AUTO_UPDATE_MATCHES_LOCKED": "match updates locked for tournament with auto updates",
     "LOADING_TOURNAMENTS": "Loading tournaments...",
     "LOADING_TOURNAMENT": "Loading tournament...",
     "LOADING_RESULTS": "Loading results...",

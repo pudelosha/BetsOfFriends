@@ -220,14 +220,6 @@ ion-row:not(.summary-header) {
   background: #3767ff;
 }
 
-.accuracy-up-segment {
-  background: #54b96f;
-}
-
-.accuracy-down-segment {
-  background: #b3261e;
-}
-
 .accuracy-total {
   color: #007bff;
   font-size: 12px;
@@ -267,6 +259,14 @@ ion-row:not(.summary-header) {
   font-size: 11px;
   font-weight: 500;
   margin-left: 8px;
+}
+
+.chart-participants-select {
+  margin: 0 6px 8px;
+  --padding-start: 0;
+  --padding-end: 0;
+  color: #333;
+  font-size: 12px;
 }
 
 .results-chart-card {

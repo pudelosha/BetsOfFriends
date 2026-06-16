@@ -631,6 +631,7 @@
     "POSITION_DOWN": "{{count}} abaixo",
     "POSITION_NO_CHANGE": "sem alteracao",
     "POINTS_GROWTH": "Evolucao de pontos",
+    "CHART_PARTICIPANTS": "Participantes",
     "CHART_CLICK_HINT": "toque em um ponto para detalhes"
   },
   "MY_TOURNAMENTS": {
@@ -837,6 +838,7 @@
     "LOADING": "Carregando...",
     "LOADING_BETS": "Carregando apostas...",
     "LOADING_MATCHES": "Carregando jogos...",
+    "AUTO_UPDATE_MATCHES_LOCKED": "As atualizacoes de jogos estao bloqueadas para torneios com atualizacoes automaticas.",
     "LOADING_TOURNAMENTS": "Carregando torneios...",
     "LOADING_TOURNAMENT": "Carregando torneio...",
     "LOADING_RESULTS": "Carregando resultados...",

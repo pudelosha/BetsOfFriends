@@ -4,6 +4,7 @@ import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { TournamentSelectionService } from 'src/app/services/tournament-selection.service';
 import { CustomMatchService } from 'src/app/services/custom-match.service';
+import { CustomTournamentService } from 'src/app/services/custom-tournament.service';
 import { firstValueFrom } from 'rxjs';
 import { Match } from 'src/app/model/match';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -24,10 +25,12 @@ export class StartedCustomMatchesPage implements OnChanges {
   tournamentId: number | null = null;
   startedMatches: Match[] = [];
   isLoading = true;
+  isAutoUpdateTournament = false;
   errorMessage: string | null = null;
 
   constructor(
     private matchService: CustomMatchService,
+    private tournamentService: CustomTournamentService,
     private router: Router,
     private tournamentSelectionService: TournamentSelectionService,
     private toastController: ToastController,
@@ -50,8 +53,19 @@ export class StartedCustomMatchesPage implements OnChanges {
 
     try {
       this.tournamentId = this.tournamentSelectionService.getSelectedTournament();
+      this.isAutoUpdateTournament = false;
 
       if (this.tournamentId === null) {
+        return;
+      }
+
+      const tournamentDetails = await firstValueFrom(
+        this.tournamentService.getSelectedTournamentDetails(this.tournamentId)
+      );
+      this.isAutoUpdateTournament = tournamentDetails.updateMethod === 'Auto';
+
+      if (this.isAutoUpdateTournament) {
+        this.startedMatches = [];
         return;
       }
 
@@ -103,6 +117,10 @@ export class StartedCustomMatchesPage implements OnChanges {
   }
 
   navigateToCustomMatches() {
+    if (this.isAutoUpdateTournament) {
+      return;
+    }
+
     this.router.navigate(['/matches/custom'], {
       queryParams: { tab: 'started' }
     });

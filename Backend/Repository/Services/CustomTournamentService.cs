@@ -3057,7 +3057,8 @@ namespace Backend.Repository.Services
                 {
                     TournamentName = tournament.Name,
                     MatchesCount = matchesCount,
-                    FinalisedMatchesCount = finalisedMatchesCount
+                    FinalisedMatchesCount = finalisedMatchesCount,
+                    UpdateMethod = tournament.Update.ToString()
                 };
             }
             catch (Exception ex)

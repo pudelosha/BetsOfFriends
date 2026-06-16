@@ -1,4 +1,4 @@
-<ng-container *ngIf="startedMatches.length > 0 || isLoading">
+<ng-container *ngIf="!isAutoUpdateTournament && (startedMatches.length > 0 || isLoading)">
   <div class="started-matches-box"
        [ngClass]="{ 'has-started-matches': startedMatches.length > 0 }"
        (click)="navigateToCustomMatches()">

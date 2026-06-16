@@ -335,6 +335,7 @@ namespace Backend.DTOs
         public string TournamentName { get; set; } = string.Empty;
         public int MatchesCount { get; set; }
         public int FinalisedMatchesCount { get; set; }
+        public string UpdateMethod { get; set; } = string.Empty;
     }
 
     public class TournamentCreationResultDto

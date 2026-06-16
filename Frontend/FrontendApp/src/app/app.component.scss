@@ -44,6 +44,16 @@ ion-menu ion-item ion-icon[slot="start"] {
   min-width: 24px;
 }
 
+ion-menu ion-item.locked-menu-item {
+  --color: #b8b8b8;
+  color: #b8b8b8;
+}
+
+ion-menu ion-item.locked-menu-item ion-icon,
+ion-menu ion-item.locked-menu-item ion-label {
+  color: #b8b8b8;
+}
+
 ion-menu ion-item-divider ion-label {
   align-items: center;
   display: flex;

@@ -227,10 +227,12 @@ namespace Backend.Repository.Services
 
                 // Step 1: Fetch matches with Status = InProgress
                 var matches = await _context.PredefinedMatches
+                    .Include(m => m.PredefinedTournament)
                     .Include(m => m.PredefinedStage)
                     .Include(m => m.HomeTeam)
                     .Include(m => m.AwayTeam)
-                    .Where(m => m.Status == MatchStatus.In_Play)
+                    .Where(m => m.Status == MatchStatus.In_Play &&
+                                m.PredefinedTournament.Update != CustomTournament.TournamentUpdate.Auto)
                     .OrderBy(m => m.MatchStart)
                     .ToListAsync();
 

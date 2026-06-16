@@ -630,6 +630,7 @@
     "POSITION_DOWN": "{{count}} places perdues",
     "POSITION_NO_CHANGE": "aucun changement",
     "POINTS_GROWTH": "Evolution des points",
+    "CHART_PARTICIPANTS": "Participants",
     "CHART_CLICK_HINT": "appuyez sur un point pour les details",
     "RESULT": "Résultat"
   },
@@ -837,6 +838,7 @@
     "LOADING": "Chargement...",
     "LOADING_BETS": "Chargement des paris...",
     "LOADING_MATCHES": "Chargement des matchs...",
+    "AUTO_UPDATE_MATCHES_LOCKED": "Les mises a jour des matchs sont bloquees pour les tournois avec mises a jour automatiques.",
     "LOADING_TOURNAMENTS": "Chargement des tournois...",
     "LOADING_TOURNAMENT": "Chargement du tournoi...",
     "LOADING_RESULTS": "Chargement des résultats...",

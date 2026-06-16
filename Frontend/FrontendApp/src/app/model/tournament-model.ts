@@ -233,6 +233,7 @@ export interface SelectedTournamentDetails {
   tournamentName: string;
   matchesCount: number;
   finalisedMatchesCount: number;
+  updateMethod: 'Manual' | 'Semi' | 'Auto';
 }
 
 export type RecordStatus = 'New' | 'Uploaded' | 'Update' | 'Delete' | 'Finalised';

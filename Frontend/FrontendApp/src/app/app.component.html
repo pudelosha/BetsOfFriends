@@ -1,13 +1,13 @@
 <ion-app>
   <!-- Side Menu -->
-  <ion-menu contentId="main-content" *ngIf="isLoggedIn">
+  <ion-menu contentId="main-content" *ngIf="isLoggedIn" (ionWillOpen)="onMenuWillOpen()" (ionDidOpen)="onMenuWillOpen()">
     <ion-header>
       <ion-toolbar>
         <ion-title>{{ 'APP.MENU' | translate }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content>
+    <ion-content #sideMenuContent>
       <ion-list>
         <ion-menu-toggle auto-hide="true">
 
@@ -87,7 +87,9 @@
               <ion-label>{{ 'APP.MANAGE_TOURNAMENTS' | translate }}</ion-label>
             </ion-item>
 
-            <ion-item (click)="navigateToCustomTournamentsMatches()">
+            <ion-item
+              [class.locked-menu-item]="isCustomMatchesMenuLocked"
+              (click)="navigateToCustomTournamentsMatches($event)">
               <ion-icon name="football-outline" slot="start"></ion-icon>
               <ion-label>{{ 'APP.MANAGE_MATCHES' | translate }}</ion-label>
             </ion-item>

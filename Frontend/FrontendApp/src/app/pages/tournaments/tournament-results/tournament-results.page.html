@@ -125,12 +125,6 @@
                 class="accuracy-segment accuracy-base-segment"
                 [style.width.%]="getAccuracyBaseWidth(player)">
               </div>
-              <div
-                *ngIf="getAccuracyChangeWidth(player) > 0"
-                class="accuracy-segment"
-                [ngClass]="getAccuracyChangeClass(player)"
-                [style.width.%]="getAccuracyChangeWidth(player)">
-              </div>
             </div>
           </div>
           <div class="accuracy-total">{{ player.betSuccessRate | number:'1.0-0' }}%</div>
@@ -143,6 +137,21 @@
         <span>{{ 'RESULTS.POINTS_GROWTH' | translate }}</span>
         <small>{{ 'RESULTS.CHART_CLICK_HINT' | translate }}</small>
       </div>
+
+      <ion-select
+        class="chart-participants-select"
+        interface="popover"
+        [multiple]="true"
+        [label]="'RESULTS.CHART_PARTICIPANTS' | translate"
+        label-placement="stacked"
+        [value]="selectedChartUserIds"
+        (ionChange)="onChartParticipantsChange($event.detail.value)">
+        <ion-select-option
+          *ngFor="let series of chartData?.series"
+          [value]="series.userId">
+          {{ series.userName }}
+        </ion-select-option>
+      </ion-select>
 
       <div class="results-chart-card">
         <svg
@@ -177,11 +186,11 @@
             </text>
           </g>
 
-          <g *ngFor="let series of chartData?.series; let seriesIndex = index">
+          <g *ngFor="let series of filteredChartSeries">
             <path
               class="chart-line"
               [attr.d]="getLinePath(series)"
-              [attr.stroke]="getSeriesColor(seriesIndex)">
+              [attr.stroke]="getFilteredSeriesColor(series)">
             </path>
 
             <circle
@@ -190,7 +199,7 @@
               [attr.cx]="getPointX(pointIndex)"
               [attr.cy]="getPointY(point)"
               r="4"
-              [attr.fill]="getSeriesColor(seriesIndex)"
+              [attr.fill]="getFilteredSeriesColor(series)"
               (click)="showChartPoint(series, pointIndex, $event)"
               (touchstart)="showChartPoint(series, pointIndex, $event)">
             </circle>
@@ -223,9 +232,6 @@
         </span>
       </div>
     </div>
-
-    <!-- Loading Spinner -->
-    <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
 
   </div>
 </ion-content>
