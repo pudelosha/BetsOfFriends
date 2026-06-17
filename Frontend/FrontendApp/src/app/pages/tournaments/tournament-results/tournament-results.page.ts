@@ -31,6 +31,17 @@ export class TournamentResultsPage implements OnInit {
     pageX: number;
     pageY: number;
   } | null = null;
+  activeChartLine: {
+    series: TournamentResultsChartSeries;
+    pageX: number;
+    pageY: number;
+  } | null = null;
+  activeStackSegment: {
+    label: string;
+    points: number;
+    pageX: number;
+    pageY: number;
+  } | null = null;
   isLoading = true;
 
   readonly chartWidth = 640;
@@ -225,6 +236,22 @@ export class TournamentResultsPage implements OnInit {
     return value / maxTotal * 100;
   }
 
+  showStackSegment(labelKey: string, points: number | null | undefined, event: MouseEvent): void {
+    const horizontalMargin = Math.min(120, Math.max(36, window.innerWidth / 2 - 12));
+    const verticalMargin = Math.min(70, Math.max(28, window.innerHeight / 4));
+
+    this.activeStackSegment = {
+      label: this.t(labelKey),
+      points: points ?? 0,
+      pageX: Math.min(Math.max(event.clientX, horizontalMargin), window.innerWidth - horizontalMargin),
+      pageY: Math.min(Math.max(event.clientY - 14, verticalMargin), window.innerHeight - verticalMargin)
+    };
+  }
+
+  clearStackSegment(): void {
+    this.activeStackSegment = null;
+  }
+
   private getPositiveTotalPayout(player: TournamentSummary): number {
     return Math.max(0, player.regularPayout ?? 0) +
       Math.max(0, player.qualificationPayout ?? 0) +
@@ -274,6 +301,7 @@ export class TournamentResultsPage implements OnInit {
   onChartParticipantsChange(value: string[] | string | null | undefined): void {
     this.selectedChartUserIds = Array.isArray(value) ? value : value ? [value] : [];
     this.clearChartPoint();
+    this.clearChartLine();
   }
 
   getPointX(index: number): number {
@@ -299,11 +327,28 @@ export class TournamentResultsPage implements OnInit {
     return this.getPointY(value);
   }
 
+  showChartLine(series: TournamentResultsChartSeries, event: MouseEvent): void {
+    const horizontalMargin = Math.min(120, Math.max(36, window.innerWidth / 2 - 12));
+    const verticalMargin = Math.min(80, Math.max(28, window.innerHeight / 4));
+
+    this.activeChartLine = {
+      series,
+      pageX: Math.min(Math.max(event.clientX, horizontalMargin), window.innerWidth - horizontalMargin),
+      pageY: Math.min(Math.max(event.clientY - 18, verticalMargin), window.innerHeight - verticalMargin)
+    };
+  }
+
+  clearChartLine(): void {
+    this.activeChartLine = null;
+  }
+
   showChartPoint(series: TournamentResultsChartSeries, pointIndex: number, event?: MouseEvent | TouchEvent): void {
     const details = series.pointDetails[pointIndex];
     if (!details) {
       return;
     }
+
+    this.clearChartLine();
 
     const pointer = event instanceof TouchEvent ? event.touches[0] : event;
     const clientX = pointer?.clientX ?? window.innerWidth / 2;

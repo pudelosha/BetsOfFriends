@@ -164,6 +164,33 @@ ion-row:not(.summary-header) {
   text-align: right;
 }
 
+.stack-segment-tooltip {
+  position: fixed;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  transform: translate(-50%, -100%);
+  max-width: min(220px, calc(100vw - 24px));
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
+  padding: 6px 9px;
+  z-index: 2;
+  color: #333;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.stack-segment-tooltip strong {
+  font-weight: 700;
+}
+
+.stack-segment-tooltip span {
+  color: #007bff;
+  font-weight: 700;
+}
+
 .results-accuracy-section {
   padding: 30px 10px 0;
 }
@@ -303,10 +330,43 @@ ion-row:not(.summary-header) {
   stroke-linejoin: round;
 }
 
+.chart-line-active {
+  stroke-width: 3.5;
+}
+
+.chart-line-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: stroke;
+  cursor: default;
+}
+
 .chart-point {
   stroke: #fff;
   stroke-width: 2;
   cursor: pointer;
+}
+
+.chart-line-tooltip {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  max-width: min(220px, calc(100vw - 24px));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
+  padding: 5px 8px;
+  z-index: 2;
+  color: #333;
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
 }
 
 .chart-tooltip {

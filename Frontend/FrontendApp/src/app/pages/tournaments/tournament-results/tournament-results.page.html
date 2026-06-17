@@ -89,25 +89,43 @@
             <div
               *ngIf="getStackSegmentWidth(player, player.regularPayout) > 0"
               class="stack-segment stack-w"
-              [style.width.%]="getStackSegmentWidth(player, player.regularPayout)">
+              [style.width.%]="getStackSegmentWidth(player, player.regularPayout)"
+              (mouseenter)="showStackSegment('RESULTS.W', player.regularPayout, $event)"
+              (mousemove)="showStackSegment('RESULTS.W', player.regularPayout, $event)"
+              (mouseleave)="clearStackSegment()">
               <span>{{ 'RESULTS.W' | translate }}</span>
             </div>
             <div
               *ngIf="getStackSegmentWidth(player, player.qualificationPayout) > 0"
               class="stack-segment stack-q"
-              [style.width.%]="getStackSegmentWidth(player, player.qualificationPayout)">
+              [style.width.%]="getStackSegmentWidth(player, player.qualificationPayout)"
+              (mouseenter)="showStackSegment('RESULTS.Q', player.qualificationPayout, $event)"
+              (mousemove)="showStackSegment('RESULTS.Q', player.qualificationPayout, $event)"
+              (mouseleave)="clearStackSegment()">
               <span>{{ 'RESULTS.Q' | translate }}</span>
             </div>
             <div
               *ngIf="getStackSegmentWidth(player, player.exactScorePayout) > 0"
               class="stack-segment stack-p"
-              [style.width.%]="getStackSegmentWidth(player, player.exactScorePayout)">
+              [style.width.%]="getStackSegmentWidth(player, player.exactScorePayout)"
+              (mouseenter)="showStackSegment('RESULTS.P', player.exactScorePayout, $event)"
+              (mousemove)="showStackSegment('RESULTS.P', player.exactScorePayout, $event)"
+              (mouseleave)="clearStackSegment()">
               <span>{{ 'RESULTS.P' | translate }}</span>
             </div>
           </div>
           <div class="stacked-total">{{ player.totalPayout | number:'1.2-2' }}</div>
         </div>
       </div>
+    </div>
+
+    <div
+      *ngIf="activeStackSegment"
+      class="stack-segment-tooltip"
+      [style.left.px]="activeStackSegment.pageX"
+      [style.top.px]="activeStackSegment.pageY">
+      <strong>{{ activeStackSegment.label }}</strong>
+      <span>{{ activeStackSegment.points | number:'1.2-2' }}</span>
     </div>
 
     <div *ngIf="hasAccuracyChartData" class="results-accuracy-section">
@@ -189,8 +207,17 @@
           <g *ngFor="let series of filteredChartSeries">
             <path
               class="chart-line"
+              [class.chart-line-active]="activeChartLine?.series?.userId === series.userId"
               [attr.d]="getLinePath(series)"
               [attr.stroke]="getFilteredSeriesColor(series)">
+            </path>
+
+            <path
+              class="chart-line-hit"
+              [attr.d]="getLinePath(series)"
+              (mouseenter)="showChartLine(series, $event)"
+              (mousemove)="showChartLine(series, $event)"
+              (mouseleave)="clearChartLine()">
             </path>
 
             <circle
@@ -206,6 +233,14 @@
           </g>
         </svg>
       </div>
+    </div>
+
+    <div
+      *ngIf="activeChartLine"
+      class="chart-line-tooltip"
+      [style.left.px]="activeChartLine.pageX"
+      [style.top.px]="activeChartLine.pageY">
+      {{ activeChartLine.series.userName }}
     </div>
 
     <div
