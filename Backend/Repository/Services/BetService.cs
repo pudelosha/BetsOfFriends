@@ -1133,25 +1133,52 @@ namespace Backend.Repository.Services
         {
             try
             {
-                var betsToClose = await _context.Bets
-                    .Where(b => b.MatchId == matchId &&
-                                (b.Status == Bet.BetStatus.ToPlace || b.Status == Bet.BetStatus.Placed))
+                var bets = await _context.Bets
+                    .Where(b => b.MatchId == matchId)
                     .ToListAsync();
 
-                if (!betsToClose.Any())
+                if (!bets.Any())
                 {
-                    _logger.LogInformation($"No bets to mark as completed for match {matchId}.");
+                    _logger.LogInformation($"No bets found to mark as completed for match {matchId}.");
                     return;
                 }
 
-                foreach (var bet in betsToClose)
+                var closedCount = 0;
+                var resetCount = 0;
+
+                foreach (var bet in bets)
                 {
-                    bet.Status = Bet.BetStatus.Closed;
+                    if (bet.Status != Bet.BetStatus.Closed)
+                    {
+                        bet.Status = Bet.BetStatus.Closed;
+                        closedCount++;
+                    }
+
+                    if (bet.Calculated ||
+                        bet.Result != Bet.BetResult.Pending ||
+                        bet.BasePayout.HasValue ||
+                        bet.QualificationPayout.HasValue ||
+                        bet.ExactScorePayout.HasValue)
+                    {
+                        bet.Calculated = false;
+                        bet.Result = Bet.BetResult.Pending;
+                        bet.BasePayout = null;
+                        bet.QualificationPayout = null;
+                        bet.ExactScorePayout = null;
+                        resetCount++;
+                    }
                 }
 
-                await _context.SaveChangesAsync();
+                if (closedCount > 0 || resetCount > 0)
+                {
+                    await _context.SaveChangesAsync();
+                }
 
-                _logger.LogInformation($"Successfully marked {betsToClose.Count} bets as completed for match {matchId}.");
+                _logger.LogInformation(
+                    "Marked bets as completed for match {MatchId}. Closed: {ClosedCount}, premature calculations reset: {ResetCount}.",
+                    matchId,
+                    closedCount,
+                    resetCount);
             }
             catch (Exception ex)
             {

@@ -388,6 +388,251 @@ public class BetServiceTests
     }
 
     [Fact]
+    public async Task RecalculateBetsForMatchAsync_PaysQualificationFromQualifiedTeam()
+    {
+        using var host = new BackendTestHost();
+        var user = await host.CreateUserAsync("qualification-payout@example.com");
+
+        int matchId;
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var tournament = new CustomTournament
+            {
+                Name = "Qualification Cup",
+                CreatedByUserId = user.Id,
+                IsActive = true,
+                AllowWhoQualifiesBets = true
+            };
+
+            dbContext.CustomTournaments.Add(tournament);
+            await dbContext.SaveChangesAsync();
+
+            var stage = new CustomMatchStage
+            {
+                TournamentId = tournament.TournamentId,
+                StageName = "Last 32",
+                Order = 1
+            };
+            var homeTeam = new CustomTeam
+            {
+                TournamentId = tournament.TournamentId,
+                TeamName = "Home",
+                EloRating = 1000
+            };
+            var awayTeam = new CustomTeam
+            {
+                TournamentId = tournament.TournamentId,
+                TeamName = "Away",
+                EloRating = 1000
+            };
+
+            dbContext.CustomMatchStages.Add(stage);
+            dbContext.CustomTeams.AddRange(homeTeam, awayTeam);
+            await dbContext.SaveChangesAsync();
+
+            var match = new CustomMatch
+            {
+                TournamentId = tournament.TournamentId,
+                StageId = stage.StageId,
+                HomeTeamId = homeTeam.TeamId,
+                AwayTeamId = awayTeam.TeamId,
+                MatchStart = DateTime.UtcNow.AddHours(-2),
+                Status = CustomMatch.MatchStatus.Finished,
+                Type = CustomMatch.MatchType.ExtendedWithQualification,
+                HomeScore = 0,
+                AwayScore = 0,
+                Qualified = CustomMatch.TeamQualified.Away,
+                HomeWinOdds = 2,
+                DrawOdds = 3,
+                AwayWinOdds = 4,
+                HomeQualifies = 1.6m,
+                AwayQualifies = 1.8m,
+                IsVisible = true
+            };
+
+            dbContext.CustomMatches.Add(match);
+            await dbContext.SaveChangesAsync();
+            matchId = match.MatchId;
+
+            dbContext.Bets.Add(new Bet
+            {
+                MatchId = matchId,
+                UserId = user.Id,
+                BaseAmount = 1,
+                HomeGoals = 1,
+                AwayGoals = 1,
+                Qualified = CustomMatch.TeamQualified.Away,
+                Status = Bet.BetStatus.Placed,
+                Result = Bet.BetResult.Pending,
+                Calculated = false
+            });
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<IBetService>();
+
+            await service.RecalculateBetsForMatchAsync(matchId);
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var bet = await dbContext.Bets.AsNoTracking().SingleAsync(b => b.MatchId == matchId);
+
+            Assert.Equal(3m, bet.BasePayout);
+            Assert.Equal(1.8m, bet.QualificationPayout);
+            Assert.Equal(Bet.BetResult.Won, bet.Result);
+        }
+    }
+
+    [Fact]
+    public async Task RecalculateBetsForMatchAsync_RewardsAwayWinExactResultAndQualificationIndependently()
+    {
+        using var host = new BackendTestHost();
+        var exactUser = await host.CreateUserAsync("exact-away-qualified@example.com");
+        var awayUser = await host.CreateUserAsync("away-qualified@example.com");
+        var drawUser = await host.CreateUserAsync("draw-away-qualified@example.com");
+
+        int matchId;
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var tournament = new CustomTournament
+            {
+                Name = "World Cup Knockout",
+                CreatedByUserId = exactUser.Id,
+                IsActive = true,
+                AllowWhoQualifiesBets = true,
+                AllowExactResultBonus = true,
+                ExactResultBonusCalculation = CustomTournament.ExactResultBonusCalculationType.Fixed,
+                ExactResultBonus = 10
+            };
+
+            dbContext.CustomTournaments.Add(tournament);
+            await dbContext.SaveChangesAsync();
+
+            var stage = new CustomMatchStage
+            {
+                TournamentId = tournament.TournamentId,
+                StageName = "Last 32",
+                Order = 1
+            };
+            var homeTeam = new CustomTeam
+            {
+                TournamentId = tournament.TournamentId,
+                TeamName = "South Africa",
+                EloRating = 1000
+            };
+            var awayTeam = new CustomTeam
+            {
+                TournamentId = tournament.TournamentId,
+                TeamName = "Canada",
+                EloRating = 1000
+            };
+
+            dbContext.CustomMatchStages.Add(stage);
+            dbContext.CustomTeams.AddRange(homeTeam, awayTeam);
+            await dbContext.SaveChangesAsync();
+
+            var match = new CustomMatch
+            {
+                TournamentId = tournament.TournamentId,
+                StageId = stage.StageId,
+                HomeTeamId = homeTeam.TeamId,
+                AwayTeamId = awayTeam.TeamId,
+                MatchStart = DateTime.UtcNow.AddHours(-2),
+                Status = CustomMatch.MatchStatus.Finished,
+                Type = CustomMatch.MatchType.ExtendedWithQualification,
+                HomeScore = 0,
+                AwayScore = 1,
+                Qualified = CustomMatch.TeamQualified.Away,
+                HomeWinOdds = 2,
+                DrawOdds = 3,
+                AwayWinOdds = 4,
+                HomeQualifies = 1.6m,
+                AwayQualifies = 1.8m,
+                IsVisible = true
+            };
+
+            dbContext.CustomMatches.Add(match);
+            await dbContext.SaveChangesAsync();
+            matchId = match.MatchId;
+
+            dbContext.CustomTournamentUserAssignments.AddRange(
+                CreateAcceptedAssignment(tournament.TournamentId, exactUser.Id, "Exact"),
+                CreateAcceptedAssignment(tournament.TournamentId, awayUser.Id, "Away"),
+                CreateAcceptedAssignment(tournament.TournamentId, drawUser.Id, "Draw"));
+
+            dbContext.Bets.AddRange(
+                CreatePlacedBet(matchId, exactUser.Id, 0, 1, CustomMatch.TeamQualified.Away),
+                CreatePlacedBet(matchId, awayUser.Id, 0, 2, CustomMatch.TeamQualified.Away),
+                CreatePlacedBet(matchId, drawUser.Id, 1, 1, CustomMatch.TeamQualified.Away));
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<IBetService>();
+
+            await service.RecalculateBetsForMatchAsync(matchId);
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var bets = await dbContext.Bets
+                .AsNoTracking()
+                .Where(b => b.MatchId == matchId)
+                .ToDictionaryAsync(b => b.UserId);
+
+            Assert.Equal(4m, bets[exactUser.Id].BasePayout);
+            Assert.Equal(1.8m, bets[exactUser.Id].QualificationPayout);
+            Assert.Equal(10m, bets[exactUser.Id].ExactScorePayout);
+            Assert.Equal(Bet.BetResult.Won, bets[exactUser.Id].Result);
+
+            Assert.Equal(4m, bets[awayUser.Id].BasePayout);
+            Assert.Equal(1.8m, bets[awayUser.Id].QualificationPayout);
+            Assert.Equal(0m, bets[awayUser.Id].ExactScorePayout);
+            Assert.Equal(Bet.BetResult.Won, bets[awayUser.Id].Result);
+
+            Assert.Equal(0m, bets[drawUser.Id].BasePayout);
+            Assert.Equal(1.8m, bets[drawUser.Id].QualificationPayout);
+            Assert.Equal(0m, bets[drawUser.Id].ExactScorePayout);
+            Assert.Equal(Bet.BetResult.Won, bets[drawUser.Id].Result);
+        }
+
+        using (var scope = host.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<IBetService>();
+            var stats = await service.GetBetStatisticsAsync(matchId, exactUser.Id);
+
+            Assert.NotNull(stats);
+            var userBets = stats.UserBets!.ToDictionary(b => b.Username);
+
+            Assert.Equal(1, userBets["Exact"].AwayWinSuccess);
+            Assert.Equal(1, userBets["Exact"].AwayQualifiesSuccess);
+            Assert.Equal(1, userBets["Exact"].ResultSuccess);
+
+            Assert.Equal(1, userBets["Away"].AwayWinSuccess);
+            Assert.Equal(1, userBets["Away"].AwayQualifiesSuccess);
+            Assert.Null(userBets["Away"].ResultSuccess);
+
+            Assert.Equal(0, userBets["Draw"].DrawSuccess);
+            Assert.Equal(1, userBets["Draw"].AwayQualifiesSuccess);
+            Assert.Null(userBets["Draw"].ResultSuccess);
+        }
+    }
+
+    [Fact]
     public async Task GetMissingBetsSummaryAsync_ForTournamentAdmin_ReturnsMissingBetsForUpcoming48Hours()
     {
         using var host = new BackendTestHost();
@@ -718,6 +963,40 @@ public class BetServiceTests
 
     private static Bet CreateClosedBet(int matchId, string userId, int homeGoals, int awayGoals)
         => CreateBet(matchId, userId, homeGoals, awayGoals, Bet.BetStatus.Closed);
+
+    private static CustomTournamentUserAssignment CreateAcceptedAssignment(int tournamentId, string userId, string username)
+    {
+        return new CustomTournamentUserAssignment
+        {
+            TournamentId = tournamentId,
+            UserId = userId,
+            UserAdminName = username,
+            UserName = username,
+            Status = AssignmentStatus.Accepted,
+            Role = UserTournamentRole.Player
+        };
+    }
+
+    private static Bet CreatePlacedBet(
+        int matchId,
+        string userId,
+        int homeGoals,
+        int awayGoals,
+        CustomMatch.TeamQualified? qualified)
+    {
+        return new Bet
+        {
+            MatchId = matchId,
+            UserId = userId,
+            BaseAmount = 1,
+            HomeGoals = homeGoals,
+            AwayGoals = awayGoals,
+            Qualified = qualified,
+            Status = Bet.BetStatus.Placed,
+            Result = Bet.BetResult.Pending,
+            Calculated = false
+        };
+    }
 
     private static Bet CreateBet(int matchId, string userId, int homeGoals, int awayGoals, Bet.BetStatus status)
     {

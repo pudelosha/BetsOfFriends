@@ -11,6 +11,10 @@ public class FootballDataHostedService : BackgroundService
 
     private readonly TimeSpan _inPlayInterval = TimeSpan.FromMinutes(1);
     private readonly TimeSpan _tournamentCheckInterval = TimeSpan.FromHours(1);
+    private readonly TimeSpan _finishedToInPlayCorrectionWindow = TimeSpan.FromHours(6);
+    private const int StatusConfirmationThreshold = 2;
+
+    private readonly Dictionary<int, (CustomMatch.MatchStatus Status, int Count)> _statusObservations = new();
 
     private DateTime _lastTournamentCheck = DateTime.MinValue;
 
@@ -18,6 +22,13 @@ public class FootballDataHostedService : BackgroundService
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
+    }
+
+    private static CustomMatch.TeamQualified? ParseQualifiedTeam(string? qualifiedTeam)
+    {
+        return Enum.TryParse<CustomMatch.TeamQualified>(qualifiedTeam, true, out var parsed)
+            ? parsed
+            : null;
     }
 
     private static string? NormalizeCrestUrl(string? crestUrl)
@@ -190,29 +201,74 @@ public class FootballDataHostedService : BackgroundService
                         : existingMatch.Status;
                     var incomingHomeScore = updatedMatch.ScoreHome;
                     var incomingAwayScore = updatedMatch.ScoreAway;
+                    var incomingQualified = ParseQualifiedTeam(updatedMatch.QualifiedTeam);
+                    var statusConfirmationCount = RegisterStatusObservation(
+                        updatedMatch.ExternalMatchId.Value,
+                        incomingStatus);
 
+                    var existingFinished = existingMatch.Status == CustomMatch.MatchStatus.Finished;
                     var existingFinishedWithScore =
-                        existingMatch.Status == CustomMatch.MatchStatus.Finished &&
+                        existingFinished &&
                         existingMatch.HomeScore.HasValue &&
                         existingMatch.AwayScore.HasValue;
 
-                    if (existingFinishedWithScore && incomingStatus != CustomMatch.MatchStatus.Finished)
+                    if (!existingFinished && incomingStatus == CustomMatch.MatchStatus.Finished &&
+                        (!incomingHomeScore.HasValue || !incomingAwayScore.HasValue ||
+                         statusConfirmationCount < StatusConfirmationThreshold))
                     {
                         _logger.LogWarning(
-                            "Ignoring external status downgrade for predefined match {MatchId} / external match {ExternalMatchId}. Local: {LocalStatus} {LocalHomeScore}:{LocalAwayScore}, incoming: {IncomingStatus} {IncomingHomeScore}:{IncomingAwayScore}.",
+                            "Waiting for confirmation of external finished status for predefined match {MatchId} / external match {ExternalMatchId}. Confirmation {ConfirmationCount}/{ConfirmationThreshold}, incoming score: {IncomingHomeScore}:{IncomingAwayScore}.",
                             existingMatch.MatchId,
                             updatedMatch.ExternalMatchId,
-                            existingMatch.Status,
-                            existingMatch.HomeScore,
-                            existingMatch.AwayScore,
-                            incomingStatus,
+                            statusConfirmationCount,
+                            StatusConfirmationThreshold,
                             incomingHomeScore,
                             incomingAwayScore);
 
                         incomingStatus = existingMatch.Status;
-                        incomingMatchStart = existingMatch.MatchStart;
-                        incomingHomeScore = existingMatch.HomeScore;
-                        incomingAwayScore = existingMatch.AwayScore;
+                        incomingQualified = existingMatch.Qualified;
+                    }
+                    else if (existingFinished && incomingStatus != CustomMatch.MatchStatus.Finished)
+                    {
+                        var confirmedLiveCorrection =
+                            incomingStatus == CustomMatch.MatchStatus.In_Play &&
+                            statusConfirmationCount >= StatusConfirmationThreshold &&
+                            IsWithinInPlayCorrectionWindow(existingMatch.MatchStart);
+
+                        if (confirmedLiveCorrection)
+                        {
+                            _logger.LogWarning(
+                                "Accepting confirmed external live correction for predefined match {MatchId} / external match {ExternalMatchId}. Local: {LocalStatus} {LocalHomeScore}:{LocalAwayScore}, incoming: {IncomingStatus} {IncomingHomeScore}:{IncomingAwayScore}.",
+                                existingMatch.MatchId,
+                                updatedMatch.ExternalMatchId,
+                                existingMatch.Status,
+                                existingMatch.HomeScore,
+                                existingMatch.AwayScore,
+                                incomingStatus,
+                                incomingHomeScore,
+                                incomingAwayScore);
+                        }
+                        else
+                        {
+                            _logger.LogWarning(
+                                "Ignoring unconfirmed external status downgrade for predefined match {MatchId} / external match {ExternalMatchId}. Local: {LocalStatus} {LocalHomeScore}:{LocalAwayScore}, incoming: {IncomingStatus} {IncomingHomeScore}:{IncomingAwayScore}, confirmation {ConfirmationCount}/{ConfirmationThreshold}.",
+                                existingMatch.MatchId,
+                                updatedMatch.ExternalMatchId,
+                                existingMatch.Status,
+                                existingMatch.HomeScore,
+                                existingMatch.AwayScore,
+                                incomingStatus,
+                                incomingHomeScore,
+                                incomingAwayScore,
+                                statusConfirmationCount,
+                                StatusConfirmationThreshold);
+
+                            incomingStatus = existingMatch.Status;
+                            incomingMatchStart = existingMatch.MatchStart;
+                            incomingHomeScore = existingMatch.HomeScore;
+                            incomingAwayScore = existingMatch.AwayScore;
+                            incomingQualified = existingMatch.Qualified;
+                        }
                     }
                     else if (existingFinishedWithScore && (!incomingHomeScore.HasValue || !incomingAwayScore.HasValue))
                     {
@@ -227,6 +283,12 @@ public class FootballDataHostedService : BackgroundService
 
                         incomingHomeScore = existingMatch.HomeScore;
                         incomingAwayScore = existingMatch.AwayScore;
+                        incomingQualified ??= existingMatch.Qualified;
+                    }
+
+                    if (incomingStatus != CustomMatch.MatchStatus.Finished)
+                    {
+                        incomingQualified = null;
                     }
 
                     // ============================================================
@@ -295,6 +357,7 @@ public class FootballDataHostedService : BackgroundService
                         existingMatch.MatchStart != incomingMatchStart ||
                         existingMatch.HomeScore != incomingHomeScore ||
                         existingMatch.AwayScore != incomingAwayScore ||
+                        existingMatch.Qualified != incomingQualified ||
                         teamChanged;
 
                     if (!hasChanges)
@@ -310,6 +373,7 @@ public class FootballDataHostedService : BackgroundService
                     existingMatch.MatchStart = incomingMatchStart;
                     existingMatch.HomeScore = incomingHomeScore;
                     existingMatch.AwayScore = incomingAwayScore;
+                    existingMatch.Qualified = incomingQualified;
 
                     // Update predefined team ids ONLY if we successfully resolved them
                     // (If still TBD/null from API, keep existing)
@@ -393,6 +457,7 @@ public class FootballDataHostedService : BackgroundService
                         customMatch.MatchStart = existingMatch.MatchStart;
                         customMatch.HomeScore = existingMatch.HomeScore;
                         customMatch.AwayScore = existingMatch.AwayScore;
+                        customMatch.Qualified = existingMatch.Qualified;
                         customMatch.Status = existingMatch.Status;
 
                         var customTournamentId = customMatch.Tournament.TournamentId;
@@ -587,5 +652,28 @@ public class FootballDataHostedService : BackgroundService
         }
 
         _logger.LogInformation("Finished checking tournament changes.");
+    }
+
+    private int RegisterStatusObservation(int externalMatchId, CustomMatch.MatchStatus status)
+    {
+        if (_statusObservations.TryGetValue(externalMatchId, out var observation) &&
+            observation.Status == status)
+        {
+            var updatedCount = Math.Min(observation.Count + 1, StatusConfirmationThreshold);
+            _statusObservations[externalMatchId] = (status, updatedCount);
+            return updatedCount;
+        }
+
+        _statusObservations[externalMatchId] = (status, 1);
+        return 1;
+    }
+
+    private bool IsWithinInPlayCorrectionWindow(DateTime matchStart)
+    {
+        var matchStartUtc = DateTime.SpecifyKind(matchStart, DateTimeKind.Utc);
+        var nowUtc = DateTime.UtcNow;
+
+        return nowUtc >= matchStartUtc.AddMinutes(-30) &&
+               nowUtc <= matchStartUtc.Add(_finishedToInPlayCorrectionWindow);
     }
 }

@@ -267,18 +267,35 @@ export class TournamentResultsPage implements OnInit {
   }
 
   get chartMaxValue(): number {
+    return this.chartValueRange.max;
+  }
+
+  get chartMinValue(): number {
+    return this.chartValueRange.min;
+  }
+
+  private get chartValueRange(): { min: number; max: number } {
     const values = this.filteredChartSeries.reduce<number[]>(
       (allPoints, series) => allPoints.concat(series.points),
       []
     );
-    const max = Math.max(0, ...values);
-    return max <= 0 ? 1 : Math.ceil(max);
+
+    if (!values.length) {
+      return { min: 0, max: 1 };
+    }
+
+    const min = Math.max(0, Math.floor(Math.min(...values)) - 1);
+    const max = Math.ceil(Math.max(...values)) + 1;
+
+    return { min, max: max <= min ? min + 1 : max };
   }
 
   get chartTicks(): number[] {
     const max = this.chartMaxValue;
-    const mid = Math.round((max / 2) * 100) / 100;
-    return [max, mid, 0];
+    const min = this.chartMinValue;
+    const mid = Math.round((min + max) / 2);
+
+    return [max, mid, min];
   }
 
   get chartPlotWidth(): number {
@@ -314,7 +331,10 @@ export class TournamentResultsPage implements OnInit {
   }
 
   getPointY(value: number): number {
-    return this.chartPadding.top + this.chartPlotHeight - (value / this.chartMaxValue) * this.chartPlotHeight;
+    const min = this.chartMinValue;
+    const range = this.chartMaxValue - min;
+
+    return this.chartPadding.top + this.chartPlotHeight - ((value - min) / range) * this.chartPlotHeight;
   }
 
   getLinePath(series: TournamentResultsChartSeries): string {

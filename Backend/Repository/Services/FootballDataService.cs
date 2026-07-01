@@ -163,15 +163,9 @@ namespace Backend.Repository.Services
                         homeReg.ValueKind == JsonValueKind.Number &&
                         awayReg.ValueKind == JsonValueKind.Number)
                     {
-                        var regHome = homeReg.GetInt32();
-                        var regAway = awayReg.GetInt32();
-
-                        if (regHome != 0 || regAway != 0)
-                        {
-                            scoreHome = regHome;
-                            scoreAway = regAway;
-                            hasValidRegular = true;
-                        }
+                        scoreHome = homeReg.GetInt32();
+                        scoreAway = awayReg.GetInt32();
+                        hasValidRegular = true;
                     }
 
                     if (!hasValidRegular &&
@@ -284,6 +278,7 @@ namespace Backend.Repository.Services
             {
                 "SCHEDULED" => "Timed",
                 "TIMED" => hasFullTimeScores ? "Finished" : "Timed",
+                "LIVE" => "In_Play",
                 "IN_PLAY" => "In_Play",
                 "PAUSED" => "In_Play",
                 "FINISHED" => "Finished",
